@@ -83,7 +83,7 @@ public class Metadata extends AbstractBasicDBObject {
         String chargeNumber = (String) parsedJson.get(ATTRIBUTE_KEY__CHARGE_NUMBER);
         String projectName = (String) parsedJson.get(ATTRIBUTE_KEY__PROJECT_NAME);
         String comments = (String) parsedJson.get(ATTRIBUTE_KEY__COMMENTS);
-        StoredFile originalUploadedFile = new StoredFile((parsedJson.get(ATTRIBUTE_KEY__ORIGINAL_UPLOADED_FILE));
+        StoredFile originalUploadedFile = new StoredFile(parsedJson.get(ATTRIBUTE_KEY__ORIGINAL_UPLOADED_FILE));
 
         List<Object> attachmentObjects = (List<Object>) parsedJson.get(ATTRIBUTE_KEY__ATTACHMENTS);
 
