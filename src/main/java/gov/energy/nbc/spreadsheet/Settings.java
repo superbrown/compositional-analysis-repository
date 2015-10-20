@@ -2,19 +2,61 @@ package gov.energy.nbc.spreadsheet;
 
 public class Settings {
 
-    protected String MONGO_DB_HOST = "localhost";
-    protected int MONGO_DB_PORT = 27017;
-    protected String MONGO_DATABASE_NAME = "spreadsheetRepository";
+    protected String mongoDbHost;
+    protected int mongoDbPort;
+    protected String mongoDatabaseName;
+    protected String dataFilesDirectoryPath;
+
+    public Settings() {
+
+        init();
+    }
+
+    protected void init() {
+
+        mongoDbHost = "localhost";
+        mongoDbPort = 27017;
+        mongoDatabaseName = "researchDataRepository";
+        dataFilesDirectoryPath = "uploadedFiles";
+    }
 
     public String getMongoDatabaseName() {
-        return MONGO_DATABASE_NAME;
+        return mongoDatabaseName;
     }
 
     public String getMongoDbHost() {
-        return MONGO_DB_HOST;
+        return mongoDbHost;
     }
 
     public int getMongoDbPort() {
-        return MONGO_DB_PORT;
+        return mongoDbPort;
+    }
+
+    public void setMongoDatabaseName(String MONGO_DATABASE_NAME) {
+        this.mongoDatabaseName = MONGO_DATABASE_NAME;
+    }
+
+    public void setSetMongoDbHost(String MONGO_DB_HOST) {
+        this.mongoDbHost = MONGO_DB_HOST;
+    }
+
+    public void setMongoDbHost(String mongoDbHost) {
+        this.mongoDbHost = mongoDbHost;
+    }
+
+    public void setMondgoDbPort(int MONGO_DB_PORT) {
+        this.mongoDbPort = MONGO_DB_PORT;
+    }
+
+    public void setMongoDbPort(int mongoDbPort) {
+        this.mongoDbPort = mongoDbPort;
+    }
+
+    public String getDataFilesDirectoryPath() {
+        return dataFilesDirectoryPath;
+    }
+
+    public void setDataFilesDirectoryPath(String dataFilesDirectoryPath) {
+        this.dataFilesDirectoryPath = dataFilesDirectoryPath;
     }
 }
