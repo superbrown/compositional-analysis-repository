@@ -118,9 +118,9 @@ public class TestData {
                 toListOfLists(spreadsheetValues_2));
         }
 
-    private static List<List<Object>> toListOfLists(Object[][] array) {
+    private static List<List> toListOfLists(Object[][] array) {
 
-        List<List<Object>> listOfLists = new ArrayList();
+        List<List> listOfLists = new ArrayList();
 
         for (Object[] item : array) {
 

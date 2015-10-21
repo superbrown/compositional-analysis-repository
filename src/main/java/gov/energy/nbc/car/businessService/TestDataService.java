@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.busineessService;
+package gov.energy.nbc.car.businessService;
 
 import com.mongodb.client.MongoDatabase;
 import gov.energy.nbc.car.dao.SpreadsheetDocumentDAO;

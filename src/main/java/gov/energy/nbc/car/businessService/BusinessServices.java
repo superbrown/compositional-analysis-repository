@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.busineessService;
+package gov.energy.nbc.car.businessService;
 
 import gov.energy.nbc.car.Settings_forUnitTestPurposes;
 import gov.energy.nbc.car.Settings;

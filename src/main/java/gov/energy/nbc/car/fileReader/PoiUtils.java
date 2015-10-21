@@ -1,11 +1,13 @@
 package gov.energy.nbc.car.fileReader;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,7 +35,15 @@ public class PoiUtils {
                 return null;
 
             case Cell.CELL_TYPE_NUMERIC:
-                return cell.getNumericCellValue();
+
+                // Date
+                if (HSSFDateUtil.isCellDateFormatted(cell)) {
+                    Date date = cell.getDateCellValue();
+                    return date;
+                }
+                else {
+                    return cell.getNumericCellValue();
+                }
         }
 
         log.error("This shouldn't happen because we should have covered all possible cases.");
@@ -66,16 +76,10 @@ public class PoiUtils {
                     break;
 
                 case Cell.CELL_TYPE_BOOLEAN:
-                    throw new NonStringValueFoundInHeader(columnNumber, cell.getBooleanCellValue());
-
                 case Cell.CELL_TYPE_ERROR:
-                    throw new NonStringValueFoundInHeader(columnNumber, cell.getBooleanCellValue());
-
                 case Cell.CELL_TYPE_FORMULA:
-                    throw new NonStringValueFoundInHeader(columnNumber, cell.getBooleanCellValue());
-
                 case Cell.CELL_TYPE_NUMERIC:
-                    throw new NonStringValueFoundInHeader(columnNumber, cell.getBooleanCellValue());
+                    throw new NonStringValueFoundInHeader(columnNumber, cell.toString());
             }
 
             if (lastColumnEncountered) {

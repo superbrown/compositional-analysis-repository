@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 
 import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,4 +48,10 @@ public class Utilities {
 				inputStream.close();
 		}
 	}
+
+	public static File getFile(String filePath) throws URISyntaxException {
+
+        URL fileURL = Utilities.class.getResource(filePath);
+        return new File(fileURL.toURI());
+    }
 }

@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.busineessService;
+package gov.energy.nbc.car.businessService;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;

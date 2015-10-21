@@ -1,7 +1,7 @@
 package gov.energy.nbc.car.restService;
 
-import gov.energy.nbc.car.busineessService.BusinessServices;
-import gov.energy.nbc.car.busineessService.TestMode;
+import gov.energy.nbc.car.businessService.BusinessServices;
+import gov.energy.nbc.car.businessService.TestMode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
