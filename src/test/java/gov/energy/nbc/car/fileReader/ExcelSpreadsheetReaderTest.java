@@ -68,7 +68,7 @@ public class ExcelSpreadsheetReaderTest {
 
     private void testExtractDataFromSpreadsheet(File file) throws IOException, NonStringValueFoundInHeader, UnsupportedFileExtension, ParseException {
 
-        SpreadsheetData spreadsheetData = ExcelSpreadsheetReader.extractDataFromSpreadsheet(file, "Sheet2");
+        SpreadsheetData spreadsheetData = ExcelSpreadsheetReader.extractDataFromSpreadsheet(file, "Sheet Containing Data");
 
         assertTrue(spreadsheetData.columnNames.size() == 6);
         assertTrue(spreadsheetData.columnNames.get(0).equals("Column 1"));
