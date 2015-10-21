@@ -81,8 +81,8 @@ public class UploadSpreadsheetServlet extends HttpServlet implements
 	private void setTheFileThatWasUploaded(Metadata metadata, FileUploadUtility.StoredFile theFileThatWasStored) {
 
 		StoredFile storedFile_mongoVersion = new StoredFile(
-				theFileThatWasStored.originalUploadedFileName,
-				theFileThatWasStored.fileNameUserForStorage);
-		metadata.put(Metadata.ATTRIBUTE_KEY__ORIGINAL_UPLOADED_FILE, storedFile_mongoVersion);
+				theFileThatWasStored.originalFileName,
+				theFileThatWasStored.storageLocation);
+		metadata.put(Metadata.ATTRIBUTE_KEY__UPLOADED_FILE, storedFile_mongoVersion);
 	}
 }

@@ -6,8 +6,8 @@ import gov.energy.nbc.car.model.AbstractBasicDBObject;
 
 public class StoredFile extends AbstractBasicDBObject {
 
-    public static final String ATTRIBUTE_KEY__ORIGINAL_UPLOADED_FILE_NAME = "originalUploadedFileName";
-    public static final String ATTRIBUTE_KEY__FILE_NAME_USED_FOR_STORAGE = "fileNameUserForStorage";
+    public static final String ATTRIBUTE_KEY__ORIGINAL_FILE_NAME = "originalFileName";
+    public static final String ATTRIBUTE_KEY__STORAGE_LOCATION = "storageLocation";
 
     public StoredFile(Object object) {
         super(object);
@@ -17,8 +17,8 @@ public class StoredFile extends AbstractBasicDBObject {
         super(json);
     }
 
-    public StoredFile(String originalUploadedFileName, String fileNameUserForStorage) {
-        init(originalUploadedFileName, fileNameUserForStorage);
+    public StoredFile(String originalFileName, String storageLocation) {
+        init(originalFileName, storageLocation);
     }
 
     @Override
@@ -26,13 +26,13 @@ public class StoredFile extends AbstractBasicDBObject {
 
         BasicDBObject parsedJson = (BasicDBObject) JSON.parse(json);
 
-        init((String)parsedJson.get(ATTRIBUTE_KEY__ORIGINAL_UPLOADED_FILE_NAME),
-             (String)parsedJson.get(ATTRIBUTE_KEY__FILE_NAME_USED_FOR_STORAGE));
+        init((String)parsedJson.get(ATTRIBUTE_KEY__ORIGINAL_FILE_NAME),
+             (String)parsedJson.get(ATTRIBUTE_KEY__STORAGE_LOCATION));
     }
 
-    public void init(String originalUploadedFileName, String fileNameUserForStorage) {
+    public void init(String originalFileName, String storageLocation) {
 
-        put(ATTRIBUTE_KEY__ORIGINAL_UPLOADED_FILE_NAME, originalUploadedFileName);
-        put(ATTRIBUTE_KEY__FILE_NAME_USED_FOR_STORAGE, fileNameUserForStorage);
+        put(ATTRIBUTE_KEY__ORIGINAL_FILE_NAME, originalFileName);
+        put(ATTRIBUTE_KEY__STORAGE_LOCATION, storageLocation);
     }
 }

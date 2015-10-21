@@ -1,9 +1,11 @@
 package gov.energy.nbc.car.businessService;
 
+import com.mongodb.client.FindIterable;
 import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.dao.DAOUtilities;
 import gov.energy.nbc.car.dao.SpreadsheetRowDocumentDAO;
 import gov.energy.nbc.car.model.document.SpreadsheetRowDocument;
+import org.bson.Document;
 
 import java.util.List;
 
@@ -12,10 +14,10 @@ public class SpreadsheetRowService {
     protected SpreadsheetRowDocumentDAO spreadsheetRowDocumentDAO;
     protected SpreadsheetRowDocumentDAO spreadsheetRowDocumentDAO_FOR_TESTING_PURPOSES;
 
-    public SpreadsheetRowService(Settings settings, Settings settings_forTheTestingPurposes) {
+    public SpreadsheetRowService(Settings settings, Settings settings_forUnitTestingPurposes) {
 
         spreadsheetRowDocumentDAO = new SpreadsheetRowDocumentDAO(settings);
-        spreadsheetRowDocumentDAO_FOR_TESTING_PURPOSES = new SpreadsheetRowDocumentDAO(settings_forTheTestingPurposes);
+        spreadsheetRowDocumentDAO_FOR_TESTING_PURPOSES = new SpreadsheetRowDocumentDAO(settings_forUnitTestingPurposes);
     }
 
     public String getSpreadsheetRow(TestMode testMode, String spreadsheetRowId) {
@@ -37,6 +39,15 @@ public class SpreadsheetRowService {
         String json = DAOUtilities.serialize(spreadsheetRowDocuments);
         return json;
     }
+
+    public String getAllSpreadsheetRows(TestMode testMode) {
+
+        FindIterable<Document> spreadsheetRowDocuments = getSpreadsheetRowDAO(testMode).getAll();
+
+        String jsonOut = DAOUtilities.serialize(spreadsheetRowDocuments);
+        return jsonOut;
+    }
+
 
     public SpreadsheetRowDocumentDAO getSpreadsheetRowDAO(TestMode testMode) {
 

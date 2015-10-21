@@ -1,14 +1,17 @@
 package gov.energy.nbc.car.businessService;
 
-import gov.energy.nbc.car.dao.SpreadsheetDocumentDAO;
-import gov.energy.nbc.car.fileReader.NonStringValueFoundInHeader;
+import com.mongodb.client.FindIterable;
 import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.dao.DAOUtilities;
+import gov.energy.nbc.car.dao.DeleteResults;
+import gov.energy.nbc.car.dao.SpreadsheetDocumentDAO;
+import gov.energy.nbc.car.fileReader.NonStringValueFoundInHeader;
 import gov.energy.nbc.car.fileReader.UnsupportedFileExtension;
 import gov.energy.nbc.car.model.common.Data;
 import gov.energy.nbc.car.model.common.Metadata;
 import gov.energy.nbc.car.model.document.SpreadsheetDocument;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.io.File;
@@ -19,15 +22,15 @@ public class SpreadsheetService {
     Logger log = Logger.getLogger(this.getClass());
 
     protected SpreadsheetDocumentDAO spreadsheetDocumentDAO;
-    protected SpreadsheetDocumentDAO spreadsheetDocumentDAO_FOR_TESTING_PURPOSES;
+    protected SpreadsheetDocumentDAO spreadsheetDocumentDAO_FOR_UNIT_TESTING_PURPOSES;
 
     protected BusinessServiceUtilities businessServiceUtilities;
 
     public SpreadsheetService(Settings settings,
-                              Settings settings_forTheTestingPurposes) {
+                              Settings settings_forUnitTestingPurposes) {
 
         spreadsheetDocumentDAO = new SpreadsheetDocumentDAO(settings);
-        spreadsheetDocumentDAO_FOR_TESTING_PURPOSES = new SpreadsheetDocumentDAO(settings_forTheTestingPurposes);
+        spreadsheetDocumentDAO_FOR_UNIT_TESTING_PURPOSES = new SpreadsheetDocumentDAO(settings_forUnitTestingPurposes);
 
         businessServiceUtilities = new BusinessServiceUtilities();
     }
@@ -43,7 +46,7 @@ public class SpreadsheetService {
     }
 
     public String getSpreadsheetMetadata(TestMode testMode,
-                                     String spreadsheetId) {
+                                         String spreadsheetId) {
 
         Metadata metadata = getSpreadsheetDAO(testMode).getSpreadsheetMetadata(spreadsheetId);
         if (metadata == null) { return null; }
@@ -61,6 +64,27 @@ public class SpreadsheetService {
 
         String jsonOut = DAOUtilities.serialize(data);
         return jsonOut;
+    }
+
+    public String getAllSpreadsheets(TestMode testMode) {
+
+        FindIterable<Document> spreadsheetDocuments = getSpreadsheetDAO(testMode).getAll();
+
+        String jsonOut = DAOUtilities.serialize(spreadsheetDocuments);
+        return jsonOut;
+    }
+
+    public long deleteSpreadsheet(TestMode testMode,
+                                  String spreadsheetId) throws DeletionFailure {
+
+        DeleteResults deleteResults = getSpreadsheetDAO(testMode).delete(spreadsheetId);
+
+        if (deleteResults.wasAcknowledged() == false) {
+            throw new DeletionFailure(deleteResults);
+        }
+
+        long numberOfObjectsDeleted = deleteResults.getDeletedCount();
+        return numberOfObjectsDeleted;
     }
 
     public String addSpreadsheet(TestMode testMode,
@@ -102,9 +126,7 @@ public class SpreadsheetService {
     public SpreadsheetDocument getSpreadsheetDocument(TestMode testMode,
                                                       String spreadsheetId) {
 
-        SpreadsheetDocumentDAO spreadsheetDocumentDAO = getSpreadsheetDAO(testMode);
-
-        SpreadsheetDocument document = spreadsheetDocumentDAO.get(spreadsheetId);
+        SpreadsheetDocument document = getSpreadsheetDAO(testMode).get(spreadsheetId);
         return document;
     }
 
@@ -114,7 +136,7 @@ public class SpreadsheetService {
             return spreadsheetDocumentDAO;
         }
         else {
-            return spreadsheetDocumentDAO_FOR_TESTING_PURPOSES;
+            return spreadsheetDocumentDAO_FOR_UNIT_TESTING_PURPOSES;
         }
     }
 }

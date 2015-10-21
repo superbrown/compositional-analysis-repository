@@ -18,7 +18,7 @@ public class Metadata extends AbstractBasicDBObject {
     public static final String ATTRIBUTE_KEY__CHARGE_NUMBER = "chargeNumber";
     public static final String ATTRIBUTE_KEY__PROJECT_NAME = "projectName";
     public static final String ATTRIBUTE_KEY__COMMENTS = "comments";
-    public static final String ATTRIBUTE_KEY__ORIGINAL_UPLOADED_FILE = "originalUploadedFile";
+    public static final String ATTRIBUTE_KEY__UPLOADED_FILE = "uploadedFile";
     public static final String ATTRIBUTE_KEY__ATTACHMENTS = "attachments";
 
     public Metadata(
@@ -28,7 +28,7 @@ public class Metadata extends AbstractBasicDBObject {
             String chargeNumber,
             String projectName,
             String comments,
-            StoredFile originalUploadedFile,
+            StoredFile uploadedFile,
             List<StoredFile> attachments) {
 
         super();
@@ -39,7 +39,7 @@ public class Metadata extends AbstractBasicDBObject {
                 chargeNumber,
                 projectName,
                 comments,
-                originalUploadedFile,
+                uploadedFile,
                 attachments);
    }
 
@@ -57,7 +57,7 @@ public class Metadata extends AbstractBasicDBObject {
                       String chargeNumber,
                       String projectName,
                       String comments,
-                      StoredFile originalUploadedFile,
+                      StoredFile uploadedFile,
                       List<StoredFile> attachments) {
 
         put(ATTRIBUTE_KEY__SAMPLE_TYPE, sampleType);
@@ -66,7 +66,7 @@ public class Metadata extends AbstractBasicDBObject {
         put(ATTRIBUTE_KEY__CHARGE_NUMBER, chargeNumber);
         put(ATTRIBUTE_KEY__PROJECT_NAME, projectName);
         put(ATTRIBUTE_KEY__COMMENTS, comments);
-        put(ATTRIBUTE_KEY__ORIGINAL_UPLOADED_FILE, originalUploadedFile);
+        put(ATTRIBUTE_KEY__UPLOADED_FILE, uploadedFile);
         put(ATTRIBUTE_KEY__ATTACHMENTS, attachments);
 
         verifyRequiredFieldsAreSet();
@@ -83,7 +83,7 @@ public class Metadata extends AbstractBasicDBObject {
         String chargeNumber = (String) parsedJson.get(ATTRIBUTE_KEY__CHARGE_NUMBER);
         String projectName = (String) parsedJson.get(ATTRIBUTE_KEY__PROJECT_NAME);
         String comments = (String) parsedJson.get(ATTRIBUTE_KEY__COMMENTS);
-        StoredFile originalUploadedFile = new StoredFile(parsedJson.get(ATTRIBUTE_KEY__ORIGINAL_UPLOADED_FILE));
+        StoredFile uploadedFile = new StoredFile(parsedJson.get(ATTRIBUTE_KEY__UPLOADED_FILE));
 
         List<Object> attachmentObjects = (List<Object>) parsedJson.get(ATTRIBUTE_KEY__ATTACHMENTS);
 
@@ -103,13 +103,13 @@ public class Metadata extends AbstractBasicDBObject {
              chargeNumber,
              projectName,
              comments,
-             originalUploadedFile,
+             uploadedFile,
              attachments);
     }
 
     private void verifyRequiredFieldsAreSet() {
         verify(StringUtils.isNotBlank((String)this.get(ATTRIBUTE_KEY__SAMPLE_TYPE)), "sampleType is blank");
-        verify(this.get(ATTRIBUTE_KEY__ORIGINAL_UPLOADED_FILE) != null, "spreadsheetPath is blank");
+        verify(this.get(ATTRIBUTE_KEY__UPLOADED_FILE) != null, "spreadsheetPath is blank");
     }
 
     private void verify(boolean condition, String errorMessage) {

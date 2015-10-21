@@ -35,7 +35,7 @@ public class SpreadsheetDocument extends AbstractDocument {
                                String chargeNumber,
                                String projectName,
                                String comments,
-                               StoredFile originalUploadedFile,
+                               StoredFile uploadedFile,
                                List<StoredFile> attachments,
                                List<List> spreadsheetContent) {
 
@@ -46,7 +46,7 @@ public class SpreadsheetDocument extends AbstractDocument {
                 chargeNumber,
                 projectName,
                 comments,
-                originalUploadedFile,
+                uploadedFile,
                 attachments);
 
         Data data = new Data(spreadsheetContent);

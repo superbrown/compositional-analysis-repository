@@ -48,14 +48,17 @@ public class SpreadsheetRowDocumentDAO extends DAO
         return spreadsheetRowObjectIds;
     }
 
-    public DeleteResult deleteRowsAssociatedWithSpreadsheet(ObjectId objectId) {
+    public DeleteResults deleteRowsAssociatedWithSpreadsheet(ObjectId objectId) {
 
         Document spreadsheetIdFilter = new Document();
         spreadsheetIdFilter.put(SpreadsheetRowDocument.ATTRIBUTE_KEY__SPREADSHEET_OBJECT_ID, objectId);
 
         DeleteResult deleteResult = getCollection().deleteMany(spreadsheetIdFilter);
 
-        return deleteResult;
+        DeleteResults allDeleteResults = new DeleteResults();
+        allDeleteResults.add(deleteResult);
+
+        return allDeleteResults;
     }
 
     @Override
@@ -65,7 +68,7 @@ public class SpreadsheetRowDocumentDAO extends DAO
     }
 
     @Override
-    public DeleteResult delete(ObjectId objectId) {
+    public DeleteResults delete(ObjectId objectId) {
 
         throw new RuntimeException(
                 "This method should not be called because rows should not be deleted  independently of " +
