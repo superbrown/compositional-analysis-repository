@@ -2,7 +2,7 @@
 <html>
 <head>
 
-    <title>Research Data Repository</title>
+    <title>Compositional Analysis Repository</title>
     <meta name="description" content="Research Data Repository">
 
     <style>
@@ -20,16 +20,22 @@
 
         h1 { margin-top: 10px; margin-bottom: 6px; }
         h2 { margin-top: 10px; margin-bottom: 3px; }
-        h3 { margin-top: 10px; margin-bottom: 3px; font-style: italic }
+        h3 { margin-top: 10px; margin-bottom: 3px; font-style: italic; }
         h4 { margin-top: 10px; margin-bottom: 3px; }
 
+        input {margin-bottom: 5px;}
+        label {display:inline-block; width: 125px; vertical-align: top; }
     </style>
+
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
 </head>
 
 <body style="margin-left: 20px; margin-top: 10px">
 
-<h1>Research Data Repository</h1>
+<h1>Compositional Analysis Repository</h1>
 
 <h2>Test Data</h2>
 <a href="/seedTestData">/api/seedTestData</a><br/>
@@ -37,21 +43,24 @@
 <a href="/dropTheTestDatabase">/api/dropTheTestDatabase</a><br/>
 
 <h2>Spreadsheets</h2>
-<a href="/addSpreadsheet?json=''">/api/addSpreadsheet?json='json'</a><br/>
-<a href="/getSpreadsheet?spreadsheetId='id'">/api/getSpreadsheet?spreadsheetId='id'</a><br/>
-<a href="/getSpreadsheetData??spreadsheetId='id'">/api/getSpreadsheetData?spreadsheetId='id'</a><br/>
-<a href="/getSpreadsheetMetadata?spreadsheetId='id'">/api/getSpreadsheetMetadata?spreadsheetId='id'</a><br/>
+/api/addSpreadsheet<br/>
+/api/getSpreadsheet/spreadsheetId?inTestMode=true<br/>
+/api/getSpreadsheetData/spreadsheetId?inTestMode=true<br/>
+/api/getSpreadsheetMetadata/spreadsheetId?inTestMode=true<br/>
 
 <h2>Spreadsheet Rows</h2>
-<a href="/getSpreadsheetRows?query=''">/api/getSpreadsheetRows?query=''</a><br/>
-<a href="/getSpreadsheetRow?spreadsheetRowId=''">/api/getSpreadsheetRows?spreadsheetRowId=''</a><br/>
+/api/getSpreadsheetRow/spreadsheetRowId?inTestMode=true<br/>
+/api/getSpreadsheetRows?query=''?inTestMode=true<br/>
 
-<form id="inputForm">
+<br/>
+<a href="uploadSpreadsheet/index.html">Upload Data</a>
 
-    <label for="file">Spreadsheet:</label>
-    <input id="file" type="file" id="fileinput" multiple="multiple" />
+<!--<form id="inputForm">-->
 
-</form>
+    <!--<label for="file">Spreadsheet:</label>-->
+    <!--<input id="file" type="file" id="fileinput" multiple="multiple" />-->
+
+<!--</form>-->
 
 <script lang="javascript">
 
