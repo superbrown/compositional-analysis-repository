@@ -57,14 +57,18 @@ public class SpreadsheetDocumentDAO extends DAO
     }
 
     @Override
-    public DeleteResult delete(ObjectId objectId) {
+    public DeleteResults delete(ObjectId objectId) {
 
-        DeleteResult deleteResult = super.delete(objectId);
-        if (deleteResult.wasAcknowledged() == false) {
-            return deleteResult;
+        DeleteResults deleteResults = super.delete(objectId);
+
+        if (deleteResults.wasAcknowledged() == false) {
+            return deleteResults;
         }
 
-        return spreadsheetRowDocumentDAO.deleteRowsAssociatedWithSpreadsheet(objectId);
+        DeleteResults deleteResultsForRows = spreadsheetRowDocumentDAO.deleteRowsAssociatedWithSpreadsheet(objectId);
+        deleteResults.addAll(deleteResultsForRows);
+
+        return deleteResults;
     }
 
     @Override

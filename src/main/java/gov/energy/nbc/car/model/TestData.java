@@ -53,7 +53,7 @@ public class TestData {
         projectName_1 = "Project Name 1";
         comments_1 = "Comment 1";
         tags_1 = Arrays.asList("tag 1", "tag 2", "tag 3");
-        originallyUploadedFile_1 = new StoredFile("{ originalUploadedFileName: \"name_1\", fileNameUserForStorage : \"uuid_1\"}");
+        originallyUploadedFile_1 = new StoredFile("{ originalFileName: \"Spreadsheet 1.xls\", storageLocation : \"uploadedFiles/2015-10-20_08_12_23_124/Spreadsheet 1.xls\"}");
         attachments_1 = null;
 
         submissionDate_2 = new Date();
@@ -62,16 +62,16 @@ public class TestData {
         projectName_2 = "Project Name 3";
         comments_2 = "Comment 2";
         tags_2 = Arrays.asList("tag 2", "tag 2", "tag 3");
-        originallyUploadedFile_2 = new StoredFile("{ originalUploadedFileName: \"name_2\", fileNameUserForStorage : \"uuid_2\"}");
+        originallyUploadedFile_2 = new StoredFile("{ originalFileName: \"Spreadsheet 2.xls\", storageLocation : \"uploadedFiles/2015-10-20_08_02_00_231/Spreadsheet 2.xls\"}");
         attachments_2 = Arrays.asList(
-                new StoredFile("{ originalUploadedFileName: \"name_3\", fileNameUserForStorage : \"uuid_3\"}"),
-                new StoredFile("{ originalUploadedFileName: \"name_4\", fileNameUserForStorage : \"uuid_4\"}"),
-                new StoredFile("{ originalUploadedFileName: \"name_5\", fileNameUserForStorage : \"uuid_5\"}"));
+                new StoredFile("{ originalFileName: \"name_3\", storageLocation : \"uuid_3\"}"),
+                new StoredFile("{ originalFileName: \"name_4\", storageLocation : \"uuid_4\"}"),
+                new StoredFile("{ originalFileName: \"name_5\", storageLocation : \"uuid_5\"}"));
 
 
         spreadsheetValues_1 = new Object[][]{
                 {
-                        "ID",
+                        "Some Column Name",
                         "String Values Column Name" ,
                         "Date Values Column Name",
                         "Float Values Column Name",
@@ -84,7 +84,7 @@ public class TestData {
 
         spreadsheetValues_2 = new Object[][]{
                 {
-                        "ID",
+                        "Some Column Name",
                         "Date Values Column Name",
                         "Float Values Column Name",
                         "Integer Values Column Name"},

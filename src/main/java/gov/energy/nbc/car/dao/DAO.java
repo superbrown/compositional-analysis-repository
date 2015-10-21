@@ -3,6 +3,7 @@ package gov.energy.nbc.car.dao;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.WriteConcern;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
@@ -97,7 +98,7 @@ public abstract class DAO {
     protected Document queryForOneWithId(String id) {
 
         ObjectId objectId = new ObjectId(id);
-        Document idFilter = this.createIdFilter(objectId);
+        Document idFilter = createIdFilter(objectId);
         return queryForOne(idFilter, null);
     }
 
@@ -123,10 +124,20 @@ public abstract class DAO {
         getCollection().drop();
     }
 
-    public DeleteResult delete(ObjectId objectId) {
+    public DeleteResults delete(String id) {
+
+        return delete(new ObjectId(id));
+    }
+
+    public DeleteResults delete(ObjectId objectId) {
 
         Document idFilter = createIdFilter(objectId);
-        return getCollection().deleteOne(idFilter);
+
+        DeleteResult deleteResult = getCollection().deleteOne(idFilter);
+
+        DeleteResults deleteResults = new DeleteResults(deleteResult);
+
+        return deleteResults;
     }
 
     protected Document createIdFilter(ObjectId objectId) {
@@ -150,5 +161,10 @@ public abstract class DAO {
     public MongoDatabase getDatabase() {
 
         return database;
+    }
+
+    public FindIterable<Document> getAll() {
+
+        return getCollection().find(new BasicDBObject());
     }
 }

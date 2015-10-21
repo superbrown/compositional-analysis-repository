@@ -127,12 +127,12 @@ public class FileUploadUtility extends HttpServlet {
 
     public static class StoredFile {
 
-        public String originalUploadedFileName;
-        public String fileNameUserForStorage;
+        public String originalFileName;
+        public String storageLocation;
 
-        public StoredFile(String originalUploadedFileName, String fileNameUserForStorage) {
-            this.originalUploadedFileName = originalUploadedFileName;
-            this.fileNameUserForStorage = fileNameUserForStorage;
+        public StoredFile(String originalFileName, String storageLocation) {
+            this.originalFileName = originalFileName;
+            this.storageLocation = storageLocation;
         }
     }
 }
