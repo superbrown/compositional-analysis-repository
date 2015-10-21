@@ -37,7 +37,7 @@ public class SpreadsheetDocument extends AbstractDocument {
                                String comments,
                                StoredFile originalUploadedFile,
                                List<StoredFile> attachments,
-                               List<List<Object>> spreadsheetContent) {
+                               List<List> spreadsheetContent) {
 
         Metadata metadata = new Metadata(
                 sampleType,

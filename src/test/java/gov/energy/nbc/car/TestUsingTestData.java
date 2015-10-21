@@ -1,7 +1,7 @@
 package gov.energy.nbc.car;
 
-import gov.energy.nbc.car.busineessService.BusinessServices;
-import gov.energy.nbc.car.busineessService.TestDataService;
+import gov.energy.nbc.car.businessService.BusinessServices;
+import gov.energy.nbc.car.businessService.TestDataService;
 
 public class TestUsingTestData {
 
