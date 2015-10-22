@@ -3,13 +3,13 @@ package gov.energy.nbc.car.model.document;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import gov.energy.nbc.car.model.AbstractDocument;
-import gov.energy.nbc.car.model.common.Metadata;
 import gov.energy.nbc.car.model.common.Data;
+import gov.energy.nbc.car.model.common.Metadata;
 import gov.energy.nbc.car.model.common.StoredFile;
-import org.bson.types.ObjectId;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public class SpreadsheetDocument extends AbstractDocument {
 
@@ -54,14 +54,12 @@ public class SpreadsheetDocument extends AbstractDocument {
         init(metadata, data);
     }
 
-    protected void init(String json) {
+    protected void initWithJson(String json) {
 
         BasicDBObject parsedJson = (BasicDBObject) JSON.parse(json);
 
-        ObjectId objectId = parsedJson.getObjectId(ATTRIBUTE_KEY__ID);
-        if (objectId != null) {
-            put(ATTRIBUTE_KEY__ID, objectId);
-        }
+        initializeId(parsedJson);
+
         Metadata metadata = new Metadata(JSON.serialize(parsedJson.get(ATTRIBUTE_KEY__METADATA)));
         Data data = new Data(JSON.serialize(parsedJson.get(ATTRIBUTE_KEY__DATA)));
 
@@ -80,5 +78,13 @@ public class SpreadsheetDocument extends AbstractDocument {
 
     public Data getData() {
         return (Data) get(ATTRIBUTE_KEY__DATA);
+    }
+
+    public Set getColumnNames() {
+        return getData().getColumnNames();
+    }
+
+    public String getSampleType() {
+        return (String) getMetadata().get(Metadata.ATTRIBUTE_KEY__SAMPLE_TYPE);
     }
 }

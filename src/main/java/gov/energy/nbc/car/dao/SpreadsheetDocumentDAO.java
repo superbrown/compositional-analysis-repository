@@ -4,20 +4,25 @@ import com.mongodb.client.result.DeleteResult;
 import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.model.common.Data;
 import gov.energy.nbc.car.model.common.Metadata;
+import gov.energy.nbc.car.model.document.SampleTypeDocument;
 import gov.energy.nbc.car.model.document.SpreadsheetDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+
+import java.util.Set;
 
 public class SpreadsheetDocumentDAO extends DAO
 {
     public static final String ATTRIBUTE_KEY__COLLECTION_NAME = "spreadsheet";
     protected SpreadsheetRowDocumentDAO spreadsheetRowDocumentDAO;
+    protected SampleTypeDocumentDAO sampleTypeDocumentDAO;
 
     public SpreadsheetDocumentDAO(Settings settings) {
 
         super(ATTRIBUTE_KEY__COLLECTION_NAME, settings);
 
         spreadsheetRowDocumentDAO = new SpreadsheetRowDocumentDAO(settings);
+        sampleTypeDocumentDAO = new SampleTypeDocumentDAO(settings);
     }
 
     public SpreadsheetDocument get(String id) {
@@ -51,9 +56,36 @@ public class SpreadsheetDocumentDAO extends DAO
         spreadsheetRowDocumentDAO.add(objectId, spreadsheetDocument);
 
         Data data = spreadsheetDocument.getData();
+
         makeSureCollectionIsIndexedForAllColumns(data);
 
+        String sampleType = spreadsheetDocument.getSampleType();
+        Set columnNames = spreadsheetDocument.getColumnNames();
+
+        associateColumnNamesToTheSampleType(sampleType, columnNames);
+
         return objectId;
+    }
+
+    protected void associateColumnNamesToTheSampleType(String sampleType, Set columnNames) {
+
+        SampleTypeDocument sampleTypeDocument = sampleTypeDocumentDAO.getByName(sampleType);
+
+        if (sampleTypeDocument == null) {
+
+            sampleTypeDocument = new SampleTypeDocument();
+            sampleTypeDocument.setSampleType(sampleType);
+            ObjectId objectId = sampleTypeDocumentDAO.add(sampleTypeDocument);
+            sampleTypeDocument = sampleTypeDocumentDAO.get(objectId);
+        }
+
+        Set<String> columnNamesFromTheDatabase = sampleTypeDocument.getColumnNames();
+        columnNamesFromTheDatabase.addAll(columnNames);
+
+        Document dataToBeUpdated = new Document().
+                append(SampleTypeDocument.ATTRIBUTE_KEY__COLUMN_NAMES, columnNamesFromTheDatabase);
+
+        sampleTypeDocumentDAO.updateOne(sampleTypeDocument.getObjectId(), dataToBeUpdated);
     }
 
     @Override

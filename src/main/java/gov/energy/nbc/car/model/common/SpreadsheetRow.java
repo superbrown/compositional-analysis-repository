@@ -8,7 +8,7 @@ import java.util.List;
 
 public class SpreadsheetRow extends AbstractBasicDBObject {
 
-    public static final String ATTRIBUTE_KEY__ROW_NUMBER = "rowNumber";
+    public static final String ATTRIBUTE_KEY__ROW_NUMBER = "_origDocRowNum";
 
     public SpreadsheetRow() {
         super();

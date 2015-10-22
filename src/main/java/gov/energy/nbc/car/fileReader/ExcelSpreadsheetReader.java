@@ -1,5 +1,6 @@
 package gov.energy.nbc.car.fileReader;
 
+import gov.energy.nbc.car.model.common.SpreadsheetRow;
 import gov.energy.nbc.car.utilities.SpreadsheetData;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -32,10 +33,15 @@ public class ExcelSpreadsheetReader {
             Workbook workbook = createWorkbookObject(fileInputStream, file.getName());
             Sheet sheet = workbook.getSheet(nameOfWorksheetContainingTheData);
 
-            List<String> columnNames = PoiUtils.determineColumnNames(sheet);
-            int numberOfColumnHeadings = columnNames.size();
+            List<String> columnNames = determineColumnNames(sheet);
+            int numberOfColumnNames = columnNames.size();
 
-            List<List> data = extractData(sheet, numberOfColumnHeadings);
+            List<List> data = extractData(sheet, numberOfColumnNames);
+
+            // DESIGN NOTE: When the data was extracted, the the row number was added as the first data element so users
+            //              will be able to trace the data back to the original source document.  So we need to add a
+            //              name for that column.
+            columnNames.add(0, SpreadsheetRow.ATTRIBUTE_KEY__ROW_NUMBER);
 
             SpreadsheetData spreasheetData = new SpreadsheetData(columnNames, data);
             return spreasheetData;
@@ -75,7 +81,11 @@ public class ExcelSpreadsheetReader {
 
         List<Object> rowData = new ArrayList();
 
-        //Get iterator to all cells of current row
+        // DESIGN NOTE: We are added the row number number so users will be able to trace the data back to the original
+        //              source document.
+        int rowNumber = row.getRowNum();
+        rowData.add(rowNumber);
+
         Iterator<Cell> cellIterator = row.cellIterator();
 
         int columnIndex = 0;
@@ -108,8 +118,6 @@ public class ExcelSpreadsheetReader {
 
     protected static Workbook createWorkbookObject(FileInputStream fileInputStream, String filePath)
             throws IOException, UnsupportedFileExtension {
-
-        // Get the workbook instance for XLS file
 
         if (filePath.toLowerCase().endsWith(".xls")) {
 
@@ -144,5 +152,48 @@ public class ExcelSpreadsheetReader {
 
             rowData.add(null);
         }
+    }
+
+
+    public static List<String> determineColumnNames(Sheet sheet)
+            throws NonStringValueFoundInHeader {
+
+        Row firstRow = sheet.iterator().next();
+        Iterator<Cell> cellIterator = firstRow.cellIterator();
+
+        List<String> headings = new ArrayList();
+
+        boolean lastColumnEncountered = false;
+        int columnNumber = 1;
+        while (cellIterator.hasNext()) {
+
+            Cell cell = cellIterator.next();
+            int cellType = cell.getCellType();
+
+            switch (cellType) {
+
+                case Cell.CELL_TYPE_STRING:
+                    headings.add(cell.getStringCellValue());
+                    break;
+
+                case Cell.CELL_TYPE_BLANK:
+                    lastColumnEncountered = true;
+                    break;
+
+                case Cell.CELL_TYPE_BOOLEAN:
+                case Cell.CELL_TYPE_ERROR:
+                case Cell.CELL_TYPE_FORMULA:
+                case Cell.CELL_TYPE_NUMERIC:
+                    throw new NonStringValueFoundInHeader(columnNumber, cell.toString());
+            }
+
+            if (lastColumnEncountered) {
+                break;
+            }
+
+            columnNumber++;
+        }
+
+        return headings;
     }
 }

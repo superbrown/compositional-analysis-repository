@@ -115,4 +115,14 @@ public class Metadata extends AbstractBasicDBObject {
     private void verify(boolean condition, String errorMessage) {
         if (condition == false) throw new IllegalArgumentException(errorMessage);
     }
+
+    public String getSampleType() { return (String) get(ATTRIBUTE_KEY__SAMPLE_TYPE); }
+    public String getSubmissionDate() { return (String) get(ATTRIBUTE_KEY__SUBMISSION_DATE); }
+    public String getSubmitter() { return (String) get(ATTRIBUTE_KEY__SUBMITTER); }
+    public String getChargeNumber() { return (String) get(ATTRIBUTE_KEY__CHARGE_NUMBER); }
+    public String getProjectName() { return (String) get(ATTRIBUTE_KEY__PROJECT_NAME); }
+    public String getComments() { return (String) get(ATTRIBUTE_KEY__COMMENTS); }
+    public StoredFile getUploadedFile() { return (StoredFile) get(ATTRIBUTE_KEY__UPLOADED_FILE); }
+    public List<StoredFile> getAttachments() { return (List<StoredFile>) get(ATTRIBUTE_KEY__ATTACHMENTS); }
+
 }

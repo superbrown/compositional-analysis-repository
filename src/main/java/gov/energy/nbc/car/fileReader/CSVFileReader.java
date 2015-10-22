@@ -1,6 +1,7 @@
 package gov.energy.nbc.car.fileReader;
 
 import au.com.bytecode.opencsv.CSVReader;
+import gov.energy.nbc.car.model.common.SpreadsheetRow;
 import gov.energy.nbc.car.utilities.SpreadsheetData;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -23,21 +24,25 @@ public class CSVFileReader {
 
         List<List> lines = parse(file);
 
-        List<Object> firstRow = lines.get(0);
-
-        List<String> columnNames = extractColumnNames(firstRow);
+        List<String> columnNames = determineColumnNames(lines);
         int numberOfColumnNames = columnNames.size();
 
-        List<List> dataRows = lines.subList(1, lines.size());
-        List<List> dataRowsTruncatedDownToTheNumberOfColumnNames =
-                toDataRowsTruncatedDownToTheNumberOfColumnNames(dataRows, numberOfColumnNames);
+        List<List> data = extractData(lines, numberOfColumnNames);
 
-        SpreadsheetData spreasheetData = new SpreadsheetData(columnNames, dataRowsTruncatedDownToTheNumberOfColumnNames);
+        // DESIGN NOTE: When the data was extracted, the the row number was added as the first data element so users
+        //              will be able to trace the data back to the original source document.  So we need to add a
+        //              name for that column.
+        columnNames.add(0, SpreadsheetRow.ATTRIBUTE_KEY__ROW_NUMBER);
+
+
+        SpreadsheetData spreasheetData = new SpreadsheetData(columnNames, data);
         return spreasheetData;
     }
 
-    protected static List<String> extractColumnNames(List<Object> firstRow)
+    protected static List<String> determineColumnNames(List<List> lines)
             throws NonStringValueFoundInHeader {
+
+        List<Object> firstRow = lines.get(0);
 
         List<String> columnNames = new ArrayList();
 
@@ -67,15 +72,27 @@ public class CSVFileReader {
         return columnNames;
     }
 
-    protected static List<List> toDataRowsTruncatedDownToTheNumberOfColumnNames(List<List> dataRows, int numberOfColumnNames) {
+    protected static List<List> extractData(List<List> lines, int numberOfColumnNames) {
 
-        List<List> dataRowsTruncatedDownToTheNumberOfColumnNames = new ArrayList();
+        // DESIGN NOTE: We skill the first line because it contains the column names
+        List<List> dataRows = lines.subList(1, lines.size());
 
+        List<List> data = new ArrayList();
+
+        Integer lineNumber = 2;
         for (List dataRow : dataRows) {
-            List<List> dataRowTruncatedDownToTheNumberOfColumnNames = dataRow.subList(0, numberOfColumnNames);
-            dataRowsTruncatedDownToTheNumberOfColumnNames.add(dataRowTruncatedDownToTheNumberOfColumnNames);
+
+            List lineData = dataRow.subList(0, numberOfColumnNames);
+
+            // DESIGN NOTE: We are added the line number number so users will be able to trace the data back to the
+            //              original source document.
+            lineData.add(0, lineNumber);
+
+            data.add(lineData);
+            lineNumber++;
         }
-        return dataRowsTruncatedDownToTheNumberOfColumnNames;
+
+        return data;
     }
 
     private static List<List> parse(File file) {

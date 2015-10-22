@@ -45,7 +45,7 @@ public class TestData {
     public static List<String> tags_2;
 
     static {
-        sampleType = "sample type";
+        sampleType = "algea";
 
         submissionDate_1 = new Date();
         submitter_1 = "Submitter 1";
