@@ -1,9 +1,11 @@
 package gov.energy.nbc.car.model;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 public abstract class AbstractDocument extends Document {
 
@@ -16,15 +18,15 @@ public abstract class AbstractDocument extends Document {
     public AbstractDocument(Object object) {
 
         String json = JSON.serialize(object);
-        init(json);
+        initWithJson(json);
     }
 
     public AbstractDocument(String json) {
 
-        init(json);
+        initWithJson(json);
     }
 
-    protected abstract void init(String json);
+    protected abstract void initWithJson(String json);
 
 
     public String toJson() {
@@ -54,5 +56,19 @@ public abstract class AbstractDocument extends Document {
                 .appendSuper(super.hashCode())
                 .append(this.toJson())
                 .toHashCode();
+    }
+
+    protected void initializeId(BasicDBObject parsedJson) {
+
+        ObjectId objectId = parsedJson.getObjectId(ATTRIBUTE_KEY__ID);
+
+        if (objectId != null) {
+            put(ATTRIBUTE_KEY__ID, objectId);
+        }
+    }
+
+    public ObjectId getObjectId() {
+
+        return getObjectId(ATTRIBUTE_KEY__ID);
     }
 }

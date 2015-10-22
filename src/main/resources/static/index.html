@@ -38,22 +38,37 @@
 <h1>Compositional Analysis Repository</h1>
 
 <h2>Test Data</h2>
-<a href="/api/seedTestData">/api/seedTestData</a><br/>
-<a href="/api/removeTestData">/api/removeTestData</a><br/>
-<a href="/api/dropTheTestDatabase">/api/dropTheTestDatabase</a><br/>
+<a href="/api/seedTestData">/api/seedTestData</a> [GET]<br/>
+<a href="/api/removeTestData">/api/removeTestData</a> [GET]<br/>
+<a href="/api/dropTheTestDatabase">/api/dropTheTestDatabase</a> [GET]<br/>
 
 <h2>Spreadsheets</h2>
-/api/addSpreadsheet<br/>
-/api/getSpreadsheet/spreadsheetId?inTestMode=true<br/>
-/api/getSpreadsheetData/spreadsheetId?inTestMode=true<br/>
-/api/getSpreadsheetMetadata/spreadsheetId?inTestMode=true<br/>
+/api/addSpreadsheet/{spreadsheet_id}?inTestMode=true [POST] (spreasheet JSON in the request body)<br/>
+/api/addSpreadsheet/{spreadsheet_id}?inTestMode=true [DELETE]<br/>
+<br/>
+<a href="/api/spreadsheets/all?inTestMode=true">/api/spreadsheets/all?inTestMode=true</a> [GET]<br/>
+/api/spreadsheets?inTestMode=true [POST] (query JSON in the request body)<br/>
+<br/>
+/api/spreadsheet/{spreadsheet_id}?inTestMode=true [GET]<br/>
+/api/spreadsheet/data/{spreadsheet_id}?inTestMode=true [GET]<br/>
+/api/spreadsheet/metadata/{spreadsheet_id}?inTestMode=true [GET]<br/>
 
 <h2>Spreadsheet Rows</h2>
-/api/getSpreadsheetRow/spreadsheetRowId?inTestMode=true<br/>
-/api/getSpreadsheetRows?query=''?inTestMode=true<br/>
-
+/api/spreadsheetRow/{spreadsheetRowId}?inTestMode=true [GET]<br/>
 <br/>
-<a href="uploadSpreadsheet/index.html">Upload Data</a>
+<a href="/api/spreadsheetRows/all?inTestMode=true">/api/spreadsheetRows/all?inTestMode=true</a> [GET]<br/>
+/api/spreadsheetRows?inTestMode=true [POST] (query JSON in the request body)<br/>
+
+<h2>Sample Type</h2>
+
+/api/sampleType/{sampleTypeId}?inTestMode=true [GET]<br/>
+/api/sampleType/name/{sampleName}"?inTestMode=true [GET]<br/>
+<br/>
+<a href="/api/sampleTypes/all?inTestMode=true">/api/sampleTypes/all?inTestMode=true</a> [GET]<br/>
+<br/>
+<br/>
+<a href="uploadSpreadsheet/index.html">Upload Data</a><br/>
+<br/>
 
 <!--<form id="inputForm">-->
 

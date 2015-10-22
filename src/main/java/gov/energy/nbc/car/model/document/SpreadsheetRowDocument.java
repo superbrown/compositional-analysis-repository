@@ -34,11 +34,12 @@ public class SpreadsheetRowDocument extends AbstractDocument {
     }
 
     @Override
-    public void init(String json) {
+    public void initWithJson(String json) {
 
         BasicDBObject parsedJson = (BasicDBObject) JSON.parse(json);
 
-        put(ATTRIBUTE_KEY__ID, parsedJson.getObjectId(ATTRIBUTE_KEY__ID));
+        initializeId(parsedJson);
+
         ObjectId spreadsheetObjectId = (ObjectId) parsedJson.get(ATTRIBUTE_KEY__SPREADSHEET_OBJECT_ID);
         Metadata metada = new Metadata(parsedJson.get(ATTRIBUTE_KEY__SPREADSHEET_METADATA));
         SpreadsheetRow spreadsheetRow = new SpreadsheetRow(parsedJson.get(ATTRIBUTE_KEY__DATA));

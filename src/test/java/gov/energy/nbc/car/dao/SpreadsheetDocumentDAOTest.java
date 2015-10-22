@@ -2,17 +2,18 @@ package gov.energy.nbc.car.dao;
 
 import gov.energy.nbc.car.TestUsingTestData;
 import gov.energy.nbc.car.businessService.BusinessServices;
+import gov.energy.nbc.car.model.TestData;
 import gov.energy.nbc.car.model.common.Metadata;
 import gov.energy.nbc.car.model.document.SpreadsheetDocument;
 import gov.energy.nbc.car.model.document.SpreadsheetRowDocument;
-import gov.energy.nbc.car.model.TestData;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.*;
 
 import java.util.List;
 
-import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
 import static org.junit.Assert.assertTrue;
 
 
@@ -75,6 +76,7 @@ public class SpreadsheetDocumentDAOTest extends TestUsingTestData
     public void testGetOneByFilter_2() {
 
         Bson filter = eq(SpreadsheetRowDocument.ATTRIBUTE_KEY__DATA + ".String Values Column Name", "String 1");
+
         List<Document> results = spreadsheetDocumentDAO.query(filter);
 
         assertTrue(results.size() == 1);

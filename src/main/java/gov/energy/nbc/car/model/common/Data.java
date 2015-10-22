@@ -6,6 +6,7 @@ import com.mongodb.util.JSON;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Data extends ArrayList<SpreadsheetRow> {
 
@@ -51,5 +52,9 @@ public class Data extends ArrayList<SpreadsheetRow> {
             SpreadsheetRow spreadsheetRow = new SpreadsheetRow(basicDBObject);
             add(spreadsheetRow);
         }
+    }
+
+    public Set getColumnNames() {
+        return get(0).keySet();
     }
 }

@@ -19,7 +19,6 @@ public class Endpoints {
     }
 
 
-
     // S P R E A D S H E E T S
 
     @RequestMapping(value="/api/addSpreadsheet/", method = RequestMethod.POST)
@@ -31,7 +30,20 @@ public class Endpoints {
         return create_SUCCESS_response(objectId);
     }
 
-    @RequestMapping(value="/api/getSpreadsheet/{spreadsheetId}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value="/api/spreadsheets/all", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity getAllSpreadsheets(
+            @RequestParam(value = "inTestMode", required = false) String testMode) {
+
+        String spreadsheets = BusinessServices.spreadsheetService.getAllSpreadsheets(TestMode.value(testMode));
+
+        if (spreadsheets == null) {
+            return create_NOT_FOUND_response();
+        }
+
+        return create_SUCCESS_response(spreadsheets);
+    }
+
+    @RequestMapping(value="/api/spreadsheet/{spreadsheetId}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getSpreadsheet(
             @PathVariable(value = "spreadsheetId") String spreadsheetId,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
@@ -45,20 +57,7 @@ public class Endpoints {
         return create_SUCCESS_response(spreadsheet);
     }
 
-    @RequestMapping(value="/api/getAllSpreadsheets", method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity getAllSpreadsheets(
-            @RequestParam(value = "inTestMode", required = false) String testMode) {
-
-        String spreadsheets = BusinessServices.spreadsheetService.getAllSpreadsheets(TestMode.value(testMode));
-
-        if (spreadsheets == null) {
-            return create_NOT_FOUND_response();
-        }
-
-        return create_SUCCESS_response(spreadsheets);
-    }
-
-    @RequestMapping(value="/api/getSpreadsheetMetadata/{spreadsheetId}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value="/api/spreadsheet/metadata/{spreadsheetId}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getSpreadsheetMetadata(
             @PathVariable(value = "spreadsheetId") String spreadsheetId,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
@@ -72,7 +71,7 @@ public class Endpoints {
         return create_SUCCESS_response(spreadsheetMetadata);
     }
 
-    @RequestMapping(value="/api/getSpreadsheetData/{spreadsheetId}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value="/api/spreadsheet/data/{spreadsheetId}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getSpreadsheetData(
             @PathVariable(value = "spreadsheetId") String spreadsheetId,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
@@ -86,7 +85,7 @@ public class Endpoints {
         return create_SUCCESS_response(spreadsheetData);
     }
 
-    @RequestMapping(value="/api/deleteSpreadsheet/{spreadsheetId}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value="/api/spreadsheet/{spreadsheetId}", method = RequestMethod.DELETE, produces = "application/json")
     public ResponseEntity deleteSpreadsheetData(
             @PathVariable(value = "spreadsheetId") String spreadsheetId,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
@@ -104,12 +103,12 @@ public class Endpoints {
             return create_NOT_FOUND_response();
         }
 
-        return create_SUCCESS_response("{ numberOfObjectsDeleted: " + numberOfObjectsDeleted + " }");
+        return create_SUCCESS_response("{ message: " + numberOfObjectsDeleted + " objects deleted. }");
     }
 
     // S P R E A D S H E E T   R O W S
 
-    @RequestMapping(value="/api/getSpreadsheetRows", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value="/api/spreadsheetRows", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity getSpreadsheetRows(
             @RequestParam(value = "query") String query,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
@@ -123,7 +122,7 @@ public class Endpoints {
         return create_SUCCESS_response(spreadsheetRows);
     }
 
-    @RequestMapping(value="/api/getAllSpreadsheetRows", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value="/api/spreadsheetRows/all", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getAllSpreadsheetRows(
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
@@ -136,12 +135,14 @@ public class Endpoints {
         return create_SUCCESS_response(spreadsheetRows);
     }
 
-    @RequestMapping(value="/api/getSpreadsheetRow/{spreadsheetRowId}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value="/api/spreadsheetRow/{spreadsheetRowId}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getSpreadsheetRow(
             @PathVariable(value = "spreadsheetRowId") String spreadsheetRowId,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String spreadsheetRow = BusinessServices.spreadsheetRowsService.getSpreadsheetRow(TestMode.value(testMode), spreadsheetRowId);
+        String spreadsheetRow = BusinessServices.spreadsheetRowsService.getSpreadsheetRow(
+                TestMode.value(testMode),
+                spreadsheetRowId);
 
         if (spreadsheetRow == null) {
             return create_NOT_FOUND_response();
@@ -149,6 +150,55 @@ public class Endpoints {
 
         return create_SUCCESS_response(spreadsheetRow);
     }
+
+    // S A M P L E   T Y P E
+
+    @RequestMapping(value="/api/sampleType/{sampleTypeId}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity getSampleType(
+            @PathVariable(value = "sampleTypeId") String sampleTypeId,
+            @RequestParam(value = "inTestMode", required = false) String testMode) {
+
+        String sampleType = BusinessServices.sampleTypeService.getSampleType(
+                TestMode.value(testMode),
+                sampleTypeId);
+
+        if (sampleType == null) {
+            return create_NOT_FOUND_response();
+        }
+
+        return create_SUCCESS_response(sampleType);
+    }
+
+    @RequestMapping(value="/api/sampleType/name/{sampleName}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity getSampleTypeByName(
+            @PathVariable(value = "sampleName") String sampleName,
+            @RequestParam(value = "inTestMode", required = false) String testMode) {
+
+        String sampleType = BusinessServices.sampleTypeService.getSampleTypeWithName(
+                TestMode.value(testMode),
+                sampleName);
+
+        if (sampleType == null) {
+            return create_NOT_FOUND_response();
+        }
+
+        return create_SUCCESS_response(sampleType);
+    }
+
+    @RequestMapping(value="/api/sampleTypes/all", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity getSampleTypeByName(
+            @RequestParam(value = "inTestMode", required = false) String testMode) {
+
+        String sampleType = BusinessServices.sampleTypeService.getAllSampleTypes(
+                TestMode.value(testMode));
+
+        if (sampleType == null) {
+            return create_NOT_FOUND_response();
+        }
+
+        return create_SUCCESS_response(sampleType);
+    }
+
 
     // T E S T   D A T A
 

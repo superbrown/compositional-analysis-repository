@@ -10,6 +10,7 @@ public class BusinessServices {
 
     public static SpreadsheetService spreadsheetService;
     public static SpreadsheetRowService spreadsheetRowsService;
+    public static SampleTypeService sampleTypeService;
     public static TestDataService testDataService;
 
     static {
@@ -18,6 +19,7 @@ public class BusinessServices {
 
         spreadsheetService = new SpreadsheetService(BusinessServices.settings, BusinessServices.settings_forUnitTestPurposes);
         spreadsheetRowsService = new SpreadsheetRowService(BusinessServices.settings, BusinessServices.settings_forUnitTestPurposes);
+        sampleTypeService = new SampleTypeService(BusinessServices.settings, BusinessServices.settings_forUnitTestPurposes);
         testDataService = new TestDataService(BusinessServices.settings_forUnitTestPurposes);
     }
 

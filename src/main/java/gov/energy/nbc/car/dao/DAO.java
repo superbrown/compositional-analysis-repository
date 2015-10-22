@@ -7,8 +7,10 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import com.mongodb.util.JSON;
 import gov.energy.nbc.car.Settings;
+import gov.energy.nbc.car.model.AbstractDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -143,7 +145,7 @@ public abstract class DAO {
     protected Document createIdFilter(ObjectId objectId) {
 
         Document idFilter = new Document();
-        idFilter.put("_id", objectId);
+        idFilter.put(AbstractDocument.ATTRIBUTE_KEY__ID, objectId);
         return idFilter;
     }
 
@@ -166,5 +168,12 @@ public abstract class DAO {
     public FindIterable<Document> getAll() {
 
         return getCollection().find(new BasicDBObject());
+    }
+
+    public UpdateResult updateOne(ObjectId objectId, Bson update) {
+
+        Bson filter = createIdFilter(objectId);
+        UpdateResult updateResult = getCollection().updateOne(filter, new Document("$set", update));
+        return updateResult;
     }
 }
