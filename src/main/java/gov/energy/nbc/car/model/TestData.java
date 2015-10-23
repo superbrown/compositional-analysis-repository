@@ -85,8 +85,10 @@ public class TestData {
                         "Integer Values Column Name",
                         "Varying Value Types Column Name"},
                 {1, "String 1", date_1, 1.11, 1, date_1},
-                {2, "String 2", date_2, 3.33, 2, "String"},
+                {2, "String 2", date_2, 3.33, 2, "1000"},
                 {3, "String 3", date_3, 3.33, 3, 1000},
+                {3, "String 3", date_3, 3.33, 3, 1300.54},
+                {3, "String 3", date_3, 3.33, 3, "string value"},
         };
 
         spreadsheetValues_2 = new Object[][]{
