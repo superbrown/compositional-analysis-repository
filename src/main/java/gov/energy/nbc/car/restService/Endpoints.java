@@ -205,7 +205,7 @@ public class Endpoints {
     @RequestMapping(value="/api/seedTestData", method = RequestMethod.GET)
     public ResponseEntity seedTestData() {
 
-        return create_SUCCESS_response(BusinessServices.testDataService.seedTestDataInTheDatabase());
+        return create_SUCCESS_response(BusinessServices.testDataService.seedTestDataInTheDatabase_spreadsheet_1_and_2());
     }
 
     @RequestMapping(value="/api/removeTestData", method = RequestMethod.GET)

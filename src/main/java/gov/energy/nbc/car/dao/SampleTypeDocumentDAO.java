@@ -1,6 +1,5 @@
 package gov.energy.nbc.car.dao;
 
-import com.mongodb.client.result.DeleteResult;
 import com.mongodb.util.JSON;
 import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.model.document.SampleTypeDocument;
@@ -54,13 +53,6 @@ public class SampleTypeDocumentDAO extends DAO
     protected Document createDocumentOfTypeDAOHandles(String json) {
 
         return new SampleTypeDocument(json);
-    }
-
-    @Override
-    public DeleteResult removeAllDataFromCollection() {
-
-        DeleteResult deleteResult = super.removeAllDataFromCollection();
-        return deleteResult;
     }
 
     public SampleTypeDocument getByName(Object name) {
