@@ -4,6 +4,7 @@ import gov.energy.nbc.car.TestUsingTestData;
 import gov.energy.nbc.car.businessService.BusinessServices;
 import gov.energy.nbc.car.model.TestData;
 import gov.energy.nbc.car.model.common.Metadata;
+import gov.energy.nbc.car.model.document.SampleTypeDocument;
 import gov.energy.nbc.car.model.document.SpreadsheetDocument;
 import gov.energy.nbc.car.model.document.SpreadsheetRowDocument;
 import org.bson.Document;
@@ -11,6 +12,7 @@ import org.bson.conversions.Bson;
 import org.junit.*;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -107,5 +109,56 @@ public class SpreadsheetDocumentDAOTest extends TestUsingTestData
                 spreadsheetDocumentDAO.getSpreadsheetRowDocumentDAO().getCollection().count();
 
         assertTrue(numberOfSpreadsheetRowsThatActuallyExist == numberOfSpreadsheetRowsThatShouldExist);
+    }
+
+    @Test
+    public void testThatTheSampleTypesAreBeingSetRight() {
+
+        SampleTypeDocumentDAO sampleTypeDocumentDAO = spreadsheetDocumentDAO.getSampleTypeDocumentDAO();
+
+        testDataService.removeTestData();
+        sampleTypeDocumentDAO.removeAllDataFromCollection();
+
+        testDataService.seedTestDataInTheDatabase_spreadsheet_1();
+
+        SampleTypeDocument sampleTypeDocument = sampleTypeDocumentDAO.getByName(TestData.ALGEA);
+        assertTrue(sampleTypeDocument.getSampleType().equals(TestData.ALGEA));
+
+        Set<String> columnNames = sampleTypeDocument.getColumnNames();
+        assertTrue(columnNames.size() == 7);
+        assertTrue(columnNames.contains("_origDocRowNum"));
+        assertTrue(columnNames.contains("Some Column Name"));
+        assertTrue(columnNames.contains("String Values Column Name"));
+        assertTrue(columnNames.contains("Date Values Column Name"));
+        assertTrue(columnNames.contains("Float Values Column Name"));
+        assertTrue(columnNames.contains("Integer Values Column Name"));
+        assertTrue(columnNames.contains("Varying Value Types Column Name"));
+
+        testDataService.seedTestDataInTheDatabase_spreadsheet_2();
+
+        sampleTypeDocument = sampleTypeDocumentDAO.getByName(TestData.ALGEA);
+        assertTrue(sampleTypeDocument.getSampleType().equals(TestData.ALGEA));
+
+        columnNames = sampleTypeDocument.getColumnNames();
+        assertTrue(columnNames.size() == 9);
+        assertTrue(columnNames.contains("_origDocRowNum"));
+        assertTrue(columnNames.contains("Some Column Name"));
+        assertTrue(columnNames.contains("String Values Column Name"));
+        assertTrue(columnNames.contains("Date Values Column Name"));
+        assertTrue(columnNames.contains("Float Values Column Name"));
+        assertTrue(columnNames.contains("Integer Values Column Name"));
+        assertTrue(columnNames.contains("Varying Value Types Column Name"));
+        assertTrue(columnNames.contains("Varying Value Types Column Name"));
+        assertTrue(columnNames.contains("Varying Value Types Column Name"));
+        assertTrue(columnNames.contains("Additional Column Name 1"));
+        assertTrue(columnNames.contains("Additional new Column Name 2"));
+
+        spreadsheetDocumentDAO.removeAllDataFromCollection();
+
+        sampleTypeDocument = sampleTypeDocumentDAO.getByName(TestData.ALGEA);
+        columnNames = sampleTypeDocument.getColumnNames();
+        // None of the data should hve gone away, as spreadsheetDocumentDAO.removeAllDataFromCollection() should not
+        // cascade to the sample type colletion.
+        assertTrue(columnNames.size() == 9);
     }
 }

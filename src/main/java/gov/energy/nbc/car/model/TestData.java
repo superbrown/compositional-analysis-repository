@@ -9,6 +9,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+/**
+ *     W A R N I N G !
+ *
+ * Exercise caution when changing values in this class as unit tests have been written with these values in mind.
+ */
 public class TestData {
 
     public static Date date_1 = new Date();
@@ -44,8 +49,10 @@ public class TestData {
     public static List<StoredFile> attachments_2;
     public static List<String> tags_2;
 
+    public static final String ALGEA = "algea";
+
     static {
-        sampleType = "algea";
+        sampleType = ALGEA;
 
         submissionDate_1 = new Date();
         submitter_1 = "Submitter 1";
@@ -87,11 +94,13 @@ public class TestData {
                         "Some Column Name",
                         "Date Values Column Name",
                         "Float Values Column Name",
-                        "Integer Values Column Name"},
-                {1, date_1, 1.22, 1},
-                {2, date_2, 2.11, 2},
-                {3, date_3, 3.33, 3},
-                {4, date_4, 4.55, 4},
+                        "Integer Values Column Name",
+                        "Additional Column Name 1",
+                        "Additional new Column Name 2"},
+                {1, date_1, 1.22, 1, "a1", "b1"},
+                {2, date_2, 2.11, 2, "a2", "b2"},
+                {3, date_3, 3.33, 3, "a3", "b3"},
+                {4, date_4, 4.55, 4, "a4", "b4"},
         };
 
 

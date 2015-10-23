@@ -20,7 +20,7 @@ public class TestDataService {
         spreadsheetDocumentDAO = new SpreadsheetDocumentDAO(settings);
     }
 
-    public String seedTestDataInTheDatabase() {
+    public String seedTestDataInTheDatabase_spreadsheet_1_and_2() {
 
         TestData.objectId_1 = spreadsheetDocumentDAO.add(TestData.spreadsheetDocument_1);
         TestData.objectId_2 = spreadsheetDocumentDAO.add(TestData.spreadsheetDocument_2);
@@ -35,9 +35,36 @@ public class TestDataService {
         return DAOUtilities.serialize(document);
     }
 
+    public String seedTestDataInTheDatabase_spreadsheet_1() {
+
+        TestData.objectId_1 = spreadsheetDocumentDAO.add(TestData.spreadsheetDocument_1);
+
+        List<ObjectId> newObjects = new ArrayList<>();
+        newObjects.add(TestData.objectId_1);
+
+        Document document = new Document();
+        document.put("spreadsheetIDs", newObjects);
+
+        return DAOUtilities.serialize(document);
+    }
+
+    public String seedTestDataInTheDatabase_spreadsheet_2() {
+
+        TestData.objectId_2 = spreadsheetDocumentDAO.add(TestData.spreadsheetDocument_2);
+
+        List<ObjectId> newObjects = new ArrayList<>();
+        newObjects.add(TestData.objectId_2);
+
+        Document document = new Document();
+        document.put("spreadsheetIDs", newObjects);
+
+        return DAOUtilities.serialize(document);
+    }
+
     public void removeTestData() {
 
         spreadsheetDocumentDAO.removeAllDataFromCollection();
+
     }
 
     public void dropTheTestDatabase() {

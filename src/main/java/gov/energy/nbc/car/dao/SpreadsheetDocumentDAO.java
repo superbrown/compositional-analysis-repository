@@ -125,6 +125,10 @@ public class SpreadsheetDocumentDAO extends DAO
         return spreadsheetRowDocumentDAO;
     }
 
+    public SampleTypeDocumentDAO getSampleTypeDocumentDAO() {
+        return sampleTypeDocumentDAO;
+    }
+
     private void makeSureCollectionIsIndexedForAllColumns(Data data) {
 //        SpreadsheetRow firstRow = data.get(0);
 //        spreadsheetRowDocumentDAO.getCollection().createIndex(firstRow);

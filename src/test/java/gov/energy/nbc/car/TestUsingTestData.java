@@ -5,26 +5,28 @@ import gov.energy.nbc.car.businessService.TestDataService;
 
 public class TestUsingTestData {
 
-    private static TestDataService testDataService;
+    protected static TestDataService testDataService;
 
     public static void beforeClass() {
 
         testDataService = new TestDataService(BusinessServices.settings_forUnitTestPurposes);
     }
 
-    public static void afterClass() {
-
-        testDataService.dropTheTestDatabase();
-    }
-
     public void before() {
 
+        // (just in case it's necessary)
         testDataService.removeTestData();
-        testDataService.seedTestDataInTheDatabase();
+
+        testDataService.seedTestDataInTheDatabase_spreadsheet_1_and_2();
     }
 
     public void after() {
 
         testDataService.removeTestData();
+    }
+
+    public static void afterClass() {
+
+        testDataService.dropTheTestDatabase();
     }
 }
