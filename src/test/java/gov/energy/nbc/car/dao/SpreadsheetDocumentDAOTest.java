@@ -54,7 +54,37 @@ public class SpreadsheetDocumentDAOTest extends TestUsingTestData
     }
 
     @Test
-    public void testGetByFilter() {
+    public void testThatQueriesWorkAsExpectedOnColumnsWithHeterogenousDataTypes() {
+
+        SpreadsheetRowDocumentDAO spreadsheetRowDocumentDAO = spreadsheetDocumentDAO.getSpreadsheetRowDocumentDAO();
+
+        Bson filter = eq(SpreadsheetRowDocument.ATTRIBUTE_KEY__DATA + ".Varying Value Types Column Name", TestData.date_1);
+        List<Document> results = spreadsheetRowDocumentDAO.query(filter);
+        assertTrue(results.size() == 1);
+
+        filter = eq(SpreadsheetRowDocument.ATTRIBUTE_KEY__DATA + ".Varying Value Types Column Name", "1000");
+        results = spreadsheetRowDocumentDAO.query(filter);
+        assertTrue(results.size() == 1);
+
+        filter = eq(SpreadsheetRowDocument.ATTRIBUTE_KEY__DATA + ".Varying Value Types Column Name", 1000);
+        results = spreadsheetRowDocumentDAO.query(filter);
+        assertTrue(results.size() == 1);
+
+        filter = eq(SpreadsheetRowDocument.ATTRIBUTE_KEY__DATA + ".Varying Value Types Column Name", 1000.00);
+        results = spreadsheetRowDocumentDAO.query(filter);
+        assertTrue(results.size() == 1);
+
+        filter = eq(SpreadsheetRowDocument.ATTRIBUTE_KEY__DATA + ".Varying Value Types Column Name", 1300.54);
+        results = spreadsheetRowDocumentDAO.query(filter);
+        assertTrue(results.size() == 1);
+
+        filter = eq(SpreadsheetRowDocument.ATTRIBUTE_KEY__DATA + ".Varying Value Types Column Name", "string value");
+        results = spreadsheetRowDocumentDAO.query(filter);
+        assertTrue(results.size() == 1);
+    }
+
+    @Test
+    public void testQueryFilter() {
 
         Document idFilter = new Document();
         idFilter.put("_id", TestData.objectId_1);
@@ -65,7 +95,7 @@ public class SpreadsheetDocumentDAOTest extends TestUsingTestData
     }
 
     @Test
-    public void testGetOneByFilter_1() {
+    public void testQueryForOneFilter_1() {
 
         Document idFilter = new Document();
         idFilter.put("_id", TestData.objectId_1);
@@ -75,17 +105,15 @@ public class SpreadsheetDocumentDAOTest extends TestUsingTestData
     }
 
     @Test
-    public void testGetOneByFilter_2() {
+    public void testQueryForOneFilter_2() {
 
         Bson filter = eq(SpreadsheetRowDocument.ATTRIBUTE_KEY__DATA + ".String Values Column Name", "String 1");
-
         List<Document> results = spreadsheetDocumentDAO.query(filter);
-
         assertTrue(results.size() == 1);
     }
 
     @Test
-    public void testGetOneByFilter_3() {
+    public void testQueryForOneFilter_3() {
 
         Bson spreadsheetFilter = and(
                 eq(SpreadsheetDocument.ATTRIBUTE_KEY__METADATA + "." + Metadata.ATTRIBUTE_KEY__SAMPLE_TYPE, TestData.sampleType),
