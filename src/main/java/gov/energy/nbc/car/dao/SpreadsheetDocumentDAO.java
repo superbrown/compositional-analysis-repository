@@ -112,6 +112,8 @@ public class SpreadsheetDocumentDAO extends DAO
     @Override
     public DeleteResult removeAllDataFromCollection() {
 
+        this.getAll();
+
         DeleteResult deleteResult = super.removeAllDataFromCollection();
         if (deleteResult.wasAcknowledged() == false) {
             return deleteResult;

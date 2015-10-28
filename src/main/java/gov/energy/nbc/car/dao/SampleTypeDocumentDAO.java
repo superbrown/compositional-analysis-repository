@@ -38,18 +38,6 @@ public class SampleTypeDocumentDAO extends DAO
     }
 
     @Override
-    public DeleteResults delete(ObjectId objectId) {
-
-        DeleteResults deleteResults = super.delete(objectId);
-
-        if (deleteResults.wasAcknowledged() == false) {
-            return deleteResults;
-        }
-
-        return deleteResults;
-    }
-
-    @Override
     protected Document createDocumentOfTypeDAOHandles(String json) {
 
         return new SampleTypeDocument(json);

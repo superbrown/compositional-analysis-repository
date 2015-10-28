@@ -5,7 +5,7 @@ public class Settings {
     protected String mongoDbHost;
     protected int mongoDbPort;
     protected String mongoDatabaseName;
-    protected String dataFilesDirectoryPath;
+    protected String rootDirectoryForDataFiles;
 
     public Settings() {
 
@@ -17,7 +17,7 @@ public class Settings {
         mongoDbHost = "localhost";
         mongoDbPort = 27017;
         mongoDatabaseName = "researchDataRepository";
-        dataFilesDirectoryPath = "uploadedFiles";
+        rootDirectoryForDataFiles = "C:/data/research-data/uploadedFiles";
     }
 
     public String getMongoDatabaseName() {
@@ -52,11 +52,11 @@ public class Settings {
         this.mongoDbPort = mongoDbPort;
     }
 
-    public String getDataFilesDirectoryPath() {
-        return dataFilesDirectoryPath;
+    public String getRootDirectoryForDataFiles() {
+        return rootDirectoryForDataFiles;
     }
 
-    public void setDataFilesDirectoryPath(String dataFilesDirectoryPath) {
-        this.dataFilesDirectoryPath = dataFilesDirectoryPath;
+    public void setRootDirectoryForDataFiles(String rootDirectoryForDataFiles) {
+        this.rootDirectoryForDataFiles = rootDirectoryForDataFiles;
     }
 }

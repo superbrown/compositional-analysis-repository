@@ -54,6 +54,29 @@ public class SpreadsheetDocument extends AbstractDocument {
         init(metadata, data);
     }
 
+    public SpreadsheetDocument(String sampleType,
+                               Date submissionDate,
+                               String submitter,
+                               String chargeNumber,
+                               String projectName,
+                               String comments,
+                               StoredFile uploadedFile,
+                               List<StoredFile> attachments,
+                               Data data) {
+
+        Metadata metadata = new Metadata(
+                sampleType,
+                submissionDate,
+                submitter,
+                chargeNumber,
+                projectName,
+                comments,
+                uploadedFile,
+                attachments);
+
+        init(metadata, data);
+    }
+
     protected void initWithJson(String json) {
 
         BasicDBObject parsedJson = (BasicDBObject) JSON.parse(json);

@@ -1,25 +1,36 @@
 package gov.energy.nbc.car.fileReader;
 
 import au.com.bytecode.opencsv.CSVReader;
+import gov.energy.nbc.car.fileReader.dto.SpreadsheetData;
 import gov.energy.nbc.car.model.common.SpreadsheetRow;
-import gov.energy.nbc.car.utilities.SpreadsheetData;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CSVFileReader {
+public class CSVFileReader implements IFileReader {
 
-    protected Logger log = Logger.getLogger(this.getClass());
+    private Logger log = Logger.getLogger(getClass());
+    
+    @Override
+    public boolean canReadFile(File file) {
+
+        return canReadFileWithExtension(file.getName());
+    }
+
+    @Override
+    public boolean canReadFileWithExtension(String fileName) {
+
+        return fileName.toLowerCase().endsWith(".csv") == true;
+    }
 
 
-    public static SpreadsheetData extractDataFromFile(File file)
+    public SpreadsheetData extractDataFromFile(File file)
             throws IOException, NonStringValueFoundInHeader, UnsupportedFileExtension {
 
         List<List> lines = parse(file);
@@ -39,7 +50,7 @@ public class CSVFileReader {
         return spreasheetData;
     }
 
-    protected static List<String> determineColumnNames(List<List> lines)
+    protected List<String> determineColumnNames(List<List> lines)
             throws NonStringValueFoundInHeader {
 
         List<Object> firstRow = lines.get(0);
@@ -72,7 +83,7 @@ public class CSVFileReader {
         return columnNames;
     }
 
-    protected static List<List> extractData(List<List> lines, int numberOfColumnNames) {
+    protected List<List> extractData(List<List> lines, int numberOfColumnNames) {
 
         // DESIGN NOTE: We skill the first line because it contains the column names
         List<List> dataRows = lines.subList(1, lines.size());
@@ -95,14 +106,14 @@ public class CSVFileReader {
         return data;
     }
 
-    private static List<List> parse(File file) {
+    private List<List> parse(File file) {
 
         List<List> lines = new ArrayList();
 
         CSVReader reader = null;
         try {
             //Get the CSVReader instance with specifying the delimiter to be used
-            reader = new CSVReader(new FileReader(file), ',');
+            reader = new CSVReader(new java.io.FileReader(file), ',');
             String[] nextLine;
 
             //Read one line at a time
@@ -120,21 +131,24 @@ public class CSVFileReader {
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
         }
         finally {
             try {
-                reader.close();
-            } catch (IOException e) { }
+                if (reader != null) {
+                    reader.close();
+                }
+            } 
+            catch (IOException e) { }
         }
 
         return lines;
     }
 
 
-    protected static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy");
+    protected SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy");
 
-    private static Object toAppropriateDataType(String value) {
+    private Object toAppropriateDataType(String value) {
 
         if (StringUtils.isBlank(value)) {
             return null;

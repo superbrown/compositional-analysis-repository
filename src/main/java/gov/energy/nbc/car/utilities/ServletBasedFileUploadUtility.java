@@ -1,5 +1,6 @@
 package gov.energy.nbc.car.utilities;
 
+import gov.energy.nbc.car.businessService.dto.StoredFile;
 import org.apache.tomcat.util.http.fileupload.FileItem;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class FileUploadUtility extends HttpServlet {
+public class ServletBasedFileUploadUtility extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,16 +41,16 @@ public class FileUploadUtility extends HttpServlet {
         for (FileItem fileItem : filesFromRequest) {
 
             String originalFileName = extractFileName(fileItem);
-            String newFileWithUUID = constructFileNameWithUUID(originalFileName);
+            String fileNameWithUUID = constructFileNameWithUUID(originalFileName);
 
-            File file = new File(directory + newFileWithUUID);
+            File file = new File(directory + fileNameWithUUID);
             file.setExecutable(true,false);
             file.setReadable(true,false);
             file.setWritable(true,false);
 
             // save the file on disk
             fileItem.write(file);
-            files.add(new StoredFile(originalFileName, file.getName()));
+            files.add(new StoredFile(originalFileName, fileNameWithUUID));
         }
 
         return files;
@@ -122,17 +123,6 @@ public class FileUploadUtility extends HttpServlet {
         File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) {
             uploadDir.mkdir();
-        }
-    }
-
-    public static class StoredFile {
-
-        public String originalFileName;
-        public String storageLocation;
-
-        public StoredFile(String originalFileName, String storageLocation) {
-            this.originalFileName = originalFileName;
-            this.storageLocation = storageLocation;
         }
     }
 }

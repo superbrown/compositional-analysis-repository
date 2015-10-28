@@ -35,4 +35,12 @@ public class StoredFile extends AbstractBasicDBObject {
         put(ATTRIBUTE_KEY__ORIGINAL_FILE_NAME, originalFileName);
         put(ATTRIBUTE_KEY__STORAGE_LOCATION, storageLocation);
     }
+
+    public String getOriginalFileName() {
+        return (String) get(ATTRIBUTE_KEY__ORIGINAL_FILE_NAME);
+    }
+
+    public String getStorageLocation() {
+        return (String) get(ATTRIBUTE_KEY__STORAGE_LOCATION);
+    }
 }

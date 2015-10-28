@@ -1,10 +1,11 @@
 package gov.energy.nbc.car.fileReader;
 
+import gov.energy.nbc.car.fileReader.dto.SpreadsheetData;
 import gov.energy.nbc.car.model.common.SpreadsheetRow;
-import gov.energy.nbc.car.utilities.SpreadsheetData;
 import gov.energy.nbc.car.utilities.Utilities;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -18,7 +19,15 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.fail;
 
 
-public class ExcelSpreadsheetReaderTest {
+public class ExcelWorkbookReaderTest {
+
+    protected static ExcelWorkbookReader excelWorkbookReader;
+
+    @BeforeClass
+    public static void beforeClass() {
+
+        excelWorkbookReader = new ExcelWorkbookReader();
+    }
 
     @Before
     public void before() throws Exception {
@@ -69,7 +78,7 @@ public class ExcelSpreadsheetReaderTest {
 
     private void testExtractDataFromSpreadsheet(File file) throws IOException, NonStringValueFoundInHeader, UnsupportedFileExtension, ParseException {
 
-        SpreadsheetData spreadsheetData = ExcelSpreadsheetReader.extractDataFromSpreadsheet(file, "Sheet Containing Data");
+        SpreadsheetData spreadsheetData = excelWorkbookReader.extractDataFromFile(file, "Sheet Containing Data");
 
         assertTrue(spreadsheetData.columnNames.size() == 7);
         assertTrue(spreadsheetData.columnNames.get(0).equals(SpreadsheetRow.ATTRIBUTE_KEY__ROW_NUMBER));

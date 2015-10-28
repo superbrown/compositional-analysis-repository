@@ -27,9 +27,31 @@
         label {display:inline-block; width: 125px; vertical-align: top; }
     </style>
 
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <!-- B O O T S T R A P -->
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+
+    <!-- J Q U E R Y -->
+
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" />-->
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />-->
+
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+    <!--<link rel="stylesheet" href="/resources/demos/style.css">-->
+    <script>
+        $(function() {
+            $( "#submissionDate" ).datepicker();
+        });
+    </script>
 
 </head>
 
@@ -38,69 +60,57 @@
 <h1>Upload Compositional Analysis Data</h1>
 
 
-<form id="inputForm">
+<form id="inputForm" action="/api/addSpreadsheet" method="POST" enctype="multipart/form-data" >
 
-    <div>
-            <legend>Metadata</legend>
-            <label for="sampleType">Sample Type*</label>
-                <select id="sampleType" style="width: auto;">
-                    <option value="biomass">Algea</option>
-                    <option value="biomass">ATP3</option>
-                    <option value="biomass">Biomass</option>
-                </select>
+    <div style="float: left">
+        <legend>Metadata</legend>
 
-                    <br/>
+        <label for="sampleType">Sample Type*</label>
+        <select id="sampleType" name="sampleType" style="width: auto;">
+            <option value="biomass">Algea</option>
+            <option value="ATP3">ATP3</option>
+            <option value="Biomass">Biomass</option>
+        </select>
+        <br/>
 
-            <label for="date">Submission Date*</label> <input class="datepicker" data-date-format="mm/dd/yyyy" id="date" ><br/>
-            <label for="submittedBy">Submitter*</label> <input id="submittedBy" type="text" style="width: 300px;"/><br/>
-            <label for="shortDescription">Short Description</label> <input id="shortDescription" type="text" style="width: 300px;"/><br/>
-            <label for="projectName">Project Name</label> <input id="projectName" type="text" style="width: 300px;"/><br/>
-            <label for="chargeNumber">Charge #</label> <input id="chargeNumber" type="text" style="width: 300px;"/><br/>
-            <label for="comments">Comments</label> <textarea id="comments" rows="2" style="width: 300px;" ></textarea><br/>
-            <label for="tags">Tags</label> <input id="tags" type="text" style="width: 300px;"/><br/>
+        <label for="submissionDate">Submission Date*</label> <input type="text" id="submissionDate" name="submissionDate"/>
+        <br/>
+        <label for="submitter">Submitter*</label> <input id="submitter" name="submitter" type="text" style="width: 300px;"/>
+        <br/>
+        <label for="projectName">Project Name</label> <input id="projectName" name="projectName" type="text" style="width: 300px;"/>
+        <br/>
+        <label for="chargeNumber">Charge #</label> <input id="chargeNumber" name="chargeNumber" type="text" style="width: 300px;"/>
+        <br/>
+        <label for="comments">Comments</label> <textarea id="comments" name="comments" rows="2" style="width: 300px;" ></textarea>
+        <br/>
+
     </div>
 
-    <div style="margin-top: 15px;">
+    <div style="float: right">
 
-        <legend>Files</legend>
+        <legend>Files To Upload </legend>
         <div>
-            <label for="fileToUpload">File to Upload:</label> <input id="fileToUpload" type="file" /><br/>
-
-            <label for="attachments">Attachments:</label>
-            <input id="attachments" type="file" multiple="multiple" /><br/>
+            <div style="margin-bottom: 30px;">
+                <label style="width: 700px" for="dataFile">Analysis Data (Excel or CSV files)</label>
+                <br/>
+                <input id="dataFile" name="dataFile" type="file" style="display: inline; margin-bottom: 5px;" />
+                <br/>
+                <label style="width: auto;" for="nameOfSheetContainingData">If Excel file, name of the sheet within the workbook containing the data:</label>
+                <br/>
+                <input id="nameOfSheetContainingData" name="nameOfSheetContainingData" type="text" style="width: 300px;" />
+            </div>
+            <div>
+                <label for="attachments">Attachments</label><input id="attachments" name="attachments" type="file" multiple="multiple" /><br/><br/>
+            </div>
         </div>
+
     </div>
 
-        <!--<div>-->
-            <!--<div style="margin-top: 20px">-->
-                <!--Name: <text id="name"></text><br/>-->
-                <!--Size: <text id="size"></text><br/>-->
-                <!--Type: <text id="type"></text><br/>-->
-                <!--Last Modified: <text id="date"></text><br/>-->
-            <!--</div>-->
-        <!--</div>-->
-
-
-    </span>
+    <div style="float: bottom; clear: both">
+        <input type="submit" value="Submit"/>
+    </div>
 
 </form>
-
-
-
-<script lang="javascript">
-
-    document.getElementById('fileToUpload').addEventListener('change', function() {
-
-        var file = this.files[0];
-
-        document.getElementById("name").innerHTML=file.name;
-        document.getElementById("size").innerHTML=file.size;
-        document.getElementById("type").innerHTML=file.type;
-        document.getElementById("date").innerHTML=file.lastModified;
-
-    }, false);
-
-</script>
 
 </body>
 </html>

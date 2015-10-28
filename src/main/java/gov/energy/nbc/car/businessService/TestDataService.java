@@ -1,10 +1,10 @@
 package gov.energy.nbc.car.businessService;
 
 import com.mongodb.client.MongoDatabase;
-import gov.energy.nbc.car.dao.SpreadsheetDocumentDAO;
-import gov.energy.nbc.car.model.TestData;
 import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.dao.DAOUtilities;
+import gov.energy.nbc.car.dao.SpreadsheetDocumentDAO;
+import gov.energy.nbc.car.model.TestData;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -64,7 +64,6 @@ public class TestDataService {
     public void removeTestData() {
 
         spreadsheetDocumentDAO.removeAllDataFromCollection();
-
     }
 
     public void dropTheTestDatabase() {
