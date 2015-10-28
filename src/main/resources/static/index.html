@@ -35,63 +35,41 @@
 
 <body style="margin-left: 20px; margin-top: 10px">
 
-<h1>Compositional Analysis Repository</h1>
+    <h1>Compositional Analysis Repository</h1>
 
-<h2>Test Data</h2>
-<a href="/api/seedTestData">/api/seedTestData</a> [GET]<br/>
-<a href="/api/removeTestData">/api/removeTestData</a> [GET]<br/>
-<a href="/api/dropTheTestDatabase">/api/dropTheTestDatabase</a> [GET]<br/>
+    <a href="uploadSpreadsheet/index.html">Upload Data</a><br/>
+    <br/>
 
-<h2>Spreadsheets</h2>
-/api/addSpreadsheet/{spreadsheet_id}?inTestMode=true [POST] (spreasheet JSON in the request body)<br/>
-/api/addSpreadsheet/{spreadsheet_id}?inTestMode=true [DELETE]<br/>
-<br/>
-<a href="/api/spreadsheets/all?inTestMode=true">/api/spreadsheets/all?inTestMode=true</a> [GET]<br/>
-/api/spreadsheets?inTestMode=true [POST] (query JSON in the request body)<br/>
-<br/>
-/api/spreadsheet/{spreadsheet_id}?inTestMode=true [GET]<br/>
-/api/spreadsheet/data/{spreadsheet_id}?inTestMode=true [GET]<br/>
-/api/spreadsheet/metadata/{spreadsheet_id}?inTestMode=true [GET]<br/>
+    <h2>Test Data</h2>
+    <a href="/api/seedTestData">/api/seedTestData</a> [GET]<br/>
+    <a href="/api/removeTestData">/api/removeTestData</a> [GET]<br/>
+    <a href="/api/dropTheTestDatabase">/api/dropTheTestDatabase</a> [GET]<br/>
 
-<h2>Spreadsheet Rows</h2>
-/api/spreadsheetRow/{spreadsheetRowId}?inTestMode=true [GET]<br/>
-<br/>
-<a href="/api/spreadsheetRows/all?inTestMode=true">/api/spreadsheetRows/all?inTestMode=true</a> [GET]<br/>
-/api/spreadsheetRows?inTestMode=true [POST] (query JSON in the request body)<br/>
+    <h2>Spreadsheets</h2>
+    /api/addSpreadsheet/{spreadsheet_id}?inTestMode=true [POST] (spreasheet JSON in the request body)<br/>
+    /api/addSpreadsheet/{spreadsheet_id}?inTestMode=true [DELETE]<br/>
+    <br/>
+    <a href="/api/spreadsheets/all?inTestMode=true">/api/spreadsheets/all?inTestMode=true</a> [GET]<br/>
+    /api/spreadsheets?inTestMode=true [POST] (query JSON in the request body)<br/>
+    <br/>
+    /api/spreadsheet/{spreadsheet_id}?inTestMode=true [GET]<br/>
+    /api/spreadsheet/data/{spreadsheet_id}?inTestMode=true [GET]<br/>
+    /api/spreadsheet/metadata/{spreadsheet_id}?inTestMode=true [GET]<br/>
 
-<h2>Sample Type</h2>
+    <h2>Spreadsheet Rows</h2>
+    /api/spreadsheetRow/{spreadsheetRowId}?inTestMode=true [GET]<br/>
+    <br/>
+    <a href="/api/spreadsheetRows/all?inTestMode=true">/api/spreadsheetRows/all?inTestMode=true</a> [GET]<br/>
+    /api/spreadsheetRows?inTestMode=true [POST] (query JSON in the request body)<br/>
 
-/api/sampleType/{sampleTypeId}?inTestMode=true [GET]<br/>
-/api/sampleType/name/{sampleName}"?inTestMode=true [GET]<br/>
-<br/>
-<a href="/api/sampleTypes/all?inTestMode=true">/api/sampleTypes/all?inTestMode=true</a> [GET]<br/>
-<br/>
-<br/>
-<a href="uploadSpreadsheet/index.html">Upload Data</a><br/>
-<br/>
+    <h2>Sample Type</h2>
 
-<!--<form id="inputForm">-->
-
-    <!--<label for="file">Spreadsheet:</label>-->
-    <!--<input id="file" type="file" id="fileinput" multiple="multiple" />-->
-
-<!--</form>-->
-
-<script lang="javascript">
-
-    document.getElementById('fileinput').addEventListener('change', function() {
-
-        var file = this.files[0];
-
-        // This code is only for demo ...
-        console.log("name : " + file.name);
-        console.log("size : " + file.size);
-        console.log("type : " + file.type);
-        console.log("date : " + file.lastModified);
-
-    }, false);
-
-</script>
+    /api/sampleType/{sampleTypeId}?inTestMode=true [GET]<br/>
+    /api/sampleType/name/{sampleName}"?inTestMode=true [GET]<br/>
+    <br/>
+    <a href="/api/sampleTypes/all?inTestMode=true">/api/sampleTypes/all?inTestMode=true</a> [GET]<br/>
+    <br/>
+    <br/>
 
 </body>
 </html>

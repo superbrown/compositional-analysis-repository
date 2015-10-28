@@ -1,16 +1,15 @@
-package gov.energy.nbc.car.businessService;
+package gov.energy.nbc.car.utilities;
 
-import gov.energy.nbc.car.utilities.Utilities;
 import org.bson.Document;
-import org.junit.Test;
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
 
-public class BusinessServiceUtilitiesTest {
+public class UtilitiesTest {
 
     @Before
     public void before() throws Exception {

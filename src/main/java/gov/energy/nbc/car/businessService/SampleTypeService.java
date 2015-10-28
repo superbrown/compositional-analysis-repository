@@ -5,6 +5,7 @@ import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.dao.DAOUtilities;
 import gov.energy.nbc.car.dao.DeleteResults;
 import gov.energy.nbc.car.dao.SampleTypeDocumentDAO;
+import gov.energy.nbc.car.fileReader.FileReader;
 import gov.energy.nbc.car.model.document.SampleTypeDocument;
 import org.apache.log4j.Logger;
 import org.bson.Document;
@@ -17,7 +18,7 @@ public class SampleTypeService {
     protected SampleTypeDocumentDAO sampleTypeDocumentDAO;
     protected SampleTypeDocumentDAO sampleTypeDocumentDAO_FOR_UNIT_TESTING_PURPOSES;
 
-    protected BusinessServiceUtilities businessServiceUtilities;
+    protected FileReader fileReader;
 
     public SampleTypeService(Settings settings,
                              Settings settings_forUnitTestingPurposes) {
@@ -25,7 +26,7 @@ public class SampleTypeService {
         sampleTypeDocumentDAO = new SampleTypeDocumentDAO(settings);
         sampleTypeDocumentDAO_FOR_UNIT_TESTING_PURPOSES = new SampleTypeDocumentDAO(settings_forUnitTestingPurposes);
 
-        businessServiceUtilities = new BusinessServiceUtilities();
+        fileReader = new FileReader();
     }
 
     public String getSampleType(TestMode testMode,

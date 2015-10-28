@@ -2,8 +2,16 @@ package gov.energy.nbc.car.fileReader;
 
 public class UnsupportedFileExtension extends Exception {
 
-    public UnsupportedFileExtension(String fileName) {
+    private final String fileName;
 
-        super(fileName);
+    public UnsupportedFileExtension(String fileName) {
+        this.fileName = fileName;
+    }
+
+    @Override
+    public String toString() {
+        return "UnsupportedFileExtension{" +
+                "fileName='" + fileName + '\'' +
+                '}';
     }
 }

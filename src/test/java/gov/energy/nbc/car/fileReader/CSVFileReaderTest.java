@@ -1,7 +1,7 @@
 package gov.energy.nbc.car.fileReader;
 
+import gov.energy.nbc.car.fileReader.dto.SpreadsheetData;
 import gov.energy.nbc.car.model.common.SpreadsheetRow;
-import gov.energy.nbc.car.utilities.SpreadsheetData;
 import gov.energy.nbc.car.utilities.Utilities;
 import org.junit.After;
 import org.junit.Before;
@@ -19,6 +19,8 @@ import static org.junit.Assert.fail;
 
 public class CSVFileReaderTest {
 
+    protected CSVFileReader csvFileReader = new CSVFileReader();
+
     @Before
     public void before() throws Exception {
     }
@@ -33,7 +35,7 @@ public class CSVFileReaderTest {
         try {
             File file = Utilities.getFile("/SpreadsheetForReadingTest_1.csv");
 
-            SpreadsheetData spreadsheetData = CSVFileReader.extractDataFromFile(file);
+            SpreadsheetData spreadsheetData = csvFileReader.extractDataFromFile(file);
 
             assertTrue(spreadsheetData.columnNames.size() == 7);
             assertTrue(spreadsheetData.columnNames.get(0).equals(SpreadsheetRow.ATTRIBUTE_KEY__ROW_NUMBER));
@@ -102,7 +104,7 @@ public class CSVFileReaderTest {
         try {
             File file = Utilities.getFile("/SpreadsheetForReadingTest_2.csv");
 
-            SpreadsheetData spreadsheetData = CSVFileReader.extractDataFromFile(file);
+            SpreadsheetData spreadsheetData = csvFileReader.extractDataFromFile(file);
 
             assertTrue(spreadsheetData.columnNames.size() == 6);
             assertTrue(spreadsheetData.columnNames.get(0).equals(SpreadsheetRow.ATTRIBUTE_KEY__ROW_NUMBER));
@@ -163,7 +165,7 @@ public class CSVFileReaderTest {
         try {
             File file = Utilities.getFile("/SpreadsheetForReadingTest_3.csv");
 
-            SpreadsheetData spreadsheetData = CSVFileReader.extractDataFromFile(file);
+            SpreadsheetData spreadsheetData = csvFileReader.extractDataFromFile(file);
 
             assertTrue(spreadsheetData.columnNames.size() == 7);
             assertTrue(spreadsheetData.columnNames.get(0).equals(SpreadsheetRow.ATTRIBUTE_KEY__ROW_NUMBER));

@@ -3,16 +3,28 @@ package gov.energy.nbc.car.restService;
 import gov.energy.nbc.car.businessService.BusinessServices;
 import gov.energy.nbc.car.businessService.DeletionFailure;
 import gov.energy.nbc.car.businessService.TestMode;
+import gov.energy.nbc.car.fileReader.ExcelWorkbookReader;
+import gov.energy.nbc.car.fileReader.NonStringValueFoundInHeader;
+import gov.energy.nbc.car.fileReader.UnsupportedFileExtension;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 @RestController
 public class Endpoints {
 
     protected Logger log = Logger.getLogger(getClass());
+    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("mm/dd/yyyy");
 
     public Endpoints() {
 
@@ -21,13 +33,76 @@ public class Endpoints {
 
     // S P R E A D S H E E T S
 
-    @RequestMapping(value="/api/addSpreadsheet/", method = RequestMethod.POST)
-    public ResponseEntity addSpreadsheet(
-            @RequestParam(value = "json") String json,
-            @RequestParam(value = "inTestMode", required = false) String testMode) {
+//    @RequestMapping(value="/api/addSpreadsheet/", method = RequestMethod.PUT)
+//    public ResponseEntity addSpreadsheet(
+//            @RequestParam(value = "json") String json,
+//            @RequestParam(value = "inTestMode", required = false) String testMode) {
+//
+//        String objectId = BusinessServices.spreadsheetService.addSpreadsheet(TestMode.value(testMode), json);
+//        return create_SUCCESS_response(objectId);
+//    }
 
-        String objectId = BusinessServices.spreadsheetService.addSpreadsheet(TestMode.value(testMode), json);
+    private static final ExcelWorkbookReader EXCEL_WORKBOOK_READER = new ExcelWorkbookReader();
+
+    @RequestMapping(value="/api/addSpreadsheet", method = RequestMethod.POST)
+    public ResponseEntity addSpreadsheet(
+            @RequestParam(value = "sampleType", required = false) String sampleType,
+            @RequestParam(value = "submissionDate", required = false) String submissionDate,
+            @RequestParam(value = "submitter", required = false) String submitter,
+            @RequestParam(value = "projectName", required = false) String projectName,
+            @RequestParam(value = "chargeNumber", required = false) String chargeNumber,
+            @RequestParam(value = "comments", required = false) String comments,
+            @RequestParam(value = "dataFile", required = false) MultipartFile dataFile,
+            @RequestParam(value = "nameOfSheetContainingData", required = false) String nameOfSheetContainingData,
+            @RequestParam(value = "testMode", required = false) String testMode) {
+
+        if (StringUtils.isBlank(sampleType)) { return create_BAD_REQUEST_missingRequiredParam_response("sampleType");}
+        if (StringUtils.isBlank(submissionDate)) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
+        if (StringUtils.isBlank(submissionDate)) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
+        if (dataFile == null) { return create_BAD_REQUEST_missingRequiredParam_response("dataFile");}
+        if (isAnExcelFile(dataFile)) { if (StringUtils.isBlank(nameOfSheetContainingData)) { return create_BAD_REQUEST_missingRequiredParam_response("nameOfSheetContainingData");} }
+
+        Date submissionDate_date = null;
+        try {
+            submissionDate_date = DATE_FORMAT.parse(submissionDate);
+        }
+        catch (ParseException e) {
+            return create_BAD_REQUEST_response("Invalid format for submissionDate. Must be conform to: " + DATE_FORMAT.toString() +
+                    ". The value was " + submissionDate + ".");
+        }
+
+        String objectId = null;
+        try {
+            objectId = BusinessServices.spreadsheetService.addSpreadsheet(
+                    TestMode.value(testMode),
+                    sampleType,
+                    submissionDate_date,
+                    submitter,
+                    projectName,
+                    chargeNumber,
+                    comments,
+                    dataFile.getBytes(),
+                    dataFile.getOriginalFilename(),
+                    nameOfSheetContainingData);
+        }
+        catch (UnsupportedFileExtension e) {
+            log.info(e);
+            return create_BAD_REQUEST_response(e.toString());
+        }
+        catch (NonStringValueFoundInHeader e) {
+            log.info(e);
+            return create_BAD_REQUEST_response(e.toString());
+        }
+        catch (IOException e) {
+            log.error(e);
+            return create_INTERNAL_SERVER_ERROR_response();
+        }
+
         return create_SUCCESS_response(objectId);
+    }
+
+    protected boolean isAnExcelFile(@RequestParam(value = "dataFile", required = false) MultipartFile dataFile) {
+        return EXCEL_WORKBOOK_READER.canReadFileWithExtension(dataFile.getOriginalFilename());
     }
 
     @RequestMapping(value="/api/spreadsheets/all", method = RequestMethod.GET, produces = "application/json")
@@ -86,7 +161,7 @@ public class Endpoints {
     }
 
     @RequestMapping(value="/api/spreadsheet/{spreadsheetId}", method = RequestMethod.DELETE, produces = "application/json")
-    public ResponseEntity deleteSpreadsheetData(
+    public ResponseEntity deleteSpreadsheet(
             @PathVariable(value = "spreadsheetId") String spreadsheetId,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
@@ -224,6 +299,14 @@ public class Endpoints {
 
     private ResponseEntity create_SUCCESS_response(String body) {
         return new ResponseEntity(body, HttpStatus.OK);
+    }
+
+    private ResponseEntity create_BAD_REQUEST_missingRequiredParam_response(String body) {
+        return create_BAD_REQUEST_response("Missing parameter: " + body);
+    }
+
+    private ResponseEntity create_BAD_REQUEST_response(String body) {
+        return new ResponseEntity(body, HttpStatus.BAD_REQUEST);
     }
 
     private ResponseEntity create_NOT_FOUND_response() {

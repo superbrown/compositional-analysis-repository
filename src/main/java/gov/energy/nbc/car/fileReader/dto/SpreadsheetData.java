@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.utilities;
+package gov.energy.nbc.car.fileReader.dto;
 
 import java.util.List;
 

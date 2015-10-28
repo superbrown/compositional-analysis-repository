@@ -1,7 +1,7 @@
 package gov.energy.nbc.car.fileReader;
 
+import gov.energy.nbc.car.fileReader.dto.SpreadsheetData;
 import gov.energy.nbc.car.model.common.SpreadsheetRow;
-import gov.energy.nbc.car.utilities.SpreadsheetData;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -17,12 +17,24 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ExcelSpreadsheetReader {
+public class ExcelWorkbookReader implements IFileReader {
 
     protected Logger log = Logger.getLogger(this.getClass());
 
+    @Override
+    public boolean canReadFile(File file) {
 
-    public static SpreadsheetData extractDataFromSpreadsheet(File file, String nameOfWorksheetContainingTheData)
+        return canReadFileWithExtension(file.getName());
+    }
+
+    @Override
+    public boolean canReadFileWithExtension(String fileName) {
+
+        fileName = fileName.toLowerCase();
+        return (fileName.endsWith(".xls") || fileName.endsWith(".xlsx") || fileName.endsWith(".xlsm")) == true;
+    }
+
+    public SpreadsheetData extractDataFromFile(File file, String nameOfWorksheetContainingTheData)
             throws IOException, NonStringValueFoundInHeader, UnsupportedFileExtension {
 
         FileInputStream fileInputStream = null;
@@ -54,7 +66,7 @@ public class ExcelSpreadsheetReader {
         }
     }
 
-    protected static List<List> extractData(Sheet sheet, int numberOfColumnHeadings) {
+    protected List<List> extractData(Sheet sheet, int numberOfColumnHeadings) {
 
         List<List> spreadsheetData = new ArrayList();
         Iterator<Row> rowIterator = sheet.rowIterator();
@@ -77,7 +89,7 @@ public class ExcelSpreadsheetReader {
         return spreadsheetData;
     }
 
-    protected static List<Object> extractData(Row row, int numberOfColumnHeadings) {
+    protected List<Object> extractData(Row row, int numberOfColumnHeadings) {
 
         List<Object> rowData = new ArrayList();
 
@@ -116,7 +128,7 @@ public class ExcelSpreadsheetReader {
         return rowData;
     }
 
-    protected static Workbook createWorkbookObject(FileInputStream fileInputStream, String filePath)
+    protected Workbook createWorkbookObject(FileInputStream fileInputStream, String filePath)
             throws IOException, UnsupportedFileExtension {
 
         if (filePath.toLowerCase().endsWith(".xls")) {
@@ -132,8 +144,7 @@ public class ExcelSpreadsheetReader {
         throw new UnsupportedFileExtension(filePath);
     }
 
-
-    protected static int addBlankCellsIfSomeWereSkippedByPoi(List<Object> rowData, int columnIndex, int indexOfColumnCellIsIn) {
+    protected int addBlankCellsIfSomeWereSkippedByPoi(List<Object> rowData, int columnIndex, int indexOfColumnCellIsIn) {
 
         if (indexOfColumnCellIsIn > columnIndex) {
 
@@ -146,7 +157,7 @@ public class ExcelSpreadsheetReader {
         return columnIndex;
     }
 
-    protected static void addBlankCellsToTheEndIfNecessary(List<Object> rowData, int numberOfDataCells, int numberOfColumnHeadings) {
+    protected void addBlankCellsToTheEndIfNecessary(List<Object> rowData, int numberOfDataCells, int numberOfColumnHeadings) {
 
         for (int i = numberOfDataCells; i < numberOfColumnHeadings; i++) {
 
@@ -155,7 +166,7 @@ public class ExcelSpreadsheetReader {
     }
 
 
-    public static List<String> determineColumnNames(Sheet sheet)
+    public List<String> determineColumnNames(Sheet sheet)
             throws NonStringValueFoundInHeader {
 
         Row firstRow = sheet.iterator().next();
