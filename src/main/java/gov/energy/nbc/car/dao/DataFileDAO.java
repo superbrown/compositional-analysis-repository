@@ -16,7 +16,6 @@ import java.util.UUID;
 public class DataFileDAO {
 
     protected Settings settings;
-    private static long mostRecentTimestampUsed;
 
     public DataFileDAO(Settings settings) {
 
@@ -31,7 +30,7 @@ public class DataFileDAO {
 
         // DESIGN NOTE: This is to prevent the files being saved during the same millisecond. This is significant
         //              because the file name will contain a time stamp to assure it's uniqueness.
-        Date timestamp = getATimeStampThatIsGuaranteedToBeAfterTheOneLastUsed();
+        Date timestamp = getATimeStampThatIsGuaranteedToBeDifferentThanTheOneLastUsed();
 
         String filenameWithEmbeddedTimestamp = constructFileName(timestamp, originalFileName);
 
@@ -55,7 +54,7 @@ public class DataFileDAO {
 
         // DESIGN NOTE: This is to prevent the files being saved during the same millisecond. This is significant
         //              because the file name will contain a time stamp to assure it's uniqueness.
-        Date timestamp = getATimeStampThatIsGuaranteedToBeAfterTheOneLastUsed();
+        Date timestamp = getATimeStampThatIsGuaranteedToBeDifferentThanTheOneLastUsed();
 
         // DESIGN NOTE: The location is hierarchical by year and month. The idea is to avoid having a single directory
         //              containing hoards of files.
@@ -144,13 +143,17 @@ public class DataFileDAO {
         return new File(getRootDirectoryForDataFiles() + storageLocation);
     }
 
-    protected Date getATimeStampThatIsGuaranteedToBeAfterTheOneLastUsed() {
+
+    private static long mostRecentTimestampUsed;
+
+    protected Date getATimeStampThatIsGuaranteedToBeDifferentThanTheOneLastUsed() {
 
         Date timestamp = new Date();
 
         if (timestamp.getTime() == this.mostRecentTimestampUsed) {
             try {
-                Thread.sleep(0);
+                // wait one millisecond
+                Thread.sleep(1);
             } catch (InterruptedException e) {
             }
 
@@ -158,6 +161,7 @@ public class DataFileDAO {
         }
 
         this.mostRecentTimestampUsed = timestamp.getTime();
+
         return timestamp;
     }
 }
