@@ -86,8 +86,7 @@ public class SpreadsheetDocumentDAOTest extends TestUsingTestData
     @Test
     public void testQueryFilter() {
 
-        Document idFilter = new Document();
-        idFilter.put("_id", TestData.objectId_1);
+        Document idFilter = new Document().append("_id", TestData.objectId_1);
         List<Document> documents = spreadsheetDocumentDAO.query(idFilter);
         assertTrue(documents != null);
         assertTrue(documents.size() == 1);
@@ -97,8 +96,7 @@ public class SpreadsheetDocumentDAOTest extends TestUsingTestData
     @Test
     public void testQueryForOneFilter_1() {
 
-        Document idFilter = new Document();
-        idFilter.put("_id", TestData.objectId_1);
+        Document idFilter = new Document().append("_id", TestData.objectId_1);
         Document document = spreadsheetDocumentDAO.queryForOne(idFilter);
         assertTrue(document != null);
         assertTrue(document.get("_id").toString().equals(TestData.objectId_1.toString()));
@@ -120,8 +118,7 @@ public class SpreadsheetDocumentDAOTest extends TestUsingTestData
                 eq(SpreadsheetRowDocument.ATTRIBUTE_KEY__DATA + ".Date Values Column Name", TestData.date_2)
         );
 
-        Document fieldsToInclude = new Document();
-        fieldsToInclude.put(SpreadsheetDocument.ATTRIBUTE_KEY__METADATA, 1);
+        Document fieldsToInclude = new Document().append(SpreadsheetDocument.ATTRIBUTE_KEY__METADATA, 1);
         List<Document> results = spreadsheetDocumentDAO.query(spreadsheetFilter, fieldsToInclude);
         assertTrue(results.size() == 2);
     }

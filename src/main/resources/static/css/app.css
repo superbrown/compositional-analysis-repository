@@ -1,0 +1,46 @@
+
+label {display:inline-block; width: 125px; vertical-align: top; }
+
+html, body, input, select, textarea {
+}
+
+body {
+    font-size: 12px;
+}
+
+legend {
+    font-style: italic;
+    font-weight: bold;
+    font-size: 150%;
+    margin-top: 10px;
+    margin-bottom: 4px;
+    font-family: serif;
+}
+
+label {
+    font-style: normal;
+    font-weight: normal;
+}
+
+.page-header {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+h1 {
+    font-size: 170%;
+    font-weight: bold;
+    margin-top: 0px;
+}
+
+.page-content {
+    margin-bottom: 20px;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.navbar-inverse {
+    background-image: linear-gradient(to bottom, rgba(12, 129, 0, 0.79) 0px, #003503 100%);
+}

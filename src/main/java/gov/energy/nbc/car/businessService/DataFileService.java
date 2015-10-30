@@ -1,6 +1,7 @@
 package gov.energy.nbc.car.businessService;
 
 import gov.energy.nbc.car.Settings;
+import gov.energy.nbc.car.businessService.dto.FileAsRawBytes;
 import gov.energy.nbc.car.businessService.dto.StoredFile;
 import gov.energy.nbc.car.dao.DataFileDAO;
 import gov.energy.nbc.car.dao.UnableToDeleteFile;
@@ -35,11 +36,11 @@ public class DataFileService {
         return theDataFileThatWasStored;
     }
 
-    public StoredFile saveFile(TestMode testMode, byte[] fileContent, String originalFileName) {
+    public StoredFile saveFile(TestMode testMode, FileAsRawBytes file) {
 
         StoredFile theDataFileThatWasStored = null;
         try {
-            theDataFileThatWasStored = getDataFileDAO(testMode).saveFile(fileContent, originalFileName);
+            theDataFileThatWasStored = getDataFileDAO(testMode).saveFile(file);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

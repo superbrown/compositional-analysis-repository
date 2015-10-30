@@ -2,6 +2,7 @@ package gov.energy.nbc.car.businessService;
 
 import com.mongodb.client.FindIterable;
 import gov.energy.nbc.car.Settings;
+import gov.energy.nbc.car.businessService.dto.FileAsRawBytes;
 import gov.energy.nbc.car.dao.DAOUtilities;
 import gov.energy.nbc.car.dao.DeleteResults;
 import gov.energy.nbc.car.dao.SpreadsheetDocumentDAO;
@@ -50,13 +51,17 @@ public class SpreadsheetService {
             String chargeNumber,
             String comments,
             gov.energy.nbc.car.businessService.dto.StoredFile dataFile,
-            String nameOfWorksheetContainingTheData)
+            String nameOfWorksheetContainingTheData,
+            List<gov.energy.nbc.car.businessService.dto.StoredFile> attachmentFiles)
             throws UnsupportedFileExtension, NonStringValueFoundInHeader {
 
         File storedFile = getDataFile(testMode, dataFile.storageLocation);
         Data data = fileReader.extractDataFromFile(storedFile, nameOfWorksheetContainingTheData);
 
-        List<StoredFile> attachments = new ArrayList<>();
+        List<StoredFile> attachments = new ArrayList();
+        for (gov.energy.nbc.car.businessService.dto.StoredFile attachmentFile : attachmentFiles) {
+            attachments.add(new StoredFile(attachmentFile.originalFileName, attachmentFile.storageLocation));
+        }
 
         SpreadsheetDocument spreadsheetDocument = new SpreadsheetDocument(sampleType,
                 submissionDate,
@@ -157,13 +162,19 @@ public class SpreadsheetService {
             String projectName,
             String chargeNumber,
             String comments,
-            byte[] dataFileContent,
-            String originalFileName,
-            String nameOfSheetContainingData)
+            FileAsRawBytes dataFile,
+            String nameOfSheetContainingData,
+            List<FileAsRawBytes> attachmentFiles)
             throws UnsupportedFileExtension, NonStringValueFoundInHeader {
 
         gov.energy.nbc.car.businessService.dto.StoredFile theDataFileThatWasStored =
-                BusinessServices.dataFileService.saveFile(testMode, dataFileContent, originalFileName);
+                BusinessServices.dataFileService.saveFile(testMode, dataFile);
+
+        List<gov.energy.nbc.car.businessService.dto.StoredFile> theAttachmentsThatWereStored = new ArrayList();
+
+        for (FileAsRawBytes attachmentFile : attachmentFiles) {
+            theAttachmentsThatWereStored.add(BusinessServices.dataFileService.saveFile(testMode, attachmentFile));
+        }
 
         String objectId = BusinessServices.spreadsheetService.addSpreadsheet(
                 testMode,
@@ -174,7 +185,8 @@ public class SpreadsheetService {
                 chargeNumber,
                 comments,
                 theDataFileThatWasStored,
-                nameOfSheetContainingData);
+                nameOfSheetContainingData,
+                theAttachmentsThatWereStored);
 
         return objectId;
     }

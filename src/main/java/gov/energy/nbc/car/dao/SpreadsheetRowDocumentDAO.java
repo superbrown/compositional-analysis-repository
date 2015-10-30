@@ -50,8 +50,8 @@ public class SpreadsheetRowDocumentDAO extends DAO
 
     public DeleteResults deleteRowsAssociatedWithSpreadsheet(ObjectId objectId) {
 
-        Document spreadsheetIdFilter = new Document();
-        spreadsheetIdFilter.put(SpreadsheetRowDocument.ATTRIBUTE_KEY__SPREADSHEET_OBJECT_ID, objectId);
+        Document spreadsheetIdFilter = new Document().
+                append(SpreadsheetRowDocument.ATTRIBUTE_KEY__SPREADSHEET_OBJECT_ID, objectId);
 
         DeleteResult deleteResult = getCollection().deleteMany(spreadsheetIdFilter);
 

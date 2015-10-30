@@ -29,8 +29,8 @@ public class TestDataService {
         newObjects.add(TestData.objectId_1);
         newObjects.add(TestData.objectId_2);
 
-        Document document = new Document();
-        document.put("spreadsheetIDs", newObjects);
+        Document document = new Document().
+                append("spreadsheetIDs", newObjects);
 
         return DAOUtilities.serialize(document);
     }
@@ -42,8 +42,8 @@ public class TestDataService {
         List<ObjectId> newObjects = new ArrayList<>();
         newObjects.add(TestData.objectId_1);
 
-        Document document = new Document();
-        document.put("spreadsheetIDs", newObjects);
+        Document document = new Document().
+                append("spreadsheetIDs", newObjects);
 
         return DAOUtilities.serialize(document);
     }
@@ -55,8 +55,7 @@ public class TestDataService {
         List<ObjectId> newObjects = new ArrayList<>();
         newObjects.add(TestData.objectId_2);
 
-        Document document = new Document();
-        document.put("spreadsheetIDs", newObjects);
+        Document document = new Document().append("spreadsheetIDs", newObjects);
 
         return DAOUtilities.serialize(document);
     }
