@@ -22,15 +22,18 @@ label {
     font-weight: normal;
 }
 
-.page-header {
-    margin-top: 0px;
-    margin-bottom: 0px;
-}
-
 h1 {
     font-size: 170%;
     font-weight: bold;
     margin-top: 0px;
+    color: #003503;
+}
+
+.page-header {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    border-bottom: none;
 }
 
 .page-content {
