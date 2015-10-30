@@ -1,7 +1,7 @@
 package gov.energy.nbc.car.restService;
 
-import gov.energy.nbc.car.businessService.BusinessServices;
-import gov.energy.nbc.car.businessService.TestMode;
+import gov.energy.nbc.car.businessObject.BusinessObjects;
+import gov.energy.nbc.car.businessObject.TestMode;
 import org.apache.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +27,7 @@ public class Endpoints_SampleTypes {
             @PathVariable(value = "sampleTypeId") String sampleTypeId,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String sampleType = BusinessServices.sampleTypeService.getSampleType(
+        String sampleType = BusinessObjects.sampleTypeBO.getSampleType(
                 TestMode.value(testMode),
                 sampleTypeId);
 
@@ -43,7 +43,7 @@ public class Endpoints_SampleTypes {
             @PathVariable(value = "sampleName") String sampleName,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String sampleType = BusinessServices.sampleTypeService.getSampleTypeWithName(
+        String sampleType = BusinessObjects.sampleTypeBO.getSampleTypeWithName(
                 TestMode.value(testMode),
                 sampleName);
 
@@ -58,7 +58,7 @@ public class Endpoints_SampleTypes {
     public ResponseEntity getSampleTypeByName(
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String sampleType = BusinessServices.sampleTypeService.getAllSampleTypes(
+        String sampleType = BusinessObjects.sampleTypeBO.getAllSampleTypes(
                 TestMode.value(testMode));
 
         if (sampleType == null) {

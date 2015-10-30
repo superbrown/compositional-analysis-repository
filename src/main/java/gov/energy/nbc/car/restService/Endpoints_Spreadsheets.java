@@ -1,9 +1,9 @@
 package gov.energy.nbc.car.restService;
 
-import gov.energy.nbc.car.businessService.BusinessServices;
-import gov.energy.nbc.car.businessService.DeletionFailure;
-import gov.energy.nbc.car.businessService.TestMode;
-import gov.energy.nbc.car.businessService.dto.FileAsRawBytes;
+import gov.energy.nbc.car.businessObject.BusinessObjects;
+import gov.energy.nbc.car.businessObject.DeletionFailure;
+import gov.energy.nbc.car.businessObject.TestMode;
+import gov.energy.nbc.car.businessObject.dto.FileAsRawBytes;
 import gov.energy.nbc.car.fileReader.ExcelWorkbookReader;
 import gov.energy.nbc.car.fileReader.NonStringValueFoundInHeader;
 import gov.energy.nbc.car.fileReader.UnsupportedFileExtension;
@@ -83,7 +83,7 @@ public class Endpoints_Spreadsheets {
                 attachmentFiles.add(toFileAsRawBytes(attachment));
             }
 
-            objectId = BusinessServices.spreadsheetService.addSpreadsheet(
+            objectId = BusinessObjects.spreadsheetBO.addSpreadsheet(
                     TestMode.value(testMode),
                     sampleType,
                     submissionDate_date,
@@ -119,7 +119,7 @@ public class Endpoints_Spreadsheets {
     public ResponseEntity getAllSpreadsheets(
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String spreadsheets = BusinessServices.spreadsheetService.getAllSpreadsheets(TestMode.value(testMode));
+        String spreadsheets = BusinessObjects.spreadsheetBO.getAllSpreadsheets(TestMode.value(testMode));
 
         if (spreadsheets == null) {
             return create_NOT_FOUND_response();
@@ -133,7 +133,7 @@ public class Endpoints_Spreadsheets {
             @PathVariable(value = "spreadsheetId") String spreadsheetId,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String spreadsheet = BusinessServices.spreadsheetService.getSpreadsheet(TestMode.value(testMode), spreadsheetId);
+        String spreadsheet = BusinessObjects.spreadsheetBO.getSpreadsheet(TestMode.value(testMode), spreadsheetId);
 
         if (spreadsheet == null) {
             return create_NOT_FOUND_response();
@@ -147,7 +147,7 @@ public class Endpoints_Spreadsheets {
             @PathVariable(value = "spreadsheetId") String spreadsheetId,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String spreadsheetMetadata = BusinessServices.spreadsheetService.getSpreadsheetMetadata(TestMode.value(testMode), spreadsheetId);
+        String spreadsheetMetadata = BusinessObjects.spreadsheetBO.getSpreadsheetMetadata(TestMode.value(testMode), spreadsheetId);
 
         if (spreadsheetMetadata == null) {
             return create_NOT_FOUND_response();
@@ -161,7 +161,7 @@ public class Endpoints_Spreadsheets {
             @PathVariable(value = "spreadsheetId") String spreadsheetId,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String spreadsheetData = BusinessServices.spreadsheetService.getSpreadsheetData(TestMode.value(testMode), spreadsheetId);
+        String spreadsheetData = BusinessObjects.spreadsheetBO.getSpreadsheetData(TestMode.value(testMode), spreadsheetId);
 
         if (spreadsheetData == null) {
             return create_NOT_FOUND_response();
@@ -177,7 +177,7 @@ public class Endpoints_Spreadsheets {
 
         long numberOfObjectsDeleted = 0;
         try {
-            numberOfObjectsDeleted = BusinessServices.spreadsheetService.deleteSpreadsheet(TestMode.value(testMode), spreadsheetId);
+            numberOfObjectsDeleted = BusinessObjects.spreadsheetBO.deleteSpreadsheet(TestMode.value(testMode), spreadsheetId);
         }
         catch (DeletionFailure deletionFailure) {
             log.error(deletionFailure);

@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.businessService;
+package gov.energy.nbc.car.businessObject;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -15,17 +15,17 @@ import org.junit.*;
 import static org.junit.Assert.assertTrue;
 
 
-public class SpreadsheetServiceTest extends TestUsingTestData
+public class SpreadsheetBOTest extends TestUsingTestData
 {
-    private static SpreadsheetService spreadsheetService;
+    private static SpreadsheetBO spreadsheetBO;
 
     @BeforeClass
     public static void beforeClass() {
 
         TestUsingTestData.beforeClass();
 
-        Settings_forUnitTestPurposes settings = BusinessServices.settings_forUnitTestPurposes;
-        spreadsheetService = new SpreadsheetService(settings, settings);
+        Settings_forUnitTestPurposes settings = BusinessObjects.settings_forUnitTestPurposes;
+        spreadsheetBO = new SpreadsheetBO(settings, settings);
     }
 
     @AfterClass
@@ -47,7 +47,7 @@ public class SpreadsheetServiceTest extends TestUsingTestData
     public void testGetById() {
 
         String spreadsheetId = TestData.objectId_1.toHexString();
-        String json = spreadsheetService.getSpreadsheet(TestMode.TEST_MODE, spreadsheetId);
+        String json = spreadsheetBO.getSpreadsheet(TestMode.TEST_MODE, spreadsheetId);
 
         assertTrue(json != null);
 
@@ -63,19 +63,19 @@ public class SpreadsheetServiceTest extends TestUsingTestData
 
         String spreadsheet_1_id = TestData.objectId_1.toHexString();
 
-        String spreadsheet_1_json = spreadsheetService.getSpreadsheet(TestMode.TEST_MODE, spreadsheet_1_id);
+        String spreadsheet_1_json = spreadsheetBO.getSpreadsheet(TestMode.TEST_MODE, spreadsheet_1_id);
 
         SpreadsheetDocument spreadsheet_1 = new SpreadsheetDocument(spreadsheet_1_json);
         spreadsheet_1.remove(AbstractDocument.ATTRIBUTE_KEY__ID);
         spreadsheet_1_json = spreadsheet_1.toJson();
-        String newObjectId = spreadsheetService.addSpreadsheet(TestMode.TEST_MODE, spreadsheet_1_json);
+        String newObjectId = spreadsheetBO.addSpreadsheet(TestMode.TEST_MODE, spreadsheet_1_json);
 
         // confirm that it's new
         assertTrue(newObjectId != TestData.objectId_1.toHexString());
         // confirm that it's all letters and numbers
         assertTrue(StringUtils.isAlphanumeric(newObjectId));
 
-        String newSpreadsheet_json = spreadsheetService.getSpreadsheet(TestMode.TEST_MODE, newObjectId);
+        String newSpreadsheet_json = spreadsheetBO.getSpreadsheet(TestMode.TEST_MODE, newObjectId);
 
         SpreadsheetDocument newSpreadsheetDocument = new SpreadsheetDocument(newSpreadsheet_json);
         newSpreadsheetDocument.remove(AbstractDocument.ATTRIBUTE_KEY__ID);
@@ -88,12 +88,12 @@ public class SpreadsheetServiceTest extends TestUsingTestData
 
         String spreadsheet_1_id = TestData.objectId_1.toHexString();
 
-        String spreadsheet_1_json = spreadsheetService.getSpreadsheet(TestMode.TEST_MODE, spreadsheet_1_id);
+        String spreadsheet_1_json = spreadsheetBO.getSpreadsheet(TestMode.TEST_MODE, spreadsheet_1_id);
         BasicDBObject spreadsheet_1_parsedJson = (BasicDBObject) JSON.parse(spreadsheet_1_json);
         BasicDBObject spreadsheet_1_parsedJson_metadataPortion = (BasicDBObject) spreadsheet_1_parsedJson.get(SpreadsheetDocument.ATTRIBUTE_KEY__METADATA);
         String spreadsheet_1_json_metadataPortion = JSON.serialize(spreadsheet_1_parsedJson_metadataPortion);
 
-        String new_json_metadataPortion = spreadsheetService.getSpreadsheetMetadata(TestMode.TEST_MODE, spreadsheet_1_id);
+        String new_json_metadataPortion = spreadsheetBO.getSpreadsheetMetadata(TestMode.TEST_MODE, spreadsheet_1_id);
 
         // they should be the same
         assertTrue(spreadsheet_1_json_metadataPortion.equals(new_json_metadataPortion));
@@ -105,12 +105,12 @@ public class SpreadsheetServiceTest extends TestUsingTestData
 
         String spreadsheet_1_id = TestData.objectId_1.toHexString();
 
-        String spreadsheet_1_json = spreadsheetService.getSpreadsheet(TestMode.TEST_MODE, spreadsheet_1_id);
+        String spreadsheet_1_json = spreadsheetBO.getSpreadsheet(TestMode.TEST_MODE, spreadsheet_1_id);
         BasicDBObject spreadsheet_1_parsedJson = (BasicDBObject) JSON.parse(spreadsheet_1_json);
         BasicDBList spreadsheet_1_parsedJson_dataPortion = (BasicDBList) spreadsheet_1_parsedJson.get(SpreadsheetDocument.ATTRIBUTE_KEY__DATA);
         String spreadsheet_1_json_dataPortion = JSON.serialize(spreadsheet_1_parsedJson_dataPortion);
 
-        String new_json_dataPortion = spreadsheetService.getSpreadsheetData(TestMode.TEST_MODE, spreadsheet_1_id);
+        String new_json_dataPortion = spreadsheetBO.getSpreadsheetData(TestMode.TEST_MODE, spreadsheet_1_id);
 
         // they should be the same
         assertTrue(spreadsheet_1_json_dataPortion.equals(new_json_dataPortion));

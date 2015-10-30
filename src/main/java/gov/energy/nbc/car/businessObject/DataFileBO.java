@@ -1,22 +1,22 @@
-package gov.energy.nbc.car.businessService;
+package gov.energy.nbc.car.businessObject;
 
 import gov.energy.nbc.car.Settings;
-import gov.energy.nbc.car.businessService.dto.FileAsRawBytes;
-import gov.energy.nbc.car.businessService.dto.StoredFile;
+import gov.energy.nbc.car.businessObject.dto.FileAsRawBytes;
+import gov.energy.nbc.car.businessObject.dto.StoredFile;
 import gov.energy.nbc.car.dao.DataFileDAO;
 import gov.energy.nbc.car.dao.UnableToDeleteFile;
 import gov.energy.nbc.car.fileReader.FileReader;
 import org.springframework.web.multipart.MultipartFile;
 
-public class DataFileService {
+public class DataFileBO {
 
     protected DataFileDAO dataFileDAO;
     protected DataFileDAO dataFileDAO_FOR_UNIT_TESTING_PURPOSES;
 
     protected FileReader fileReader;
 
-    public DataFileService(Settings settings,
-                           Settings settings_forUnitTestingPurposes) {
+    public DataFileBO(Settings settings,
+                      Settings settings_forUnitTestingPurposes) {
 
         dataFileDAO = new DataFileDAO(settings);
         dataFileDAO_FOR_UNIT_TESTING_PURPOSES = new DataFileDAO(settings_forUnitTestingPurposes);

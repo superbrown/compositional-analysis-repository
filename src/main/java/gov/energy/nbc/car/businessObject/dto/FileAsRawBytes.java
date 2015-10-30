@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.businessService.dto;
+package gov.energy.nbc.car.businessObject.dto;
 
 public class FileAsRawBytes {
 

@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.businessService;
+package gov.energy.nbc.car.businessObject;
 
 import org.junit.Test;
 

@@ -1,6 +1,6 @@
 package gov.energy.nbc.car.utilities;
 
-import gov.energy.nbc.car.businessService.dto.StoredFile;
+import gov.energy.nbc.car.businessObject.dto.StoredFile;
 import org.apache.tomcat.util.http.fileupload.FileItem;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;

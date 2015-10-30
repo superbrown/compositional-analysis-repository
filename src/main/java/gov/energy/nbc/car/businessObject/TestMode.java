@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.businessService;
+package gov.energy.nbc.car.businessObject;
 
 public enum TestMode {
     TEST_MODE,
