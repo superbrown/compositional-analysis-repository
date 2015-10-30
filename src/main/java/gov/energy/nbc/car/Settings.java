@@ -16,7 +16,7 @@ public class Settings {
 
         mongoDbHost = "localhost";
         mongoDbPort = 27017;
-        mongoDatabaseName = "researchDataRepository";
+        mongoDatabaseName = "car";
         rootDirectoryForDataFiles = "C:/data/research-data/uploadedFiles";
     }
 

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Compositional Analysis Repository</title>
+    <meta name="description" content="Research Data Repository">
+
+    <style>
+
+        body {
+
+            font-family: Helvetica,Arial,sans-serif;
+            font-size: 11px;
+        }
+
+        a {
+            color: #428BCA;
+            text-decoration: none;
+        }
+
+        h1 { margin-top: 10px; margin-bottom: 6px; }
+        h2 { margin-top: 10px; margin-bottom: 3px; }
+        h3 { margin-top: 10px; margin-bottom: 3px; font-style: italic; }
+        h4 { margin-top: 10px; margin-bottom: 3px; }
+
+        input {margin-bottom: 5px;}
+        label {display:inline-block; width: 125px; vertical-align: top; }
+    </style>
+
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+</head>
+
+<body style="margin-left: 20px; margin-top: 10px">
+
+    <h1>Compositional Analysis Repository</h1>
+
+    <a href="index.html">Upload Data</a><br/>
+    <br/>
+
+    <h2>Test Data</h2>
+    <a href="/api/seedTestData">/api/seedTestData</a> [GET]<br/>
+    <a href="/api/removeTestData">/api/removeTestData</a> [GET]<br/>
+    <a href="/api/dropTheTestDatabase">/api/dropTheTestDatabase</a> [GET]<br/>
+
+    <h2>Spreadsheets</h2>
+    /api/addSpreadsheet/{spreadsheet_id}?inTestMode=true [POST] (spreasheet JSON in the request body)<br/>
+    /api/addSpreadsheet/{spreadsheet_id}?inTestMode=true [DELETE]<br/>
+    <br/>
+    <a href="/api/spreadsheets/all?inTestMode=true">/api/spreadsheets/all?inTestMode=true</a> [GET]<br/>
+    /api/spreadsheets?inTestMode=true [POST] (query JSON in the request body)<br/>
+    <br/>
+    /api/spreadsheet/{spreadsheet_id}?inTestMode=true [GET]<br/>
+    /api/spreadsheet/data/{spreadsheet_id}?inTestMode=true [GET]<br/>
+    /api/spreadsheet/metadata/{spreadsheet_id}?inTestMode=true [GET]<br/>
+
+    <h2>Spreadsheet Rows</h2>
+    /api/spreadsheetRow/{spreadsheetRowId}?inTestMode=true [GET]<br/>
+    <br/>
+    <a href="/api/spreadsheetRows/all?inTestMode=true">/api/spreadsheetRows/all?inTestMode=true</a> [GET]<br/>
+    /api/spreadsheetRows?inTestMode=true [POST] (query JSON in the request body)<br/>
+
+    <h2>Sample Type</h2>
+
+    /api/sampleType/{sampleTypeId}?inTestMode=true [GET]<br/>
+    /api/sampleType/name/{sampleName}"?inTestMode=true [GET]<br/>
+    <br/>
+    <a href="/api/sampleTypes/all?inTestMode=true">/api/sampleTypes/all?inTestMode=true</a> [GET]<br/>
+    <br/>
+    <br/>
+
+</body>
+</html>
+

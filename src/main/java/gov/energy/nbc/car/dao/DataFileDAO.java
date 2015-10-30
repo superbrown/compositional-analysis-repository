@@ -1,6 +1,7 @@
 package gov.energy.nbc.car.dao;
 
 import gov.energy.nbc.car.Settings;
+import gov.energy.nbc.car.businessService.dto.FileAsRawBytes;
 import gov.energy.nbc.car.businessService.dto.StoredFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +16,7 @@ import java.util.UUID;
 public class DataFileDAO {
 
     protected Settings settings;
+    private static long mostRecentTimestampUsed;
 
     public DataFileDAO(Settings settings) {
 
@@ -27,7 +29,11 @@ public class DataFileDAO {
         String dataFilesDirectoryPath = getRootDirectoryForDataFiles();
         String originalFileName = multipartFile.getOriginalFilename();
 
-        String filenameWithEmbeddedTimestamp = constructFileName(new Date(), originalFileName);
+        // DESIGN NOTE: This is to prevent the files being saved during the same millisecond. This is significant
+        //              because the file name will contain a time stamp to assure it's uniqueness.
+        Date timestamp = getATimeStampThatIsGuaranteedToBeAfterTheOneLastUsed();
+
+        String filenameWithEmbeddedTimestamp = constructFileName(timestamp, originalFileName);
 
         if (seeToItThatTheDirectoryExists(dataFilesDirectoryPath) == false) {
             throw new CouldNoCreateDirectory();
@@ -40,13 +46,18 @@ public class DataFileDAO {
         return storedFile;
     }
 
-    public StoredFile saveFile(byte[] fileContent, String originalFileName)
+    public StoredFile saveFile(FileAsRawBytes file)
             throws CouldNoCreateDirectory, IOException {
 
-        String rootDirectoryForDataFiles = getRootDirectoryForDataFiles();
-        Date timestamp = new Date();
+        String originalFileName = file.fileName;
 
-        // DESIGN NOTE: The location is heirarchical by year and month. The idea is to avoid having a single directory
+        String rootDirectoryForDataFiles = getRootDirectoryForDataFiles();
+
+        // DESIGN NOTE: This is to prevent the files being saved during the same millisecond. This is significant
+        //              because the file name will contain a time stamp to assure it's uniqueness.
+        Date timestamp = getATimeStampThatIsGuaranteedToBeAfterTheOneLastUsed();
+
+        // DESIGN NOTE: The location is hierarchical by year and month. The idea is to avoid having a single directory
         //              containing hoards of files.
         String relativeFileLocation = constructRelativeFileLocation(timestamp, originalFileName);
         String fileName = constructFileName(timestamp, originalFileName);
@@ -57,7 +68,7 @@ public class DataFileDAO {
             throw new CouldNoCreateDirectory();
         }
 
-        File savedFile = saveTo(fileContent, fullyQualifiedFileLocation + fileName);
+        File savedFile = saveTo(file.bytes, fullyQualifiedFileLocation + fileName);
 
         StoredFile storedFile = new StoredFile(originalFileName, relativeFileLocation + fileName);
 
@@ -131,5 +142,22 @@ public class DataFileDAO {
     public File getFile(String storageLocation) {
 
         return new File(getRootDirectoryForDataFiles() + storageLocation);
+    }
+
+    protected Date getATimeStampThatIsGuaranteedToBeAfterTheOneLastUsed() {
+
+        Date timestamp = new Date();
+
+        if (timestamp.getTime() == this.mostRecentTimestampUsed) {
+            try {
+                Thread.sleep(0);
+            } catch (InterruptedException e) {
+            }
+
+            timestamp = new Date();
+        }
+
+        this.mostRecentTimestampUsed = timestamp.getTime();
+        return timestamp;
     }
 }

@@ -10,6 +10,6 @@ public class Settings_forUnitTestPurposes extends Settings {
     protected void init() {
 
         super.init();
-        setMongoDatabaseName("researchDataRepository_forUnitTestPurposes");
+        setMongoDatabaseName("car_forUnitTestPurposes");
     }
 }

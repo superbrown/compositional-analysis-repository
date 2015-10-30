@@ -144,8 +144,8 @@ public abstract class DAO {
 
     protected Document createIdFilter(ObjectId objectId) {
 
-        Document idFilter = new Document();
-        idFilter.put(AbstractDocument.ATTRIBUTE_KEY__ID, objectId);
+        Document idFilter = new Document().
+                append(AbstractDocument.ATTRIBUTE_KEY__ID, objectId);
         return idFilter;
     }
 
