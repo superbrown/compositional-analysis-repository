@@ -1,7 +1,7 @@
 package gov.energy.nbc.car.restService;
 
-import gov.energy.nbc.car.businessService.BusinessServices;
-import gov.energy.nbc.car.businessService.TestMode;
+import gov.energy.nbc.car.businessObject.BusinessObjects;
+import gov.energy.nbc.car.businessObject.TestMode;
 import org.apache.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +28,7 @@ public class Endpoints_SpreadsheetRows {
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
         String spreadsheetRows =
-                BusinessServices.spreadsheetRowsService.getSpreadsheetRows(TestMode.value(testMode), query);
+                BusinessObjects.spreadsheetRowBO.getSpreadsheetRows(TestMode.value(testMode), query);
 
         if (spreadsheetRows == null) {
             return create_NOT_FOUND_response();
@@ -41,7 +41,7 @@ public class Endpoints_SpreadsheetRows {
     public ResponseEntity getAllSpreadsheetRows(
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String spreadsheetRows = BusinessServices.spreadsheetRowsService.getAllSpreadsheetRows(TestMode.value(testMode));
+        String spreadsheetRows = BusinessObjects.spreadsheetRowBO.getAllSpreadsheetRows(TestMode.value(testMode));
 
         if (spreadsheetRows == null) {
             return create_NOT_FOUND_response();
@@ -55,7 +55,7 @@ public class Endpoints_SpreadsheetRows {
             @PathVariable(value = "spreadsheetRowId") String spreadsheetRowId,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String spreadsheetRow = BusinessServices.spreadsheetRowsService.getSpreadsheetRow(
+        String spreadsheetRow = BusinessObjects.spreadsheetRowBO.getSpreadsheetRow(
                 TestMode.value(testMode),
                 spreadsheetRowId);
 

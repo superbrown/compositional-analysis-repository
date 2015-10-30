@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.businessService;
+package gov.energy.nbc.car.businessObject;
 
 import com.mongodb.client.FindIterable;
 import gov.energy.nbc.car.Settings;
@@ -9,12 +9,12 @@ import org.bson.Document;
 
 import java.util.List;
 
-public class SpreadsheetRowService {
+public class SpreadsheetRowBO {
 
     protected SpreadsheetRowDocumentDAO spreadsheetRowDocumentDAO;
     protected SpreadsheetRowDocumentDAO spreadsheetRowDocumentDAO_FOR_TESTING_PURPOSES;
 
-    public SpreadsheetRowService(Settings settings, Settings settings_forUnitTestingPurposes) {
+    public SpreadsheetRowBO(Settings settings, Settings settings_forUnitTestingPurposes) {
 
         spreadsheetRowDocumentDAO = new SpreadsheetRowDocumentDAO(settings);
         spreadsheetRowDocumentDAO_FOR_TESTING_PURPOSES = new SpreadsheetRowDocumentDAO(settings_forUnitTestingPurposes);

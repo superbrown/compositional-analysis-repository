@@ -1,32 +1,32 @@
 package gov.energy.nbc.car;
 
-import gov.energy.nbc.car.businessService.BusinessServices;
-import gov.energy.nbc.car.businessService.TestDataService;
+import gov.energy.nbc.car.businessObject.BusinessObjects;
+import gov.energy.nbc.car.businessObject.TestDataBO;
 
 public class TestUsingTestData {
 
-    protected static TestDataService testDataService;
+    protected static TestDataBO testDataBO;
 
     public static void beforeClass() {
 
-        testDataService = new TestDataService(BusinessServices.settings_forUnitTestPurposes);
+        testDataBO = new TestDataBO(BusinessObjects.settings_forUnitTestPurposes);
     }
 
     public void before() {
 
         // (just in case it's necessary)
-        testDataService.removeTestData();
+        testDataBO.removeTestData();
 
-        testDataService.seedTestDataInTheDatabase_spreadsheet_1_and_2();
+        testDataBO.seedTestDataInTheDatabase_spreadsheet_1_and_2();
     }
 
     public void after() {
 
-        testDataService.removeTestData();
+        testDataBO.removeTestData();
     }
 
     public static void afterClass() {
 
-        testDataService.dropTheTestDatabase();
+        testDataBO.dropTheTestDatabase();
     }
 }

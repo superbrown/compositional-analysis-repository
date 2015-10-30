@@ -1,8 +1,8 @@
 package gov.energy.nbc.car.dao;
 
 import gov.energy.nbc.car.Settings;
-import gov.energy.nbc.car.businessService.dto.FileAsRawBytes;
-import gov.energy.nbc.car.businessService.dto.StoredFile;
+import gov.energy.nbc.car.businessObject.dto.FileAsRawBytes;
+import gov.energy.nbc.car.businessObject.dto.StoredFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;

@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.businessService;
+package gov.energy.nbc.car.businessObject;
 
 import com.mongodb.client.FindIterable;
 import gov.energy.nbc.car.Settings;
@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-public class SampleTypeService {
+public class SampleTypeBO {
 
     Logger log = Logger.getLogger(this.getClass());
 
@@ -20,8 +20,8 @@ public class SampleTypeService {
 
     protected FileReader fileReader;
 
-    public SampleTypeService(Settings settings,
-                             Settings settings_forUnitTestingPurposes) {
+    public SampleTypeBO(Settings settings,
+                        Settings settings_forUnitTestingPurposes) {
 
         sampleTypeDocumentDAO = new SampleTypeDocumentDAO(settings);
         sampleTypeDocumentDAO_FOR_UNIT_TESTING_PURPOSES = new SampleTypeDocumentDAO(settings_forUnitTestingPurposes);

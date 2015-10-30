@@ -1,6 +1,6 @@
 package gov.energy.nbc.car.restService;
 
-import gov.energy.nbc.car.businessService.BusinessServices;
+import gov.energy.nbc.car.businessObject.BusinessObjects;
 import org.apache.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,20 +26,20 @@ public class Endpoints_TestData {
     @RequestMapping(value="/api/seedTestData", method = RequestMethod.GET)
     public ResponseEntity seedTestData() {
 
-        return create_SUCCESS_response(BusinessServices.testDataService.seedTestDataInTheDatabase_spreadsheet_1_and_2());
+        return create_SUCCESS_response(BusinessObjects.testDataBO.seedTestDataInTheDatabase_spreadsheet_1_and_2());
     }
 
     @RequestMapping(value="/api/removeTestData", method = RequestMethod.GET)
     public ResponseEntity removeTestData() {
 
-        BusinessServices.testDataService.removeTestData();
+        BusinessObjects.testDataBO.removeTestData();
         return create_SUCCESS_response("{ message: \"test data successfully removed\" }");
     }
 
     @RequestMapping(value="/api/dropTestDatabase", method = RequestMethod.GET)
     public ResponseEntity dropTheTestDatabase() {
 
-        BusinessServices.testDataService.dropTheTestDatabase();
+        BusinessObjects.testDataBO.dropTheTestDatabase();
         return create_SUCCESS_response("{ message: \"test database successfully dropped\" }");
     }
 }

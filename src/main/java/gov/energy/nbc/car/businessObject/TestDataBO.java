@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.businessService;
+package gov.energy.nbc.car.businessObject;
 
 import com.mongodb.client.MongoDatabase;
 import gov.energy.nbc.car.Settings;
@@ -11,11 +11,11 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestDataService {
+public class TestDataBO {
 
     public SpreadsheetDocumentDAO spreadsheetDocumentDAO;
 
-    public TestDataService(Settings settings) {
+    public TestDataBO(Settings settings) {
 
         spreadsheetDocumentDAO = new SpreadsheetDocumentDAO(settings);
     }

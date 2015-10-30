@@ -1,7 +1,7 @@
 package gov.energy.nbc.car.dao;
 
 import gov.energy.nbc.car.TestUsingTestData;
-import gov.energy.nbc.car.businessService.BusinessServices;
+import gov.energy.nbc.car.businessObject.BusinessObjects;
 import gov.energy.nbc.car.model.TestData;
 import gov.energy.nbc.car.model.common.Metadata;
 import gov.energy.nbc.car.model.document.SampleTypeDocument;
@@ -27,7 +27,7 @@ public class SpreadsheetDocumentDAOTest extends TestUsingTestData
     public static void beforeClass() {
 
         TestUsingTestData.beforeClass();
-        spreadsheetDocumentDAO = new SpreadsheetDocumentDAO(BusinessServices.settings_forUnitTestPurposes);
+        spreadsheetDocumentDAO = new SpreadsheetDocumentDAO(BusinessObjects.settings_forUnitTestPurposes);
     }
 
     @AfterClass
@@ -141,10 +141,10 @@ public class SpreadsheetDocumentDAOTest extends TestUsingTestData
 
         SampleTypeDocumentDAO sampleTypeDocumentDAO = spreadsheetDocumentDAO.getSampleTypeDocumentDAO();
 
-        testDataService.removeTestData();
+        testDataBO.removeTestData();
         sampleTypeDocumentDAO.removeAllDataFromCollection();
 
-        testDataService.seedTestDataInTheDatabase_spreadsheet_1();
+        testDataBO.seedTestDataInTheDatabase_spreadsheet_1();
 
         SampleTypeDocument sampleTypeDocument = sampleTypeDocumentDAO.getByName(TestData.ALGEA);
         assertTrue(sampleTypeDocument.getSampleType().equals(TestData.ALGEA));
@@ -159,7 +159,7 @@ public class SpreadsheetDocumentDAOTest extends TestUsingTestData
         assertTrue(columnNames.contains("Integer Values Column Name"));
         assertTrue(columnNames.contains("Varying Value Types Column Name"));
 
-        testDataService.seedTestDataInTheDatabase_spreadsheet_2();
+        testDataBO.seedTestDataInTheDatabase_spreadsheet_2();
 
         sampleTypeDocument = sampleTypeDocumentDAO.getByName(TestData.ALGEA);
         assertTrue(sampleTypeDocument.getSampleType().equals(TestData.ALGEA));
