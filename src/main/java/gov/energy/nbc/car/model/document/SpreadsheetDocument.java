@@ -1,32 +1,29 @@
 package gov.energy.nbc.car.model.document;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
+import gov.energy.nbc.car.dao.DAOUtilities;
 import gov.energy.nbc.car.model.AbstractDocument;
-import gov.energy.nbc.car.model.common.Data;
 import gov.energy.nbc.car.model.common.Metadata;
 import gov.energy.nbc.car.model.common.StoredFile;
+import org.bson.Document;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 public class SpreadsheetDocument extends AbstractDocument {
 
     public static final String ATTRIBUTE_KEY__METADATA = "metadata";
-    public static final String ATTRIBUTE_KEY__DATA = "data";
 
     public SpreadsheetDocument(String json) {
         super(json);
     }
 
-    public SpreadsheetDocument(Object object) {
+    public SpreadsheetDocument(Document object) {
         super(object);
     }
 
-    public SpreadsheetDocument(Metadata metadata, Data data) {
+    public SpreadsheetDocument(Metadata metadata) {
 
-        init(metadata, data);
+        init(metadata);
     }
 
     public SpreadsheetDocument(String sampleType,
@@ -36,8 +33,7 @@ public class SpreadsheetDocument extends AbstractDocument {
                                String projectName,
                                String comments,
                                StoredFile uploadedFile,
-                               List<StoredFile> attachments,
-                               List<List> spreadsheetContent) {
+                               List<StoredFile> attachments) {
 
         Metadata metadata = new Metadata(
                 sampleType,
@@ -49,62 +45,29 @@ public class SpreadsheetDocument extends AbstractDocument {
                 uploadedFile,
                 attachments);
 
-        Data data = new Data(spreadsheetContent);
-
-        init(metadata, data);
+        init(metadata);
     }
 
-    public SpreadsheetDocument(String sampleType,
-                               Date submissionDate,
-                               String submitter,
-                               String chargeNumber,
-                               String projectName,
-                               String comments,
-                               StoredFile uploadedFile,
-                               List<StoredFile> attachments,
-                               Data data) {
+    protected void init(Document document) {
 
-        Metadata metadata = new Metadata(
-                sampleType,
-                submissionDate,
-                submitter,
-                chargeNumber,
-                projectName,
-                comments,
-                uploadedFile,
-                attachments);
+        if (document == null) {
+            return;
+        }
 
-        init(metadata, data);
+        initializeId(document);
+
+        Metadata metadata = new Metadata(DAOUtilities.serialize(document.get(ATTRIBUTE_KEY__METADATA)));
+
+        init(metadata);
     }
 
-    protected void initWithJson(String json) {
-
-        BasicDBObject parsedJson = (BasicDBObject) JSON.parse(json);
-
-        initializeId(parsedJson);
-
-        Metadata metadata = new Metadata(JSON.serialize(parsedJson.get(ATTRIBUTE_KEY__METADATA)));
-        Data data = new Data(JSON.serialize(parsedJson.get(ATTRIBUTE_KEY__DATA)));
-
-        init(metadata, data);
-    }
-
-    private void init(Metadata metadata, Data data) {
+    private void init(Metadata metadata) {
 
         put(ATTRIBUTE_KEY__METADATA, metadata);
-        put(ATTRIBUTE_KEY__DATA, data);
     }
 
     public Metadata getMetadata() {
         return (Metadata) get(ATTRIBUTE_KEY__METADATA);
-    }
-
-    public Data getData() {
-        return (Data) get(ATTRIBUTE_KEY__DATA);
-    }
-
-    public Set getColumnNames() {
-        return getData().getColumnNames();
     }
 
     public String getSampleType() {

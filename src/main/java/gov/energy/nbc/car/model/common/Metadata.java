@@ -1,16 +1,17 @@
 package gov.energy.nbc.car.model.common;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
-import gov.energy.nbc.car.model.AbstractBasicDBObject;
+import gov.energy.nbc.car.dao.DAOUtilities;
+import gov.energy.nbc.car.model.AbstractDocument;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
-public class Metadata extends AbstractBasicDBObject {
+public class Metadata extends AbstractDocument {
 
     public static final String ATTRIBUTE_KEY__SAMPLE_TYPE = "sampleType";
     public static final String ATTRIBUTE_KEY__SUBMISSION_DATE = "submissionDate";
@@ -43,8 +44,8 @@ public class Metadata extends AbstractBasicDBObject {
                 attachments);
    }
 
-    public Metadata(Object object) {
-        super(object);
+    public Metadata(Document document) {
+        super(document);
     }
 
     public Metadata(String json) {
@@ -73,25 +74,33 @@ public class Metadata extends AbstractBasicDBObject {
     }
 
     @Override
-    protected void init(String json) {
+    protected void initWithJson(String json) {
 
-        BasicDBObject parsedJson = (BasicDBObject) JSON.parse(json);
+        Document parsedJson = new Document((BasicDBObject) DAOUtilities.parse(json));
+        init(parsedJson);
+    }
 
-        String sampleType = (String) parsedJson.get(ATTRIBUTE_KEY__SAMPLE_TYPE);
-        Date submissionDate = (Date) parsedJson.get(ATTRIBUTE_KEY__SUBMISSION_DATE);
-        String submitter = (String) parsedJson.get(ATTRIBUTE_KEY__SUBMITTER);
-        String chargeNumber = (String) parsedJson.get(ATTRIBUTE_KEY__CHARGE_NUMBER);
-        String projectName = (String) parsedJson.get(ATTRIBUTE_KEY__PROJECT_NAME);
-        String comments = (String) parsedJson.get(ATTRIBUTE_KEY__COMMENTS);
-        StoredFile uploadedFile = new StoredFile(parsedJson.get(ATTRIBUTE_KEY__UPLOADED_FILE));
+    protected void init(Document document) {
 
-        List<Object> attachmentObjects = (List<Object>) parsedJson.get(ATTRIBUTE_KEY__ATTACHMENTS);
+        if (document == null) {
+            return;
+        }
+
+        String sampleType = (String) document.get(ATTRIBUTE_KEY__SAMPLE_TYPE);
+        Date submissionDate = (Date) document.get(ATTRIBUTE_KEY__SUBMISSION_DATE);
+        String submitter = (String) document.get(ATTRIBUTE_KEY__SUBMITTER);
+        String chargeNumber = (String) document.get(ATTRIBUTE_KEY__CHARGE_NUMBER);
+        String projectName = (String) document.get(ATTRIBUTE_KEY__PROJECT_NAME);
+        String comments = (String) document.get(ATTRIBUTE_KEY__COMMENTS);
+        StoredFile uploadedFile = new StoredFile((BasicDBObject)document.get(ATTRIBUTE_KEY__UPLOADED_FILE));
+
+        List<BasicDBObject> attachmentObjects = (List<BasicDBObject>) document.get(ATTRIBUTE_KEY__ATTACHMENTS);
 
         List<StoredFile> attachments = new ArrayList();
 
         if (attachmentObjects != null) {
 
-            for (Object attachmentObject : attachmentObjects) {
+            for (BasicDBObject attachmentObject : attachmentObjects) {
 
                 attachments.add(new StoredFile(attachmentObject));
             }

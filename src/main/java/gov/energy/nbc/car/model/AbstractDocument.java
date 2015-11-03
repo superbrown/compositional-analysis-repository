@@ -1,7 +1,7 @@
 package gov.energy.nbc.car.model;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
+import gov.energy.nbc.car.dao.DAOUtilities;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.bson.Document;
@@ -17,21 +17,29 @@ public abstract class AbstractDocument extends Document {
 
     public AbstractDocument(Object object) {
 
-        String json = JSON.serialize(object);
+        String json = DAOUtilities.serialize(object);
         initWithJson(json);
+    }
+
+    public AbstractDocument(Document document) {
+        init(document);
     }
 
     public AbstractDocument(String json) {
-
         initWithJson(json);
     }
 
-    protected abstract void initWithJson(String json);
+    protected void initWithJson(String json) {
 
+        Document document = new Document((BasicDBObject) DAOUtilities.parse(json));
+        init(document);
+    }
+
+    protected abstract void init(Document object);
 
     public String toJson() {
 
-        return JSON.serialize(this);
+        return DAOUtilities.serialize(this);
     }
 
     @Override
@@ -58,7 +66,7 @@ public abstract class AbstractDocument extends Document {
                 .toHashCode();
     }
 
-    protected void initializeId(BasicDBObject parsedJson) {
+    protected void initializeId(Document parsedJson) {
 
         ObjectId objectId = parsedJson.getObjectId(ATTRIBUTE_KEY__ID);
 

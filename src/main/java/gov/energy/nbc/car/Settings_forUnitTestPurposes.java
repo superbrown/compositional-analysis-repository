@@ -11,5 +11,6 @@ public class Settings_forUnitTestPurposes extends Settings {
 
         super.init();
         setMongoDatabaseName("car_forUnitTestPurposes");
+        setRootDirectoryForDataFiles("C:/projects/car/target/test-classes");
     }
 }

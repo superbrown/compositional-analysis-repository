@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ExcelWorkbookReader implements IFileReader {
+public class ExcelWorkbookReader extends AbsFileReader {
 
     protected Logger log = Logger.getLogger(this.getClass());
 
@@ -35,7 +35,7 @@ public class ExcelWorkbookReader implements IFileReader {
     }
 
     public SpreadsheetData extractDataFromFile(File file, String nameOfWorksheetContainingTheData)
-            throws IOException, NonStringValueFoundInHeader, UnsupportedFileExtension {
+            throws IOException, InvalidValueFoundInHeader, UnsupportedFileExtension {
 
         FileInputStream fileInputStream = null;
 
@@ -83,7 +83,12 @@ public class ExcelWorkbookReader implements IFileReader {
 
             List<Object> rowData = extractData(row, numberOfColumnHeadings);
 
-            spreadsheetData.add(rowData);
+            List<Object> allDataInRowExceptTheFirstColumnThatContainsTheRowNumber =
+                    rowData.subList(1, rowData.size());
+
+            if (containsData(allDataInRowExceptTheFirstColumnThatContainsTheRowNumber)) {
+                spreadsheetData.add(rowData);
+            }
         }
 
         return spreadsheetData;
@@ -167,7 +172,7 @@ public class ExcelWorkbookReader implements IFileReader {
 
 
     public List<String> determineColumnNames(Sheet sheet)
-            throws NonStringValueFoundInHeader {
+            throws InvalidValueFoundInHeader {
 
         Row firstRow = sheet.iterator().next();
         Iterator<Cell> cellIterator = firstRow.cellIterator();
@@ -187,6 +192,10 @@ public class ExcelWorkbookReader implements IFileReader {
                     headings.add(cell.getStringCellValue());
                     break;
 
+                case Cell.CELL_TYPE_NUMERIC:
+                    headings.add(String.valueOf(cell.getNumericCellValue()));
+                    break;
+
                 case Cell.CELL_TYPE_BLANK:
                     lastColumnEncountered = true;
                     break;
@@ -194,8 +203,7 @@ public class ExcelWorkbookReader implements IFileReader {
                 case Cell.CELL_TYPE_BOOLEAN:
                 case Cell.CELL_TYPE_ERROR:
                 case Cell.CELL_TYPE_FORMULA:
-                case Cell.CELL_TYPE_NUMERIC:
-                    throw new NonStringValueFoundInHeader(columnNumber, cell.toString());
+                    throw new InvalidValueFoundInHeader(columnNumber, cell.toString());
             }
 
             if (lastColumnEncountered) {

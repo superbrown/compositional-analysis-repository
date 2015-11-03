@@ -35,65 +35,71 @@ public class CSVFileReaderTest {
         try {
             File file = Utilities.getFile("/SpreadsheetForReadingTest_1.csv");
 
-            SpreadsheetData spreadsheetData = csvFileReader.extractDataFromFile(file);
+            SpreadsheetData spreadsheetData = csvFileReader.extractDataFromFile(file, -1);
 
-            assertTrue(spreadsheetData.columnNames.size() == 7);
+            assertTrue(spreadsheetData.columnNames.size() == 8);
             assertTrue(spreadsheetData.columnNames.get(0).equals(SpreadsheetRow.ATTRIBUTE_KEY__ROW_NUMBER));
             assertTrue(spreadsheetData.columnNames.get(1).equals("Column 1"));
-            assertTrue(spreadsheetData.columnNames.get(2).equals("Column 2"));
-            assertTrue(spreadsheetData.columnNames.get(3).equals("Column 3"));
-            assertTrue(spreadsheetData.columnNames.get(4).equals("Column 4"));
-            assertTrue(spreadsheetData.columnNames.get(5).equals("Column 5"));
-            assertTrue(spreadsheetData.columnNames.get(6).equals("Column 6"));
+            assertTrue(spreadsheetData.columnNames.get(2).equals("1.5"));
+            assertTrue(spreadsheetData.columnNames.get(3).equals("Column 2"));
+            assertTrue(spreadsheetData.columnNames.get(4).equals("Column 3"));
+            assertTrue(spreadsheetData.columnNames.get(5).equals("Column 4"));
+            assertTrue(spreadsheetData.columnNames.get(6).equals("Column 5"));
+            assertTrue(spreadsheetData.columnNames.get(7).equals("Column 6"));
 
             assertTrue(spreadsheetData.spreadsheetData.size() == 5);
 
             List row_1 = spreadsheetData.spreadsheetData.get(0);
-            assertTrue(row_1.size() == 7);
+            assertTrue(row_1.size() == 8);
             assertTrue(row_1.get(1).equals(1.0));
-            assertTrue(row_1.get(2).equals("one"));
-            assertTrue(row_1.get(3).equals(toDate("01/01/2015")));
-            assertTrue(row_1.get(4) == null);
-            assertTrue(row_1.get(5).equals("one"));
-            assertTrue(row_1.get(6) == null);
+            assertTrue(row_1.get(2).equals(true));
+            assertTrue(row_1.get(3).equals("one"));
+            assertTrue(row_1.get(4).equals(toDate("01/01/2015")));
+            assertTrue(row_1.get(5) == null);
+            assertTrue(row_1.get(6).equals("one"));
+            assertTrue(row_1.get(7) == null);
 
             List row_2 = spreadsheetData.spreadsheetData.get(1);
-            assertTrue(row_2.size() == 7);
+            assertTrue(row_2.size() == 8);
             assertTrue(row_2.get(1) == null);
-            assertTrue(row_2.get(2).equals("two"));
-            assertTrue(row_2.get(3).equals(toDate("01/02/2015")));
-            assertTrue(row_2.get(4) == null);
-            assertTrue(row_2.get(5).equals(2.0));
-            assertTrue(row_2.get(6) == null);
+            assertTrue(row_2.get(2).equals(true));
+            assertTrue(row_2.get(3).equals("two"));
+            assertTrue(row_2.get(4).equals(toDate("01/02/2015")));
+            assertTrue(row_2.get(5) == null);
+            assertTrue(row_2.get(6).equals(2.0));
+            assertTrue(row_2.get(7) == null);
 
             List row_3 = spreadsheetData.spreadsheetData.get(2);
-            assertTrue(row_3.size() == 7);
+            assertTrue(row_3.size() == 8);
             assertTrue(row_3.get(1).equals(3.0));
             assertTrue(row_3.get(2) == null);
-            assertTrue(row_3.get(3).equals(toDate("01/03/2015")));
-            assertTrue(row_3.get(4) == null);
-            assertTrue(row_3.get(5).equals(3.345));
-            assertTrue(row_3.get(6) == null);
+            assertTrue(row_3.get(3) == null);
+            assertTrue(row_3.get(4).equals(toDate("01/03/2015")));
+            assertTrue(row_3.get(5) == null);
+            assertTrue(row_3.get(6).equals(3.345));
+            assertTrue(row_3.get(7) == null);
 
             List row_4 = spreadsheetData.spreadsheetData.get(3);
-            assertTrue(row_4.size() == 7);
+            assertTrue(row_4.size() == 8);
             assertTrue(row_4.get(1).equals(4.0));
-            assertTrue(row_4.get(2).equals("four"));
-            assertTrue(row_4.get(3) == null);
+            assertTrue(row_4.get(2).equals(false));
+            assertTrue(row_4.get(3).equals("four"));
             assertTrue(row_4.get(4) == null);
-            assertTrue(row_4.get(5).equals("four"));
-            assertTrue(row_4.get(6).equals("hello 1"));
+            assertTrue(row_4.get(5) == null);
+            assertTrue(row_4.get(6).equals("four"));
+            assertTrue(row_4.get(7).equals("hello 1"));
 
             List row_5 = spreadsheetData.spreadsheetData.get(4);
-            assertTrue(row_5.size() == 7);
+            assertTrue(row_5.size() == 8);
             assertTrue(row_5.get(1).equals(5.0));
-            assertTrue(row_5.get(2).equals("five"));
-            assertTrue(row_5.get(3).equals(toDate("01/05/2015")));
-            assertTrue(row_5.get(4) == null);
-            assertTrue(row_5.get(5).equals("five"));
-            assertTrue(row_5.get(6) == null);
+            assertTrue(row_5.get(2).equals(false));
+            assertTrue(row_5.get(3).equals("five"));
+            assertTrue(row_5.get(4).equals(toDate("01/05/2015")));
+            assertTrue(row_5.get(5) == null);
+            assertTrue(row_5.get(6).equals("five"));
+            assertTrue(row_5.get(7) == null);
         }
-        catch (NonStringValueFoundInHeader nonStringValueFoundInHeader) {
+        catch (InvalidValueFoundInHeader e) {
             fail();
         }
     }
@@ -104,7 +110,7 @@ public class CSVFileReaderTest {
         try {
             File file = Utilities.getFile("/SpreadsheetForReadingTest_2.csv");
 
-            SpreadsheetData spreadsheetData = csvFileReader.extractDataFromFile(file);
+            SpreadsheetData spreadsheetData = csvFileReader.extractDataFromFile(file, -1);
 
             assertTrue(spreadsheetData.columnNames.size() == 6);
             assertTrue(spreadsheetData.columnNames.get(0).equals(SpreadsheetRow.ATTRIBUTE_KEY__ROW_NUMBER));
@@ -154,7 +160,7 @@ public class CSVFileReaderTest {
             assertTrue(row_5.get(4) == null);
             assertTrue(row_5.get(5).equals("five"));
         }
-        catch (NonStringValueFoundInHeader nonStringValueFoundInHeader) {
+        catch (InvalidValueFoundInHeader e) {
             fail();
         }
     }
@@ -165,7 +171,7 @@ public class CSVFileReaderTest {
         try {
             File file = Utilities.getFile("/SpreadsheetForReadingTest_3.csv");
 
-            SpreadsheetData spreadsheetData = csvFileReader.extractDataFromFile(file);
+            SpreadsheetData spreadsheetData = csvFileReader.extractDataFromFile(file, -1);
 
             assertTrue(spreadsheetData.columnNames.size() == 7);
             assertTrue(spreadsheetData.columnNames.get(0).equals(SpreadsheetRow.ATTRIBUTE_KEY__ROW_NUMBER));
@@ -223,7 +229,7 @@ public class CSVFileReaderTest {
             assertTrue(row_5.get(5).equals("five"));
             assertTrue(row_5.get(6) == null);
         }
-        catch (NonStringValueFoundInHeader nonStringValueFoundInHeader) {
+        catch (InvalidValueFoundInHeader e) {
             fail();
         }
     }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="myAngularModule">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -33,6 +33,8 @@
     <!-- Custom styles for this template -->
     <link href="bootstrap-3.3.5/docs/examples/theme/theme.css" rel="stylesheet">
 
+    <!--AngularJS-->
+    <script src="code.angularjs.org/angular-1.4.7/angular.min.js"></script>
 
     <!-- Our Stuff -->
     <link href="css/app.css" rel="stylesheet">
@@ -83,66 +85,70 @@
 
     <div class="container theme-showcase" role="main">
 
-      <div class="page-header">
-        <h1>Upload Data</h1>
-      </div>
+      <div ng-controller="uploadController">
 
-      <div class="page-content">
 
-        <form id="inputForm" action="/api/addSpreadsheet" method="POST" enctype="multipart/form-data" >
+        <div class="page-header">
+          <h1>Upload Data</h1>
+        </div>
 
-          <div>
-            <legend>Metadata</legend>
+        <div class="page-content">
 
-            <input type="hidden" name="sampleType" value="Algea"/>
+          <form id="inputForm" action="/api/addSpreadsheet" method="POST" enctype="multipart/form-data" >
 
-            <!--<label for="sampleType">Sample Type*</label>-->
-            <!--<select id="sampleType" name="sampleType" style="width: auto;">-->
+            <div>
+              <legend>Metadata</legend>
+
+              <input type="hidden" name="sampleType" value="Algea"/>
+
+              <!--<label for="sampleType">Sample Type*</label>-->
+              <!--<select id="sampleType" name="sampleType" style="width: auto;">-->
               <!--<option value="Algea">Algea</option>-->
               <!--<option value="ATP3">ATP3</option>-->
               <!--<option value="Biomass">Biomass</option>-->
-            <!--</select>-->
-            <!--<br/>-->
+              <!--</select>-->
+              <!--<br/>-->
 
-            <label for="submissionDate">Submission Date*</label> <input type="text" id="submissionDate" name="submissionDate"/>
-            <br/>
-            <label for="submitter">Submitter*</label> <input id="submitter" name="submitter" type="text" style="width: 300px;"/>
-            <br/>
-            <label for="projectName">Project Name</label> <input id="projectName" name="projectName" type="text" style="width: 300px;"/>
-            <br/>
-            <label for="chargeNumber">Charge #</label> <input id="chargeNumber" name="chargeNumber" type="text" style="width: 300px;"/>
-            <br/>
-            <label for="comments">Comments</label> <textarea id="comments" name="comments" rows="2" style="width: 300px;" ></textarea>
-            <br/>
+              <label for="submissionDate">Submission Date*</label> <input type="text" id="submissionDate" name="submissionDate"/>
+              <br/>
+              <label for="submitter">Submitter*</label> <input id="submitter" name="submitter" type="text" style="width: 300px;"/>
+              <br/>
+              <label for="projectName">Project Name</label> <input id="projectName" name="projectName" type="text" style="width: 300px;"/>
+              <br/>
+              <label for="chargeNumber">Charge #</label> <input id="chargeNumber" name="chargeNumber" type="text" style="width: 300px;"/>
+              <br/>
+              <label for="comments">Comments</label> <textarea id="comments" name="comments" rows="2" style="width: 300px;" ></textarea>
+              <br/>
 
-          </div>
+            </div>
 
-          <div>
-            <legend>Data File</legend>
+            <div>
+              <legend>Data File</legend>
 
-            <label for="dataFile">Excel or CSV file</label>
-            <br/>
-            <input id="dataFile" name="dataFile" type="file" style="display: inline; margin-bottom: 5px;" />
-            <br/>
-            <label style="width: auto;" for="nameOfSheetContainingData">If Excel workkbook, enter name of sheet within the workbook containing the data to be ingested:</label>
-            <br/>
-            <input id="nameOfSheetContainingData" name="nameOfSheetContainingData" type="text" style="width: 300px;" />
+              <label for="dataFile">Excel or CSV file</label>
+              <br/>
+              <input id="dataFile" name="dataFile" type="file" style="display: inline; margin-bottom: 5px;" />
+              <br/>
+              <label style="width: auto;" for="nameOfSheetContainingData">If Excel workkbook, enter name of sheet within the workbook containing the data to be ingested:</label>
+              <br/>
+              <input id="nameOfSheetContainingData" name="nameOfSheetContainingData" type="text" style="width: 300px;" />
 
-          </div>
+            </div>
 
-          <div>
-            <legend>Attachments</legend>
+            <div>
+              <legend>Attachments</legend>
 
-            <input id="attachments" name="attachments" type="file" multiple="multiple" /><br/><br/>
+              <input id="attachments" name="attachments" type="file" multiple="multiple" /><br/><br/>
 
-          </div>
+            </div>
 
-          <div style="float: bottom; clear: both">
-            <input type="submit" value="Submit"/>
-          </div>
+            <div style="float: bottom; clear: both">
+              <input type="submit" value="Submit"/>
+            </div>
 
-        </form>
+          </form>
 
+        </div>
       </div>
 
       <!--&lt;!&ndash; Main jumbotron for a primary marketing message or call to action &ndash;&gt;-->

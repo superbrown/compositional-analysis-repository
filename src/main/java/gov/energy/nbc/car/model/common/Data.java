@@ -2,7 +2,7 @@ package gov.energy.nbc.car.model.common;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
+import gov.energy.nbc.car.dao.DAOUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,20 +14,20 @@ public class Data extends ArrayList<SpreadsheetRow> {
 
         super();
 
-        List<Object> columnNames = spreadsheetContent.get(0);
+        List<String> columnNames = spreadsheetContent.get(0);
         List<List> spreadsheetData = spreadsheetContent.subList(1, spreadsheetContent.size());
 
         init(columnNames, spreadsheetData);
     }
 
-    public Data(List<Object> columnNames, List<List> spreadsheetData) {
+    public Data(List<String> columnNames, List<List> spreadsheetData) {
 
         super();
 
         init(columnNames, spreadsheetData);
     }
 
-    private void init(List columnNames, List<List> spreadsheetData) {
+    private void init(List<String> columnNames, List<List> spreadsheetData) {
 
         for (int rowIndex = 0; rowIndex < spreadsheetData.size(); rowIndex++) {
 
@@ -44,14 +44,18 @@ public class Data extends ArrayList<SpreadsheetRow> {
 
     private void init(String json) {
 
-        BasicDBList parseredJson = (BasicDBList) JSON.parse(json);
+        Object parsedJson = DAOUtilities.parse(json);
+//        if (parsedJson instanceof BasicDBList) {
 
-        for (Object o : parseredJson) {
+            BasicDBList parseredJson = (BasicDBList) parsedJson;
 
-            BasicDBObject basicDBObject = (BasicDBObject)o;
-            SpreadsheetRow spreadsheetRow = new SpreadsheetRow(basicDBObject);
-            add(spreadsheetRow);
-        }
+            for (Object o : parseredJson) {
+
+                BasicDBObject basicDBObject = (BasicDBObject)o;
+                SpreadsheetRow spreadsheetRow = new SpreadsheetRow(basicDBObject);
+                add(spreadsheetRow);
+            }
+//        }
     }
 
     public Set getColumnNames() {

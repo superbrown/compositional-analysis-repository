@@ -8,12 +8,13 @@ import gov.energy.nbc.car.dao.DeleteResults;
 import gov.energy.nbc.car.dao.SpreadsheetDocumentDAO;
 import gov.energy.nbc.car.dao.UnableToDeleteFile;
 import gov.energy.nbc.car.fileReader.FileReader;
-import gov.energy.nbc.car.fileReader.NonStringValueFoundInHeader;
+import gov.energy.nbc.car.fileReader.InvalidValueFoundInHeader;
 import gov.energy.nbc.car.fileReader.UnsupportedFileExtension;
 import gov.energy.nbc.car.model.common.Data;
 import gov.energy.nbc.car.model.common.Metadata;
 import gov.energy.nbc.car.model.common.StoredFile;
 import gov.energy.nbc.car.model.document.SpreadsheetDocument;
+import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -53,27 +54,64 @@ public class SpreadsheetBO {
             gov.energy.nbc.car.businessObject.dto.StoredFile dataFile,
             String nameOfWorksheetContainingTheData,
             List<gov.energy.nbc.car.businessObject.dto.StoredFile> attachmentFiles)
-            throws UnsupportedFileExtension, NonStringValueFoundInHeader {
+            throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
         File storedFile = getDataFile(testMode, dataFile.storageLocation);
-        Data data = fileReader.extractDataFromFile(storedFile, nameOfWorksheetContainingTheData);
+        Data data = fileReader.extractDataFromFile(storedFile, nameOfWorksheetContainingTheData, -1);
 
         List<StoredFile> attachments = new ArrayList();
         for (gov.energy.nbc.car.businessObject.dto.StoredFile attachmentFile : attachmentFiles) {
             attachments.add(new StoredFile(attachmentFile.originalFileName, attachmentFile.storageLocation));
         }
 
-        SpreadsheetDocument spreadsheetDocument = new SpreadsheetDocument(sampleType,
+        SpreadsheetDocument spreadsheetDocument = new SpreadsheetDocument(
+                sampleType,
                 submissionDate,
                 submitter,
                 chargeNumber,
                 projectName,
                 comments,
                 new StoredFile(dataFile.originalFileName, dataFile.storageLocation),
-                attachments,
-                data);
+                attachments);
 
-        ObjectId objectId = getSpreadsheetDocumentDAO(testMode).add(spreadsheetDocument);
+        ObjectId objectId = getSpreadsheetDocumentDAO(testMode).add(spreadsheetDocument, data);
+
+        return objectId.toHexString();
+    }
+
+    public String addSpreadsheet(
+            int maxNumberOfValuesPerRow,
+            String sampleType,
+            Date submissionDate,
+            String submitter,
+            String projectName,
+            String chargeNumber,
+            String comments,
+            gov.energy.nbc.car.businessObject.dto.StoredFile dataFile,
+            String nameOfWorksheetContainingTheData,
+            List<gov.energy.nbc.car.businessObject.dto.StoredFile> attachmentFiles)
+            throws UnsupportedFileExtension, InvalidValueFoundInHeader {
+
+        File storedFile = getDataFile(TestMode.TEST_MODE, dataFile.storageLocation);
+
+        Data data = fileReader.extractDataFromFile(storedFile, nameOfWorksheetContainingTheData, maxNumberOfValuesPerRow);
+
+        List<StoredFile> attachments = new ArrayList();
+        for (gov.energy.nbc.car.businessObject.dto.StoredFile attachmentFile : attachmentFiles) {
+            attachments.add(new StoredFile(attachmentFile.originalFileName, attachmentFile.storageLocation));
+        }
+
+        SpreadsheetDocument spreadsheetDocument = new SpreadsheetDocument(
+                sampleType,
+                submissionDate,
+                submitter,
+                chargeNumber,
+                projectName,
+                comments,
+                new StoredFile(dataFile.originalFileName, dataFile.storageLocation),
+                attachments);
+
+        ObjectId objectId = getSpreadsheetDocumentDAO(TestMode.TEST_MODE).add(spreadsheetDocument, data);
 
         return objectId.toHexString();
     }
@@ -85,8 +123,8 @@ public class SpreadsheetBO {
 
     public File getSpreadsheetDataFile(TestMode testMode, String spreadsheetId) {
 
-        Metadata metadata = getSpreadsheetDocumentDAO(testMode).getSpreadsheetMetadata(spreadsheetId);
-        String storageLocation = metadata.getUploadedFile().getStorageLocation();
+        SpreadsheetDocument spreadsheetDocument = getSpreadsheetDocumentDAO(testMode).getSpreadsheet(spreadsheetId);
+        String storageLocation = spreadsheetDocument.getMetadata().getUploadedFile().getStorageLocation();
 
         return BusinessObjects.dataFileBO.getDataFileDAO(testMode).getFile(storageLocation);
     }
@@ -94,31 +132,10 @@ public class SpreadsheetBO {
     public String getSpreadsheet(TestMode testMode,
                                  String spreadsheetId) {
 
-        SpreadsheetDocument spreadsheetDocument = getSpreadsheetDocument(testMode, spreadsheetId);
+        SpreadsheetDocument spreadsheetDocument = getSpreadsheetDocumentDAO(testMode).getSpreadsheet(spreadsheetId);
         if (spreadsheetDocument == null) { return null; }
 
         String jsonOut = DAOUtilities.serialize(spreadsheetDocument);
-        return jsonOut;
-    }
-
-    public String getSpreadsheetMetadata(TestMode testMode,
-                                         String spreadsheetId) {
-
-        Metadata metadata = getSpreadsheetDocumentDAO(testMode).getSpreadsheetMetadata(spreadsheetId);
-        if (metadata == null) { return null; }
-
-        String jsonOut = DAOUtilities.serialize(metadata);
-        return jsonOut;
-    }
-
-
-    public String getSpreadsheetData(TestMode testMode,
-                                     String spreadsheetId) {
-
-        Data data = getSpreadsheetDocumentDAO(testMode).getSpreadsheetData(spreadsheetId);
-        if (data == null) { return null; }
-
-        String jsonOut = DAOUtilities.serialize(data);
         return jsonOut;
     }
 
@@ -134,7 +151,7 @@ public class SpreadsheetBO {
                                   String spreadsheetId) throws DeletionFailure {
 
         SpreadsheetDocumentDAO spreadsheetDocumentDAO = getSpreadsheetDocumentDAO(testMode);
-        SpreadsheetDocument spreadsheetDocument = spreadsheetDocumentDAO.get(spreadsheetId);
+        SpreadsheetDocument spreadsheetDocument = spreadsheetDocumentDAO.getSpreadsheet(spreadsheetId);
         DeleteResults deleteResults = spreadsheetDocumentDAO.delete(spreadsheetId);
 
         if (deleteResults.wasAcknowledged() == false) {
@@ -165,7 +182,7 @@ public class SpreadsheetBO {
             FileAsRawBytes dataFile,
             String nameOfSheetContainingData,
             List<FileAsRawBytes> attachmentFiles)
-            throws UnsupportedFileExtension, NonStringValueFoundInHeader {
+            throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
         gov.energy.nbc.car.businessObject.dto.StoredFile theDataFileThatWasStored =
                 BusinessObjects.dataFileBO.saveFile(testMode, dataFile);
@@ -176,7 +193,7 @@ public class SpreadsheetBO {
             theAttachmentsThatWereStored.add(BusinessObjects.dataFileBO.saveFile(testMode, attachmentFile));
         }
 
-        String objectId = BusinessObjects.spreadsheetBO.addSpreadsheet(
+        String objectId = addSpreadsheet(
                 testMode,
                 sampleType,
                 submissionDate,
@@ -191,22 +208,22 @@ public class SpreadsheetBO {
         return objectId;
     }
 
-    public String addSpreadsheet(TestMode testMode,
-                                 String jsonIn) {
-
-        SpreadsheetDocumentDAO spreadsheetDocumentDAO = getSpreadsheetDocumentDAO(testMode);
-
-        SpreadsheetDocument spreadsheetDocument = new SpreadsheetDocument(jsonIn);
-        ObjectId objectId = spreadsheetDocumentDAO.add(spreadsheetDocument);
-
-        return objectId.toHexString();
-    }
+//    public String addSpreadsheet(TestMode testMode,
+//                                 String jsonIn) {
+//
+//        SpreadsheetDocumentDAO spreadsheetDocumentDAO = getSpreadsheetDocumentDAO(testMode);
+//
+//        SpreadsheetDocument spreadsheetDocument = new SpreadsheetDocument(jsonIn);
+//        ObjectId objectId = spreadsheetDocumentDAO.add(spreadsheetDocument, data);
+//
+//        return objectId.toHexString();
+//    }
 
     public String addSpreadsheet(TestMode testMode,
                                  String metadataJson,
                                  File file,
                                  String nameOfWorksheetContainingTheData)
-            throws UnsupportedFileExtension, NonStringValueFoundInHeader {
+            throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
         SpreadsheetDocumentDAO spreadsheetDocumentDAO = getSpreadsheetDocumentDAO(testMode);
 
@@ -215,9 +232,11 @@ public class SpreadsheetBO {
 
             Metadata metadata = new Metadata(metadataJson);
 
-            SpreadsheetDocument spreadsheetDocument = new SpreadsheetDocument(metadata, data);
+            PerformanceLogger performanceLogger = new PerformanceLogger("new SpreadsheetDocument()");
+            SpreadsheetDocument spreadsheetDocument = new SpreadsheetDocument(metadata);
+            performanceLogger.done();
 
-            ObjectId objectId = spreadsheetDocumentDAO.add(spreadsheetDocument);
+            ObjectId objectId = spreadsheetDocumentDAO.add(spreadsheetDocument, data);
 
             return objectId.toHexString();
         }
@@ -225,13 +244,6 @@ public class SpreadsheetBO {
             log.error(e);
             throw new RuntimeException(e);
         }
-    }
-
-    public SpreadsheetDocument getSpreadsheetDocument(TestMode testMode,
-                                                      String spreadsheetId) {
-
-        SpreadsheetDocument document = getSpreadsheetDocumentDAO(testMode).get(spreadsheetId);
-        return document;
     }
 
     public SpreadsheetDocumentDAO getSpreadsheetDocumentDAO(TestMode testMode) {

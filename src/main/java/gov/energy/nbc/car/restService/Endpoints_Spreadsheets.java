@@ -5,7 +5,7 @@ import gov.energy.nbc.car.businessObject.DeletionFailure;
 import gov.energy.nbc.car.businessObject.TestMode;
 import gov.energy.nbc.car.businessObject.dto.FileAsRawBytes;
 import gov.energy.nbc.car.fileReader.ExcelWorkbookReader;
-import gov.energy.nbc.car.fileReader.NonStringValueFoundInHeader;
+import gov.energy.nbc.car.fileReader.InvalidValueFoundInHeader;
 import gov.energy.nbc.car.fileReader.UnsupportedFileExtension;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.annotation.MultipartConfig;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -25,7 +26,14 @@ import static gov.energy.nbc.car.utilities.HTTPResponseUtility.*;
 
 
 @RestController
+@MultipartConfig(
+        location="/tmp",
+        fileSizeThreshold=Endpoints_Spreadsheets.MEGABYTE,
+        maxFileSize=Endpoints_Spreadsheets.MEGABYTE * 50,
+        maxRequestSize=Endpoints_Spreadsheets.MEGABYTE * 5 * 50)
 public class Endpoints_Spreadsheets {
+
+    public static final int MEGABYTE = 1024 * 1024;
 
     protected Logger log = Logger.getLogger(getClass());
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("mm/dd/yyyy");
@@ -74,13 +82,16 @@ public class Endpoints_Spreadsheets {
                     ". The value was " + submissionDate + ".");
         }
 
-
         String objectId = null;
         try {
-
             List<FileAsRawBytes> attachmentFiles = new ArrayList<>();
             for (MultipartFile attachment : attachments) {
-                attachmentFiles.add(toFileAsRawBytes(attachment));
+
+                // DESIGN NOTE: I don't know why this is necessary, but for some reason
+                //              attachment attributes sometimes are empty.
+                if (StringUtils.isNotBlank(attachment.getOriginalFilename())) {
+                    attachmentFiles.add(toFileAsRawBytes(attachment));
+                }
             }
 
             objectId = BusinessObjects.spreadsheetBO.addSpreadsheet(
@@ -99,7 +110,7 @@ public class Endpoints_Spreadsheets {
             log.info(e);
             return create_BAD_REQUEST_response(e.toString());
         }
-        catch (NonStringValueFoundInHeader e) {
+        catch (InvalidValueFoundInHeader e) {
             log.info(e);
             return create_BAD_REQUEST_response(e.toString());
         }
@@ -133,21 +144,7 @@ public class Endpoints_Spreadsheets {
             @PathVariable(value = "spreadsheetId") String spreadsheetId,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String spreadsheet = BusinessObjects.spreadsheetBO.getSpreadsheet(TestMode.value(testMode), spreadsheetId);
-
-        if (spreadsheet == null) {
-            return create_NOT_FOUND_response();
-        }
-
-        return create_SUCCESS_response(spreadsheet);
-    }
-
-    @RequestMapping(value="/api/spreadsheet/metadata/{spreadsheetId}", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity getSpreadsheetMetadata(
-            @PathVariable(value = "spreadsheetId") String spreadsheetId,
-            @RequestParam(value = "inTestMode", required = false) String testMode) {
-
-        String spreadsheetMetadata = BusinessObjects.spreadsheetBO.getSpreadsheetMetadata(TestMode.value(testMode), spreadsheetId);
+        String spreadsheetMetadata = BusinessObjects.spreadsheetBO.getSpreadsheet(TestMode.value(testMode), spreadsheetId);
 
         if (spreadsheetMetadata == null) {
             return create_NOT_FOUND_response();
@@ -156,19 +153,21 @@ public class Endpoints_Spreadsheets {
         return create_SUCCESS_response(spreadsheetMetadata);
     }
 
-    @RequestMapping(value="/api/spreadsheet/data/{spreadsheetId}", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity getSpreadsheetData(
+    @RequestMapping(value="/api/spreadsheet/{spreadsheetId}/rows", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity getSpreadsheetRows(
             @PathVariable(value = "spreadsheetId") String spreadsheetId,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String spreadsheetData = BusinessObjects.spreadsheetBO.getSpreadsheetData(TestMode.value(testMode), spreadsheetId);
+        String rowsForSpreadsheet = BusinessObjects.spreadsheetRowBO.getRowsForSpreadsheet(
+                TestMode.value(testMode), spreadsheetId);
 
-        if (spreadsheetData == null) {
+        if (rowsForSpreadsheet == null) {
             return create_NOT_FOUND_response();
         }
 
-        return create_SUCCESS_response(spreadsheetData);
+        return create_SUCCESS_response(rowsForSpreadsheet);
     }
+
 
     @RequestMapping(value="/api/spreadsheet/{spreadsheetId}", method = RequestMethod.DELETE, produces = "application/json")
     public ResponseEntity deleteSpreadsheet(

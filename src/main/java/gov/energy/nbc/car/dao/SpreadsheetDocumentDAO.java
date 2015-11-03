@@ -3,7 +3,6 @@ package gov.energy.nbc.car.dao;
 import com.mongodb.client.result.DeleteResult;
 import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.model.common.Data;
-import gov.energy.nbc.car.model.common.Metadata;
 import gov.energy.nbc.car.model.document.SampleTypeDocument;
 import gov.energy.nbc.car.model.document.SpreadsheetDocument;
 import org.bson.Document;
@@ -25,42 +24,21 @@ public class SpreadsheetDocumentDAO extends DAO
         sampleTypeDocumentDAO = new SampleTypeDocumentDAO(settings);
     }
 
-    public SpreadsheetDocument get(String id) {
+    public SpreadsheetDocument getSpreadsheet(String id) {
 
-        return (SpreadsheetDocument) queryForOneWithId(id);
+        SpreadsheetDocument metadata = (SpreadsheetDocument) queryForOneWithId(id);
+        return metadata;
     }
 
-    public SpreadsheetDocument get(ObjectId objectId) {
-
-        Document idFilter = this.createIdFilter(objectId);
-        return (SpreadsheetDocument) queryForOne(idFilter, null);
-    }
-
-    public Metadata getSpreadsheetMetadata(String id) {
-
-        SpreadsheetDocument spreadsheetDocument = get(id);
-        if (spreadsheetDocument == null) { return null; }
-        return spreadsheetDocument.getMetadata();
-    }
-
-    public Data getSpreadsheetData(String id) {
-
-        SpreadsheetDocument spreadsheetDocument = get(id);
-        if (spreadsheetDocument == null) { return null; }
-        return spreadsheetDocument.getData();
-    }
-
-    public ObjectId add(SpreadsheetDocument spreadsheetDocument) {
+    public ObjectId add(SpreadsheetDocument spreadsheetDocument, Data data) {
 
         ObjectId objectId = insert(spreadsheetDocument);
-        spreadsheetRowDocumentDAO.add(objectId, spreadsheetDocument);
-
-        Data data = spreadsheetDocument.getData();
+        spreadsheetRowDocumentDAO.add(objectId, spreadsheetDocument, data);
 
         makeSureCollectionIsIndexedForAllColumns(data);
 
         String sampleType = spreadsheetDocument.getSampleType();
-        Set columnNames = spreadsheetDocument.getColumnNames();
+        Set columnNames = data.getColumnNames();
 
         associateColumnNamesToTheSampleType(sampleType, columnNames);
 
@@ -104,9 +82,9 @@ public class SpreadsheetDocumentDAO extends DAO
     }
 
     @Override
-    protected Document createDocumentOfTypeDAOHandles(String json) {
+    protected Document createDocumentOfTypeDAOHandles(Document document) {
 
-        return new SpreadsheetDocument(json);
+        return new SpreadsheetDocument(document);
     }
 
     @Override
