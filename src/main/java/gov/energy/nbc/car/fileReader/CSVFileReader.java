@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CSVFileReader implements IFileReader {
+public class CSVFileReader extends AbsFileReader {
 
     private Logger log = Logger.getLogger(getClass());
     
@@ -30,10 +30,10 @@ public class CSVFileReader implements IFileReader {
     }
 
 
-    public SpreadsheetData extractDataFromFile(File file)
-            throws IOException, NonStringValueFoundInHeader, UnsupportedFileExtension {
+    public SpreadsheetData extractDataFromFile(File file, int maxNumberOfValuesPerRow)
+            throws IOException, InvalidValueFoundInHeader, UnsupportedFileExtension {
 
-        List<List> lines = parse(file);
+        List<List> lines = parse(file, maxNumberOfValuesPerRow);
 
         List<String> columnNames = determineColumnNames(lines);
         int numberOfColumnNames = columnNames.size();
@@ -51,7 +51,7 @@ public class CSVFileReader implements IFileReader {
     }
 
     protected List<String> determineColumnNames(List<List> lines)
-            throws NonStringValueFoundInHeader {
+            throws InvalidValueFoundInHeader {
 
         List<Object> firstRow = lines.get(0);
 
@@ -59,24 +59,25 @@ public class CSVFileReader implements IFileReader {
 
         int columnNumber = 1;
 
-        for (Object o : firstRow) {
+        for (Object columnName : firstRow) {
 
-            if (o == null) {
+            if (columnName == null) {
                 break;
             }
 
-            if ((o instanceof String) == false) {
+            if (((columnName instanceof String) == false) &&
+                ((columnName instanceof Number) == false)) {
 
-                throw new NonStringValueFoundInHeader(columnNumber, o);
+                throw new InvalidValueFoundInHeader(columnNumber, columnName);
             }
 
-            String value = (String)o;
-
-            if (StringUtils.isBlank(value)) {
+            if ((columnName instanceof String) &&
+                StringUtils.isBlank((String)columnName)) {
+                // we interpret this as being an indication that we've passed the final column in the sequence
                 break;
             }
 
-            columnNames.add(value);
+            columnNames.add(columnName.toString());
 
             columnNumber++;
         }
@@ -85,7 +86,7 @@ public class CSVFileReader implements IFileReader {
 
     protected List<List> extractData(List<List> lines, int numberOfColumnNames) {
 
-        // DESIGN NOTE: We skill the first line because it contains the column names
+        // DESIGN NOTE: We skip the first line because it contains the column names
         List<List> dataRows = lines.subList(1, lines.size());
 
         List<List> data = new ArrayList();
@@ -94,19 +95,23 @@ public class CSVFileReader implements IFileReader {
         for (List dataRow : dataRows) {
 
             List lineData = dataRow.subList(0, numberOfColumnNames);
+            List allDataInRowExceptTheFirstColumnThatContainsTheRowNumber = new ArrayList(lineData);
 
-            // DESIGN NOTE: We are added the line number number so users will be able to trace the data back to the
+            // DESIGN NOTE: We are adding the line number number so users will be able to trace the data back to the
             //              original source document.
             lineData.add(0, lineNumber);
 
-            data.add(lineData);
+            if (containsData(allDataInRowExceptTheFirstColumnThatContainsTheRowNumber)) {
+                data.add(lineData);
+            }
+
             lineNumber++;
         }
 
         return data;
     }
 
-    private List<List> parse(File file) {
+    private List<List> parse(File file, int maxNumberOfValuesPerRow) {
 
         List<List> lines = new ArrayList();
 
@@ -114,17 +119,24 @@ public class CSVFileReader implements IFileReader {
         try {
             //Get the CSVReader instance with specifying the delimiter to be used
             reader = new CSVReader(new java.io.FileReader(file), ',');
-            String[] nextLine;
+            String[] values;
 
             //Read one line at a time
-            while ((nextLine = reader.readNext()) != null) {
+            while ((values = reader.readNext()) != null) {
 
                 List<Object> line = new ArrayList();
 
-                for (String value : nextLine) {
+                int i = 1;
+                for (String value : values) {
+
+                    if ((maxNumberOfValuesPerRow != -1) &&
+                        (i > maxNumberOfValuesPerRow)) {
+                        break;
+                    }
 
                     Object appropriateDataType = toAppropriateDataType(value);
                     line.add(appropriateDataType);
+                    i++;
                 }
 
                 lines.add(line);
@@ -132,6 +144,7 @@ public class CSVFileReader implements IFileReader {
         }
         catch (Exception e) {
             log.error(e);
+            throw new RuntimeException(e);
         }
         finally {
             try {
@@ -146,9 +159,10 @@ public class CSVFileReader implements IFileReader {
     }
 
 
-    protected SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy");
+    protected static SimpleDateFormat SIMPLE_DATE_FORMAT_WITH_DASHES = new SimpleDateFormat("M-d-yyyy");
+    protected static SimpleDateFormat SIMPLE_DATE_FORMAT_WITH_SlASHES = new SimpleDateFormat("M/d/yyyy");
 
-    private Object toAppropriateDataType(String value) {
+    protected Object toAppropriateDataType(String value) {
 
         if (StringUtils.isBlank(value)) {
             return null;
@@ -160,8 +174,22 @@ public class CSVFileReader implements IFileReader {
         catch (NumberFormatException e) {
         }
 
+        if (value.toLowerCase().equals("true")) {
+            return Boolean.TRUE;
+        }
+
+        if (value.toLowerCase().equals("false")) {
+            return Boolean.FALSE;
+        }
+
         try {
-            return simpleDateFormat.parse(value);
+            return SIMPLE_DATE_FORMAT_WITH_DASHES.parse(value);
+        }
+        catch (ParseException e) {
+        }
+
+        try {
+            return SIMPLE_DATE_FORMAT_WITH_SlASHES.parse(value);
         }
         catch (ParseException e) {
         }

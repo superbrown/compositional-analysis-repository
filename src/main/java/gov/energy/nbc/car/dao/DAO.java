@@ -8,9 +8,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import com.mongodb.util.JSON;
 import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.model.AbstractDocument;
+import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -49,9 +49,14 @@ public abstract class DAO {
         // org.bson.codecs.configuration.CodecConfigurationException: Can't find a codec for class
         // gov.energy.nbc.spreadsheet.model.document.SpreadsheetDocument.
 
+        PerformanceLogger performanceLogger = new PerformanceLogger("new Document(document)");
         Document wrapper = new Document(document);
+        performanceLogger.done();
 
+        performanceLogger = new PerformanceLogger("getCollection().insertOne(wrapper)");
         getCollection().insertOne(wrapper);
+        performanceLogger.done();
+
         ObjectId objectId = wrapper.getObjectId("_id");
         System.out.println("Inserted (ID: " + objectId + "): " + document);
         return objectId;
@@ -68,18 +73,17 @@ public abstract class DAO {
 
         if (documents.size() > 1) {
             throw new RuntimeException("getOne() was called with a filer that matches more than one document: " +
-                    JSON.serialize(filter));
+                    DAOUtilities.serialize(filter));
         }
 
 
         Document document = documents.get(0);
-        String json = JSON.serialize(document);
-        Document documentOfTypeDAOHandles = createDocumentOfTypeDAOHandles(json);
+        Document documentOfTypeDAOHandles = createDocumentOfTypeDAOHandles(document);
 
         return documentOfTypeDAOHandles;
     }
 
-    abstract protected Document createDocumentOfTypeDAOHandles(String json);
+    abstract protected Document createDocumentOfTypeDAOHandles(Document document);
 
     public Document queryForOne(Bson filter) {
 
@@ -142,7 +146,7 @@ public abstract class DAO {
         return deleteResults;
     }
 
-    protected Document createIdFilter(ObjectId objectId) {
+    public static Document createIdFilter(ObjectId objectId) {
 
         Document idFilter = new Document().
                 append(AbstractDocument.ATTRIBUTE_KEY__ID, objectId);

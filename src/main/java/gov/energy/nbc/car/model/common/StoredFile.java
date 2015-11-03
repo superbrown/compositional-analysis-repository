@@ -1,16 +1,20 @@
 package gov.energy.nbc.car.model.common;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
-import gov.energy.nbc.car.model.AbstractBasicDBObject;
+import gov.energy.nbc.car.model.AbstractDocument;
+import org.bson.Document;
 
-public class StoredFile extends AbstractBasicDBObject {
+public class StoredFile extends AbstractDocument {
 
     public static final String ATTRIBUTE_KEY__ORIGINAL_FILE_NAME = "originalFileName";
     public static final String ATTRIBUTE_KEY__STORAGE_LOCATION = "storageLocation";
 
-    public StoredFile(Object object) {
-        super(object);
+    public StoredFile(Document document) {
+        super(document);
+    }
+
+    public StoredFile(BasicDBObject document) {
+        super(document);
     }
 
     public StoredFile(String json) {
@@ -21,13 +25,14 @@ public class StoredFile extends AbstractBasicDBObject {
         init(originalFileName, storageLocation);
     }
 
-    @Override
-    public void init(String json) {
+    public void init(Document document) {
 
-        BasicDBObject parsedJson = (BasicDBObject) JSON.parse(json);
+        if (document == null) {
+            return;
+        }
 
-        init((String)parsedJson.get(ATTRIBUTE_KEY__ORIGINAL_FILE_NAME),
-             (String)parsedJson.get(ATTRIBUTE_KEY__STORAGE_LOCATION));
+        init((String)document.get(ATTRIBUTE_KEY__ORIGINAL_FILE_NAME),
+             (String)document.get(ATTRIBUTE_KEY__STORAGE_LOCATION));
     }
 
     public void init(String originalFileName, String storageLocation) {

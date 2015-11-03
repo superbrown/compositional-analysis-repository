@@ -1,6 +1,5 @@
 package gov.energy.nbc.car.dao;
 
-import com.mongodb.util.JSON;
 import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.model.document.SampleTypeDocument;
 import org.bson.Document;
@@ -38,9 +37,8 @@ public class SampleTypeDocumentDAO extends DAO
     }
 
     @Override
-    protected Document createDocumentOfTypeDAOHandles(String json) {
-
-        return new SampleTypeDocument(json);
+    protected Document createDocumentOfTypeDAOHandles(Document document) {
+        return new SampleTypeDocument(document);
     }
 
     public SampleTypeDocument getByName(Object name) {
@@ -53,7 +51,7 @@ public class SampleTypeDocumentDAO extends DAO
         }
 
         Document object = results.get(0);
-        String json = JSON.serialize(object);
+        String json = DAOUtilities.serialize(object);
 
         SampleTypeDocument sampleTypeDocument = new SampleTypeDocument(json);
         return sampleTypeDocument;

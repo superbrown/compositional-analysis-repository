@@ -5,10 +5,8 @@ import gov.energy.nbc.car.model.common.Data;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
-public class FileReader implements IFileReader {
+public class FileReader extends AbsFileReader {
 
     public ExcelWorkbookReader excelWorkbookReader;
     public CSVFileReader csvFileReader;
@@ -20,8 +18,8 @@ public class FileReader implements IFileReader {
     }
 
 
-    public Data extractDataFromFile(File file, String nameOfWorksheetContainingTheData)
-            throws UnsupportedFileExtension, NonStringValueFoundInHeader {
+    public Data extractDataFromFile(File file, String nameOfWorksheetContainingTheData, int maxNumberOfValuesPerRow)
+            throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
         Data data = null;
 
@@ -32,7 +30,7 @@ public class FileReader implements IFileReader {
             }
             else if (csvFileReader.canReadFile(file)) {
 
-                data = extractDataFromCSVFile(file);
+                data = extractDataFromCSVFile(file, maxNumberOfValuesPerRow);
             }
             else {
                 new UnsupportedFileExtension(file.getName());
@@ -40,32 +38,30 @@ public class FileReader implements IFileReader {
         }
         catch (IOException e) {
             // FIXME: Log
+            throw new RuntimeException(e);
         }
 
         return data;
     }
 
     public Data extractDataFromSpreadsheet(File file, String nameOfWorksheetContainingTheData)
-            throws UnsupportedFileExtension, IOException, NonStringValueFoundInHeader {
+            throws UnsupportedFileExtension, IOException, InvalidValueFoundInHeader {
+
 
         SpreadsheetData spreadsheetData =
                 excelWorkbookReader.extractDataFromFile(file, nameOfWorksheetContainingTheData);
 
-        List<Object> columnNamesAsAGenericList = Arrays.asList(spreadsheetData.columnNames.toArray());
-
-        Data data = new Data(columnNamesAsAGenericList, spreadsheetData.spreadsheetData);
+        Data data = new Data(spreadsheetData.columnNames, spreadsheetData.spreadsheetData);
 
         return data;
     }
 
-    public Data extractDataFromCSVFile(File file)
-            throws UnsupportedFileExtension, IOException, NonStringValueFoundInHeader {
+    public Data extractDataFromCSVFile(File file, int maxNumberOfValuesPerRow)
+            throws UnsupportedFileExtension, IOException, InvalidValueFoundInHeader {
 
-        SpreadsheetData spreadsheetData = csvFileReader.extractDataFromFile(file);
+        SpreadsheetData spreadsheetData = csvFileReader.extractDataFromFile(file, maxNumberOfValuesPerRow);
 
-        List<Object> columnNamesAsAGenericList = Arrays.asList(spreadsheetData.columnNames.toArray());
-
-        Data data = new Data(columnNamesAsAGenericList, spreadsheetData.spreadsheetData);
+        Data data = new Data(spreadsheetData.columnNames, spreadsheetData.spreadsheetData);
 
         return data;
     }

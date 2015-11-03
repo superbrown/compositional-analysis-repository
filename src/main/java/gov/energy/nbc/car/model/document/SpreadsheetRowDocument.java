@@ -1,10 +1,9 @@
 package gov.energy.nbc.car.model.document;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
-import gov.energy.nbc.car.model.common.SpreadsheetRow;
 import gov.energy.nbc.car.model.AbstractDocument;
 import gov.energy.nbc.car.model.common.Metadata;
+import gov.energy.nbc.car.model.common.SpreadsheetRow;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 
 public class SpreadsheetRowDocument extends AbstractDocument {
@@ -18,7 +17,7 @@ public class SpreadsheetRowDocument extends AbstractDocument {
         init(speadsheetObjectId, metadata, spreadsheetRow);
     }
 
-    public SpreadsheetRowDocument(Object object) {
+    public SpreadsheetRowDocument(Document object) {
         super(object);
     }
 
@@ -33,16 +32,17 @@ public class SpreadsheetRowDocument extends AbstractDocument {
         put(ATTRIBUTE_KEY__DATA, spreadsheetRow);
     }
 
-    @Override
-    public void initWithJson(String json) {
+    protected void init(Document document) {
 
-        BasicDBObject parsedJson = (BasicDBObject) JSON.parse(json);
+        if (document == null) {
+            return;
+        }
 
-        initializeId(parsedJson);
+        initializeId(document);
 
-        ObjectId spreadsheetObjectId = (ObjectId) parsedJson.get(ATTRIBUTE_KEY__SPREADSHEET_OBJECT_ID);
-        Metadata metada = new Metadata(parsedJson.get(ATTRIBUTE_KEY__SPREADSHEET_METADATA));
-        SpreadsheetRow spreadsheetRow = new SpreadsheetRow(parsedJson.get(ATTRIBUTE_KEY__DATA));
+        ObjectId spreadsheetObjectId = (ObjectId) document.get(ATTRIBUTE_KEY__SPREADSHEET_OBJECT_ID);
+        Metadata metada = new Metadata((Document) document.get(ATTRIBUTE_KEY__SPREADSHEET_METADATA));
+        SpreadsheetRow spreadsheetRow = new SpreadsheetRow(document.get(ATTRIBUTE_KEY__DATA));
 
         init(spreadsheetObjectId, metada, spreadsheetRow);
     }

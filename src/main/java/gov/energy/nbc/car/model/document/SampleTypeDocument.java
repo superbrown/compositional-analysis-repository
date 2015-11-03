@@ -1,11 +1,10 @@
 package gov.energy.nbc.car.model.document;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
 import gov.energy.nbc.car.model.AbstractDocument;
+import org.bson.Document;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class SampleTypeDocument extends AbstractDocument {
@@ -23,19 +22,21 @@ public class SampleTypeDocument extends AbstractDocument {
         super(json);
     }
 
-    public SampleTypeDocument(Object object) {
-        super(object);
+    public SampleTypeDocument(Document document) {
+        super(document);
     }
 
-    protected void initWithJson(String json) {
+    protected void init(Document document) {
 
-        BasicDBObject parsedJson = (BasicDBObject) JSON.parse(json);
+        if (document == null) {
+            return;
+        }
 
-        initializeId(parsedJson);
+        initializeId(document);
 
-        String sampleType = (String) parsedJson.get(ATTRIBUTE_KEY__SAMPLE_TYPE);
+        String sampleType = (String) document.get(ATTRIBUTE_KEY__SAMPLE_TYPE);
 
-        BasicDBList columnNames = (BasicDBList) parsedJson.get(ATTRIBUTE_KEY__COLUMN_NAMES);
+        List columnNames = (List) document.get(ATTRIBUTE_KEY__COLUMN_NAMES);;
 
         Set<String> columnNameSet = new HashSet<>();
         for (Object colomnName : columnNames) {

@@ -14,10 +14,22 @@ public class DAOUtilities {
 
     public static List<Document> get(MongoCollection<Document> collection, Bson query, Bson projection) {
 
-        FindIterable<Document> resultsCursor = collection.find(query).projection(projection);
-        MongoCursor<Document> resultsIterator = resultsCursor.iterator();
-        List<Document> results = DAOUtilities.toList(resultsIterator);
-        return results;
+        try {
+            FindIterable<Document> resultsCursor;
+
+            if (projection == null) {
+                resultsCursor = collection.find(query);
+            }
+            else {
+                resultsCursor = collection.find(query).projection(projection);
+            }
+            MongoCursor<Document> resultsIterator = resultsCursor.iterator();
+            List<Document> results = DAOUtilities.toList(resultsIterator);
+            return results;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public static List<Document> toList(MongoCursor<Document> resultsIterator) {
@@ -35,8 +47,13 @@ public class DAOUtilities {
         return list;
     }
 
-    public static String serialize(Object spreadsheetRow) {
+    public static String serialize(Object object) {
 
-        return JSON.serialize(spreadsheetRow);
+        return JSON.serialize(object);
+    }
+
+    public static Object parse(String json) {
+
+        return JSON.parse(json);
     }
 }

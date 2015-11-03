@@ -5,7 +5,9 @@ import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.dao.DAOUtilities;
 import gov.energy.nbc.car.dao.SpreadsheetRowDocumentDAO;
 import gov.energy.nbc.car.model.document.SpreadsheetRowDocument;
+import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 import java.util.List;
 
@@ -43,6 +45,21 @@ public class SpreadsheetRowBO {
     public String getAllSpreadsheetRows(TestMode testMode) {
 
         FindIterable<Document> spreadsheetRowDocuments = getSpreadsheetRowDAO(testMode).getAll();
+
+        String jsonOut = DAOUtilities.serialize(spreadsheetRowDocuments);
+        return jsonOut;
+    }
+
+
+    public String getRowsForSpreadsheet(TestMode testMode, String speadSheetId) {
+
+        Document idFilter = new Document().append(
+                SpreadsheetRowDocument.ATTRIBUTE_KEY__SPREADSHEET_OBJECT_ID, new
+                ObjectId(speadSheetId));
+
+        PerformanceLogger performanceLogger = new PerformanceLogger("getSpreadsheetRowDAO(testMode).query(" + idFilter.toJson() + ")");
+        List<Document> spreadsheetRowDocuments = getSpreadsheetRowDAO(testMode).query(idFilter);
+        performanceLogger.done();
 
         String jsonOut = DAOUtilities.serialize(spreadsheetRowDocuments);
         return jsonOut;

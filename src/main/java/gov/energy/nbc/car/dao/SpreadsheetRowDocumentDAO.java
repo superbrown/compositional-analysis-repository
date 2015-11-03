@@ -2,11 +2,13 @@ package gov.energy.nbc.car.dao;
 
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.util.JSON;
-import gov.energy.nbc.car.model.common.SpreadsheetRow;
-import gov.energy.nbc.car.model.document.SpreadsheetRowDocument;
 import gov.energy.nbc.car.Settings;
+import gov.energy.nbc.car.model.common.Data;
 import gov.energy.nbc.car.model.common.Metadata;
+import gov.energy.nbc.car.model.common.SpreadsheetRow;
 import gov.energy.nbc.car.model.document.SpreadsheetDocument;
+import gov.energy.nbc.car.model.document.SpreadsheetRowDocument;
+import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -28,20 +30,25 @@ public class SpreadsheetRowDocumentDAO extends DAO
         return (SpreadsheetRowDocument) queryForOneWithId(id);
     }
 
-    public List<ObjectId> add(ObjectId spreadsheetObjectId, SpreadsheetDocument spreadsheetDocument) {
+    public List<ObjectId> add(ObjectId spreadsheetObjectId, SpreadsheetDocument spreadsheetDocument, Data data) {
 
         List<ObjectId> spreadsheetRowObjectIds = new ArrayList();
 
         Metadata metadata = spreadsheetDocument.getMetadata();
 
-        for (SpreadsheetRow spreadsheetRow : spreadsheetDocument.getData()) {
+        for (SpreadsheetRow spreadsheetRow : data) {
 
+            PerformanceLogger performanceLogger = new PerformanceLogger("new SpreadsheetRowDocument()");
             SpreadsheetRowDocument spreadsheetRowDocument = new SpreadsheetRowDocument(
                     spreadsheetObjectId,
                     metadata,
                     spreadsheetRow);
+            performanceLogger.done();
 
+            performanceLogger = new PerformanceLogger("insert(spreadsheetRowDocument)");
             ObjectId objectId = insert(spreadsheetRowDocument);
+            performanceLogger.done();
+
             spreadsheetRowObjectIds.add(objectId);
         }
 
@@ -62,9 +69,9 @@ public class SpreadsheetRowDocumentDAO extends DAO
     }
 
     @Override
-    protected Document createDocumentOfTypeDAOHandles(String json) {
+    protected Document createDocumentOfTypeDAOHandles(Document document) {
 
-        return new SpreadsheetRowDocument(json);
+        return new SpreadsheetRowDocument(document);
     }
 
     @Override
@@ -77,14 +84,14 @@ public class SpreadsheetRowDocumentDAO extends DAO
 
     public List<SpreadsheetRowDocument> executeQuery(String query) {
 
-        Bson bson = (Bson)JSON.parse(query);
+        Bson bson = (Bson)DAOUtilities.parse(query);
         List<Document> documents = query(bson);
 
         List <SpreadsheetRowDocument> spreadsheetRows = new ArrayList();
 
         for (Document document : documents) {
 
-            SpreadsheetRowDocument spreadsheetRow = new SpreadsheetRowDocument(JSON.serialize(document));
+            SpreadsheetRowDocument spreadsheetRow = new SpreadsheetRowDocument(DAOUtilities.serialize(document));
             spreadsheetRows.add(spreadsheetRow);
         }
 

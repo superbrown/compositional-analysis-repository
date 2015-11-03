@@ -1,11 +1,11 @@
 package gov.energy.nbc.car.model;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
+import gov.energy.nbc.car.dao.DAOUtilities;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.bson.Document;
 
-public abstract class AbstractBasicDBObject extends BasicDBObject {
+public abstract class AbstractBasicDBObject extends Document {
 
     public AbstractBasicDBObject() {
 
@@ -13,7 +13,7 @@ public abstract class AbstractBasicDBObject extends BasicDBObject {
 
     public AbstractBasicDBObject(Object object) {
 
-        String json = JSON.serialize(object);
+        String json = DAOUtilities.serialize(object);
         init(json);
     }
 
@@ -27,7 +27,7 @@ public abstract class AbstractBasicDBObject extends BasicDBObject {
 
     public String toJson() {
 
-        return JSON.serialize(this);
+        return DAOUtilities.serialize(this);
     }
 
     public String getJson() {

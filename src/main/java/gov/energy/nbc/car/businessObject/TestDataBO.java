@@ -22,8 +22,8 @@ public class TestDataBO {
 
     public String seedTestDataInTheDatabase_spreadsheet_1_and_2() {
 
-        TestData.objectId_1 = spreadsheetDocumentDAO.add(TestData.spreadsheetDocument_1);
-        TestData.objectId_2 = spreadsheetDocumentDAO.add(TestData.spreadsheetDocument_2);
+        TestData.objectId_1 = spreadsheetDocumentDAO.add(TestData.spreadsheetDocument_1, TestData.spreadsheetData_1);
+        TestData.objectId_2 = spreadsheetDocumentDAO.add(TestData.spreadsheetDocument_2, TestData.spreadsheetData_2);
 
         List<ObjectId> newObjects = new ArrayList<>();
         newObjects.add(TestData.objectId_1);
@@ -37,7 +37,7 @@ public class TestDataBO {
 
     public String seedTestDataInTheDatabase_spreadsheet_1() {
 
-        TestData.objectId_1 = spreadsheetDocumentDAO.add(TestData.spreadsheetDocument_1);
+        TestData.objectId_1 = spreadsheetDocumentDAO.add(TestData.spreadsheetDocument_1, TestData.spreadsheetData_1);
 
         List<ObjectId> newObjects = new ArrayList<>();
         newObjects.add(TestData.objectId_1);
@@ -50,7 +50,7 @@ public class TestDataBO {
 
     public String seedTestDataInTheDatabase_spreadsheet_2() {
 
-        TestData.objectId_2 = spreadsheetDocumentDAO.add(TestData.spreadsheetDocument_2);
+        TestData.objectId_2 = spreadsheetDocumentDAO.add(TestData.spreadsheetDocument_2, TestData.spreadsheetData_2);
 
         List<ObjectId> newObjects = new ArrayList<>();
         newObjects.add(TestData.objectId_2);
