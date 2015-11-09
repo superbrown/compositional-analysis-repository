@@ -1,5 +1,6 @@
 package gov.energy.nbc.car;
 
+import gov.energy.nbc.car.businessObject.multipleCellCollectionsApproach.BusinessObjects_new;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -13,9 +14,9 @@ import java.util.Arrays;
 @MultipartConfig(location="/tmp", fileSizeThreshold=1024*1024, maxFileSize=1024*1024*50, maxRequestSize=1024*1024*5*50)
 public class CARApplication {
 
-    public static final int MEGABYTE = 1024 * 1024;
-
     public static void main(String[] args) {
+
+        Application.setBusinessObjects(new BusinessObjects_new());
 
         SpringApplication.run(CARApplication.class, args);
 

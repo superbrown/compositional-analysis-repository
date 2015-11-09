@@ -36,7 +36,7 @@ public interface AppConstants {
 	public final double DEFAULT_REAL = -9999.0;
 	
     /** The Hibernate properties file name. */
-    public final String SPREADSHEET_PROPERTIES_FILE_NAME = "spreadsheet";
+    public final String DATASET_PROPERTIES_FILE_NAME = "dataset";
 	
     /**
      * Default Excel file name for file returned to user
@@ -74,7 +74,7 @@ public interface AppConstants {
 	public final String DEFAULT_WORKSHEET_NAME = "query";
 
 	/**
-	 * Property name for the path to store the spreadsheet files locally.
+	 * Property name for the path to store the dataset files locally.
 	 */
 	public final String FILE_DIR = "fileDirectory";
     
@@ -128,7 +128,7 @@ public interface AppConstants {
 	public final String FAILED = "As Failed Upload";
 
 
-	public final int SPREADSHEET_ERRORS = -1;
+	public final int DATASET_ERRORS = -1;
 	public final int MISSING_WORKSHEET = -2;
 	public final int MISMATCHED_COLUMN_NUMBERS = -3;
 	public final int MISSING_COLUMN = -4;

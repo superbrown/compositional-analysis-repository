@@ -1,32 +1,33 @@
 package gov.energy.nbc.car;
 
-import gov.energy.nbc.car.businessObject.BusinessObjects;
-import gov.energy.nbc.car.businessObject.TestDataBO;
+import gov.energy.nbc.car.businessObject.ITestDataBO;
+import gov.energy.nbc.car.businessObject.singleCellCollectionApproach.BusinessObjects;
 
 public class TestUsingTestData {
 
-    protected static TestDataBO testDataBO;
-
     public static void beforeClass() {
 
-        testDataBO = new TestDataBO(BusinessObjects.settings_forUnitTestPurposes);
+        Application.setBusinessObjects(new BusinessObjects());
     }
 
     public void before() {
 
+        ITestDataBO testDataBO = Application.getBusinessObjects().getTestDataBO();
+
         // (just in case it's necessary)
         testDataBO.removeTestData();
-
-        testDataBO.seedTestDataInTheDatabase_spreadsheet_1_and_2();
+        testDataBO.seedTestDataInTheDatabase_dataset_1_and_2();
     }
 
     public void after() {
 
+        ITestDataBO testDataBO = Application.getBusinessObjects().getTestDataBO();
         testDataBO.removeTestData();
     }
 
     public static void afterClass() {
 
+        ITestDataBO testDataBO = Application.getBusinessObjects().getTestDataBO();
         testDataBO.dropTheTestDatabase();
     }
 }

@@ -1,8 +1,8 @@
 package gov.energy.nbc.car.fileReader;
 
 import au.com.bytecode.opencsv.CSVReader;
-import gov.energy.nbc.car.fileReader.dto.SpreadsheetData;
-import gov.energy.nbc.car.model.common.SpreadsheetRow;
+import gov.energy.nbc.car.fileReader.dto.RowCollection;
+import gov.energy.nbc.car.model.common.Row;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -30,7 +30,7 @@ public class CSVFileReader extends AbsFileReader {
     }
 
 
-    public SpreadsheetData extractDataFromFile(File file, int maxNumberOfValuesPerRow)
+    public RowCollection extractDataFromFile(File file, int maxNumberOfValuesPerRow)
             throws IOException, InvalidValueFoundInHeader, UnsupportedFileExtension {
 
         List<List> lines = parse(file, maxNumberOfValuesPerRow);
@@ -43,11 +43,11 @@ public class CSVFileReader extends AbsFileReader {
         // DESIGN NOTE: When the data was extracted, the the row number was added as the first data element so users
         //              will be able to trace the data back to the original source document.  So we need to add a
         //              name for that column.
-        columnNames.add(0, SpreadsheetRow.ATTRIBUTE_KEY__ROW_NUMBER);
+        columnNames.add(0, Row.ATTR_KEY__ROW_NUMBER);
 
 
-        SpreadsheetData spreasheetData = new SpreadsheetData(columnNames, data);
-        return spreasheetData;
+        RowCollection rowCollection = new RowCollection(columnNames, data);
+        return rowCollection;
     }
 
     protected List<String> determineColumnNames(List<List> lines)

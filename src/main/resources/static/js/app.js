@@ -1,20 +1,31 @@
 
+// needed for the date picker widget
 $(function() {
     $( "#submissionDate" ).datepicker();
 });
 
 
-var myAngularModule = angular.module('myAngularModule', []);
 
-myAngularModule.controller =('uploadController', function() {
+// A N G U L A R   s t u f f
 
-});
+var angular_module = angular.module('angular_module', ['ngMessages', 'ngResource']);
 
-myAngularModule.sampleType = "";
-myAngularModule.sampleType_submissionDate = "";
-myAngularModule.sampleType_submitter = "";
-myAngularModule.sampleType_projectName = "";
-myAngularModule.sampleType_chargeNumber = "";
-myAngularModule.sampleType_comments = "";
-myAngularModule.sampleType = "";
+angular_module.controller('angular_uploadController', [
+    '$scope', '$log', '$filter', '$resource',
+    function($scope, $log, $filter, $resource) {
+
+        $scope.dataCategory = '';
+        $scope.dataCategory_submissionDate = '';
+        $scope.dataCategory_submitter = '';
+        $scope.dataCategory_projectName = '';
+        $scope.dataCategory_chargeNumber = '';
+        $scope.dataCategory_comments = '';
+
+        $scope.dataCategories = [
+            { name: "Algea"},
+            { name: "ATP3"},
+            { name: "Biomas"},
+        ];
+    }]);
+
 

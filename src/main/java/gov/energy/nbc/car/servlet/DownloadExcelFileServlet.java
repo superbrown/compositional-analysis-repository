@@ -20,7 +20,7 @@ public class DownloadExcelFileServlet extends HttpServlet {
 
 	public static final String CONTENT_DISPOSITION = "Content-Disposition";
 	public static final String XLS_CONTENT_TYPE = "application/vnd.ms-excel";
-	public static final String XLSX_CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	public static final String XLSX_CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.datasetml.sheet";
 	public static final String XLSM_CONTENT_TYPE = "application/vnd.openxmlformats";
 	public static final String SS_FILE_PATH = "excelfile";
 	public static final String SS_FILE_NAME = "ssFileName";

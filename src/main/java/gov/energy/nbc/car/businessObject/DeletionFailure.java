@@ -1,7 +1,7 @@
 package gov.energy.nbc.car.businessObject;
 
 import com.mongodb.client.result.DeleteResult;
-import gov.energy.nbc.car.dao.DeleteResults;
+import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
 
 
 public class DeletionFailure extends Throwable {

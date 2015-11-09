@@ -1,7 +1,6 @@
 package gov.energy.nbc.car.fileReader;
 
-import gov.energy.nbc.car.fileReader.dto.SpreadsheetData;
-import gov.energy.nbc.car.model.common.Data;
+import gov.energy.nbc.car.fileReader.dto.RowCollection;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,19 +17,19 @@ public class FileReader extends AbsFileReader {
     }
 
 
-    public Data extractDataFromFile(File file, String nameOfWorksheetContainingTheData, int maxNumberOfValuesPerRow)
+    public gov.energy.nbc.car.model.common.RowCollection extractDataFromFile(File file, String nameOfWorksheetContainingTheData, int maxNumberOfValuesPerRow)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
-        Data data = null;
+        gov.energy.nbc.car.model.common.RowCollection rowCollection = null;
 
         try {
             if (excelWorkbookReader.canReadFile(file)) {
 
-                data = extractDataFromSpreadsheet(file, nameOfWorksheetContainingTheData);
+                rowCollection = extractDataFromDataset(file, nameOfWorksheetContainingTheData);
             }
             else if (csvFileReader.canReadFile(file)) {
 
-                data = extractDataFromCSVFile(file, maxNumberOfValuesPerRow);
+                rowCollection = extractDataFromCSVFile(file, maxNumberOfValuesPerRow);
             }
             else {
                 new UnsupportedFileExtension(file.getName());
@@ -41,29 +40,29 @@ public class FileReader extends AbsFileReader {
             throw new RuntimeException(e);
         }
 
-        return data;
+        return rowCollection;
     }
 
-    public Data extractDataFromSpreadsheet(File file, String nameOfWorksheetContainingTheData)
+    public gov.energy.nbc.car.model.common.RowCollection extractDataFromDataset(File file, String nameOfWorksheetContainingTheData)
             throws UnsupportedFileExtension, IOException, InvalidValueFoundInHeader {
 
 
-        SpreadsheetData spreadsheetData =
+        RowCollection dataUpload =
                 excelWorkbookReader.extractDataFromFile(file, nameOfWorksheetContainingTheData);
 
-        Data data = new Data(spreadsheetData.columnNames, spreadsheetData.spreadsheetData);
+        gov.energy.nbc.car.model.common.RowCollection rowCollection = new gov.energy.nbc.car.model.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
-        return data;
+        return rowCollection;
     }
 
-    public Data extractDataFromCSVFile(File file, int maxNumberOfValuesPerRow)
+    public gov.energy.nbc.car.model.common.RowCollection extractDataFromCSVFile(File file, int maxNumberOfValuesPerRow)
             throws UnsupportedFileExtension, IOException, InvalidValueFoundInHeader {
 
-        SpreadsheetData spreadsheetData = csvFileReader.extractDataFromFile(file, maxNumberOfValuesPerRow);
+        RowCollection dataUpload = csvFileReader.extractDataFromFile(file, maxNumberOfValuesPerRow);
 
-        Data data = new Data(spreadsheetData.columnNames, spreadsheetData.spreadsheetData);
+        gov.energy.nbc.car.model.common.RowCollection rowCollection = new gov.energy.nbc.car.model.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
-        return data;
+        return rowCollection;
     }
 
     @Override

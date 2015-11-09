@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="myAngularModule">
+<html lang="en" ng-app="angular_module">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Compositional Analysis Repository</title>
+    <title>Research Data Repository</title>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -35,20 +35,16 @@
 
     <!--AngularJS-->
     <script src="code.angularjs.org/angular-1.4.7/angular.min.js"></script>
+    <script src="code.angularjs.org/angular-1.4.7/angular-messages.min.js"></script>
+    <script src="code.angularjs.org/angular-1.4.7/angular-resource.min.js"></script>
 
     <!-- Our Stuff -->
     <link href="css/app.css" rel="stylesheet">
     <script src="js/app.js"></script>
 
-    <script>
-      $(function() {
-        $( "#submissionDate" ).datepicker();
-      });
-    </script>
-
   </head>
 
-  <body role="document">
+  <body role="document" ng-controller="angular_uploadController">
 
     <!-- F i x e d   n a v b a r  -->
 
@@ -61,7 +57,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Compositional Analysis Repository</a>
+          <a class="navbar-brand" href="#">Research Data Repository - {{dataCategory}} </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
@@ -85,8 +81,7 @@
 
     <div class="container theme-showcase" role="main">
 
-      <div ng-controller="uploadController">
-
+      <div>
 
         <div class="page-header">
           <h1>Upload Data</h1>
@@ -94,30 +89,45 @@
 
         <div class="page-content">
 
-          <form id="inputForm" action="/api/addSpreadsheet" method="POST" enctype="multipart/form-data" >
+          <form id="inputForm" action="/api/addDataset" method="POST" enctype="multipart/form-data" >
 
             <div>
               <legend>Metadata</legend>
 
-              <input type="hidden" name="sampleType" value="Algea"/>
+              <label>Data Catagory*</label>
+              <select ng-model="dataCategory">
+                <option value=''>(select)</option>
+                <option ng-repeat="category in dataCategories" value='{{ category.name }}'>{{ category.name }}</option>
+              </select>
+              <br/>
 
-              <!--<label for="sampleType">Sample Type*</label>-->
-              <!--<select id="sampleType" name="sampleType" style="width: auto;">-->
+              <!--<label for="dataCategory">Sample Type*</label>-->
+              <!--<select id="dataCategory" name="dataCategory" style="width: auto;">-->
               <!--<option value="Algea">Algea</option>-->
               <!--<option value="ATP3">ATP3</option>-->
               <!--<option value="Biomass">Biomass</option>-->
               <!--</select>-->
               <!--<br/>-->
 
-              <label for="submissionDate">Submission Date*</label> <input type="text" id="submissionDate" name="submissionDate"/>
+              <label for="submissionDate">Submission Date*</label>
+              <input ng-model="submissionDate" required type="text" id="submissionDate" name="submissionDate"/>
               <br/>
-              <label for="submitter">Submitter*</label> <input id="submitter" name="submitter" type="text" style="width: 300px;"/>
+
+              <label for="submitter">Submitter*</label>
+              <input ng-model="submitter" required id="submitter" name="submitter" type="text" style="width: 300px;"/>
+              <span class="alert" ng-class="{'alert-warning':submitter.length > 5}" >Sumitter is required!</span>
               <br/>
-              <label for="projectName">Project Name</label> <input id="projectName" name="projectName" type="text" style="width: 300px;"/>
+
+              <label for="projectName">Project Name</label>
+              <input ng-model="projectName" required id="projectName" name="projectName" type="text" style="width: 300px;"/>
               <br/>
-              <label for="chargeNumber">Charge #</label> <input id="chargeNumber" name="chargeNumber" type="text" style="width: 300px;"/>
+
+              <label for="chargeNumber">Charge #</label>
+              <input ng-model="chargeNumber" id="chargeNumber" name="chargeNumber" type="text" style="width: 300px;"/>
               <br/>
-              <label for="comments">Comments</label> <textarea id="comments" name="comments" rows="2" style="width: 300px;" ></textarea>
+
+              <label for="comments">Comments</label>
+              <textarea ng-model="comments" id="comments" name="comments" rows="2" style="width: 300px;" ></textarea>
               <br/>
 
             </div>
@@ -127,18 +137,18 @@
 
               <label for="dataFile">Excel or CSV file</label>
               <br/>
-              <input id="dataFile" name="dataFile" type="file" style="display: inline; margin-bottom: 5px;" />
+              <input id="dataFile" ng-model="dataFile" required name="dataFile" type="file" style="display: inline; margin-bottom: 5px;" />
               <br/>
-              <label style="width: auto;" for="nameOfSheetContainingData">If Excel workkbook, enter name of sheet within the workbook containing the data to be ingested:</label>
+              <label ng-show="dataFile " style="width: auto;" for="nameOfSheetContainingData">Name of sheet within the workbook containing the data to be ingested*</label>
               <br/>
-              <input id="nameOfSheetContainingData" name="nameOfSheetContainingData" type="text" style="width: 300px;" />
+              <input id="nameOfSheetContainingData" ng-model="nameOfSheetContainingData" name="nameOfSheetContainingData" type="text" style="width: 300px;" />
 
             </div>
 
             <div>
               <legend>Attachments</legend>
 
-              <input id="attachments" name="attachments" type="file" multiple="multiple" /><br/><br/>
+              <input id="attachments" ng-model="attachments" name="attachments" type="file" multiple="multiple" /><br/><br/>
 
             </div>
 

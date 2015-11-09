@@ -1,7 +1,7 @@
 package gov.energy.nbc.car.fileReader;
 
-import gov.energy.nbc.car.fileReader.dto.SpreadsheetData;
-import gov.energy.nbc.car.model.common.SpreadsheetRow;
+import gov.energy.nbc.car.fileReader.dto.RowCollection;
+import gov.energy.nbc.car.model.common.Row;
 import gov.energy.nbc.car.utilities.Utilities;
 import org.junit.After;
 import org.junit.Before;
@@ -38,14 +38,14 @@ public class ExcelWorkbookReaderTest {
     }
 
     /**
-     * Method: extractDataFromSpreadsheet(File file, String nameOfWorksheetContainingTheData)
+     * Method: extractDataFromDataset(File file, String nameOfWorksheetContainingTheData)
      */
     @Test
-    public void testExtractDataFromSpreadsheet_xls() throws Exception {
+    public void testExtractDataFromDataset_xls() throws Exception {
 
         try {
             File file = Utilities.getFile("/SpreadsheetForReadingTest.xls");
-            testExtractDataFromSpreadsheet(file);
+            testExtractDataFromDataset(file);
         }
         catch (InvalidValueFoundInHeader invalidValueFoundInHeader) {
             fail();
@@ -53,11 +53,11 @@ public class ExcelWorkbookReaderTest {
     }
 
     @Test
-    public void testExtractDataFromSpreadsheet_xlm() throws Exception {
+    public void testExtractDataFromDataset_xlm() throws Exception {
 
         try {
             File file = Utilities.getFile("/SpreadsheetForReadingTest.xlsm");
-            testExtractDataFromSpreadsheet(file);
+            testExtractDataFromDataset(file);
         }
         catch (InvalidValueFoundInHeader invalidValueFoundInHeader) {
             fail();
@@ -65,34 +65,34 @@ public class ExcelWorkbookReaderTest {
     }
 
     @Test
-    public void testExtractDataFromSpreadsheet_xlsx() throws Exception {
+    public void testExtractDataFromDataset_xlsx() throws Exception {
 
         try {
             File file = Utilities.getFile("/SpreadsheetForReadingTest.xlsx");
-            testExtractDataFromSpreadsheet(file);
+            testExtractDataFromDataset(file);
         }
         catch (InvalidValueFoundInHeader invalidValueFoundInHeader) {
             fail();
         }
     }
 
-    private void testExtractDataFromSpreadsheet(File file) throws IOException, InvalidValueFoundInHeader, UnsupportedFileExtension, ParseException {
+    private void testExtractDataFromDataset(File file) throws IOException, InvalidValueFoundInHeader, UnsupportedFileExtension, ParseException {
 
-        SpreadsheetData spreadsheetData = excelWorkbookReader.extractDataFromFile(file, "Sheet Containing Data");
+        RowCollection rowCollection = excelWorkbookReader.extractDataFromFile(file, "Sheet Containing Data");
 
-        assertTrue(spreadsheetData.columnNames.size() == 8);
-        assertTrue(spreadsheetData.columnNames.get(0).equals(SpreadsheetRow.ATTRIBUTE_KEY__ROW_NUMBER));
-        assertTrue(spreadsheetData.columnNames.get(1).equals("Column 1"));
-        assertTrue(spreadsheetData.columnNames.get(2).equals("1.5"));
-        assertTrue(spreadsheetData.columnNames.get(3).equals("Column 2"));
-        assertTrue(spreadsheetData.columnNames.get(4).equals("Column 3"));
-        assertTrue(spreadsheetData.columnNames.get(5).equals("Column 4"));
-        assertTrue(spreadsheetData.columnNames.get(6).equals("Column 5"));
-        assertTrue(spreadsheetData.columnNames.get(7).equals("Column 6"));
+        assertTrue(rowCollection.columnNames.size() == 8);
+        assertTrue(rowCollection.columnNames.get(0).equals(Row.ATTR_KEY__ROW_NUMBER));
+        assertTrue(rowCollection.columnNames.get(1).equals("Column 1"));
+        assertTrue(rowCollection.columnNames.get(2).equals("1.5"));
+        assertTrue(rowCollection.columnNames.get(3).equals("Column 2"));
+        assertTrue(rowCollection.columnNames.get(4).equals("Column 3"));
+        assertTrue(rowCollection.columnNames.get(5).equals("Column 4"));
+        assertTrue(rowCollection.columnNames.get(6).equals("Column 5"));
+        assertTrue(rowCollection.columnNames.get(7).equals("Column 6"));
 
-        assertTrue(spreadsheetData.spreadsheetData.size() == 5);
+        assertTrue(rowCollection.rowData.size() == 5);
 
-        List row_1 = spreadsheetData.spreadsheetData.get(0);
+        List row_1 = rowCollection.rowData.get(0);
         assertTrue(row_1.size() == 8);
         assertTrue(row_1.get(1).equals(1.0));
         assertTrue(row_1.get(2).equals(true));
@@ -102,7 +102,7 @@ public class ExcelWorkbookReaderTest {
         assertTrue(row_1.get(6).equals("one"));
         assertTrue(row_1.get(7) == null);
 
-        List row_2 = spreadsheetData.spreadsheetData.get(1);
+        List row_2 = rowCollection.rowData.get(1);
         assertTrue(row_2.size() == 8);
         assertTrue(row_2.get(1) == null);
         assertTrue(row_2.get(2).equals(false));
@@ -112,7 +112,7 @@ public class ExcelWorkbookReaderTest {
         assertTrue(row_2.get(6).equals(2.0));
         assertTrue(row_2.get(7) == null);
 
-        List row_3 = spreadsheetData.spreadsheetData.get(2);
+        List row_3 = rowCollection.rowData.get(2);
         assertTrue(row_3.size() == 8);
         assertTrue(row_3.get(1).equals(3.0));
         assertTrue(row_3.get(2).equals(false));
@@ -122,7 +122,7 @@ public class ExcelWorkbookReaderTest {
         assertTrue(row_3.get(6).equals(3.345));
         assertTrue(row_3.get(7) == null);
 
-        List row_4 = spreadsheetData.spreadsheetData.get(3);
+        List row_4 = rowCollection.rowData.get(3);
         assertTrue(row_4.size() == 8);
         assertTrue(row_4.get(1).equals(4.0));
         assertTrue(row_4.get(2).equals(true));
@@ -132,7 +132,7 @@ public class ExcelWorkbookReaderTest {
         assertTrue(row_4.get(6).equals("four"));
         assertTrue(row_4.get(7).equals("hello 1"));
 
-        List row_5 = spreadsheetData.spreadsheetData.get(4);
+        List row_5 = rowCollection.rowData.get(4);
         assertTrue(row_5.size() == 8);
         assertTrue(row_5.get(1).equals(5.0));
         assertTrue(row_5.get(2).equals(true));

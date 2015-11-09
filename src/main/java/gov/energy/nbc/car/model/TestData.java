@@ -1,8 +1,8 @@
 package gov.energy.nbc.car.model;
 
-import gov.energy.nbc.car.model.common.Data;
+import gov.energy.nbc.car.model.common.RowCollection;
 import gov.energy.nbc.car.model.common.StoredFile;
-import gov.energy.nbc.car.model.document.SpreadsheetDocument;
+import gov.energy.nbc.car.model.document.DatasetDocument;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -22,15 +22,15 @@ public class TestData {
     public static Date date_3;
     public static Date date_4;
 
-    public static Data spreadsheetData_1;
-    public static SpreadsheetDocument spreadsheetDocument_1;
+    public static RowCollection rowCollection_1;
+    public static DatasetDocument dataset_1;
 
-    public static Data spreadsheetData_2;
-    public static SpreadsheetDocument spreadsheetDocument_2;
+    public static RowCollection rowCollection_2;
+    public static DatasetDocument dataset_2;
 
-    public static String sampleType;
+    public static String dataCategory;
 
-    public static ObjectId objectId_1;
+    public static ObjectId dataset_1_objectId;
     public static Date submissionDate_1;
     public static String submitter_1;
     public static String chargeNumber_1;
@@ -40,7 +40,7 @@ public class TestData {
     public static List<StoredFile> attachments_1;
     public static List<String> tags_1;
 
-    public static ObjectId objectId_2;
+    public static ObjectId dataset_2_objectId;
     public static Date submissionDate_2;
     public static String submitter_2;
     public static String chargeNumber_2;
@@ -63,7 +63,7 @@ public class TestData {
             date_4 = new Date();
             Thread.sleep(1);
 
-            sampleType = ALGEA;
+            dataCategory = ALGEA;
 
             submissionDate_1 = new Date();
             Thread.sleep(1);
@@ -72,7 +72,7 @@ public class TestData {
             projectName_1 = "Project Name 1";
             comments_1 = "Comment 1";
             tags_1 = Arrays.asList("tag 1", "tag 2", "tag 3");
-            originallyUploadedFile_1 = new StoredFile("{ originalFileName: \"Spreadsheet 1.xls\", storageLocation : \"uploadedFiles/2015-10-20_08_12_23_124/Spreadsheet 1.xls\"}");
+            originallyUploadedFile_1 = new StoredFile("{ originalFileName: \"Dataset 1.xls\", storageLocation : \"uploadedFiles/2015-10-20_08_12_23_124/Dataset 1.xls\"}");
             attachments_1 = null;
 
             submissionDate_2 = new Date();
@@ -82,7 +82,7 @@ public class TestData {
             projectName_2 = "Project Name 3";
             comments_2 = "Comment 2";
             tags_2 = Arrays.asList("tag 2", "tag 2", "tag 3");
-            originallyUploadedFile_2 = new StoredFile("{ originalFileName: \"Spreadsheet 2.xls\", storageLocation : \"uploadedFiles/2015-10-20_08_02_00_231/Spreadsheet 2.xls\"}");
+            originallyUploadedFile_2 = new StoredFile("{ originalFileName: \"Dataset 2.xls\", storageLocation : \"uploadedFiles/2015-10-20_08_02_00_231/Dataset 2.xls\"}");
             attachments_2 = Arrays.asList(
                     new StoredFile("{ originalFileName: \"name_3\", storageLocation : \"uuid_3\"}"),
                     new StoredFile("{ originalFileName: \"name_4\", storageLocation : \"uuid_4\"}"),
@@ -105,7 +105,7 @@ public class TestData {
                     {3, "String 3", date_3, true, 3.33, 3, "string value"},
             };
             List<List> dataList = toListOfLists(data);
-            spreadsheetData_1 = new Data(dataList);
+            rowCollection_1 = new RowCollection(dataList);
 
             data = new Object[][]{
                     {
@@ -121,10 +121,10 @@ public class TestData {
                     {4, date_4, 4.55, 4, "a4", "b4"},
             };
             dataList = toListOfLists(data);
-            spreadsheetData_2 = new Data(dataList);
+            rowCollection_2 = new RowCollection(dataList);
 
-            spreadsheetDocument_1 = new SpreadsheetDocument(
-                    sampleType,
+            dataset_1 = new DatasetDocument(
+                    dataCategory,
                     submissionDate_1,
                     submitter_1,
                     chargeNumber_1,
@@ -133,8 +133,8 @@ public class TestData {
                     originallyUploadedFile_1,
                     attachments_1);
 
-            spreadsheetDocument_2 = new SpreadsheetDocument(
-                    sampleType,
+            dataset_2 = new DatasetDocument(
+                    dataCategory,
                     submissionDate_2,
                     submitter_2,
                     chargeNumber_2,

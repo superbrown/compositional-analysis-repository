@@ -1,7 +1,7 @@
 package gov.energy.nbc.car.model;
 
 import com.mongodb.BasicDBObject;
-import gov.energy.nbc.car.dao.DAOUtilities;
+import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.bson.Document;
@@ -9,7 +9,7 @@ import org.bson.types.ObjectId;
 
 public abstract class AbstractDocument extends Document {
 
-    public static final String ATTRIBUTE_KEY__ID = "_id";
+    public static final String ATTR_KEY__ID = "_id";
 
     public AbstractDocument() {
 
@@ -35,11 +35,25 @@ public abstract class AbstractDocument extends Document {
         init(document);
     }
 
-    protected abstract void init(Document object);
+    protected abstract void init(Document document);
 
     public String toJson() {
 
         return DAOUtilities.serialize(this);
+    }
+
+    protected void initObjectId(Document document) {
+
+        ObjectId objectId = document.getObjectId(ATTR_KEY__ID);
+
+        if (objectId != null) {
+            put(ATTR_KEY__ID, objectId);
+        }
+    }
+
+    public ObjectId getObjectId() {
+
+        return getObjectId(ATTR_KEY__ID);
     }
 
     @Override
@@ -64,19 +78,5 @@ public abstract class AbstractDocument extends Document {
                 .appendSuper(super.hashCode())
                 .append(this.toJson())
                 .toHashCode();
-    }
-
-    protected void initializeId(Document parsedJson) {
-
-        ObjectId objectId = parsedJson.getObjectId(ATTRIBUTE_KEY__ID);
-
-        if (objectId != null) {
-            put(ATTRIBUTE_KEY__ID, objectId);
-        }
-    }
-
-    public ObjectId getObjectId() {
-
-        return getObjectId(ATTRIBUTE_KEY__ID);
     }
 }

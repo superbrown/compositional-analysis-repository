@@ -1,11 +1,14 @@
 package gov.energy.nbc.car.model;
 
-import gov.energy.nbc.car.dao.DAOUtilities;
+import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 public abstract class AbstractBasicDBObject extends Document {
+
+    public static final String ATTR_KEY__ID = "_id";
 
     public AbstractBasicDBObject() {
 
@@ -34,6 +37,21 @@ public abstract class AbstractBasicDBObject extends Document {
 
         return this.toJson();
     }
+
+    protected void initializeId(Document parsedJson) {
+
+        ObjectId objectId = parsedJson.getObjectId(ATTR_KEY__ID);
+
+        if (objectId != null) {
+            put(ATTR_KEY__ID, objectId);
+        }
+    }
+
+    public ObjectId getObjectId() {
+
+        return getObjectId(ATTR_KEY__ID);
+    }
+
 
     @Override
     public boolean equals(Object o) {
