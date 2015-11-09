@@ -1,11 +1,10 @@
 package gov.energy.nbc.car.fileReader;
 
-import gov.energy.nbc.car.fileReader.dto.SpreadsheetData;
-import gov.energy.nbc.car.model.common.SpreadsheetRow;
+import gov.energy.nbc.car.fileReader.dto.RowCollection;
+import gov.energy.nbc.car.model.common.Row;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -34,7 +33,7 @@ public class ExcelWorkbookReader extends AbsFileReader {
         return (fileName.endsWith(".xls") || fileName.endsWith(".xlsx") || fileName.endsWith(".xlsm")) == true;
     }
 
-    public SpreadsheetData extractDataFromFile(File file, String nameOfWorksheetContainingTheData)
+    public RowCollection extractDataFromFile(File file, String nameOfWorksheetContainingTheData)
             throws IOException, InvalidValueFoundInHeader, UnsupportedFileExtension {
 
         FileInputStream fileInputStream = null;
@@ -53,9 +52,9 @@ public class ExcelWorkbookReader extends AbsFileReader {
             // DESIGN NOTE: When the data was extracted, the the row number was added as the first data element so users
             //              will be able to trace the data back to the original source document.  So we need to add a
             //              name for that column.
-            columnNames.add(0, SpreadsheetRow.ATTRIBUTE_KEY__ROW_NUMBER);
+            columnNames.add(0, Row.ATTR_KEY__ROW_NUMBER);
 
-            SpreadsheetData spreasheetData = new SpreadsheetData(columnNames, data);
+            RowCollection spreasheetData = new RowCollection(columnNames, data);
             return spreasheetData;
         }
         finally {
@@ -68,13 +67,13 @@ public class ExcelWorkbookReader extends AbsFileReader {
 
     protected List<List> extractData(Sheet sheet, int numberOfColumnHeadings) {
 
-        List<List> spreadsheetData = new ArrayList();
-        Iterator<Row> rowIterator = sheet.rowIterator();
+        List<List> dataUpload = new ArrayList();
+        Iterator<org.apache.poi.ss.usermodel.Row> rowIterator = sheet.rowIterator();
 
         boolean isFirstRow = true;
         while (rowIterator.hasNext()) {
 
-            Row row = rowIterator.next();
+            org.apache.poi.ss.usermodel.Row row = rowIterator.next();
 
             if (isFirstRow) {
                 isFirstRow = false;
@@ -87,14 +86,14 @@ public class ExcelWorkbookReader extends AbsFileReader {
                     rowData.subList(1, rowData.size());
 
             if (containsData(allDataInRowExceptTheFirstColumnThatContainsTheRowNumber)) {
-                spreadsheetData.add(rowData);
+                dataUpload.add(rowData);
             }
         }
 
-        return spreadsheetData;
+        return dataUpload;
     }
 
-    protected List<Object> extractData(Row row, int numberOfColumnHeadings) {
+    protected List<Object> extractData(org.apache.poi.ss.usermodel.Row row, int numberOfColumnHeadings) {
 
         List<Object> rowData = new ArrayList();
 
@@ -174,7 +173,7 @@ public class ExcelWorkbookReader extends AbsFileReader {
     public List<String> determineColumnNames(Sheet sheet)
             throws InvalidValueFoundInHeader {
 
-        Row firstRow = sheet.iterator().next();
+        org.apache.poi.ss.usermodel.Row firstRow = sheet.iterator().next();
         Iterator<Cell> cellIterator = firstRow.cellIterator();
 
         List<String> headings = new ArrayList();

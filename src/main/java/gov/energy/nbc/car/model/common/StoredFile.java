@@ -6,8 +6,8 @@ import org.bson.Document;
 
 public class StoredFile extends AbstractDocument {
 
-    public static final String ATTRIBUTE_KEY__ORIGINAL_FILE_NAME = "originalFileName";
-    public static final String ATTRIBUTE_KEY__STORAGE_LOCATION = "storageLocation";
+    public static final String ATTR_KEY__ORIGINAL_FILE_NAME = "originalFileName";
+    public static final String ATTR_KEY__STORAGE_LOCATION = "storageLocation";
 
     public StoredFile(Document document) {
         super(document);
@@ -31,21 +31,23 @@ public class StoredFile extends AbstractDocument {
             return;
         }
 
-        init((String)document.get(ATTRIBUTE_KEY__ORIGINAL_FILE_NAME),
-             (String)document.get(ATTRIBUTE_KEY__STORAGE_LOCATION));
+        initObjectId(document);
+
+        init((String)document.get(ATTR_KEY__ORIGINAL_FILE_NAME),
+             (String)document.get(ATTR_KEY__STORAGE_LOCATION));
     }
 
     public void init(String originalFileName, String storageLocation) {
 
-        put(ATTRIBUTE_KEY__ORIGINAL_FILE_NAME, originalFileName);
-        put(ATTRIBUTE_KEY__STORAGE_LOCATION, storageLocation);
+        put(ATTR_KEY__ORIGINAL_FILE_NAME, originalFileName);
+        put(ATTR_KEY__STORAGE_LOCATION, storageLocation);
     }
 
     public String getOriginalFileName() {
-        return (String) get(ATTRIBUTE_KEY__ORIGINAL_FILE_NAME);
+        return (String) get(ATTR_KEY__ORIGINAL_FILE_NAME);
     }
 
     public String getStorageLocation() {
-        return (String) get(ATTRIBUTE_KEY__STORAGE_LOCATION);
+        return (String) get(ATTR_KEY__STORAGE_LOCATION);
     }
 }

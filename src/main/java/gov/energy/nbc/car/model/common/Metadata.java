@@ -1,7 +1,7 @@
 package gov.energy.nbc.car.model.common;
 
 import com.mongodb.BasicDBObject;
-import gov.energy.nbc.car.dao.DAOUtilities;
+import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.model.AbstractDocument;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
@@ -13,17 +13,17 @@ import java.util.List;
 
 public class Metadata extends AbstractDocument {
 
-    public static final String ATTRIBUTE_KEY__SAMPLE_TYPE = "sampleType";
-    public static final String ATTRIBUTE_KEY__SUBMISSION_DATE = "submissionDate";
-    public static final String ATTRIBUTE_KEY__SUBMITTER = "submitter";
-    public static final String ATTRIBUTE_KEY__CHARGE_NUMBER = "chargeNumber";
-    public static final String ATTRIBUTE_KEY__PROJECT_NAME = "projectName";
-    public static final String ATTRIBUTE_KEY__COMMENTS = "comments";
-    public static final String ATTRIBUTE_KEY__UPLOADED_FILE = "uploadedFile";
-    public static final String ATTRIBUTE_KEY__ATTACHMENTS = "attachments";
+    public static final String ATTR_KEY__SAMPLE_TYPE = "dataCategory";
+    public static final String ATTR_KEY__SUBMISSION_DATE = "submissionDate";
+    public static final String ATTR_KEY__SUBMITTER = "submitter";
+    public static final String ATTR_KEY__CHARGE_NUMBER = "chargeNumber";
+    public static final String ATTR_KEY__PROJECT_NAME = "projectName";
+    public static final String ATTR_KEY__COMMENTS = "comments";
+    public static final String ATTR_KEY__UPLOADED_FILE = "uploadedFile";
+    public static final String ATTR_KEY__ATTACHMENTS = "attachments";
 
     public Metadata(
-            String sampleType,
+            String dataCategory,
             Date submissionDate,
             String submitter,
             String chargeNumber,
@@ -34,7 +34,7 @@ public class Metadata extends AbstractDocument {
 
         super();
 
-        init(sampleType,
+        init(dataCategory,
                 submissionDate,
                 submitter,
                 chargeNumber,
@@ -52,7 +52,7 @@ public class Metadata extends AbstractDocument {
         super(json);
     }
 
-    private void init(String sampleType,
+    private void init(String dataCategory,
                       Date submissionDate,
                       String submitter,
                       String chargeNumber,
@@ -61,14 +61,14 @@ public class Metadata extends AbstractDocument {
                       StoredFile uploadedFile,
                       List<StoredFile> attachments) {
 
-        put(ATTRIBUTE_KEY__SAMPLE_TYPE, sampleType);
-        put(ATTRIBUTE_KEY__SUBMISSION_DATE, submissionDate);
-        put(ATTRIBUTE_KEY__SUBMITTER, submitter);
-        put(ATTRIBUTE_KEY__CHARGE_NUMBER, chargeNumber);
-        put(ATTRIBUTE_KEY__PROJECT_NAME, projectName);
-        put(ATTRIBUTE_KEY__COMMENTS, comments);
-        put(ATTRIBUTE_KEY__UPLOADED_FILE, uploadedFile);
-        put(ATTRIBUTE_KEY__ATTACHMENTS, attachments);
+        put(ATTR_KEY__SAMPLE_TYPE, dataCategory);
+        put(ATTR_KEY__SUBMISSION_DATE, submissionDate);
+        put(ATTR_KEY__SUBMITTER, submitter);
+        put(ATTR_KEY__CHARGE_NUMBER, chargeNumber);
+        put(ATTR_KEY__PROJECT_NAME, projectName);
+        put(ATTR_KEY__COMMENTS, comments);
+        put(ATTR_KEY__UPLOADED_FILE, uploadedFile);
+        put(ATTR_KEY__ATTACHMENTS, attachments);
 
         verifyRequiredFieldsAreSet();
     }
@@ -86,27 +86,38 @@ public class Metadata extends AbstractDocument {
             return;
         }
 
-        String sampleType = (String) document.get(ATTRIBUTE_KEY__SAMPLE_TYPE);
-        Date submissionDate = (Date) document.get(ATTRIBUTE_KEY__SUBMISSION_DATE);
-        String submitter = (String) document.get(ATTRIBUTE_KEY__SUBMITTER);
-        String chargeNumber = (String) document.get(ATTRIBUTE_KEY__CHARGE_NUMBER);
-        String projectName = (String) document.get(ATTRIBUTE_KEY__PROJECT_NAME);
-        String comments = (String) document.get(ATTRIBUTE_KEY__COMMENTS);
-        StoredFile uploadedFile = new StoredFile((BasicDBObject)document.get(ATTRIBUTE_KEY__UPLOADED_FILE));
+        initObjectId(document);
 
-        List<BasicDBObject> attachmentObjects = (List<BasicDBObject>) document.get(ATTRIBUTE_KEY__ATTACHMENTS);
+        String dataCategory = (String) document.get(ATTR_KEY__SAMPLE_TYPE);
+        Date submissionDate = (Date) document.get(ATTR_KEY__SUBMISSION_DATE);
+        String submitter = (String) document.get(ATTR_KEY__SUBMITTER);
+        String chargeNumber = (String) document.get(ATTR_KEY__CHARGE_NUMBER);
+        String projectName = (String) document.get(ATTR_KEY__PROJECT_NAME);
+        String comments = (String) document.get(ATTR_KEY__COMMENTS);
+
+        StoredFile uploadedFile = null;
+        Object o = document.get(ATTR_KEY__UPLOADED_FILE);
+        // It's not clear to me why this is not always the same type of object
+        if (o instanceof BasicDBObject) {
+            uploadedFile = new StoredFile((BasicDBObject) o);
+        }
+        else if (o instanceof Document) {
+            uploadedFile = new StoredFile((Document) o);
+        }
+
+        List<Document> attachmentObjects = (List<Document>) document.get(ATTR_KEY__ATTACHMENTS);
 
         List<StoredFile> attachments = new ArrayList();
 
         if (attachmentObjects != null) {
 
-            for (BasicDBObject attachmentObject : attachmentObjects) {
+            for (Document attachmentObject : attachmentObjects) {
 
                 attachments.add(new StoredFile(attachmentObject));
             }
         }
 
-        init(sampleType,
+        init(dataCategory,
              submissionDate,
              submitter,
              chargeNumber,
@@ -117,21 +128,21 @@ public class Metadata extends AbstractDocument {
     }
 
     private void verifyRequiredFieldsAreSet() {
-        verify(StringUtils.isNotBlank((String)this.get(ATTRIBUTE_KEY__SAMPLE_TYPE)), "sampleType is blank");
-        verify(this.get(ATTRIBUTE_KEY__UPLOADED_FILE) != null, "spreadsheetPath is blank");
+        verify(StringUtils.isNotBlank((String)this.get(ATTR_KEY__SAMPLE_TYPE)), "dataCategory is blank");
+        verify(this.get(ATTR_KEY__UPLOADED_FILE) != null, "datasetPath is blank");
     }
 
     private void verify(boolean condition, String errorMessage) {
         if (condition == false) throw new IllegalArgumentException(errorMessage);
     }
 
-    public String getSampleType() { return (String) get(ATTRIBUTE_KEY__SAMPLE_TYPE); }
-    public String getSubmissionDate() { return (String) get(ATTRIBUTE_KEY__SUBMISSION_DATE); }
-    public String getSubmitter() { return (String) get(ATTRIBUTE_KEY__SUBMITTER); }
-    public String getChargeNumber() { return (String) get(ATTRIBUTE_KEY__CHARGE_NUMBER); }
-    public String getProjectName() { return (String) get(ATTRIBUTE_KEY__PROJECT_NAME); }
-    public String getComments() { return (String) get(ATTRIBUTE_KEY__COMMENTS); }
-    public StoredFile getUploadedFile() { return (StoredFile) get(ATTRIBUTE_KEY__UPLOADED_FILE); }
-    public List<StoredFile> getAttachments() { return (List<StoredFile>) get(ATTRIBUTE_KEY__ATTACHMENTS); }
+    public String getDataCategory() { return (String) get(ATTR_KEY__SAMPLE_TYPE); }
+    public String getSubmissionDate() { return (String) get(ATTR_KEY__SUBMISSION_DATE); }
+    public String getSubmitter() { return (String) get(ATTR_KEY__SUBMITTER); }
+    public String getChargeNumber() { return (String) get(ATTR_KEY__CHARGE_NUMBER); }
+    public String getProjectName() { return (String) get(ATTR_KEY__PROJECT_NAME); }
+    public String getComments() { return (String) get(ATTR_KEY__COMMENTS); }
+    public StoredFile getUploadedFile() { return (StoredFile) get(ATTR_KEY__UPLOADED_FILE); }
+    public List<StoredFile> getAttachments() { return (List<StoredFile>) get(ATTR_KEY__ATTACHMENTS); }
 
 }

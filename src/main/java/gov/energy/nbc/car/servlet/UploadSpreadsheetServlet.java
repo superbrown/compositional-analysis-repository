@@ -1,7 +1,7 @@
 //package gov.energy.nbc.car.servlet;
 //
 //import gov.energy.nbc.car.model.common.Metadata;
-//import gov.energy.nbc.car.model.document.SpreadsheetDocument;
+//import gov.energy.nbc.car.model.document.Dataset;
 //import gov.energy.nbc.car.Settings;
 //import gov.energy.nbc.car.businessService.BusinessServices;
 //import gov.energy.nbc.car.businessService.TestMode;
@@ -23,7 +23,7 @@
 // * @author James Albersheim
 // *
 // */
-//public class UploadSpreadsheetServlet extends HttpServlet implements
+//public class UploadDatasetServlet extends HttpServlet implements
 //		AppConstants {
 //
 //	/**
@@ -48,13 +48,13 @@
 //            return;
 //        }
 //
-//		String spreadsheetId = (String) request.getAttribute("spreadsheetId");
+//		String datasetId = (String) request.getAttribute("datasetId");
 //		String testMode = (String) request.getAttribute("testMode");
 //
 //		TestMode testModeValue = TestMode.value(testMode);
 //
-//		String json = BusinessServices.spreadsheetService.getSpreadsheet(testModeValue, spreadsheetId);
-//		SpreadsheetDocument spreadsheetDocument = new SpreadsheetDocument(json);
+//		String json = BusinessServices.datasetService.getDataset(testModeValue, datasetId);
+//		Dataset dataset = new Dataset(json);
 //
 //		Settings settings = BusinessServices.getSettings(testModeValue);
 //
@@ -68,12 +68,12 @@
 //            throw new RuntimeException(e);
 //        }
 //
-//		Metadata metadata = spreadsheetDocument.getMetadata();
+//		Metadata metadata = dataset.getMetadata();
 //		setTheFileThatWasUploaded(metadata, theFilesThatWereStored.get(0));
 //
-//		Data data = spreadsheetDocument.getData();
+//		Data data = dataset.getData();
 //
-//		new SpreadsheetDocument(metadata, data);
+//		new Dataset(metadata, data);
 //
 //        System.out.print(theFilesThatWereStored);
 //	}
@@ -83,6 +83,6 @@
 //		StoredFile storedFile_mongoVersion = new StoredFile(
 //				theFileThatWasStored.originalFileName,
 //				theFileThatWasStored.storageLocation);
-//		metadata.put(Metadata.ATTRIBUTE_KEY__UPLOADED_FILE, storedFile_mongoVersion);
+//		metadata.put(Metadata.ATTR_KEY__UPLOADED_FILE, storedFile_mongoVersion);
 //	}
 //}
