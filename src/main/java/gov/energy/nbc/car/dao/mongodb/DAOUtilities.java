@@ -1,14 +1,19 @@
 package gov.energy.nbc.car.dao.mongodb;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.util.JSON;
+import gov.energy.nbc.car.businessObject.dto.ComparisonOperator;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.mongodb.client.model.Filters.*;
+import static gov.energy.nbc.car.businessObject.dto.ComparisonOperator.*;
 
 public class DAOUtilities {
 
@@ -121,4 +126,35 @@ public class DAOUtilities {
         return parse(json);
     }
 
+    public static Bson toCriterion(String name, Object value, ComparisonOperator comparisonOperator) {
+
+        Bson criterion;
+
+        if (comparisonOperator == EQUALS) {
+            criterion = eq(name, value);
+        }
+        else if (comparisonOperator == GREATER_THAN) {
+            criterion = gt(name, value);
+        }
+        else if (comparisonOperator == LESS_THAN) {
+            criterion = lt(name, value);
+        }
+        else if (comparisonOperator == GREATER_THAN_OR_EQUAL) {
+            criterion = gte(name, value);
+        }
+        else if (comparisonOperator == LESS_THAN_OR_EQUAL) {
+            criterion = lte(name, value);
+        }
+        else if (comparisonOperator == LIKE) {
+            criterion = new BasicDBObject();
+            ((BasicDBObject)criterion).put(
+                    name,
+                    java.util.regex.Pattern.compile("/"+ value +"/"));
+        }
+        else {
+           throw new RuntimeException("Unknown comparison operator: " + comparisonOperator);
+        }
+
+        return criterion;
+    }
 }

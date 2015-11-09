@@ -22,6 +22,8 @@ import org.bson.types.ObjectId;
 
 import java.util.*;
 
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Projections.include;
 
@@ -310,13 +312,15 @@ public class RowDAO_new extends DAO implements IRowDAO {
 
         CellDAO_new cellDAO = getCellDAO(searchCriterion.getName());
 
-        // CAUTION: Do NOT change the order of these, as these reflect an index set within the
-        //          database.  If you do, you'll have to change the index as well.
-        Document query = new Document().
-//                append(CellDocument.ATTR_KEY__COLUMN_NAME, columnName).
-                append(CellDocument.ATTR_KEY__VALUE, searchCriterion.getValue());
+        Bson query = DAOUtilities.toCriterion(
+                CellDocument.ATTR_KEY__VALUE,
+                searchCriterion.getValue(),
+                searchCriterion.getComparisonOperator());
 
-        PerformanceLogger performanceLogger = new PerformanceLogger(log, "[getCountOfRowsThatMatch()] cellDAO.getCollection().count(" + query.toString() + ")", true);
+        PerformanceLogger performanceLogger = new PerformanceLogger(
+                log,
+                "[getCountOfRowsThatMatch()] cellDAO.getCollection().count(" + query.toString() + ")",
+                true);
         long count = cellDAO.getCollection().count(query);
         performanceLogger.done();
 
@@ -329,14 +333,12 @@ public class RowDAO_new extends DAO implements IRowDAO {
 
         CellDAO_new cellDAO = getCellDAO(searchCriterion.getName());
 
-        // CAUTION: Do NOT change the order of these, as these reflect an index set within the
-        //          database.  If you do, you'll have to change the index as well.
-        Document query = new Document().
-//                append(CellDocument.ATTR_KEY__COLUMN_NAME, searchCriterion.getName()).
-                append(CellDocument.ATTR_KEY__VALUE, searchCriterion.getValue());
+        Bson query = DAOUtilities.toCriterion(
+                CellDocument.ATTR_KEY__VALUE,
+                searchCriterion.getValue(),
+                searchCriterion.getComparisonOperator());
 
-        Bson projection = fields(include(
-                CellDocument.ATTR_KEY__ROW_ID));
+        Bson projection = fields(include(CellDocument.ATTR_KEY__ROW_ID));
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "[getIdsOfRowsThatMatch()] cellDAO.get(" + query.toString() + ")", true);
         List<Document> documents = cellDAO.get(query, projection);
@@ -354,15 +356,22 @@ public class RowDAO_new extends DAO implements IRowDAO {
 
         // CAUTION: Do NOT change the order of these, as these reflect an index set within the
         //          database.  If you do, you'll have to change the index as well.
-        Document query = new Document().
-                append(CellDocument.ATTR_KEY__ROW_ID, rowId).
-//                append(CellDocument.ATTR_KEY__COLUMN_NAME, searchCriterion.getName()).
-                append(CellDocument.ATTR_KEY__VALUE, searchCriterion.getValue());
+        Bson query = and(
+                eq(
+                        CellDocument.ATTR_KEY__ROW_ID,
+                        rowId),
 
-        Bson projection = fields(include(
-                CellDocument.ATTR_KEY__ROW_ID));
+                DAOUtilities.toCriterion(
+                        CellDocument.ATTR_KEY__VALUE,
+                        searchCriterion.getValue(),
+                        searchCriterion.getComparisonOperator()));
 
-        PerformanceLogger performanceLogger = new PerformanceLogger(log, "[rowMatchesTheCriterion()] cellDAO.getOne(" + query.toString() + ")", true);
+        Bson projection = fields(include(CellDocument.ATTR_KEY__ROW_ID));
+
+        PerformanceLogger performanceLogger = new PerformanceLogger(
+                log,
+                "[rowMatchesTheCriterion()] cellDAO.getOne(" + query.toString() + ")",
+                true);
         Document document = cellDAO.getOne(query, projection);
         performanceLogger.done();
 

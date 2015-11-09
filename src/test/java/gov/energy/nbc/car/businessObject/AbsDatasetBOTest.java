@@ -3,6 +3,7 @@ package gov.energy.nbc.car.businessObject;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import gov.energy.nbc.car.Application;
+import gov.energy.nbc.car.TestUsingTestData;
 import gov.energy.nbc.car.businessObject.dto.RowSearchCriteria;
 import gov.energy.nbc.car.businessObject.dto.StoredFile;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
@@ -12,7 +13,6 @@ import gov.energy.nbc.car.fileReader.UnsupportedFileExtension;
 import gov.energy.nbc.car.model.TestData;
 import gov.energy.nbc.car.model.common.Metadata;
 import gov.energy.nbc.car.model.document.RowDocument;
-import gov.energy.nbc.car.TestUsingTestData;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
 import org.bson.conversions.Bson;
@@ -25,6 +25,7 @@ import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Projections.include;
+import static gov.energy.nbc.car.businessObject.dto.ComparisonOperator.EQUALS;
 import static org.junit.Assert.assertTrue;
 
 
@@ -149,13 +150,16 @@ public abstract class AbsDatasetBOTest extends TestUsingTestData
 
         rowSearchCriteria.addCriterion_data(
                 "FEEDSTOCK",
-                "corn stover");
+                "corn stover",
+                EQUALS);
         rowSearchCriteria.addCriterion_data(
                 "SCANNING_METHOD",
-                "Quarter Cup");
+                "Quarter Cup",
+                EQUALS);
         rowSearchCriteria.addCriterion_data(
                 "2497" + MongoFieldNameEncoder.DECIMAL_POINT_SUBSTITUTE + "0",
-                0.5887146);
+                0.5887146,
+                EQUALS);
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "[performQueries_homeGrownWay()] rowBO.getRows(" + rowSearchCriteria.toString() + ")", true);
 
@@ -178,7 +182,8 @@ public abstract class AbsDatasetBOTest extends TestUsingTestData
         rowSearchCriteria = new RowSearchCriteria();
         rowSearchCriteria.addCriterion_data(
                 "FEEDSTOCK",
-                "corn stover");
+                "corn stover",
+                EQUALS);
 
         performanceLogger = new PerformanceLogger(log, "[performQueries_homeGrownWay()] rowBO.getRows(" + rowSearchCriteria.toString() + ")", true);
 

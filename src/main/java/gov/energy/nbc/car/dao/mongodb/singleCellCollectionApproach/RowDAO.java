@@ -26,6 +26,8 @@ import org.bson.types.ObjectId;
 
 import java.util.*;
 
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Projections.include;
 
@@ -278,11 +280,22 @@ public class RowDAO extends DAO implements IRowDAO {
 
         // CAUTION: Do NOT change the order of these, as these reflect an index set within the
         //          database.  If you do, you'll have to change the index as well.
-        Document query = new Document().
-                append(CellDocument.ATTR_KEY__COLUMN_NAME, toMongoSafeFieldName(searchCriterion.getName())).
-                append(CellDocument.ATTR_KEY__VALUE, searchCriterion.getValue());
 
-        PerformanceLogger performanceLogger = new PerformanceLogger(log, "[getCountOfRowsThatMatch()] cellDAO.getCollection().count(" + query.toString() + ")", true);
+        Bson query = and(
+
+                eq(
+                        CellDocument.ATTR_KEY__COLUMN_NAME,
+                        toMongoSafeFieldName(searchCriterion.getName())),
+
+                DAOUtilities.toCriterion(
+                        CellDocument.ATTR_KEY__VALUE,
+                        searchCriterion.getValue(),
+                        searchCriterion.getComparisonOperator()));
+
+        PerformanceLogger performanceLogger = new PerformanceLogger(
+                log,
+                "[getCountOfRowsThatMatch()] cellDAO.getCollection().count(" + query.toString() + ")",
+                true);
         long count = cellDAO.getCollection().count(query);
         performanceLogger.done();
 
@@ -297,14 +310,18 @@ public class RowDAO extends DAO implements IRowDAO {
 
     public Set<ObjectId> getIdsOfRowsThatMatch(SearchCriterion searchCriterion) {
 
+        Bson rowIdCriterion = eq(CellDocument.ATTR_KEY__COLUMN_NAME, toMongoSafeFieldName(searchCriterion.getName()));
+
+        Bson valueCriterion = DAOUtilities.toCriterion(
+                CellDocument.ATTR_KEY__VALUE,
+                searchCriterion.getValue(),
+                searchCriterion.getComparisonOperator());
+
         // CAUTION: Do NOT change the order of these, as these reflect an index set within the
         //          database.  If you do, you'll have to change the index as well.
-        Document query = new Document().
-                append(CellDocument.ATTR_KEY__COLUMN_NAME, toMongoSafeFieldName(searchCriterion.getName())).
-                        append(CellDocument.ATTR_KEY__VALUE, searchCriterion.getValue());
+        Bson query = and(rowIdCriterion, valueCriterion);
 
-        Bson projection = fields(include(
-                CellDocument.ATTR_KEY__ROW_ID));
+        Bson projection = fields(include(CellDocument.ATTR_KEY__ROW_ID));
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "[getIdsOfRowsThatMatch()] cellDAO.get(" + query.toString() + ")", true);
         List<Document> documents = cellDAO.get(query, projection);
@@ -325,10 +342,20 @@ public class RowDAO extends DAO implements IRowDAO {
 
         // CAUTION: Do NOT change the order of these, as these reflect an index set within the
         //          database.  If you do, you'll have to change the index as well.
-        Document query = new Document().
-                append(CellDocument.ATTR_KEY__ROW_ID, rowId).
-                append(CellDocument.ATTR_KEY__COLUMN_NAME, toMongoSafeFieldName(searchCriterion.getName())).
-                append(CellDocument.ATTR_KEY__VALUE, searchCriterion.getValue());
+        Bson query = and(
+
+                eq(
+                        CellDocument.ATTR_KEY__ROW_ID,
+                        rowId),
+
+                eq(
+                        CellDocument.ATTR_KEY__COLUMN_NAME,
+                        toMongoSafeFieldName(searchCriterion.getName())),
+
+                DAOUtilities.toCriterion(
+                        CellDocument.ATTR_KEY__VALUE,
+                        searchCriterion.getValue(),
+                        searchCriterion.getComparisonOperator()));
 
         Bson projection = fields(include(
                 CellDocument.ATTR_KEY__ROW_ID));
