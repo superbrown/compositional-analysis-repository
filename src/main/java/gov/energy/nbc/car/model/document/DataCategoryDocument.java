@@ -1,6 +1,6 @@
 package gov.energy.nbc.car.model.document;
 
-import gov.energy.nbc.car.dao.mongodb.dto.MongoFieldNameEncoder;
+import gov.energy.nbc.car.dao.mongodb.MongoFieldNameEncoder;
 import gov.energy.nbc.car.model.AbstractDocument;
 import org.bson.Document;
 

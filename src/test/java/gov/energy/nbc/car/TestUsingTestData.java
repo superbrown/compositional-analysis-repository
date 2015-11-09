@@ -1,13 +1,16 @@
 package gov.energy.nbc.car;
 
 import gov.energy.nbc.car.businessObject.ITestDataBO;
-import gov.energy.nbc.car.businessObject.singleCellCollectionApproach.BusinessObjects;
+import gov.energy.nbc.car.businessObject.singleCellSchemaApproach.s_BusinessObjects;
 
 public class TestUsingTestData {
 
+    static public boolean SUSPEND_DATA_SEEDING = false;
+    static public boolean SUSPEND_DATA_CLEANUP = false;
+
     public static void beforeClass() {
 
-        Application.setBusinessObjects(new BusinessObjects());
+        Application.setBusinessObjects(new s_BusinessObjects());
     }
 
     public void before() {
@@ -15,19 +18,28 @@ public class TestUsingTestData {
         ITestDataBO testDataBO = Application.getBusinessObjects().getTestDataBO();
 
         // (just in case it's necessary)
-        testDataBO.removeTestData();
-        testDataBO.seedTestDataInTheDatabase_dataset_1_and_2();
+        if (SUSPEND_DATA_CLEANUP == false) {
+            testDataBO.removeTestData();
+        }
+
+        if (SUSPEND_DATA_SEEDING == false) {
+            testDataBO.seedTestDataInTheDatabase_dataset_1_and_2();
+        }
     }
 
     public void after() {
 
-        ITestDataBO testDataBO = Application.getBusinessObjects().getTestDataBO();
-        testDataBO.removeTestData();
+        if (SUSPEND_DATA_CLEANUP == false) {
+            ITestDataBO testDataBO = Application.getBusinessObjects().getTestDataBO();
+            testDataBO.removeTestData();
+        }
     }
 
     public static void afterClass() {
 
-        ITestDataBO testDataBO = Application.getBusinessObjects().getTestDataBO();
-        testDataBO.dropTheTestDatabase();
+        if (SUSPEND_DATA_CLEANUP == false) {
+            ITestDataBO testDataBO = Application.getBusinessObjects().getTestDataBO();
+            testDataBO.dropTheTestDatabase();
+        }
     }
 }

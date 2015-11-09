@@ -39,6 +39,7 @@ public class SearchCriterion {
         return "SearchCriterion{" +
                 "name='" + name + '\'' +
                 ", value=" + value +
+                ", comparisonOperator=" + comparisonOperator +
                 '}';
     }
 }
