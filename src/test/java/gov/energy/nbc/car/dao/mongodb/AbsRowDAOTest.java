@@ -4,7 +4,6 @@ import gov.energy.nbc.car.Application;
 import gov.energy.nbc.car.TestUsingTestData;
 import gov.energy.nbc.car.businessObject.TestMode;
 import gov.energy.nbc.car.businessObject.dto.RowSearchCriteria;
-import gov.energy.nbc.car.dao.mongodb.dto.MongoFieldNameEncoder;
 import gov.energy.nbc.car.model.TestData;
 import gov.energy.nbc.car.model.common.Metadata;
 import gov.energy.nbc.car.model.document.DatasetDocument;

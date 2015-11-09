@@ -50,7 +50,8 @@ public class FileReader extends AbsFileReader {
         RowCollection dataUpload =
                 excelWorkbookReader.extractDataFromFile(file, nameOfWorksheetContainingTheData);
 
-        gov.energy.nbc.car.model.common.RowCollection rowCollection = new gov.energy.nbc.car.model.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
+        gov.energy.nbc.car.model.common.RowCollection rowCollection =
+                new gov.energy.nbc.car.model.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
         return rowCollection;
     }

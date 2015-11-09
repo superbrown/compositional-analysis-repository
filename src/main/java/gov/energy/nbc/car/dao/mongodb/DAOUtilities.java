@@ -149,7 +149,7 @@ public class DAOUtilities {
             criterion = new BasicDBObject();
             ((BasicDBObject)criterion).put(
                     name,
-                    java.util.regex.Pattern.compile("/"+ value +"/"));
+                    java.util.regex.Pattern.compile(value.toString()));
         }
         else {
            throw new RuntimeException("Unknown comparison operator: " + comparisonOperator);

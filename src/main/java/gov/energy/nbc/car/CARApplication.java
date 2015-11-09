@@ -1,6 +1,6 @@
 package gov.energy.nbc.car;
 
-import gov.energy.nbc.car.businessObject.multipleCellCollectionsApproach.BusinessObjects_new;
+import gov.energy.nbc.car.businessObject.multipleCellSchemaApproach.m_BusinessObjects;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -16,7 +16,7 @@ public class CARApplication {
 
     public static void main(String[] args) {
 
-        Application.setBusinessObjects(new BusinessObjects_new());
+        Application.setBusinessObjects(new m_BusinessObjects());
 
         SpringApplication.run(CARApplication.class, args);
 

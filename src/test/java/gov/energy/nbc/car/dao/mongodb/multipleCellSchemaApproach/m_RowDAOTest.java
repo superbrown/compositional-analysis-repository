@@ -1,0 +1,13 @@
+package gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach;
+
+import gov.energy.nbc.car.Application;
+import gov.energy.nbc.car.businessObject.multipleCellSchemaApproach.m_BusinessObjects;
+import gov.energy.nbc.car.dao.mongodb.AbsRowDAOTest;
+
+public class m_RowDAOTest extends AbsRowDAOTest {
+
+    protected void initializeBusinessObjects() {
+
+        Application.setBusinessObjects(new m_BusinessObjects());
+    }
+}
