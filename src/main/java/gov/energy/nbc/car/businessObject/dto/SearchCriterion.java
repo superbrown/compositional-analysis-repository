@@ -5,10 +5,13 @@ public class SearchCriterion {
 
     private String name;
     private Object value;
+    private ComparisonOperator comparisonOperator;
 
-    public SearchCriterion(String name, Object value) {
+    public SearchCriterion(String name, Object value, ComparisonOperator comparisonOperator) {
+
         this.name = name;
         this.value = value;
+        this.comparisonOperator = comparisonOperator;
     }
 
     public String getName() {
@@ -25,6 +28,10 @@ public class SearchCriterion {
 
     public void setValue(Object value) {
         this.value = value;
+    }
+
+    public ComparisonOperator getComparisonOperator() {
+        return comparisonOperator;
     }
 
     @Override

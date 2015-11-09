@@ -1,6 +1,7 @@
 package gov.energy.nbc.car.dao.mongodb;
 
 import gov.energy.nbc.car.Application;
+import gov.energy.nbc.car.TestUsingTestData;
 import gov.energy.nbc.car.businessObject.TestMode;
 import gov.energy.nbc.car.businessObject.dto.RowSearchCriteria;
 import gov.energy.nbc.car.dao.mongodb.dto.MongoFieldNameEncoder;
@@ -8,7 +9,6 @@ import gov.energy.nbc.car.model.TestData;
 import gov.energy.nbc.car.model.common.Metadata;
 import gov.energy.nbc.car.model.document.DatasetDocument;
 import gov.energy.nbc.car.model.document.RowDocument;
-import gov.energy.nbc.car.TestUsingTestData;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.*;
@@ -17,6 +17,7 @@ import java.util.List;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
+import static gov.energy.nbc.car.businessObject.dto.ComparisonOperator.EQUALS;
 import static org.junit.Assert.assertTrue;
 
 
@@ -158,9 +159,9 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
     public void testQuery_rowSearchCriteria() {
 
         RowSearchCriteria rowSearchCriteria = new RowSearchCriteria();
-        rowSearchCriteria.addCriterion_data("Some Column Name", 1);
-        rowSearchCriteria.addCriterion_data("Float Values Column Name", 1.22);
-        rowSearchCriteria.addCriterion_data("Additional Column Name 1", "a1");
+        rowSearchCriteria.addCriterion_data("Some Column Name", 1, EQUALS);
+        rowSearchCriteria.addCriterion_data("Float Values Column Name", 1.22, EQUALS);
+        rowSearchCriteria.addCriterion_data("Additional Column Name 1", "a1", EQUALS);
 
         List<Document> documents = rowDAO.query(rowSearchCriteria);
         assertTrue(documents.size() == 1);
