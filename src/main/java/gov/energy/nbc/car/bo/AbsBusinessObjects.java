@@ -14,10 +14,10 @@ public abstract class AbsBusinessObjects implements IBusinessObjects {
     protected IPhysicalFileBO physicalFileBO;
     protected ITestDataBO testDataBO;
 
-    public AbsBusinessObjects() {
+    public AbsBusinessObjects(Settings settings, Settings_forUnitTestPurposes settings_forUnitTestPurposes) {
 
-        settings = new Settings();
-        settings_forUnitTestPurposes = new Settings_forUnitTestPurposes();
+        this.settings = settings;
+        this.settings_forUnitTestPurposes = settings_forUnitTestPurposes;
 
         init();
     }

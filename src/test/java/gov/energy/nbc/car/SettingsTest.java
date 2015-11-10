@@ -38,8 +38,8 @@ public class SettingsTest {
     @Test
     public void testSetAndGetMongoDbPort() throws Exception {
 
-        Integer mongo_database_port = 123;
-        settings.setMondgoDbPort(mongo_database_port);
+        String mongo_database_port = "123";
+        settings.setMongoDbPort(mongo_database_port);
         assertTrue(settings.getMongoDbPort() == mongo_database_port);
     }
 }

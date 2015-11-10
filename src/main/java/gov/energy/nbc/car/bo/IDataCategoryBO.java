@@ -14,7 +14,7 @@ public interface IDataCategoryBO {
 
     String getAllDataCategories(TestMode testMode);
 
-    long deleteDataCategory(TestMode testMode,
+    void deleteDataCategory(TestMode testMode,
                             String dataCategoryId) throws DeletionFailure;
 
     String addDataCategory(TestMode testMode,

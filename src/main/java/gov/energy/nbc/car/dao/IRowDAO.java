@@ -1,8 +1,8 @@
 package gov.energy.nbc.car.dao;
 
-import gov.energy.nbc.car.bo.dto.RowSearchCriteria;
-import gov.energy.nbc.car.bo.dto.SearchCriterion;
-import gov.energy.nbc.car.dao.dto.DeleteResults;
+import gov.energy.nbc.car.dao.dto.IDeleteResults;
+import gov.energy.nbc.car.dao.dto.RowSearchCriteria;
+import gov.energy.nbc.car.dao.dto.SearchCriterion;
 import gov.energy.nbc.car.model.IDatasetDocument;
 import gov.energy.nbc.car.model.IRowCollection;
 import gov.energy.nbc.car.model.IRowDocument;
@@ -20,7 +20,7 @@ public interface IRowDAO extends IDAO {
 
     List<ObjectId> add(ObjectId datasetId, IDatasetDocument datasetDocument, IRowCollection data);
 
-    DeleteResults deleteRowsAssociatedWithDataset(ObjectId datasetId);
+    IDeleteResults deleteRowsAssociatedWithDataset(ObjectId datasetId);
 
     List<Document> query(String query, String projection);
 

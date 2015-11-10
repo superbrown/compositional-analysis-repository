@@ -5,8 +5,9 @@ import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.bo.ITestDataBO;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.IDatasetDAO;
+import gov.energy.nbc.car.dao.mongodb.IMongodbDAO;
 import gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach.m_DatasetDAO;
-import gov.energy.nbc.car.bo.TestData;
+import gov.energy.nbc.car.bo.mongodb.TestData;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -66,12 +67,12 @@ public class m_TestDataBO implements ITestDataBO {
 
     public void removeTestData() {
 
-        datasetDAO.getMongoClient().dropDatabase(settings.getMongoDatabaseName());
+        ((IMongodbDAO)datasetDAO).getMongoClient().dropDatabase(settings.getMongoDatabaseName());
     }
 
     public void dropTheTestDatabase() {
 
-        MongoDatabase database = datasetDAO.getDatabase();
+        MongoDatabase database = ((IMongodbDAO)datasetDAO).getDatabase();
         database.drop();
     }
 }

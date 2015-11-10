@@ -16,7 +16,7 @@ public class CARApplication {
 
     public static void main(String[] args) {
 
-        Application.setBusinessObjects(new m_BusinessObjects());
+        Application.setBusinessObjects(new m_BusinessObjects(new Settings(), new Settings_forUnitTestPurposes()));
 
         SpringApplication.run(CARApplication.class, args);
 

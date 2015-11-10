@@ -3,14 +3,15 @@ package gov.energy.nbc.car.dao.mongodb;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.WriteConcern;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import gov.energy.nbc.car.ISettings;
+import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.dao.IDAO;
-import gov.energy.nbc.car.dao.dto.DeleteResults;
+import gov.energy.nbc.car.dao.dto.IDeleteResults;
+import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
 import gov.energy.nbc.car.model.mongodb.AbstractDocument;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
@@ -22,7 +23,7 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class DAO implements IDAO {
+public abstract class DAO implements IDAO, IMongodbDAO {
 
     protected MongoDatabase database;
     protected MongoClient mongoClient;
@@ -50,7 +51,7 @@ public abstract class DAO implements IDAO {
 
         mongoClient = MongoClients.getClientForHost(
                 settings.getMongoDbHost(),
-                settings.getMongoDbPort());
+                Integer.valueOf(settings.getMongoDbPort()));
 
         database = mongoClient.getDatabase(
                 settings.getMongoDatabaseName());
@@ -142,13 +143,13 @@ public abstract class DAO implements IDAO {
     }
 
     @Override
-    public DeleteResults delete(String id) {
+    public IDeleteResults delete(String id) throws DeletionFailure {
 
         return delete(new ObjectId(id));
     }
 
     @Override
-    public DeleteResults delete(ObjectId objectId) {
+    public IDeleteResults delete(ObjectId objectId) {
 
         Document idFilter = createIdFilter(objectId);
 
@@ -184,12 +185,11 @@ public abstract class DAO implements IDAO {
     }
 
     @Override
-    public FindIterable<Document> getAll() {
+    public Iterable<Document> getAll() {
 
         return getCollection().find(new BasicDBObject());
     }
 
-    @Override
     public UpdateResult updateOne(String id, Bson update) {
 
         Bson filter = createIdFilter(new ObjectId(id));

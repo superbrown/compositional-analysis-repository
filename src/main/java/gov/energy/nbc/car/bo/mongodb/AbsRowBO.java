@@ -4,7 +4,7 @@ import com.mongodb.client.FindIterable;
 import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.bo.IRowBO;
 import gov.energy.nbc.car.bo.TestMode;
-import gov.energy.nbc.car.bo.dto.RowSearchCriteria;
+import gov.energy.nbc.car.dao.dto.RowSearchCriteria;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.model.IRowDocument;
@@ -89,7 +89,7 @@ public abstract class AbsRowBO implements IRowBO {
     @Override
     public String getAllRows(TestMode testMode) {
 
-        FindIterable<Document> rowDocuments = getRowDAO(testMode).getAll();
+        Iterable<Document> rowDocuments = getRowDAO(testMode).getAll();
 
         String jsonOut = DAOUtilities.serialize(rowDocuments);
         return jsonOut;

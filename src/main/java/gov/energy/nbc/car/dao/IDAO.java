@@ -1,17 +1,14 @@
 package gov.energy.nbc.car.dao;
 
-import com.mongodb.MongoClient;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.result.UpdateResult;
 import gov.energy.nbc.car.ISettings;
-import gov.energy.nbc.car.dao.dto.DeleteResults;
+import gov.energy.nbc.car.bo.exception.DeletionFailure;
+import gov.energy.nbc.car.dao.dto.IDeleteResults;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.List;
+
 
 public interface IDAO {
 
@@ -33,23 +30,15 @@ public interface IDAO {
 
     List<Document> get(Bson filter, Bson projection);
 
-    void dropCollection();
+    IDeleteResults delete(String id) throws DeletionFailure;
 
-    DeleteResults delete(String id);
+    IDeleteResults delete(ObjectId objectId);
 
-    DeleteResults delete(ObjectId objectId);
+    Iterable<Document> getAll();
 
-    MongoCollection<Document> getCollection();
-
-    MongoDatabase getDatabase();
-
-    FindIterable<Document> getAll();
-
-    UpdateResult updateOne(String id, Bson update);
+//    UpdateResult updateOne(String id, Bson update);
 
     List<Document> createDocumentsOfTypeDAOHandles(List<Document> documents);
-
-    MongoClient getMongoClient();
 
     String getCollectionName();
 

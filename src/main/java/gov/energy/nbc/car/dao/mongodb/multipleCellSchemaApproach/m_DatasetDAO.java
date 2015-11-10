@@ -1,8 +1,9 @@
 package gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach;
 
 import gov.energy.nbc.car.ISettings;
+import gov.energy.nbc.car.dao.IDataCategoryDAO;
 import gov.energy.nbc.car.dao.IDatasetDAO;
-import gov.energy.nbc.car.dao.dto.DeleteResults;
+import gov.energy.nbc.car.dao.dto.IDeleteResults;
 import gov.energy.nbc.car.dao.mongodb.DAO;
 import gov.energy.nbc.car.dao.mongodb.DataCategoryDAO;
 import gov.energy.nbc.car.model.IDataCategoryDocument;
@@ -30,7 +31,7 @@ public class m_DatasetDAO extends DAO implements IDatasetDAO {
     }
 
     @Override
-    public DatasetDocument getDataset(String id) {
+    public IDatasetDocument getDataset(String id) {
 
         DatasetDocument datasetDocument = (DatasetDocument) getOneWithId(id);
         return datasetDocument;
@@ -75,17 +76,16 @@ public class m_DatasetDAO extends DAO implements IDatasetDAO {
     }
 
     @Override
-    public DeleteResults delete(ObjectId objectId) {
+    public IDeleteResults delete(ObjectId objectId) {
 
-        DeleteResults deleteResults = super.delete(objectId);
+        IDeleteResults deleteResults = super.delete(objectId);
 
         if (deleteResults.wasAcknowledged() == false) {
             return deleteResults;
         }
 
-        // FIXME
-//        DeleteResults deleteResultsForRows = rowDAO.deleteRowsAssociatedWithDataset(objectId);
-//        deleteResults.addAll(deleteResultsForRows);
+        IDeleteResults deleteResultsForRows = rowDAO.deleteRowsAssociatedWithDataset(objectId);
+        deleteResults.addAll(deleteResultsForRows);
 
         return deleteResults;
     }
@@ -101,7 +101,7 @@ public class m_DatasetDAO extends DAO implements IDatasetDAO {
     }
 
     @Override
-    public DataCategoryDAO getDataCategoryDAO() {
+    public IDataCategoryDAO getDataCategoryDAO() {
         return dataCategoryDAO;
     }
 

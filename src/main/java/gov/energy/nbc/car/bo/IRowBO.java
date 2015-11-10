@@ -1,6 +1,6 @@
 package gov.energy.nbc.car.bo;
 
-import gov.energy.nbc.car.bo.dto.RowSearchCriteria;
+import gov.energy.nbc.car.dao.dto.RowSearchCriteria;
 import gov.energy.nbc.car.dao.IRowDAO;
 import org.bson.conversions.Bson;
 

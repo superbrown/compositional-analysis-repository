@@ -6,13 +6,12 @@ import gov.energy.nbc.car.bo.IDataCategoryBO;
 import gov.energy.nbc.car.bo.TestMode;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.dao.IDataCategoryDAO;
-import gov.energy.nbc.car.dao.dto.DeleteResults;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.mongodb.DataCategoryDAO;
-import gov.energy.nbc.car.fileReader.DatasetReader_AllFileTypes;
-import gov.energy.nbc.car.fileReader.IDatasetReader_AllFileTypes;
 import gov.energy.nbc.car.model.IDataCategoryDocument;
 import gov.energy.nbc.car.model.mongodb.document.DataCategoryDocument;
+import gov.energy.nbc.car.utilities.fileReader.DatasetReader_AllFileTypes;
+import gov.energy.nbc.car.utilities.fileReader.IDatasetReader_AllFileTypes;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -60,24 +59,17 @@ public class DataCategoryBO implements IDataCategoryBO {
     @Override
     public String getAllDataCategories(TestMode testMode) {
 
-        FindIterable<Document> dataCategoryDocuments = getDataCategoryDAO(testMode).getAll();
+        Iterable<Document> dataCategoryDocuments = getDataCategoryDAO(testMode).getAll();
 
         String jsonOut = DAOUtilities.serialize(dataCategoryDocuments);
         return jsonOut;
     }
 
     @Override
-    public long deleteDataCategory(TestMode testMode,
+    public void deleteDataCategory(TestMode testMode,
                                    String dataCategoryId) throws DeletionFailure {
 
-        DeleteResults deleteResults = getDataCategoryDAO(testMode).delete(dataCategoryId);
-
-        if (deleteResults.wasAcknowledged() == false) {
-            throw new DeletionFailure(deleteResults);
-        }
-
-        long numberOfObjectsDeleted = deleteResults.getDeletedCount();
-        return numberOfObjectsDeleted;
+        getDataCategoryDAO(testMode).delete(dataCategoryId);
     }
 
     @Override
