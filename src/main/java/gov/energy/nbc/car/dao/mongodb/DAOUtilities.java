@@ -5,7 +5,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.util.JSON;
-import gov.energy.nbc.car.businessObject.dto.ComparisonOperator;
+import gov.energy.nbc.car.bo.dto.ComparisonOperator;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.*;
-import static gov.energy.nbc.car.businessObject.dto.ComparisonOperator.*;
+import static gov.energy.nbc.car.bo.dto.ComparisonOperator.*;
 
 public class DAOUtilities {
 

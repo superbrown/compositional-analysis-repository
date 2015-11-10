@@ -6,10 +6,10 @@ import com.mongodb.client.ListIndexesIterable;
 import com.mongodb.client.result.DeleteResult;
 import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.dao.mongodb.DAO;
-import gov.energy.nbc.car.dao.mongodb.ICellDAO;
-import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
-import gov.energy.nbc.car.model.common.Row;
-import gov.energy.nbc.car.model.document.CellDocument;
+import gov.energy.nbc.car.dao.ICellDAO;
+import gov.energy.nbc.car.dao.dto.DeleteResults;
+import gov.energy.nbc.car.model.IRow;
+import gov.energy.nbc.car.model.mongodb.document.CellDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -31,17 +31,17 @@ public class s_CellDAO extends DAO implements ICellDAO {
     }
 
 
-    public List<ObjectId> add(ObjectId rowId, Row row) {
+    public List<ObjectId> add(ObjectId rowId, IRow row) {
 
         List<ObjectId> cellIDs = new ArrayList();
 
         for (String columnName : row.getColumnNames()) {
 
-            Object value = row.get(columnName);
+            Object value = row.getValue(columnName);
 
             CellDocument cellDocument = new CellDocument(rowId, columnName, value);
 
-            ObjectId cellID = insert(cellDocument);
+            ObjectId cellID = add(cellDocument);
             cellIDs.add(cellID);
         }
 

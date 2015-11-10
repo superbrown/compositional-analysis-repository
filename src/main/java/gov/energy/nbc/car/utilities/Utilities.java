@@ -27,28 +27,6 @@ public class Utilities {
         return Arrays.asList(array);
     }
 
-	public static void writeFileToOutputSream(String filePath, OutputStream outputStream)
-			throws IOException {
-
-		InputStream inputStream = null;
-		try {
-			inputStream = new BufferedInputStream(new FileInputStream(filePath));
-
-			byte[] bytes = new byte[4 * 1024];
-			int bytesRead;
-
-			while ((bytesRead = inputStream.read(bytes)) != -1) {
-
-				outputStream.write(bytes, 0, bytesRead);
-			}
-		}
-		finally {
-
-			if (inputStream != null)
-				inputStream.close();
-		}
-	}
-
 	public static File getFile(String filePath) throws URISyntaxException {
 
         URL fileURL = Utilities.class.getResource(filePath);

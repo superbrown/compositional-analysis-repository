@@ -2,37 +2,34 @@ package gov.energy.nbc.car.dao.mongodb;
 
 import com.mongodb.client.MongoCollection;
 import gov.energy.nbc.car.ISettings;
-import gov.energy.nbc.car.Settings;
-import gov.energy.nbc.car.model.document.DataCategoryDocument;
+import gov.energy.nbc.car.dao.IDataCategoryDAO;
+import gov.energy.nbc.car.model.IDataCategoryDocument;
+import gov.energy.nbc.car.model.mongodb.document.DataCategoryDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public class DataCategoryDAO extends DAO
-{
+public class DataCategoryDAO extends DAO implements IDataCategoryDAO {
+
     public static final String COLLECTION_NAME = "dataCategory";
 
     public DataCategoryDAO(ISettings settings) {
         super(COLLECTION_NAME, settings);
     }
 
-    public DataCategoryDocument get(String id) {
+    @Override
+    public IDataCategoryDocument get(String id) {
 
         return (DataCategoryDocument) getOneWithId(id);
     }
 
-    public DataCategoryDocument get(ObjectId objectId) {
+    @Override
+    public IDataCategoryDocument get(ObjectId objectId) {
 
         Document idFilter = this.createIdFilter(objectId);
         return (DataCategoryDocument) getOne(idFilter);
-    }
-
-    public ObjectId add(DataCategoryDocument dataCategoryDocument) {
-
-        ObjectId objectId = insert(dataCategoryDocument);
-        return objectId;
     }
 
     @Override
@@ -40,7 +37,8 @@ public class DataCategoryDAO extends DAO
         return new DataCategoryDocument(document);
     }
 
-    public DataCategoryDocument getByName(Object name) {
+    @Override
+    public IDataCategoryDocument getByName(Object name) {
 
         Bson filter = eq(DataCategoryDocument.ATTR_KEY__SAMPLE_TYPE, name);
 

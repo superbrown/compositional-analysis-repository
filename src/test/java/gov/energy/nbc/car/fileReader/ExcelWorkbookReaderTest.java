@@ -1,7 +1,9 @@
 package gov.energy.nbc.car.fileReader;
 
 import gov.energy.nbc.car.fileReader.dto.RowCollection;
-import gov.energy.nbc.car.model.common.Row;
+import gov.energy.nbc.car.fileReader.exception.InvalidValueFoundInHeader;
+import gov.energy.nbc.car.fileReader.exception.UnsupportedFileExtension;
+import gov.energy.nbc.car.model.mongodb.common.Row;
 import gov.energy.nbc.car.utilities.Utilities;
 import org.junit.After;
 import org.junit.Before;
@@ -21,12 +23,12 @@ import static org.junit.Assert.fail;
 
 public class ExcelWorkbookReaderTest {
 
-    protected static ExcelWorkbookReader excelWorkbookReader;
+    protected static IDatasetReader_ExcelWorkbook excelWorkbookReader;
 
     @BeforeClass
     public static void beforeClass() {
 
-        excelWorkbookReader = new ExcelWorkbookReader();
+        excelWorkbookReader = new DatasetReader_ExcelWorkbook();
     }
 
     @Before

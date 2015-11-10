@@ -2,11 +2,12 @@ package gov.energy.nbc.car.dao.mongodb;
 
 import gov.energy.nbc.car.Application;
 import gov.energy.nbc.car.TestUsingTestData;
-import gov.energy.nbc.car.businessObject.ITestDataBO;
-import gov.energy.nbc.car.businessObject.TestMode;
-import gov.energy.nbc.car.model.TestData;
-import gov.energy.nbc.car.model.document.DataCategoryDocument;
-import gov.energy.nbc.car.model.document.DatasetDocument;
+import gov.energy.nbc.car.bo.ITestDataBO;
+import gov.energy.nbc.car.bo.TestData;
+import gov.energy.nbc.car.bo.TestMode;
+import gov.energy.nbc.car.dao.IDatasetDAO;
+import gov.energy.nbc.car.model.IDataCategoryDocument;
+import gov.energy.nbc.car.model.mongodb.document.DatasetDocument;
 import org.bson.Document;
 import org.junit.*;
 
@@ -86,7 +87,7 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
         testDataBO.removeTestData();
         testDataBO.seedTestDataInTheDatabase_dataset_1();
 
-        DataCategoryDocument dataCategoryDocument = dataCategoryDAO.getByName(TestData.ALGEA);
+        IDataCategoryDocument dataCategoryDocument = dataCategoryDAO.getByName(TestData.ALGEA);
         assertTrue(dataCategoryDocument.getDataCategory().equals(TestData.ALGEA));
 
         Set<String> columnNames = dataCategoryDocument.getColumnNames();

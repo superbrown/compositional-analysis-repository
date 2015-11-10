@@ -1,19 +1,16 @@
 package gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach;
 
 import gov.energy.nbc.car.ISettings;
-import gov.energy.nbc.car.businessObject.dto.RowSearchCriteria;
-import gov.energy.nbc.car.businessObject.dto.SearchCriterion;
+import gov.energy.nbc.car.bo.dto.RowSearchCriteria;
+import gov.energy.nbc.car.bo.dto.SearchCriterion;
+import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.mongodb.DAO;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
-import gov.energy.nbc.car.dao.mongodb.IRowDAO;
-import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
 import gov.energy.nbc.car.dao.mongodb.MongoFieldNameEncoder;
-import gov.energy.nbc.car.model.common.Metadata;
-import gov.energy.nbc.car.model.common.Row;
-import gov.energy.nbc.car.model.common.RowCollection;
-import gov.energy.nbc.car.model.document.CellDocument;
-import gov.energy.nbc.car.model.document.DatasetDocument;
-import gov.energy.nbc.car.model.document.RowDocument;
+import gov.energy.nbc.car.dao.dto.DeleteResults;
+import gov.energy.nbc.car.model.*;
+import gov.energy.nbc.car.model.mongodb.document.CellDocument;
+import gov.energy.nbc.car.model.mongodb.document.RowDocument;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
 import org.bson.Document;
@@ -41,19 +38,19 @@ public class m_RowDAO extends DAO implements IRowDAO {
     }
 
     @Override
-    public RowDocument get(String id) {
+    public IRowDocument get(String id) {
 
-        return (RowDocument) getOneWithId(id);
+        return (IRowDocument) getOneWithId(id);
     }
 
     @Override
-    public List<ObjectId> add(ObjectId datasetId, DatasetDocument datasetDocument, RowCollection data) {
+    public List<ObjectId> add(ObjectId datasetId, IDatasetDocument datasetDocument, IRowCollection data) {
 
         List<ObjectId> rowIds = new ArrayList();
 
-        Metadata metadata = datasetDocument.getMetadata();
+        IMetadata metadata = datasetDocument.getMetadata();
 
-        for (Row row : data) {
+        for (IRow row : data.getRows()) {
 
             RowDocument rowDocument = new RowDocument(
                     datasetId,
@@ -61,14 +58,14 @@ public class m_RowDAO extends DAO implements IRowDAO {
                     row);
 
             PerformanceLogger performanceLogger = new PerformanceLogger(log, "insert(rowDocument)");
-            ObjectId rowId = insert(rowDocument);
+            ObjectId rowId = add(rowDocument);
             performanceLogger.done();
 
             rowIds.add(rowId);
 
             for (String columnName : row.getColumnNames()) {
                 m_CellDAO cellDAO = getCellDAO(columnName);
-                cellDAO.add(rowId, row.get(columnName));
+                cellDAO.add(rowId, row.getValue(columnName));
             }
         }
 

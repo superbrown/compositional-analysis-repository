@@ -1,7 +1,7 @@
 package gov.energy.nbc.car;
 
-import gov.energy.nbc.car.businessObject.ITestDataBO;
-import gov.energy.nbc.car.businessObject.singleCellSchemaApproach.s_BusinessObjects;
+import gov.energy.nbc.car.bo.ITestDataBO;
+import gov.energy.nbc.car.bo.mongodb.singleCellSchemaApproach.s_BusinessObjects;
 
 public class TestUsingTestData {
 

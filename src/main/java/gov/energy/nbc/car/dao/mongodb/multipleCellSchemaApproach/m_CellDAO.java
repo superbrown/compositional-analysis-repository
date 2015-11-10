@@ -7,10 +7,10 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.DeleteResult;
 import gov.energy.nbc.car.ISettings;
 import gov.energy.nbc.car.dao.mongodb.DAO;
-import gov.energy.nbc.car.dao.mongodb.ICellDAO;
-import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
-import gov.energy.nbc.car.model.common.Row;
-import gov.energy.nbc.car.model.document.CellDocument;
+import gov.energy.nbc.car.dao.ICellDAO;
+import gov.energy.nbc.car.dao.dto.DeleteResults;
+import gov.energy.nbc.car.model.IRow;
+import gov.energy.nbc.car.model.mongodb.document.CellDocument;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -29,13 +29,13 @@ public class m_CellDAO extends DAO implements ICellDAO {
     }
 
     @Override
-    public List<ObjectId> add(ObjectId rowId, Row row) {
+    public List<ObjectId> add(ObjectId rowId, IRow row) {
 
         List<ObjectId> cellIDs = new ArrayList();
 
         for (String columnName : row.getColumnNames()) {
 
-            Object value = row.get(columnName);
+            Object value = row.getValue(columnName);
 
             ObjectId cellID = add(rowId, value);
             cellIDs.add(cellID);
@@ -48,7 +48,7 @@ public class m_CellDAO extends DAO implements ICellDAO {
     public ObjectId add(ObjectId rowId, Object value) {
 
         CellDocument cellDocument = new CellDocument(rowId, getCollectionName(), value);
-        return insert(cellDocument);
+        return add(cellDocument);
     }
 
     @Override

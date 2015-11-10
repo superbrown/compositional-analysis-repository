@@ -1,6 +1,6 @@
 package gov.energy.nbc.car;
 
-import gov.energy.nbc.car.businessObject.IBusinessObjects;
+import gov.energy.nbc.car.bo.IBusinessObjects;
 
 public class Application {
 
