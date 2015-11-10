@@ -3,14 +3,13 @@ package gov.energy.nbc.car.model.mongodb.common;
 import gov.energy.nbc.car.dao.mongodb.MongoFieldNameEncoder;
 import gov.energy.nbc.car.model.mongodb.AbstractDocument;
 import gov.energy.nbc.car.model.IRow;
+import gov.energy.nbc.car.utilities.fileReader.IDatasetReader;
 import org.bson.Document;
 
 import java.util.List;
 import java.util.Set;
 
 public class Row extends AbstractDocument implements IRow {
-
-    public static final String ATTR_KEY__ROW_NUMBER = "_origDocRowNum";
 
     public Row() {
         super();
@@ -33,7 +32,7 @@ public class Row extends AbstractDocument implements IRow {
 
     public Row(List<String> columnNames, int rowIndex, List rowValues) {
 
-        put(ATTR_KEY__ROW_NUMBER, rowIndex);
+        put(IDatasetReader.ATTR_KEY__ROW_NUMBER, rowIndex);
 
         for (int columnIndex = 0; columnIndex < columnNames.size(); columnIndex++) {
 

@@ -1,13 +1,15 @@
 package gov.energy.nbc.car.dao.mongodb;
 
 import gov.energy.nbc.car.Application;
-import gov.energy.nbc.car.TestUsingTestData;
+import gov.energy.nbc.car.Settings;
+import gov.energy.nbc.car.Settings_forUnitTestPurposes;
 import gov.energy.nbc.car.bo.ITestDataBO;
-import gov.energy.nbc.car.bo.TestData;
 import gov.energy.nbc.car.bo.TestMode;
+import gov.energy.nbc.car.bo.mongodb.TestData;
+import gov.energy.nbc.car.dao.IDataCategoryDAO;
 import gov.energy.nbc.car.dao.IDatasetDAO;
 import gov.energy.nbc.car.model.IDataCategoryDocument;
-import gov.energy.nbc.car.model.mongodb.document.DatasetDocument;
+import gov.energy.nbc.car.model.IDatasetDocument;
 import org.bson.Document;
 import org.junit.*;
 
@@ -28,7 +30,7 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
 
     }
 
-    protected abstract void initializeBusinessObjects();
+    protected abstract void initializeBusinessObjects(Settings settings, Settings_forUnitTestPurposes settings_forUnitTestPurposes);
 
     @AfterClass
     public static void afterClass() {
@@ -39,7 +41,7 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
     public void before() {
         super.before();
 
-        initializeBusinessObjects();
+        initializeBusinessObjects(new Settings_forUnitTestPurposes(), new Settings_forUnitTestPurposes());
         datasetDAO = Application.
                 getBusinessObjects().
                 getDatasetBO().
@@ -54,9 +56,9 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
     @Test
     public void testGetById() {
 
-        DatasetDocument document = datasetDAO.getDataset(TestData.dataset_1_objectId.toHexString());
+        IDatasetDocument document = datasetDAO.getDataset(TestData.dataset_1_objectId.toHexString());
         assertTrue(document != null);
-        assertTrue(document.get("_id").toString().equals(TestData.dataset_1_objectId.toString()));
+        assertTrue(document.getId().equals(TestData.dataset_1_objectId.toString()));
     }
 
     @Test
@@ -81,7 +83,7 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
     @Test
     public void testThatTheDataCategoriesAreBeingSetRight() {
 
-        DataCategoryDAO dataCategoryDAO = datasetDAO.getDataCategoryDAO();
+        IDataCategoryDAO dataCategoryDAO = datasetDAO.getDataCategoryDAO();
 
         ITestDataBO testDataBO = Application.getBusinessObjects().getTestDataBO();
         testDataBO.removeTestData();

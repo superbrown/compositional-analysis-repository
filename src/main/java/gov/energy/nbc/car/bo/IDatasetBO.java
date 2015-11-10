@@ -1,19 +1,17 @@
 package gov.energy.nbc.car.bo;
 
-import gov.energy.nbc.car.bo.dto.FileAsRawBytes;
-import gov.energy.nbc.car.bo.dto.StoredFile;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.dao.IDatasetDAO;
-import gov.energy.nbc.car.fileReader.exception.InvalidValueFoundInHeader;
-import gov.energy.nbc.car.fileReader.exception.UnsupportedFileExtension;
+import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
+import gov.energy.nbc.car.dao.dto.StoredFile;
+import gov.energy.nbc.car.utilities.fileReader.exception.InvalidValueFoundInHeader;
+import gov.energy.nbc.car.utilities.fileReader.exception.UnsupportedFileExtension;
 
 import java.io.File;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by mbrown on 11/8/2015.
- */
+
 public interface IDatasetBO {
 
     String addDataset(
@@ -24,7 +22,7 @@ public interface IDatasetBO {
             String projectName,
             String chargeNumber,
             String comments,
-            gov.energy.nbc.car.bo.dto.StoredFile dataFile,
+            StoredFile dataFile,
             String nameOfWorksheetContainingTheData,
             List<StoredFile> attachmentFiles)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader;

@@ -1,13 +1,13 @@
 package gov.energy.nbc.car.bo;
 
 import gov.energy.nbc.car.Settings;
-import gov.energy.nbc.car.bo.dto.FileAsRawBytes;
-import gov.energy.nbc.car.bo.dto.StoredFile;
+import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
+import gov.energy.nbc.car.dao.dto.StoredFile;
 import gov.energy.nbc.car.dao.IPhysicalFileDAO;
-import gov.energy.nbc.car.dao.mongodb.PhysicalFileDAO;
+import gov.energy.nbc.car.dao.PhysicalFileDAO;
 import gov.energy.nbc.car.dao.exception.UnableToDeleteFile;
-import gov.energy.nbc.car.fileReader.DatasetReader_AllFileTypes;
-import gov.energy.nbc.car.fileReader.IDatasetReader_AllFileTypes;
+import gov.energy.nbc.car.utilities.fileReader.DatasetReader_AllFileTypes;
+import gov.energy.nbc.car.utilities.fileReader.IDatasetReader_AllFileTypes;
 import org.springframework.web.multipart.MultipartFile;
 
 public class PhysicalFileBO implements IPhysicalFileBO {

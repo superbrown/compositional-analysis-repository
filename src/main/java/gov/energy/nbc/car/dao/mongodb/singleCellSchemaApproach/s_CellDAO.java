@@ -5,9 +5,10 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.ListIndexesIterable;
 import com.mongodb.client.result.DeleteResult;
 import gov.energy.nbc.car.Settings;
-import gov.energy.nbc.car.dao.mongodb.DAO;
 import gov.energy.nbc.car.dao.ICellDAO;
-import gov.energy.nbc.car.dao.dto.DeleteResults;
+import gov.energy.nbc.car.dao.dto.IDeleteResults;
+import gov.energy.nbc.car.dao.mongodb.DAO;
+import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
 import gov.energy.nbc.car.model.IRow;
 import gov.energy.nbc.car.model.mongodb.document.CellDocument;
 import org.bson.Document;
@@ -55,7 +56,7 @@ public class s_CellDAO extends DAO implements ICellDAO {
         return new CellDocument(document);
     }
 
-    public DeleteResults deleteCellsAssociatedWithRow(ObjectId rowId) {
+    public IDeleteResults deleteCellsAssociatedWithRow(ObjectId rowId) {
 
         DeleteResults allDeleteResults = new DeleteResults();
 
@@ -68,7 +69,6 @@ public class s_CellDAO extends DAO implements ICellDAO {
 
         return allDeleteResults;
     }
-
 
     private static boolean HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = false;
 

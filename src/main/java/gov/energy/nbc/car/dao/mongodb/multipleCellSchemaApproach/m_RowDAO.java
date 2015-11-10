@@ -1,13 +1,14 @@
 package gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach;
 
 import gov.energy.nbc.car.ISettings;
-import gov.energy.nbc.car.bo.dto.RowSearchCriteria;
-import gov.energy.nbc.car.bo.dto.SearchCriterion;
+import gov.energy.nbc.car.dao.dto.IDeleteResults;
+import gov.energy.nbc.car.dao.dto.RowSearchCriteria;
+import gov.energy.nbc.car.dao.dto.SearchCriterion;
 import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.mongodb.DAO;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.mongodb.MongoFieldNameEncoder;
-import gov.energy.nbc.car.dao.dto.DeleteResults;
+import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
 import gov.energy.nbc.car.model.*;
 import gov.energy.nbc.car.model.mongodb.document.CellDocument;
 import gov.energy.nbc.car.model.mongodb.document.RowDocument;
@@ -76,33 +77,34 @@ public class m_RowDAO extends DAO implements IRowDAO {
 
         // FIXME
 
-//        DeleteResults allDeleteResults = new DeleteResults();
-//
-//        Document datasetIdFilter = new Document().
-//                append(RowDocument.ATTR_KEY__DATASET_ID, datasetId);
-//
-//        Bson projection = fields(include(RowDocument.ATTR_KEY__ID));
-//
-//        List<Document> rowsAssociatedWithDataset = this.query(datasetIdFilter, projection);
-//
-//        for (Document document : rowsAssociatedWithDataset) {
-//
-//            ObjectId rowId = (ObjectId) document.get(RowDocument.ATTR_KEY__DATA);
-//
-//            get(((ObjectId)rowId)
-//
-//            // delete all cells associated with the row
-//            DeleteResults deleteResults = getCellDAO().deleteCellsAssociatedWithRow(rowId);
-//            allDeleteResults.add(deleteResults);
-//
-//            // delete the row
-//            deleteResults = delete(rowId);
-//            allDeleteResults.add(deleteResults);
-//        }
-//
-//        return allDeleteResults;
+        DeleteResults allDeleteResults = new DeleteResults();
 
-        return null;
+        Document datasetIdFilter = new Document().
+                append(RowDocument.ATTR_KEY__DATASET_ID, datasetId);
+
+        Bson projection = fields(include(RowDocument.ATTR_KEY__ID));
+
+        List<Document> rowsAssociatedWithDataset = this.query(datasetIdFilter, projection);
+
+        if (rowsAssociatedWithDataset.size() > 0) {
+
+            Document firstRow = rowsAssociatedWithDataset.get(0);
+            Document data = (Document) firstRow.get(RowDocument.ATTR_KEY__DATA);
+
+            for (String columnName : data.keySet()) {
+
+                m_CellDAO cellDAO = getCellDAO(columnName);
+
+                for (Document rowDocument : rowsAssociatedWithDataset) {
+
+                    ObjectId rowId = (ObjectId) rowDocument.get("_id");
+                    IDeleteResults deleteResults = cellDAO.deleteCellsAssociatedWithRow(rowId);
+                    allDeleteResults.addAll(deleteResults);
+                }
+            }
+        }
+
+        return allDeleteResults;
     }
 
     protected Document createDocumentOfTypeDAOHandles(Document document) {
@@ -111,7 +113,7 @@ public class m_RowDAO extends DAO implements IRowDAO {
     }
 
     @Override
-    public DeleteResults delete(ObjectId objectId) {
+    public IDeleteResults delete(ObjectId objectId) {
 
         throw new RuntimeException(
                 "This method should not be called because rows should not be deleted  independently of " +
@@ -390,14 +392,22 @@ public class m_RowDAO extends DAO implements IRowDAO {
     @Override
     public m_CellDAO getCellDAO(String columnName) {
 
-        m_CellDAO cellDAO = cellDAOs.get(columnName);
+        String collectonNameForCell = toCellCollectionName(columnName);
+
+        m_CellDAO cellDAO = cellDAOs.get(collectonNameForCell);
 
         if (cellDAO == null) {
-            cellDAO = new m_CellDAO(columnName, settings);
+            cellDAO = new m_CellDAO(collectonNameForCell, settings);
             cellDAOs.put(columnName, cellDAO);
         }
 
         return cellDAO;
+    }
+
+    private static final String PREFIX_FOR_CELL_COLLECTIONS = "CELL_";
+
+    public static String toCellCollectionName(String columnName) {
+        return PREFIX_FOR_CELL_COLLECTIONS + columnName;
     }
 
     protected void encodeColumnNamesForMongoSafety(List<SearchCriterion> searchCriteria_data) {

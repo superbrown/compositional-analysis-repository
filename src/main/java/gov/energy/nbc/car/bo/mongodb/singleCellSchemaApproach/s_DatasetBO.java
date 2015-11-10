@@ -1,27 +1,28 @@
 package gov.energy.nbc.car.bo.mongodb.singleCellSchemaApproach;
 
-import com.mongodb.client.FindIterable;
 import gov.energy.nbc.car.Application;
 import gov.energy.nbc.car.Settings;
-import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.TestMode;
-import gov.energy.nbc.car.bo.dto.FileAsRawBytes;
+import gov.energy.nbc.car.bo.exception.DeletionFailure;
+import gov.energy.nbc.car.dao.IDatasetDAO;
+import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
+import gov.energy.nbc.car.dao.exception.UnableToDeleteFile;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.mongodb.singleCellSchemaApproach.s_DatasetDAO;
-import gov.energy.nbc.car.dao.IDatasetDAO;
-import gov.energy.nbc.car.dao.dto.DeleteResults;
-import gov.energy.nbc.car.dao.exception.UnableToDeleteFile;
-import gov.energy.nbc.car.fileReader.DatasetReader_AllFileTypes;
-import gov.energy.nbc.car.fileReader.IDatasetReader_AllFileTypes;
-import gov.energy.nbc.car.fileReader.exception.InvalidValueFoundInHeader;
-import gov.energy.nbc.car.fileReader.exception.UnsupportedFileExtension;
+import gov.energy.nbc.car.model.IDatasetDocument;
 import gov.energy.nbc.car.model.IMetadata;
 import gov.energy.nbc.car.model.IRowCollection;
 import gov.energy.nbc.car.model.IStoredFile;
-import gov.energy.nbc.car.model.mongodb.common.*;
+import gov.energy.nbc.car.model.mongodb.common.Metadata;
+import gov.energy.nbc.car.model.mongodb.common.StoredFile;
 import gov.energy.nbc.car.model.mongodb.document.DatasetDocument;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
+import gov.energy.nbc.car.utilities.fileReader.DatasetReader_AllFileTypes;
+import gov.energy.nbc.car.utilities.fileReader.IDatasetReader_AllFileTypes;
+import gov.energy.nbc.car.utilities.fileReader.dto.RowCollection;
+import gov.energy.nbc.car.utilities.fileReader.exception.InvalidValueFoundInHeader;
+import gov.energy.nbc.car.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -58,17 +59,18 @@ public class s_DatasetBO implements IDatasetBO {
             String projectName,
             String chargeNumber,
             String comments,
-            gov.energy.nbc.car.bo.dto.StoredFile dataFile,
+            gov.energy.nbc.car.dao.dto.StoredFile dataFile,
             String nameOfWorksheetContainingTheData,
-            List<gov.energy.nbc.car.bo.dto.StoredFile> attachmentFiles)
+            List<gov.energy.nbc.car.dao.dto.StoredFile> attachmentFiles)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
         File storedFile = getPhysicalFile(testMode, dataFile.storageLocation);
-        IRowCollection rowCollection = generalFileReader.extractDataFromFile(storedFile, nameOfWorksheetContainingTheData, -1);
+        RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfWorksheetContainingTheData, -1);
+        IRowCollection rowCollection = new gov.energy.nbc.car.model.mongodb.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
         List<IStoredFile> attachments = new ArrayList();
         if (attachmentFiles != null) {
-            for (gov.energy.nbc.car.bo.dto.StoredFile attachmentFile : attachmentFiles) {
+            for (gov.energy.nbc.car.dao.dto.StoredFile attachmentFile : attachmentFiles) {
                 attachments.add(new StoredFile(attachmentFile.originalFileName, attachmentFile.storageLocation));
             }
         }
@@ -96,16 +98,17 @@ public class s_DatasetBO implements IDatasetBO {
             String projectName,
             String chargeNumber,
             String comments,
-            gov.energy.nbc.car.bo.dto.StoredFile dataFile,
+            gov.energy.nbc.car.dao.dto.StoredFile dataFile,
             String nameOfWorksheetContainingTheData,
-            List<gov.energy.nbc.car.bo.dto.StoredFile> attachmentFiles)
+            List<gov.energy.nbc.car.dao.dto.StoredFile> attachmentFiles)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
         File storedFile = getPhysicalFile(TestMode.TEST_MODE, dataFile.storageLocation);
-        IRowCollection rowCollection = generalFileReader.extractDataFromFile(storedFile, nameOfWorksheetContainingTheData, maxNumberOfValuesPerRow);
+        RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfWorksheetContainingTheData, maxNumberOfValuesPerRow);
+        IRowCollection rowCollection = new gov.energy.nbc.car.model.mongodb.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
         List<IStoredFile> attachments = new ArrayList();
-        for (gov.energy.nbc.car.bo.dto.StoredFile attachmentFile : attachmentFiles) {
+        for (gov.energy.nbc.car.dao.dto.StoredFile attachmentFile : attachmentFiles) {
             attachments.add(new StoredFile(attachmentFile.originalFileName, attachmentFile.storageLocation));
         }
 
@@ -131,7 +134,7 @@ public class s_DatasetBO implements IDatasetBO {
 
     public String getDataset(TestMode testMode, String datasetId) {
 
-        DatasetDocument datasetDocument = getDatasetDAO(testMode).getDataset(datasetId);
+        IDatasetDocument datasetDocument = getDatasetDAO(testMode).getDataset(datasetId);
         if (datasetDocument == null) { return null; }
 
         String jsonOut = DAOUtilities.serialize(datasetDocument);
@@ -140,24 +143,18 @@ public class s_DatasetBO implements IDatasetBO {
 
     public String getAllDatasets(TestMode testMode) {
 
-        FindIterable<Document> datasets = getDatasetDAO(testMode).getAll();
+        Iterable<Document> datasets = getDatasetDAO(testMode).getAll();
 
         String jsonOut = DAOUtilities.serialize(datasets);
         return jsonOut;
     }
 
     public long deleteDataset(TestMode testMode,
-                                  String datasetId) throws DeletionFailure {
+                              String datasetId) throws DeletionFailure {
 
         IDatasetDAO datasetDAO = getDatasetDAO(testMode);
-        DatasetDocument datasetDocument = datasetDAO.getDataset(datasetId);
-        DeleteResults deleteResults = datasetDAO.delete(datasetId);
-
-        if (deleteResults.wasAcknowledged() == false) {
-            throw new DeletionFailure(deleteResults);
-        }
-
-        long numberOfObjectsDeleted = deleteResults.getDeletedCount();
+        IDatasetDocument datasetDocument = datasetDAO.getDataset(datasetId);
+        datasetDAO.delete(datasetId);
 
         String storageLocation = datasetDocument.getMetadata().getUploadedFile().getStorageLocation();
         try {
@@ -166,8 +163,7 @@ public class s_DatasetBO implements IDatasetBO {
         catch (UnableToDeleteFile e) {
             log.warn(e);
         }
-
-        return numberOfObjectsDeleted;
+        return 0;
     }
 
     public String addDataset(
@@ -183,10 +179,10 @@ public class s_DatasetBO implements IDatasetBO {
             List<FileAsRawBytes> attachmentFiles)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
-        gov.energy.nbc.car.bo.dto.StoredFile theDataFileThatWasStored =
+        gov.energy.nbc.car.dao.dto.StoredFile theDataFileThatWasStored =
                 Application.getBusinessObjects().getPhysicalFileBO().saveFile(testMode, dataFile);
 
-        List<gov.energy.nbc.car.bo.dto.StoredFile> theAttachmentsThatWereStored = new ArrayList();
+        List<gov.energy.nbc.car.dao.dto.StoredFile> theAttachmentsThatWereStored = new ArrayList();
 
         for (FileAsRawBytes attachmentFile : attachmentFiles) {
             theAttachmentsThatWereStored.add(Application.getBusinessObjects().getPhysicalFileBO().saveFile(testMode, attachmentFile));
@@ -227,7 +223,8 @@ public class s_DatasetBO implements IDatasetBO {
         IDatasetDAO datasetDAO = getDatasetDAO(testMode);
 
         try {
-            IRowCollection rowCollection = generalFileReader.extractDataFromDataset(file, nameOfWorksheetContainingTheData);
+            RowCollection dataUpload = generalFileReader.extractDataFromDataset(file, nameOfWorksheetContainingTheData);
+            IRowCollection rowCollection = new gov.energy.nbc.car.model.mongodb.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
             IMetadata metadata = new Metadata(metadataJson);
 

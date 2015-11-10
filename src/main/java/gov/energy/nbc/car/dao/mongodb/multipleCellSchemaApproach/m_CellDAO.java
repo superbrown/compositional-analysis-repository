@@ -6,9 +6,10 @@ import com.mongodb.client.ListCollectionsIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.DeleteResult;
 import gov.energy.nbc.car.ISettings;
-import gov.energy.nbc.car.dao.mongodb.DAO;
 import gov.energy.nbc.car.dao.ICellDAO;
-import gov.energy.nbc.car.dao.dto.DeleteResults;
+import gov.energy.nbc.car.dao.dto.IDeleteResults;
+import gov.energy.nbc.car.dao.mongodb.DAO;
+import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
 import gov.energy.nbc.car.model.IRow;
 import gov.energy.nbc.car.model.mongodb.document.CellDocument;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
@@ -20,11 +21,9 @@ import java.util.List;
 
 public class m_CellDAO extends DAO implements ICellDAO {
 
-    private static final String PREFIX_FOR_CELL_COLLECTIONS = "CELL_";
+    public m_CellDAO(String columnName, ISettings settings) {
 
-    public m_CellDAO(String collectionName, ISettings settings) {
-
-        super(PREFIX_FOR_CELL_COLLECTIONS + collectionName, settings);
+        super(columnName, settings);
         makeSureTableColumnsIRelyUponAreIndexed();
     }
 
@@ -58,7 +57,7 @@ public class m_CellDAO extends DAO implements ICellDAO {
     }
 
     @Override
-    public DeleteResults deleteCellsAssociatedWithRow(ObjectId rowId) {
+    public IDeleteResults deleteCellsAssociatedWithRow(ObjectId rowId) {
 
         DeleteResults allDeleteResults = new DeleteResults();
 

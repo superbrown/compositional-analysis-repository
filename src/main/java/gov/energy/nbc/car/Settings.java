@@ -1,10 +1,23 @@
 package gov.energy.nbc.car;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+
+@Configuration
+@PropertySource("classpath:application.properties")
 public class Settings implements ISettings {
 
+    @Value("${mongoDb.host}")
     protected String mongoDbHost;
-    protected int mongoDbPort;
+
+    @Value("${mongoDb.port}")
+    protected String mongoDbPort;
+
+    @Value("${mongoDb.databaseName}")
     protected String mongoDatabaseName;
+
+    @Value("${rootDirectoryForDataFiles}")
     protected String rootDirectoryForDataFiles;
 
     public Settings() {
@@ -14,10 +27,10 @@ public class Settings implements ISettings {
 
     protected void init() {
 
-        mongoDbHost = "localhost";
-        mongoDbPort = 27017;
-        mongoDatabaseName = "car";
-        rootDirectoryForDataFiles = "C:/data/research-data/uploadedFiles";
+//        mongoDbHost = "localhost";
+//        mongoDbPort = 27017;
+//        mongoDatabaseName = "car";
+//        rootDirectoryForDataFiles = "C:/data/research-data/uploadedFiles";
     }
 
     @Override
@@ -31,7 +44,7 @@ public class Settings implements ISettings {
     }
 
     @Override
-    public int getMongoDbPort() {
+    public String getMongoDbPort() {
         return mongoDbPort;
     }
 
@@ -51,12 +64,7 @@ public class Settings implements ISettings {
     }
 
     @Override
-    public void setMondgoDbPort(int MONGO_DB_PORT) {
-        this.mongoDbPort = MONGO_DB_PORT;
-    }
-
-    @Override
-    public void setMongoDbPort(int mongoDbPort) {
+    public void setMongoDbPort(String mongoDbPort) {
         this.mongoDbPort = mongoDbPort;
     }
 

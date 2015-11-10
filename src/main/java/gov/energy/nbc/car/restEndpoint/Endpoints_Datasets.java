@@ -2,12 +2,12 @@ package gov.energy.nbc.car.restEndpoint;
 
 import gov.energy.nbc.car.Application;
 import gov.energy.nbc.car.bo.TestMode;
-import gov.energy.nbc.car.bo.dto.FileAsRawBytes;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
-import gov.energy.nbc.car.fileReader.DatasetReader_AllFileTypes;
-import gov.energy.nbc.car.fileReader.IDatasetReader_AllFileTypes;
-import gov.energy.nbc.car.fileReader.exception.InvalidValueFoundInHeader;
-import gov.energy.nbc.car.fileReader.exception.UnsupportedFileExtension;
+import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
+import gov.energy.nbc.car.utilities.fileReader.DatasetReader_AllFileTypes;
+import gov.energy.nbc.car.utilities.fileReader.IDatasetReader_AllFileTypes;
+import gov.energy.nbc.car.utilities.fileReader.exception.InvalidValueFoundInHeader;
+import gov.energy.nbc.car.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.http.ResponseEntity;

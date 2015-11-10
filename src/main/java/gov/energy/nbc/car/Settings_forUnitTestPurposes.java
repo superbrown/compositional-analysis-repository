@@ -10,6 +10,9 @@ public class Settings_forUnitTestPurposes extends Settings {
     protected void init() {
 
         super.init();
+
+        setMongoDbHost("localhost");
+        setMongoDbPort("27017");
         setMongoDatabaseName("car_forUnitTestPurposes");
         setRootDirectoryForDataFiles("C:/projects/car/target/test-classes");
     }

@@ -1,11 +1,12 @@
 package gov.energy.nbc.car.dao.mongodb;
 
 import gov.energy.nbc.car.Application;
-import gov.energy.nbc.car.TestUsingTestData;
+import gov.energy.nbc.car.Settings;
+import gov.energy.nbc.car.Settings_forUnitTestPurposes;
 import gov.energy.nbc.car.bo.TestMode;
-import gov.energy.nbc.car.bo.dto.RowSearchCriteria;
+import gov.energy.nbc.car.dao.dto.RowSearchCriteria;
 import gov.energy.nbc.car.dao.IRowDAO;
-import gov.energy.nbc.car.bo.TestData;
+import gov.energy.nbc.car.bo.mongodb.TestData;
 import gov.energy.nbc.car.model.mongodb.common.Metadata;
 import gov.energy.nbc.car.model.mongodb.document.DatasetDocument;
 import gov.energy.nbc.car.model.mongodb.document.RowDocument;
@@ -17,7 +18,7 @@ import java.util.List;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
-import static gov.energy.nbc.car.bo.dto.ComparisonOperator.EQUALS;
+import static gov.energy.nbc.car.dao.dto.ComparisonOperator.EQUALS;
 import static org.junit.Assert.assertTrue;
 
 
@@ -41,7 +42,8 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
 
         super.before();
 
-        initializeBusinessObjects();
+        Settings_forUnitTestPurposes settings = new Settings_forUnitTestPurposes();
+        initializeBusinessObjects(settings, settings);
 
         rowDAO = Application.
                 getBusinessObjects().
@@ -49,7 +51,7 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
                 getRowDAO(TestMode.TEST_MODE);
     }
 
-    protected abstract void initializeBusinessObjects();
+    protected abstract void initializeBusinessObjects(Settings settings, Settings_forUnitTestPurposes settings_forUnitTestPurposes);
 
     @After
     public void after() {
@@ -150,7 +152,7 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
                         (TestData.rowCollection_2.getRows().size());
 
         long numberOfRowsThatActuallyExist =
-                rowDAO.getCollection().count();
+                ((IMongodbDAO)rowDAO).getCollection().count();
 
         assertTrue(numberOfRowsThatActuallyExist == numberOfRowsThatShouldExist);
     }

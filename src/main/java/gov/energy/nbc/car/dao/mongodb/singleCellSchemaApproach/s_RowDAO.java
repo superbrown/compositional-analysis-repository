@@ -3,15 +3,18 @@ package gov.energy.nbc.car.dao.mongodb.singleCellSchemaApproach;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.ListIndexesIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.result.DeleteResult;
 import gov.energy.nbc.car.Settings;
-import gov.energy.nbc.car.bo.dto.RowSearchCriteria;
-import gov.energy.nbc.car.bo.dto.SearchCriterion;
 import gov.energy.nbc.car.dao.ICellDAO;
 import gov.energy.nbc.car.dao.IRowDAO;
+import gov.energy.nbc.car.dao.dto.IDeleteResults;
+import gov.energy.nbc.car.dao.dto.RowSearchCriteria;
+import gov.energy.nbc.car.dao.dto.SearchCriterion;
 import gov.energy.nbc.car.dao.mongodb.DAO;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
+import gov.energy.nbc.car.dao.mongodb.IMongodbDAO;
 import gov.energy.nbc.car.dao.mongodb.MongoFieldNameEncoder;
-import gov.energy.nbc.car.dao.dto.DeleteResults;
+import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
 import gov.energy.nbc.car.model.*;
 import gov.energy.nbc.car.model.mongodb.document.CellDocument;
 import gov.energy.nbc.car.model.mongodb.document.RowDocument;
@@ -74,7 +77,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
         return rowIds;
     }
 
-    public DeleteResults deleteRowsAssociatedWithDataset(ObjectId datasetId) {
+    public IDeleteResults deleteRowsAssociatedWithDataset(ObjectId datasetId) {
 
         DeleteResults allDeleteResults = new DeleteResults();
 
@@ -90,12 +93,14 @@ public class s_RowDAO extends DAO implements IRowDAO {
             ObjectId rowId = (ObjectId) document.get(RowDocument.ATTR_KEY__ID);
 
             // delete all cells associated with the row
-            DeleteResults deleteResults = cellDAO.deleteCellsAssociatedWithRow(rowId);
-            allDeleteResults.add(deleteResults);
+            IDeleteResults deleteResults = cellDAO.deleteCellsAssociatedWithRow(rowId);
+            allDeleteResults.add((DeleteResult) deleteResults);
 
             // delete the row
-            deleteResults = delete(rowId);
-            allDeleteResults.add(deleteResults);
+            Document idFilter = createIdFilter(rowId);
+            DeleteResult deleteResult = getCollection().deleteOne(idFilter);
+
+            allDeleteResults.add(deleteResult);
         }
 
         return allDeleteResults;
@@ -108,10 +113,10 @@ public class s_RowDAO extends DAO implements IRowDAO {
     }
 
     @Override
-    public DeleteResults delete(ObjectId objectId) {
+    public IDeleteResults delete(ObjectId objectId) {
 
         throw new RuntimeException(
-                "This method should not be called because rows should not be deleted  independently of " +
+                "This method should not be called because rows should not be deleted independently of " +
                         "their spreasheet.");
     }
 
@@ -232,7 +237,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
         performanceLogger.done();
         log.info("[RESULTS] results.size() = " + results.size() +
                 ", row.count() = " + getCollection().count() +
-                ", cell.count() = " + cellDAO.getCollection().count());
+                ", cell.count() = " + ((IMongodbDAO)cellDAO).getCollection().count());
 
         return results;
     }
@@ -293,7 +298,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
                 log,
                 "[getCountOfRowsThatMatch()] cellDAO.getCollection().count(" + query.toString() + ")",
                 true);
-        long count = cellDAO.getCollection().count(query);
+        long count = ((IMongodbDAO)cellDAO).getCollection().count(query);
         performanceLogger.done();
 
         return count;
@@ -325,7 +330,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
         performanceLogger.done();
         log.info("[RESULTS] results.size() = " + documents.size() +
                 ", row.count() = " + getCollection().count() +
-                ", cell.count() = " + cellDAO.getCollection().count());
+                ", cell.count() = " + ((IMongodbDAO)cellDAO).getCollection().count());
 
         return toSetOfRowIds(documents);
     }
@@ -427,7 +432,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
             //              is where the code exists that relies upon them. I figured if they were here, they would less
             //              likely get removed by someone who didn't realize they were used somewhere.
 
-            MongoCollection<Document> cellCollection = cellDAO.getCollection();
+            MongoCollection<Document> cellCollection = ((IMongodbDAO)cellDAO).getCollection();
 
             cellCollection.createIndex(new BasicDBObject(CellDocument.ATTR_KEY__ROW_ID, 1));
             cellCollection.createIndex(new BasicDBObject(CellDocument.ATTR_KEY__COLUMN_NAME, 1));
