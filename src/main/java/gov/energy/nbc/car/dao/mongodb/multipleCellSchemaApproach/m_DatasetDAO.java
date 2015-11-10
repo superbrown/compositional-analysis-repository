@@ -1,13 +1,15 @@
 package gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach;
 
 import gov.energy.nbc.car.ISettings;
+import gov.energy.nbc.car.dao.IDatasetDAO;
+import gov.energy.nbc.car.dao.dto.DeleteResults;
 import gov.energy.nbc.car.dao.mongodb.DAO;
 import gov.energy.nbc.car.dao.mongodb.DataCategoryDAO;
-import gov.energy.nbc.car.dao.mongodb.IDatasetDAO;
-import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
-import gov.energy.nbc.car.model.common.RowCollection;
-import gov.energy.nbc.car.model.document.DataCategoryDocument;
-import gov.energy.nbc.car.model.document.DatasetDocument;
+import gov.energy.nbc.car.model.IDataCategoryDocument;
+import gov.energy.nbc.car.model.IDatasetDocument;
+import gov.energy.nbc.car.model.IRowCollection;
+import gov.energy.nbc.car.model.mongodb.document.DataCategoryDocument;
+import gov.energy.nbc.car.model.mongodb.document.DatasetDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -35,9 +37,9 @@ public class m_DatasetDAO extends DAO implements IDatasetDAO {
     }
 
     @Override
-    public ObjectId add(DatasetDocument datasetDocument, RowCollection data) {
+    public ObjectId add(IDatasetDocument datasetDocument, IRowCollection data) {
 
-        ObjectId objectId = insert(datasetDocument);
+        ObjectId objectId = add(datasetDocument);
 
         rowDAO.add(objectId, datasetDocument, data);
 
@@ -53,7 +55,7 @@ public class m_DatasetDAO extends DAO implements IDatasetDAO {
 
     protected void associateColumnNamesToTheDataCategory(String dataCategory, Set columnNames) {
 
-        DataCategoryDocument dataCategoryDocument = dataCategoryDAO.getByName(dataCategory);
+        IDataCategoryDocument dataCategoryDocument = dataCategoryDAO.getByName(dataCategory);
 
         if (dataCategoryDocument == null) {
 
@@ -69,7 +71,7 @@ public class m_DatasetDAO extends DAO implements IDatasetDAO {
         Document dataToBeUpdated = new Document().
                 append(DataCategoryDocument.ATTR_KEY__COLUMN_NAMES, columnNamesFromTheDatabase);
 
-        dataCategoryDAO.updateOne(dataCategoryDocument.getObjectId(), dataToBeUpdated);
+        dataCategoryDAO.updateOne(dataCategoryDocument.getId(), dataToBeUpdated);
     }
 
     @Override
@@ -103,7 +105,7 @@ public class m_DatasetDAO extends DAO implements IDatasetDAO {
         return dataCategoryDAO;
     }
 
-    protected void makeSureCollectionIsIndexedForAllColumns(RowCollection rowCollection) {
+    protected void makeSureCollectionIsIndexedForAllColumns(IRowCollection rowCollection) {
 
 //        Row firstRow = rowCollection.get(0);
 //

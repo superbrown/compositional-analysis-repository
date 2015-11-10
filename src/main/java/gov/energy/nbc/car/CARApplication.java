@@ -1,6 +1,6 @@
 package gov.energy.nbc.car;
 
-import gov.energy.nbc.car.businessObject.multipleCellSchemaApproach.m_BusinessObjects;
+import gov.energy.nbc.car.bo.mongodb.multipleCellSchemaApproach.m_BusinessObjects;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;

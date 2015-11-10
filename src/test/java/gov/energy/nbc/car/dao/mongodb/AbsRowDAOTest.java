@@ -2,12 +2,13 @@ package gov.energy.nbc.car.dao.mongodb;
 
 import gov.energy.nbc.car.Application;
 import gov.energy.nbc.car.TestUsingTestData;
-import gov.energy.nbc.car.businessObject.TestMode;
-import gov.energy.nbc.car.businessObject.dto.RowSearchCriteria;
-import gov.energy.nbc.car.model.TestData;
-import gov.energy.nbc.car.model.common.Metadata;
-import gov.energy.nbc.car.model.document.DatasetDocument;
-import gov.energy.nbc.car.model.document.RowDocument;
+import gov.energy.nbc.car.bo.TestMode;
+import gov.energy.nbc.car.bo.dto.RowSearchCriteria;
+import gov.energy.nbc.car.dao.IRowDAO;
+import gov.energy.nbc.car.bo.TestData;
+import gov.energy.nbc.car.model.mongodb.common.Metadata;
+import gov.energy.nbc.car.model.mongodb.document.DatasetDocument;
+import gov.energy.nbc.car.model.mongodb.document.RowDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.*;
@@ -16,7 +17,7 @@ import java.util.List;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
-import static gov.energy.nbc.car.businessObject.dto.ComparisonOperator.EQUALS;
+import static gov.energy.nbc.car.bo.dto.ComparisonOperator.EQUALS;
 import static org.junit.Assert.assertTrue;
 
 
@@ -145,8 +146,8 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
     public void testThatTheRightNumberOfSpreasheetRowDocumentsExist() {
 
         int numberOfRowsThatShouldExist =
-                (TestData.rowCollection_1.size()) +
-                        (TestData.rowCollection_2.size());
+                (TestData.rowCollection_1.getRows().size()) +
+                        (TestData.rowCollection_2.getRows().size());
 
         long numberOfRowsThatActuallyExist =
                 rowDAO.getCollection().count();

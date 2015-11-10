@@ -1,7 +1,8 @@
 package gov.energy.nbc.car.fileReader;
 
 import gov.energy.nbc.car.fileReader.dto.RowCollection;
-import gov.energy.nbc.car.model.common.Row;
+import gov.energy.nbc.car.fileReader.exception.InvalidValueFoundInHeader;
+import gov.energy.nbc.car.model.mongodb.common.Row;
 import gov.energy.nbc.car.utilities.Utilities;
 import org.junit.After;
 import org.junit.Before;
@@ -19,7 +20,7 @@ import static org.junit.Assert.fail;
 
 public class CSVFileReaderTest {
 
-    protected CSVFileReader csvFileReader = new CSVFileReader();
+    protected IDatasetReader_CSVFile csvFileReader = new DatasetReader_CSVFile();
 
     @Before
     public void before() throws Exception {

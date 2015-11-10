@@ -1,10 +1,11 @@
 package gov.energy.nbc.car.dao.mongodb;
 
 import gov.energy.nbc.car.Settings;
-import gov.energy.nbc.car.businessObject.dto.FileAsRawBytes;
-import gov.energy.nbc.car.businessObject.dto.StoredFile;
-import gov.energy.nbc.car.dao.mongodb.exception.CouldNoCreateDirectory;
-import gov.energy.nbc.car.dao.mongodb.exception.UnableToDeleteFile;
+import gov.energy.nbc.car.bo.dto.FileAsRawBytes;
+import gov.energy.nbc.car.bo.dto.StoredFile;
+import gov.energy.nbc.car.dao.IPhysicalFileDAO;
+import gov.energy.nbc.car.dao.exception.CouldNoCreateDirectory;
+import gov.energy.nbc.car.dao.exception.UnableToDeleteFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -15,7 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-public class PhysicalFileDAO {
+public class PhysicalFileDAO implements IPhysicalFileDAO {
 
     protected Settings settings;
 
@@ -24,6 +25,7 @@ public class PhysicalFileDAO {
         this.settings = settings;
     }
 
+    @Override
     public StoredFile saveFile(MultipartFile multipartFile)
             throws CouldNoCreateDirectory, IOException {
 
@@ -47,6 +49,7 @@ public class PhysicalFileDAO {
         return storedFile;
     }
 
+    @Override
     public StoredFile saveFile(FileAsRawBytes file)
             throws CouldNoCreateDirectory, IOException {
 
@@ -131,6 +134,7 @@ public class PhysicalFileDAO {
         return true;
     }
 
+    @Override
     public void deletFile(String file)
             throws UnableToDeleteFile {
 
@@ -140,6 +144,7 @@ public class PhysicalFileDAO {
         }
     }
 
+    @Override
     public File getFile(String storageLocation) {
 
         return new File(getRootDirectoryForDataFiles() + storageLocation);

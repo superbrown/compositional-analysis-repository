@@ -9,14 +9,16 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import gov.energy.nbc.car.ISettings;
-import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
-import gov.energy.nbc.car.model.AbstractDocument;
+import gov.energy.nbc.car.dao.IDAO;
+import gov.energy.nbc.car.dao.dto.DeleteResults;
+import gov.energy.nbc.car.model.mongodb.AbstractDocument;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +57,14 @@ public abstract class DAO implements IDAO {
     }
 
     @Override
-    public ObjectId insert(Document document) {
+    public ObjectId add(Object model) {
+
+        if ((model instanceof Document) == false) {
+
+            throw new InvalidParameterException("Must be Document object, but was a :" + model.getClass().getName());
+        }
+
+        Document document = (Document)model;
 
         // DESIGN NOTE: I don't know why we need to create a wrapper here, but if we don't, Mongo throws the following
         // exception:
@@ -181,9 +190,9 @@ public abstract class DAO implements IDAO {
     }
 
     @Override
-    public UpdateResult updateOne(ObjectId objectId, Bson update) {
+    public UpdateResult updateOne(String id, Bson update) {
 
-        Bson filter = createIdFilter(objectId);
+        Bson filter = createIdFilter(new ObjectId(id));
         UpdateResult updateResult = getCollection().updateOne(filter, new Document("$set", update));
         return updateResult;
     }
