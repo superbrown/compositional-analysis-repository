@@ -1,14 +1,13 @@
 package gov.energy.nbc.car.bo.mongodb.singleCellSchemaApproach;
 
 import gov.energy.nbc.car.Settings;
-import gov.energy.nbc.car.Settings_forUnitTestPurposes;
 import gov.energy.nbc.car.bo.AbsBusinessObjects;
-import gov.energy.nbc.car.bo.mongodb.DataCategoryBO;
 import gov.energy.nbc.car.bo.PhysicalFileBO;
+import gov.energy.nbc.car.bo.mongodb.DataCategoryBO;
 
 public class s_BusinessObjects extends AbsBusinessObjects {
 
-    public s_BusinessObjects(Settings settings, Settings_forUnitTestPurposes settings_forUnitTestPurposes) {
+    public s_BusinessObjects(Settings settings, Settings settings_forUnitTestPurposes) {
 
         super(settings, settings_forUnitTestPurposes);
         init();

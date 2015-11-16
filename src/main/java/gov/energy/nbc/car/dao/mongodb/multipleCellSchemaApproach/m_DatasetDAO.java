@@ -44,8 +44,6 @@ public class m_DatasetDAO extends DAO implements IDatasetDAO {
 
         rowDAO.add(objectId, datasetDocument, data);
 
-        makeSureCollectionIsIndexedForAllColumns(data);
-
         String dataCategory = datasetDocument.getDataCategory();
         Set columnNames = data.getColumnNames();
 
@@ -61,7 +59,7 @@ public class m_DatasetDAO extends DAO implements IDatasetDAO {
         if (dataCategoryDocument == null) {
 
             dataCategoryDocument = new DataCategoryDocument();
-            dataCategoryDocument.setDataCategory(dataCategory);
+            dataCategoryDocument.setName(dataCategory);
             ObjectId objectId = dataCategoryDAO.add(dataCategoryDocument);
             dataCategoryDocument = dataCategoryDAO.get(objectId);
         }
@@ -103,15 +101,5 @@ public class m_DatasetDAO extends DAO implements IDatasetDAO {
     @Override
     public IDataCategoryDAO getDataCategoryDAO() {
         return dataCategoryDAO;
-    }
-
-    protected void makeSureCollectionIsIndexedForAllColumns(IRowCollection rowCollection) {
-
-//        Row firstRow = rowCollection.get(0);
-//
-//        for (String fieldName : firstRow.keySet()) {
-//
-//            rowDAO.getCollection().createIndex(new BasicDBObject(fieldName, 1));
-//        }
     }
 }

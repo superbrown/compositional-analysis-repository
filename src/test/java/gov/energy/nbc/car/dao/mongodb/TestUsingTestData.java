@@ -1,18 +1,26 @@
 package gov.energy.nbc.car.dao.mongodb;
 
 import gov.energy.nbc.car.Application;
+import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.Settings_forUnitTestPurposes;
 import gov.energy.nbc.car.bo.ITestDataBO;
-import gov.energy.nbc.car.bo.mongodb.singleCellSchemaApproach.s_BusinessObjects;
 
 public class TestUsingTestData {
 
     static public boolean SUSPEND_DATA_SEEDING = false;
     static public boolean SUSPEND_DATA_CLEANUP = false;
 
-    public static void beforeClass() {
+    private static final Settings SETTINGS = new Settings_forUnitTestPurposes();
 
-        Application.setBusinessObjects(new s_BusinessObjects(new Settings_forUnitTestPurposes(), new Settings_forUnitTestPurposes()));
+    static {
+        SETTINGS.setMongoDbHost("localhost");
+        SETTINGS.setMongoDbPort("27017");
+        SETTINGS.setMongoDatabaseName("car_forUnitTestPurposes");
+        SETTINGS.setRootDirectoryForUploadedDataFiles("target/test-classes");
+        SETTINGS.setDefaultSetOfDataCategories(Application.DEFAULT_SET_OF_DATA_CATEGORIES);
+    }
+
+    public static void beforeClass() {
     }
 
     public void before() {
@@ -43,5 +51,10 @@ public class TestUsingTestData {
             ITestDataBO testDataBO = Application.getBusinessObjects().getTestDataBO();
             testDataBO.dropTheTestDatabase();
         }
+    }
+
+    protected Settings createSettingsForUnitTesting() {
+
+        return SETTINGS;
     }
 }

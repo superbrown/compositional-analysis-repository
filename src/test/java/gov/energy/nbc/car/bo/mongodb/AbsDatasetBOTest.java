@@ -22,7 +22,7 @@ public abstract class AbsDatasetBOTest extends TestUsingTestData
 
     }
 
-    protected abstract void initializeBusinessObject();
+    protected abstract void initializeBusinessObjects();
 
     @AfterClass
     public static void afterClass() {
@@ -31,8 +31,8 @@ public abstract class AbsDatasetBOTest extends TestUsingTestData
 
     @Before
     public void before() {
+        initializeBusinessObjects();
         super.before();
-        initializeBusinessObject();
     }
 
     @After

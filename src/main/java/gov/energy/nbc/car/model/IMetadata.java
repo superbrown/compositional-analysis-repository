@@ -1,5 +1,6 @@
 package gov.energy.nbc.car.model;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -7,7 +8,7 @@ public interface IMetadata {
 
     String getDataCategory();
 
-    String getSubmissionDate();
+    Date getSubmissionDate();
 
     String getSubmitter();
 

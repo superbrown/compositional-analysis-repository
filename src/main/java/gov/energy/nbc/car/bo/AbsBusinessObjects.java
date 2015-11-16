@@ -1,12 +1,11 @@
 package gov.energy.nbc.car.bo;
 
 import gov.energy.nbc.car.Settings;
-import gov.energy.nbc.car.Settings_forUnitTestPurposes;
 
 public abstract class AbsBusinessObjects implements IBusinessObjects {
 
     protected Settings settings;
-    protected Settings_forUnitTestPurposes settings_forUnitTestPurposes;
+    protected Settings settings_forUnitTestPurposes;
 
     protected IDataCategoryBO dataCategoryBO;
     protected IDatasetBO datasetBO;
@@ -14,7 +13,7 @@ public abstract class AbsBusinessObjects implements IBusinessObjects {
     protected IPhysicalFileBO physicalFileBO;
     protected ITestDataBO testDataBO;
 
-    public AbsBusinessObjects(Settings settings, Settings_forUnitTestPurposes settings_forUnitTestPurposes) {
+    public AbsBusinessObjects(Settings settings, Settings settings_forUnitTestPurposes) {
 
         this.settings = settings;
         this.settings_forUnitTestPurposes = settings_forUnitTestPurposes;
@@ -41,7 +40,7 @@ public abstract class AbsBusinessObjects implements IBusinessObjects {
     }
 
     @Override
-    public Settings_forUnitTestPurposes getSettings_forUnitTestPurposes() {
+    public Settings getSettings_forUnitTestPurposes() {
         return settings_forUnitTestPurposes;
     }
 

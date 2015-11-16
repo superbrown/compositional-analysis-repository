@@ -1,8 +1,6 @@
 package gov.energy.nbc.car.dao.mongodb;
 
 import gov.energy.nbc.car.Application;
-import gov.energy.nbc.car.Settings;
-import gov.energy.nbc.car.Settings_forUnitTestPurposes;
 import gov.energy.nbc.car.bo.ITestDataBO;
 import gov.energy.nbc.car.bo.TestMode;
 import gov.energy.nbc.car.bo.mongodb.TestData;
@@ -30,7 +28,7 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
 
     }
 
-    protected abstract void initializeBusinessObjects(Settings settings, Settings_forUnitTestPurposes settings_forUnitTestPurposes);
+    protected abstract void initializeBusinessObjects();
 
     @AfterClass
     public static void afterClass() {
@@ -39,9 +37,11 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
 
     @Before
     public void before() {
+
+        initializeBusinessObjects();
+
         super.before();
 
-        initializeBusinessObjects(new Settings_forUnitTestPurposes(), new Settings_forUnitTestPurposes());
         datasetDAO = Application.
                 getBusinessObjects().
                 getDatasetBO().
@@ -86,11 +86,13 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
         IDataCategoryDAO dataCategoryDAO = datasetDAO.getDataCategoryDAO();
 
         ITestDataBO testDataBO = Application.getBusinessObjects().getTestDataBO();
-        testDataBO.removeTestData();
+        if (SUSPEND_DATA_CLEANUP == false) {
+            testDataBO.removeTestData();
+        }
         testDataBO.seedTestDataInTheDatabase_dataset_1();
 
         IDataCategoryDocument dataCategoryDocument = dataCategoryDAO.getByName(TestData.ALGEA);
-        assertTrue(dataCategoryDocument.getDataCategory().equals(TestData.ALGEA));
+        assertTrue(dataCategoryDocument.getName().equals(TestData.ALGEA));
 
         Set<String> columnNames = dataCategoryDocument.getColumnNames();
         assertTrue(columnNames.size() == 8);
@@ -106,7 +108,7 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
         testDataBO.seedTestDataInTheDatabase_dataset_2();
 
         dataCategoryDocument = dataCategoryDAO.getByName(TestData.ALGEA);
-        assertTrue(dataCategoryDocument.getDataCategory().equals(TestData.ALGEA));
+        assertTrue(dataCategoryDocument.getName().equals(TestData.ALGEA));
 
         columnNames = dataCategoryDocument.getColumnNames();
         assertTrue(columnNames.size() == 10);

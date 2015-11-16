@@ -1,15 +1,16 @@
 package gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach;
 
 import gov.energy.nbc.car.ISettings;
-import gov.energy.nbc.car.dao.dto.IDeleteResults;
-import gov.energy.nbc.car.dao.dto.RowSearchCriteria;
-import gov.energy.nbc.car.dao.dto.SearchCriterion;
 import gov.energy.nbc.car.dao.IRowDAO;
+import gov.energy.nbc.car.dao.dto.IDeleteResults;
+import gov.energy.nbc.car.dao.dto.SearchCriterion;
 import gov.energy.nbc.car.dao.mongodb.DAO;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.mongodb.MongoFieldNameEncoder;
+import gov.energy.nbc.car.dao.mongodb.dto.DataOrMetatdata;
 import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
 import gov.energy.nbc.car.model.*;
+import gov.energy.nbc.car.model.mongodb.common.Metadata;
 import gov.energy.nbc.car.model.mongodb.document.CellDocument;
 import gov.energy.nbc.car.model.mongodb.document.RowDocument;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
@@ -47,7 +48,7 @@ public class m_RowDAO extends DAO implements IRowDAO {
     @Override
     public List<ObjectId> add(ObjectId datasetId, IDatasetDocument datasetDocument, IRowCollection data) {
 
-        List<ObjectId> rowIds = new ArrayList();
+        List<ObjectId> idsOfRowsAdded = new ArrayList();
 
         IMetadata metadata = datasetDocument.getMetadata();
 
@@ -58,24 +59,39 @@ public class m_RowDAO extends DAO implements IRowDAO {
                     metadata,
                     row);
 
+            // add row
+
             PerformanceLogger performanceLogger = new PerformanceLogger(log, "insert(rowDocument)");
             ObjectId rowId = add(rowDocument);
             performanceLogger.done();
 
-            rowIds.add(rowId);
+            idsOfRowsAdded.add(rowId);
+
+            // add metadata into cell collections
+
+            addToCellCollection(rowId, DataOrMetatdata.METADATA, Metadata.ATTR_KEY__SUBMISSION_DATE, metadata.getSubmissionDate());
+            addToCellCollection(rowId, DataOrMetatdata.METADATA, Metadata.ATTR_KEY__SUBMITTER, metadata.getSubmitter());
+            addToCellCollection(rowId, DataOrMetatdata.METADATA, Metadata.ATTR_KEY__PROJECT_NAME, metadata.getProjectName());
+            addToCellCollection(rowId, DataOrMetatdata.METADATA, Metadata.ATTR_KEY__CHARGE_NUMBER, metadata.getChargeNumber());
+
+            // add data into cell collections
 
             for (String columnName : row.getColumnNames()) {
-                m_CellDAO cellDAO = getCellDAO(columnName);
-                cellDAO.add(rowId, row.getValue(columnName));
+
+                addToCellCollection(rowId, DataOrMetatdata.DATA, columnName, row.getValue(columnName));
             }
         }
 
-        return rowIds;
+        return idsOfRowsAdded;
+    }
+
+    protected void addToCellCollection(ObjectId rowId, DataOrMetatdata dataOrMetatdata, String columnName, Object value) {
+
+        m_CellDAO cellDAO = getCellDAO(columnName);
+        cellDAO.add(rowId, value);
     }
 
     public DeleteResults deleteRowsAssociatedWithDataset(ObjectId datasetId) {
-
-        // FIXME
 
         DeleteResults allDeleteResults = new DeleteResults();
 
@@ -84,7 +100,7 @@ public class m_RowDAO extends DAO implements IRowDAO {
 
         Bson projection = fields(include(RowDocument.ATTR_KEY__ID));
 
-        List<Document> rowsAssociatedWithDataset = this.query(datasetIdFilter, projection);
+        List<Document> rowsAssociatedWithDataset = get(datasetIdFilter, projection);
 
         if (rowsAssociatedWithDataset.size() > 0) {
 
@@ -120,92 +136,52 @@ public class m_RowDAO extends DAO implements IRowDAO {
                         "their spreasheet.");
     }
 
-    @Override
-    public List<Document> query(String query, String projection) {
-
-        Bson bson_query = (Bson) DAOUtilities.parse(query);
-        Bson bson_projection = (Bson)DAOUtilities.parse(projection);
-        return query(bson_query, bson_projection);
-    }
-
-    @Override
-    public List<Document> query(Bson bson, Bson projection) {
-
-        List<Document> documents = get(bson, projection);
-        return documents;
-    }
+//    @Override
+//    public List<Document> query(String query, String projection) {
+//
+//        Bson bson_query = (Bson) DAOUtilities.parse(query);
+//        Bson bson_projection = (Bson)DAOUtilities.parse(projection);
+//        return query(bson_query, bson_projection);
+//    }
 
     @Override
-    public List<Document> query(RowSearchCriteria searchCriteria) {
+    public List<Document> query(List<SearchCriterion> searchCriteria) {
 
-        List<SearchCriterion> searchCriteria_metadata = searchCriteria.getMetadataSearchCriteria();
-        List<SearchCriterion> searchCriteria_data = searchCriteria.getDataSearchCriteria();
-
-        encodeColumnNamesForMongoSafety(searchCriteria_data);
-
-//        CriterionAndItsNumberOfMatches criterionWithTheFewestMatches_metadata = null;
-        CriterionAndItsNumberOfMatches criterionWithTheFewestMatches_data = null;
-
-        if (searchCriteria_data.isEmpty() == false) {
-            criterionWithTheFewestMatches_data = determineCriterionWithTheFewestMatches(searchCriteria_data);
+        if (searchCriteria.size() == 0) {
+            throw new RuntimeException();
         }
 
-        if (criterionWithTheFewestMatches_data.getNubmerOfMatches() == 0) {
-            // this means there can be no matches
+        encodeColumnNamesForMongoSafety(searchCriteria);
+
+        CriterionAndItsNumberOfMatches criterionWithTheFewestMatches = null;
+
+        if (searchCriteria.isEmpty() == false) {
+            criterionWithTheFewestMatches = determineCriterionWithTheFewestMatches(searchCriteria);
+        }
+
+        if (criterionWithTheFewestMatches.getNubmerOfMatches() == 0) {
+            // since the search is performed as an AND operation, this means there can be no matches
             return new ArrayList();
         }
 
-//        if (searchCriteria_metadata.isEmpty() == false) {
-//            criterionWithTheFewestMatches_metadata =
-//                    determineCriterionWithTheFewestMatches(searchCriteria_metadata);
-//        }
-
-//        long numberOfMatches_metadata = criterionWithTheFewestMatches_metadata.getNubmerOfMatches();
-//        long numberOfMatches_data = criterionWithTheFewestMatches_data.getNubmerOfMatches();
-//
-//        if (numberOfMatches_metadata != -1) {
-//
-//            if (numberOfMatches_data < numberOfMatches_metadata) {
-//                new
-//            }
-//        }
-//        else {
-//
-//            if (nubmerOfMatches_data < numberOfMatches_metadata) {
-//
-//            }
-//        }
-//
-//        if (nubmerOfMatches_data == -1) {
-//
-//        }
-//        else if (criterionWithTheFewestMatches_metadata.getNubmerOfMatches()){
-//            if ()
-//        }
+        SearchCriterion firstCriterionToApply = criterionWithTheFewestMatches.getCriterion();
 
         // get the row numbers of all cells that match the first criterion
-        SearchCriterion criterionWithTheFewestMatches = criterionWithTheFewestMatches_data.getCriterion();
-        List<SearchCriterion> searchCriteria_data_whatsLeftToDo = new ArrayList(searchCriteria_data);
-        searchCriteria_data_whatsLeftToDo.remove(criterionWithTheFewestMatches);
+        List<SearchCriterion> searchCriteria_allCriteriaButTheFirst = new ArrayList(searchCriteria);
+        searchCriteria_allCriteriaButTheFirst.remove(firstCriterionToApply);
 
-        Set<ObjectId> matchingRowIds = getIdsOfRowsThatMatch(criterionWithTheFewestMatches);
+        Set<ObjectId> matchingRowIds = getIdsOfRowsThatMatch(firstCriterionToApply);
 
-        for (SearchCriterion searchCondition : searchCriteria_data_whatsLeftToDo) {
-
-            // DESIGN NOTE: Each time this is called, it'll likely make the set of IDs smaller.
-            matchingRowIds = getIdsOfSubsetOfRowsThatMatch(matchingRowIds, searchCondition);
-        }
-
-        for (SearchCriterion searchCondition : searchCriteria_metadata) {
+        for (SearchCriterion searchCondition : searchCriteria_allCriteriaButTheFirst) {
 
             // DESIGN NOTE: Each time this is called, it'll likely make the set of IDs smaller.
             matchingRowIds = getIdsOfSubsetOfRowsThatMatch(matchingRowIds, searchCondition);
         }
-
 
         Set<String> dataColumnNamesToIncludedInQueryResults = new LinkedHashSet<>();
 
-        for (SearchCriterion searchCriterion : searchCriteria_data) {
+        for (SearchCriterion searchCriterion : searchCriteria) {
+
             dataColumnNamesToIncludedInQueryResults.add(searchCriterion.getName());
         }
 
@@ -278,7 +254,7 @@ public class m_RowDAO extends DAO implements IRowDAO {
 
         for (SearchCriterion searchCriterion : searchCriteria) {
 
-            long count = getCountOfRowsThatMatch(searchCriterion);
+            long count = getCountOfCellsThatMatch(searchCriterion);
 
             if (count == 0) {
                 return new CriterionAndItsNumberOfMatches(searchCriterion, 0);
@@ -306,21 +282,20 @@ public class m_RowDAO extends DAO implements IRowDAO {
         return matchingIds;
     }
 
-    @Override
-    public long getCountOfRowsThatMatch(SearchCriterion searchCriterion) {
+    public long getCountOfCellsThatMatch(SearchCriterion searchCriterion) {
 
-        m_CellDAO cellDAO = getCellDAO(searchCriterion.getName());
+        m_CellDAO cellDAOForThisName = getCellDAO(searchCriterion.getName());
 
-        Bson query = DAOUtilities.toCriterion(
+        Bson valueFilter = DAOUtilities.toCriterion(
                 CellDocument.ATTR_KEY__VALUE,
                 searchCriterion.getValue(),
                 searchCriterion.getComparisonOperator());
 
         PerformanceLogger performanceLogger = new PerformanceLogger(
                 log,
-                "[getCountOfRowsThatMatch()] cellDAO.getCollection().count(" + query.toString() + ")",
+                "[getCountOfRowsThatMatch()] cellDAO.getCollection().count(" + valueFilter.toString() + ")",
                 true);
-        long count = cellDAO.getCollection().count(query);
+        long count = cellDAOForThisName.getCollection().count(valueFilter);
         performanceLogger.done();
 
         return count;

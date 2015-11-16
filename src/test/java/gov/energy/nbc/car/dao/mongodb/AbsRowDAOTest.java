@@ -2,11 +2,10 @@ package gov.energy.nbc.car.dao.mongodb;
 
 import gov.energy.nbc.car.Application;
 import gov.energy.nbc.car.Settings;
-import gov.energy.nbc.car.Settings_forUnitTestPurposes;
 import gov.energy.nbc.car.bo.TestMode;
-import gov.energy.nbc.car.dao.dto.RowSearchCriteria;
-import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.bo.mongodb.TestData;
+import gov.energy.nbc.car.dao.IRowDAO;
+import gov.energy.nbc.car.dao.dto.SearchCriterion;
 import gov.energy.nbc.car.model.mongodb.common.Metadata;
 import gov.energy.nbc.car.model.mongodb.document.DatasetDocument;
 import gov.energy.nbc.car.model.mongodb.document.RowDocument;
@@ -14,6 +13,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.and;
@@ -40,10 +40,10 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
     @Before
     public void before() {
 
-        super.before();
+        Settings settings = createSettingsForUnitTesting();
+        initializeBusinessObjects();
 
-        Settings_forUnitTestPurposes settings = new Settings_forUnitTestPurposes();
-        initializeBusinessObjects(settings, settings);
+        super.before();
 
         rowDAO = Application.
                 getBusinessObjects().
@@ -51,7 +51,7 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
                 getRowDAO(TestMode.TEST_MODE);
     }
 
-    protected abstract void initializeBusinessObjects(Settings settings, Settings_forUnitTestPurposes settings_forUnitTestPurposes);
+    protected abstract void initializeBusinessObjects();
 
     @After
     public void after() {
@@ -160,10 +160,10 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
     @Test
     public void testQuery_rowSearchCriteria() {
 
-        RowSearchCriteria rowSearchCriteria = new RowSearchCriteria();
-        rowSearchCriteria.addCriterion_data("Some Column Name", 1, EQUALS);
-        rowSearchCriteria.addCriterion_data("Float Values Column Name", 1.22, EQUALS);
-        rowSearchCriteria.addCriterion_data("Additional Column Name 1", "a1", EQUALS);
+        List<SearchCriterion> rowSearchCriteria = new ArrayList<>();
+        rowSearchCriteria.add(new SearchCriterion("Some Column Name", 1, EQUALS));
+        rowSearchCriteria.add(new SearchCriterion("Float Values Column Name", 1.22, EQUALS));
+        rowSearchCriteria.add(new SearchCriterion("Additional Column Name 1", "a1", EQUALS));
 
         List<Document> documents = rowDAO.query(rowSearchCriteria);
         assertTrue(documents.size() == 1);

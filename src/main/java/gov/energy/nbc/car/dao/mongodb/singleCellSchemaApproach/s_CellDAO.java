@@ -1,8 +1,6 @@
 package gov.energy.nbc.car.dao.mongodb.singleCellSchemaApproach;
 
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.client.ListIndexesIterable;
 import com.mongodb.client.result.DeleteResult;
 import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.dao.ICellDAO;
@@ -23,12 +21,10 @@ public class s_CellDAO extends DAO implements ICellDAO {
 
     public s_CellDAO(String collectionName, Settings settings) {
         super(collectionName, settings);
-        makeSureTableColumnsIRelyUponAreIndexed();
     }
 
     public s_CellDAO(Settings settings) {
         super(COLLECTION_NAME, settings);
-        makeSureTableColumnsIRelyUponAreIndexed();
     }
 
 
@@ -68,24 +64,5 @@ public class s_CellDAO extends DAO implements ICellDAO {
         allDeleteResults.add(deleteResult);
 
         return allDeleteResults;
-    }
-
-    private static boolean HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = false;
-
-    protected void makeSureTableColumnsIRelyUponAreIndexed() {
-        if (HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED == false) {
-
-            getCollection().createIndex(new BasicDBObject(CellDocument.ATTR_KEY__ROW_ID, 1));
-            getCollection().createIndex(new BasicDBObject(CellDocument.ATTR_KEY__COLUMN_NAME, 1));
-            getCollection().createIndex(new BasicDBObject(CellDocument.ATTR_KEY__VALUE, 1));
-
-            log.info("Row Indexes");
-            ListIndexesIterable<Document> indexes = getCollection().listIndexes();
-            for (Document index : indexes) {
-                log.info(index.toJson());
-            }
-
-            HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = true;
-        }
     }
 }

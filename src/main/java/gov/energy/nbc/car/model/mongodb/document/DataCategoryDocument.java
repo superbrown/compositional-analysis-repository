@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class DataCategoryDocument extends AbstractDocument implements IDataCategoryDocument {
 
-    public static final String ATTR_KEY__SAMPLE_TYPE = "dataCategory";
+    public static final String ATTR_KEY__NAME = "name";
     public static final String ATTR_KEY__COLUMN_NAMES = "columnNames";
 
     public DataCategoryDocument() {
@@ -36,7 +36,7 @@ public class DataCategoryDocument extends AbstractDocument implements IDataCateg
 
         initObjectId(document);
 
-        String dataCategory = (String) document.get(ATTR_KEY__SAMPLE_TYPE);
+        String dataCategory = (String) document.get(ATTR_KEY__NAME);
 
         List columnNames = (List) document.get(ATTR_KEY__COLUMN_NAMES);;
 
@@ -50,18 +50,18 @@ public class DataCategoryDocument extends AbstractDocument implements IDataCateg
 
     protected void init(String dataCategory, Set<String> columnNames) {
 
-        setDataCategory(dataCategory);
+        setName(dataCategory);
         setColumnNames(columnNames);
     }
 
     @Override
-    public void setDataCategory(String dataCategory) {
-        put(ATTR_KEY__SAMPLE_TYPE, dataCategory);
+    public void setName(String dataCategory) {
+        put(ATTR_KEY__NAME, dataCategory);
     }
 
     @Override
-    public String getDataCategory() {
-        return (String) get(ATTR_KEY__SAMPLE_TYPE);
+    public String getName() {
+        return (String) get(ATTR_KEY__NAME);
     }
 
     @Override

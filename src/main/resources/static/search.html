@@ -61,7 +61,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Upload Data</a></li>
+            <li class="active"><a href="#">Retrieve Data</a></li>
             <li><a href="#findData">Find Data</a></li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Settings <span class="caret"></span></a>
@@ -95,18 +95,18 @@
               <legend>Metadata</legend>
 
               <label>Data Catagory*</label>
-              <select name="dataCategory" id="dataCategory" ng-model="dataCategory"
-                      ng-options="dataCategoryName as dataCategoryName for dataCategoryName in dataCategoryNames">
+              <select ng-model="dataCategory"
+                      ng-options="dataCategoryName as dataCategoryName for dataCategoryName in dataCategoryNames"
+                      ng-change="handleDataCategorySelection()">
               </select>
               <br/>
 
-              <!--<label for="dataCategory">Sample Type*</label>-->
-              <!--<select id="dataCategory" name="dataCategory" style="width: auto;">-->
-              <!--<option value="Algea">Algea</option>-->
-              <!--<option value="ATP3">ATP3</option>-->
-              <!--<option value="Biomass">Biomass</option>-->
-              <!--</select>-->
-              <!--<br/>-->
+              <label>Column Name*</label>
+              <select ng-model="column">
+                <option value=''>(select)</option>
+                <option ng-repeat="columnName in columnNames" value="{{ columnName }}">{{ columnName }}</option>
+              </select>
+              <br/>
 
               <label for="submissionDate">Submission Date*</label>
               <input ng-model="submissionDate" required type="text" id="submissionDate" name="submissionDate"/>
@@ -114,7 +114,7 @@
 
               <label for="submitter">Submitter*</label>
               <input ng-model="submitter" required id="submitter" name="submitter" type="text" style="width: 300px;"/>
-              <!--<span class="alert" ng-class="{'alert-warning':submitter.length > 5}" >Sumitter is required!</span>-->
+              <span class="alert" ng-class="{'alert-warning':submitter.length > 5}" >Sumitter is required!</span>
               <br/>
 
               <label for="projectName">Project Name</label>
@@ -138,11 +138,9 @@
               <br/>
               <input id="dataFile" ng-model="dataFile" required name="dataFile" type="file" style="display: inline; margin-bottom: 5px;" />
               <br/>
-              <span ng-show="hasExcelWorkbookFileSuffix(dataFile)">
-                <label style="width: auto;" for="nameOfSheetContainingData">Name of sheet within the workbook containing the data to be ingested*</label>
-                <br/>
-                <input id="nameOfSheetContainingData" ng-model="nameOfSheetContainingData" name="nameOfSheetContainingData" type="text" style="width: 300px;" />
-              </span>
+              <label ng-show="dataFile " style="width: auto;" for="nameOfSheetContainingData">Name of sheet within the workbook containing the data to be ingested*</label>
+              <br/>
+              <input id="nameOfSheetContainingData" ng-model="nameOfSheetContainingData" name="nameOfSheetContainingData" type="text" style="width: 300px;" />
 
             </div>
 
@@ -154,7 +152,7 @@
             </div>
 
             <div style="float: bottom; clear: both">
-              <input type="submit" value="Submit"/>
+              <a href="#" class="btn btn-default" ng-click="uploadData()">Upload</a>
             </div>
 
           </form>

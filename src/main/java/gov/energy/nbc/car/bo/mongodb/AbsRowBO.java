@@ -1,20 +1,23 @@
 package gov.energy.nbc.car.bo.mongodb;
 
-import com.mongodb.client.FindIterable;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
 import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.bo.IRowBO;
 import gov.energy.nbc.car.bo.TestMode;
-import gov.energy.nbc.car.dao.dto.RowSearchCriteria;
-import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.IRowDAO;
+import gov.energy.nbc.car.dao.dto.ComparisonOperator;
+import gov.energy.nbc.car.dao.dto.SearchCriterion;
+import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.model.IRowDocument;
 import gov.energy.nbc.car.model.mongodb.document.RowDocument;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbsRowBO implements IRowBO {
@@ -43,31 +46,26 @@ public abstract class AbsRowBO implements IRowBO {
     }
 
     @Override
-    public String getRows(TestMode testMode, String query, String projection) {
+    public String getRows(TestMode testMode, String query) {
 
-        List<Document> rowDocuments = getRowDAO(testMode).query(query, projection);
+        BasicDBList list = (BasicDBList)JSON.parse(query);
 
-        if (rowDocuments.size() == 0) { return null; }
+        List<SearchCriterion> rowSearchCriteria = new ArrayList<>();
 
-        String json = DAOUtilities.serialize(rowDocuments);
-        return json;
-    }
+        for (Object element : list) {
 
-    @Override
-    public String getRows(TestMode testMode, RowSearchCriteria rowSearchCriteria, String projection) {
+            BasicDBObject document = (BasicDBObject)element;
 
-        List<Document> rowDocuments = getRowDAO(testMode).query(rowSearchCriteria);
+            String name = (String) document.get("name");
+            Object value = document.get("value");
+            ComparisonOperator comparisonOperator = ComparisonOperator.valueOf((String) document.get("comparisonOperator"));
 
-        if (rowDocuments.size() == 0) { return null; }
+            SearchCriterion searchCriterion = new SearchCriterion(name, value, comparisonOperator);
 
-        String json = DAOUtilities.serialize(rowDocuments);
-        return json;
-    }
+            rowSearchCriteria.add(searchCriterion);
+        }
 
-    @Override
-    public String getRows(TestMode testMode, Bson query, Bson projection) {
-
-        List<Document> rowDocuments = getRowDAO(testMode).query(query, projection);
+        List <Document> rowDocuments = getRowDAO(testMode).query(rowSearchCriteria);
 
         if (rowDocuments.size() == 0) { return null; }
 
@@ -75,8 +73,29 @@ public abstract class AbsRowBO implements IRowBO {
         return json;
     }
 
+//    @Override
+//    public String getRows(TestMode testMode, RowSearchCriteria rowSearchCriteria, String projection) {
+//
+//        List<Document> rowDocuments = getRowDAO(testMode).query(rowSearchCriteria);
+//
+//        if (rowDocuments.size() == 0) { return null; }
+//
+//        String json = DAOUtilities.serialize(rowDocuments);
+//        return json;
+//    }
+
+//    public String getRows(TestMode testMode, Bson query, Bson projection) {
+//
+//        List<Document> rowDocuments = getRowDAO(testMode).query(query);
+//
+//        if (rowDocuments.size() == 0) { return null; }
+//
+//        String json = DAOUtilities.serialize(rowDocuments);
+//        return json;
+//    }
+
     @Override
-    public String getRows(TestMode testMode, RowSearchCriteria rowSearchCriteria) {
+    public String getRows(TestMode testMode, List<SearchCriterion> rowSearchCriteria) {
 
         List<Document> rowDocuments = getRowDAO(testMode).query(rowSearchCriteria);
 

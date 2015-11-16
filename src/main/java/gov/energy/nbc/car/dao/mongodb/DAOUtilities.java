@@ -10,6 +10,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.*;
@@ -21,7 +22,7 @@ public class DAOUtilities {
 
         try {
             FindIterable<Document> resultsCursor = collection.find(query);
-            List<Document> results = extractResults(resultsCursor);
+            List<Document> results = toList(resultsCursor);
             return results;
 
         } catch (Throwable e) {
@@ -39,7 +40,7 @@ public class DAOUtilities {
 
         try {
             FindIterable<Document> resultsCursor = collection.find(query).projection(projection);
-            List<Document> results = extractResults(resultsCursor);
+            List<Document> results = toList(resultsCursor);
             return results;
 
         } catch (Throwable e) {
@@ -55,7 +56,7 @@ public class DAOUtilities {
                 // From: https://docs.mongodb.org/manual/reference/mongodb-wire-protocol/
                         limit(-1);
 
-        List<Document> results = extractResults(resultsCursor);
+        List<Document> results = toList(resultsCursor);
 
         if (results.size() != 0) {
             return results.get(0);
@@ -74,7 +75,7 @@ public class DAOUtilities {
                 // From: https://docs.mongodb.org/manual/reference/mongodb-wire-protocol/
                         limit(-1);
 
-        List<Document> results = extractResults(resultsCursor);
+        List<Document> results = toList(resultsCursor);
 
         if (results.size() != 0) {
             return results.get(0);
@@ -84,11 +85,33 @@ public class DAOUtilities {
         }
     }
 
-    protected static List<Document> extractResults(FindIterable<Document> resultsCursor) {
+    public static List<Document> toList(FindIterable<Document> resultsCursor) {
 
         MongoCursor<Document> resultsIterator = resultsCursor.iterator();
         List<Document> results = toList(resultsIterator);
         return results;
+    }
+
+    public static List<Document> toList(Iterable<Document> resultsCursor) {
+
+        Iterator<Document> resultsIterator = resultsCursor.iterator();
+        List<Document> results = toList(resultsIterator);
+        return results;
+    }
+
+    private static List<Document> toList(Iterator<Document> resultsIterator) {
+
+        List<Document> list = new ArrayList<>();
+
+        if (resultsIterator.hasNext() == false) {
+            return list;
+        }
+
+        while (resultsIterator.hasNext()) {
+            list.add(resultsIterator.next());
+        }
+
+        return list;
     }
 
     public static List<Document> toList(MongoCursor<Document> resultsIterator) {
@@ -145,7 +168,7 @@ public class DAOUtilities {
         else if (comparisonOperator == LESS_THAN_OR_EQUAL) {
             criterion = lte(name, value);
         }
-        else if (comparisonOperator == LIKE) {
+        else if (comparisonOperator == CONTAINS) {
             criterion = new BasicDBObject();
             ((BasicDBObject)criterion).put(
                     name,

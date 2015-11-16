@@ -80,7 +80,7 @@ public class PhysicalFileDAO implements IPhysicalFileDAO {
 
     protected String getRootDirectoryForDataFiles() {
 
-        String dataFilesDirectoryPath = settings.getRootDirectoryForDataFiles();
+        String dataFilesDirectoryPath = settings.getRootDirectoryForUploadedDataFiles();
         dataFilesDirectoryPath = seeToItThatItEndsWithAFileSeparator(dataFilesDirectoryPath);
         return dataFilesDirectoryPath;
     }

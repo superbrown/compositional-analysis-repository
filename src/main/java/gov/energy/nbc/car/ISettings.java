@@ -11,7 +11,7 @@ public interface ISettings {
 
     String getMongoDbPort();
 
-    String getRootDirectoryForDataFiles();
+    String getRootDirectoryForUploadedDataFiles();
 
     void setMongoDatabaseName(String MONGO_DATABASE_NAME);
 
@@ -21,5 +21,9 @@ public interface ISettings {
 
     void setMongoDbPort(String MONGO_DB_PORT);
 
-    void setRootDirectoryForDataFiles(String rootDirectoryForDataFiles);
+    void setRootDirectoryForUploadedDataFiles(String rootDirectoryForDataFiles);
+
+    String[] getDefaultSetOfDataCategories();
+
+    void setDefaultSetOfDataCategories(String[] defaultSetOfDataCategories);
 }
