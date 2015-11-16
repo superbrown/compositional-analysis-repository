@@ -15,14 +15,14 @@ import java.util.List;
 
 public class Metadata extends AbstractDocument implements IMetadata {
 
-    public static final String ATTR_KEY__SAMPLE_TYPE = "dataCategory";
-    public static final String ATTR_KEY__SUBMISSION_DATE = "submissionDate";
-    public static final String ATTR_KEY__SUBMITTER = "submitter";
-    public static final String ATTR_KEY__CHARGE_NUMBER = "chargeNumber";
-    public static final String ATTR_KEY__PROJECT_NAME = "projectName";
-    public static final String ATTR_KEY__COMMENTS = "comments";
-    public static final String ATTR_KEY__UPLOADED_FILE = "uploadedFile";
-    public static final String ATTR_KEY__ATTACHMENTS = "attachments";
+    public static final String ATTR_KEY__SAMPLE_TYPE = "_dataCategory";
+    public static final String ATTR_KEY__SUBMISSION_DATE = "_submissionDate";
+    public static final String ATTR_KEY__SUBMITTER = "_submitter";
+    public static final String ATTR_KEY__CHARGE_NUMBER = "_chargeNumber";
+    public static final String ATTR_KEY__PROJECT_NAME = "_projectName";
+    public static final String ATTR_KEY__COMMENTS = "_comments";
+    public static final String ATTR_KEY__UPLOADED_FILE = "_uploadedFile";
+    public static final String ATTR_KEY__ATTACHMENTS = "_attachments";
 
     public Metadata(
             String dataCategory,
@@ -141,7 +141,7 @@ public class Metadata extends AbstractDocument implements IMetadata {
     @Override
     public String getDataCategory() { return (String) get(ATTR_KEY__SAMPLE_TYPE); }
     @Override
-    public String getSubmissionDate() { return (String) get(ATTR_KEY__SUBMISSION_DATE); }
+    public Date getSubmissionDate() { return (Date) get(ATTR_KEY__SUBMISSION_DATE); }
     @Override
     public String getSubmitter() { return (String) get(ATTR_KEY__SUBMITTER); }
     @Override

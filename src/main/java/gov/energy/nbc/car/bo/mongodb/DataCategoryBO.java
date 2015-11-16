@@ -1,6 +1,5 @@
 package gov.energy.nbc.car.bo.mongodb;
 
-import com.mongodb.client.FindIterable;
 import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.bo.IDataCategoryBO;
 import gov.energy.nbc.car.bo.TestMode;
@@ -15,6 +14,10 @@ import gov.energy.nbc.car.utilities.fileReader.IDatasetReader_AllFileTypes;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 public class DataCategoryBO implements IDataCategoryBO {
 
@@ -66,6 +69,32 @@ public class DataCategoryBO implements IDataCategoryBO {
     }
 
     @Override
+    public String getAllDataCategoryNames(TestMode testMode) {
+
+        List<String> dataCategoryNames = getDataCategoryDAO(testMode).getAllNames();
+
+        // FIXME: This doesn't sort correctly if the string contains a number.  This is a problem with the
+        // implementation of String.
+        Collections.sort(dataCategoryNames);
+
+        String jsonOut = DAOUtilities.serialize(dataCategoryNames);
+        return jsonOut;
+    }
+
+
+    @Override
+    public String getColumnNamesForDataCategoryName(TestMode testMode,
+                                                    String dataCategoryName) {
+
+        IDataCategoryDocument document = getDataCategoryDAO(testMode).getByName(dataCategoryName);
+
+        Set<String> columnNames = document.getColumnNames();
+
+        String jsonOut = DAOUtilities.serialize(columnNames);
+        return jsonOut;
+    }
+
+    @Override
     public void deleteDataCategory(TestMode testMode,
                                    String dataCategoryId) throws DeletionFailure {
 
@@ -84,8 +113,7 @@ public class DataCategoryBO implements IDataCategoryBO {
         return objectId.toHexString();
     }
 
-    @Override
-    public IDataCategoryDocument getDataCategoryDocument(TestMode testMode,
+    protected IDataCategoryDocument getDataCategoryDocument(TestMode testMode,
                                                          String dataCategoryId) {
 
         IDataCategoryDocument document = getDataCategoryDAO(testMode).get(dataCategoryId);

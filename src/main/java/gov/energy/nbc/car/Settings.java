@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:/application.properties")
 public class Settings implements ISettings {
 
     @Value("${mongoDb.host}")
@@ -18,7 +18,10 @@ public class Settings implements ISettings {
     protected String mongoDatabaseName;
 
     @Value("${rootDirectoryForDataFiles}")
-    protected String rootDirectoryForDataFiles;
+    protected String rootDirectoryForUploadedDataFiles;
+
+    @Value("${defaultSetOfDataCategories}")
+    private String[] defaultSetOfDataCategories;
 
     public Settings() {
 
@@ -28,9 +31,10 @@ public class Settings implements ISettings {
     protected void init() {
 
 //        mongoDbHost = "localhost";
-//        mongoDbPort = 27017;
+//        mongoDbPort = "27017";
 //        mongoDatabaseName = "car";
 //        rootDirectoryForDataFiles = "C:/data/research-data/uploadedFiles";
+//        defaultSetOfDataCategories = new String[] {};
     }
 
     @Override
@@ -54,8 +58,8 @@ public class Settings implements ISettings {
     }
 
     @Override
-    public void setSetMongoDbHost(String MONGO_DB_HOST) {
-        this.mongoDbHost = MONGO_DB_HOST;
+    public void setSetMongoDbHost(String mongoDbHost) {
+        this.mongoDbHost = mongoDbHost;
     }
 
     @Override
@@ -69,12 +73,22 @@ public class Settings implements ISettings {
     }
 
     @Override
-    public String getRootDirectoryForDataFiles() {
-        return rootDirectoryForDataFiles;
+    public String getRootDirectoryForUploadedDataFiles() {
+        return rootDirectoryForUploadedDataFiles;
     }
 
     @Override
-    public void setRootDirectoryForDataFiles(String rootDirectoryForDataFiles) {
-        this.rootDirectoryForDataFiles = rootDirectoryForDataFiles;
+    public void setRootDirectoryForUploadedDataFiles(String rootDirectoryForUploadedDataFiles) {
+        this.rootDirectoryForUploadedDataFiles = rootDirectoryForUploadedDataFiles;
+    }
+
+    @Override
+    public String[] getDefaultSetOfDataCategories() {
+        return defaultSetOfDataCategories;
+    }
+
+    @Override
+    public void setDefaultSetOfDataCategories(String[] defaultSetOfDataCategories) {
+        this.defaultSetOfDataCategories = defaultSetOfDataCategories;
     }
 }

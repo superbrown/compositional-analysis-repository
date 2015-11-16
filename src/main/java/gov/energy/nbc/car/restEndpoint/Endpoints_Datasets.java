@@ -1,6 +1,7 @@
 package gov.energy.nbc.car.restEndpoint;
 
 import gov.energy.nbc.car.Application;
+import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.TestMode;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
@@ -28,11 +29,13 @@ import static gov.energy.nbc.car.utilities.HTTPResponseUtility.*;
 @RestController
 public class Endpoints_Datasets {
 
+    private final IDatasetBO datasetBO;
     protected Logger log = Logger.getLogger(getClass());
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("mm/dd/yyyy");
 
     public Endpoints_Datasets() {
 
+        datasetBO = Application.getBusinessObjects().getDatasetBO();
     }
 
 
@@ -85,7 +88,7 @@ public class Endpoints_Datasets {
                 }
             }
 
-            objectId = Application.getBusinessObjects().getDatasetBO().addDataset(
+            objectId = datasetBO.addDataset(
                     TestMode.value(testMode),
                     dataCategory,
                     submissionDate_date,
@@ -124,7 +127,7 @@ public class Endpoints_Datasets {
     public ResponseEntity getAllDatasets(
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String datasets = Application.getBusinessObjects().getDatasetBO().getAllDatasets(TestMode.value(testMode));
+        String datasets = datasetBO.getAllDatasets(TestMode.value(testMode));
 
         if (datasets == null) {
             return create_NOT_FOUND_response();
@@ -138,7 +141,7 @@ public class Endpoints_Datasets {
             @PathVariable(value = "datasetId") String datasetId,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String dataset = Application.getBusinessObjects().getDatasetBO().getDataset(TestMode.value(testMode), datasetId);
+        String dataset = datasetBO.getDataset(TestMode.value(testMode), datasetId);
 
         if (dataset == null) {
             return create_NOT_FOUND_response();
@@ -170,7 +173,7 @@ public class Endpoints_Datasets {
 
         long numberOfObjectsDeleted = 0;
         try {
-            numberOfObjectsDeleted = Application.getBusinessObjects().getDatasetBO().deleteDataset(TestMode.value(testMode), datasetId);
+            numberOfObjectsDeleted = datasetBO.deleteDataset(TestMode.value(testMode), datasetId);
         }
         catch (DeletionFailure deletionFailure) {
             log.error(deletionFailure);

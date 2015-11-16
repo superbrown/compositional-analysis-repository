@@ -7,5 +7,5 @@ public enum ComparisonOperator {
     LESS_THAN,
     GREATER_THAN_OR_EQUAL,
     LESS_THAN_OR_EQUAL,
-    LIKE
+    CONTAINS
 }

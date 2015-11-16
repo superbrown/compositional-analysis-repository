@@ -13,7 +13,6 @@ import gov.energy.nbc.car.dao.IDAO;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
 import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
 import gov.energy.nbc.car.model.mongodb.AbstractDocument;
-import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -73,16 +72,10 @@ public abstract class DAO implements IDAO, IMongodbDAO {
         // org.bson.codecs.configuration.CodecConfigurationException: Can't find a codec for class
         // gov.energy.nbc.dataset.model.document.Dataset.
 
-        PerformanceLogger performanceLogger = new PerformanceLogger(log, "new Document(document)");
         Document wrapper = new Document(document);
-        performanceLogger.done();
-
-        performanceLogger = new PerformanceLogger(log, "getCollection().insertOne(wrapper)");
         getCollection().insertOne(wrapper);
-        performanceLogger.done();
 
         ObjectId objectId = wrapper.getObjectId("_id");
-//        System.out.println("Inserted (ID: " + objectId + "): " + document);
         return objectId;
     }
 

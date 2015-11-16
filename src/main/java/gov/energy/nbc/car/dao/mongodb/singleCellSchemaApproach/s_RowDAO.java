@@ -8,7 +8,6 @@ import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.dao.ICellDAO;
 import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
-import gov.energy.nbc.car.dao.dto.RowSearchCriteria;
 import gov.energy.nbc.car.dao.dto.SearchCriterion;
 import gov.energy.nbc.car.dao.mongodb.DAO;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
@@ -120,87 +119,51 @@ public class s_RowDAO extends DAO implements IRowDAO {
                         "their spreasheet.");
     }
 
-    public List<Document> query(String query, String projection) {
+//    public List<Document> query(String query, String projection) {
+//
+//        Bson bson_query = (Bson)DAOUtilities.parse(query);
+//        Bson bson_projection = (Bson) DAOUtilities.parse(projection);
+//        return query(bson_query, bson_projection);
+//    }
 
-        Bson bson_query = (Bson)DAOUtilities.parse(query);
-        Bson bson_projection = (Bson) DAOUtilities.parse(projection);
-        return query(bson_query, bson_projection);
-    }
-
-    public List<Document> query(Bson bson, Bson projection) {
+    protected List<Document> query(Bson bson, Bson projection) {
 
         List<Document> documents = get(bson, projection);
         return documents;
     }
 
-    public List<Document> query(RowSearchCriteria searchCriteria) {
+    public List<Document> query(List<SearchCriterion> searchCriteria) {
 
-        List<SearchCriterion> searchCriteria_metadata = searchCriteria.getMetadataSearchCriteria();
-        List<SearchCriterion> searchCriteria_data = searchCriteria.getDataSearchCriteria();
+        CriterionAndItsNumberOfMatches criterionWithTheFewestMatches = null;
 
-//        CriterionAndItsNumberOfMatches criterionWithTheFewestMatches_metadata = null;
-        CriterionAndItsNumberOfMatches criterionWithTheFewestMatches_data = null;
-
-        if (searchCriteria_data.isEmpty() == false) {
-            criterionWithTheFewestMatches_data = determineCriterionWithTheFewestMatches(searchCriteria_data);
+        if (searchCriteria.isEmpty() == false) {
+            criterionWithTheFewestMatches = determineCriterionWithTheFewestMatches(searchCriteria);
         }
 
-        if (criterionWithTheFewestMatches_data.getNubmerOfMatches() == 0) {
+        if (criterionWithTheFewestMatches.getNubmerOfMatches() == 0) {
             // this means there can be no matches
             return new ArrayList();
         }
 
-//        if (searchCriteria_metadata.isEmpty() == false) {
-//            criterionWithTheFewestMatches_metadata =
-//                    determineCriterionWithTheFewestMatches(searchCriteria_metadata);
-//        }
-
-//        long numberOfMatches_metadata = criterionWithTheFewestMatches_metadata.getNubmerOfMatches();
-//        long numberOfMatches_data = criterionWithTheFewestMatches_data.getNubmerOfMatches();
-//
-//        if (numberOfMatches_metadata != -1) {
-//
-//            if (numberOfMatches_data < numberOfMatches_metadata) {
-//                new
-//            }
-//        }
-//        else {
-//
-//            if (nubmerOfMatches_data < numberOfMatches_metadata) {
-//
-//            }
-//        }
-//
-//        if (nubmerOfMatches_data == -1) {
-//
-//        }
-//        else if (criterionWithTheFewestMatches_metadata.getNubmerOfMatches()){
-//            if ()
-//        }
+        SearchCriterion firstCriterionToApply = criterionWithTheFewestMatches.getCriterion();
 
         // get the row numbers of all cells that match the first criterion
-        SearchCriterion criterionWithTheFewestMatches = criterionWithTheFewestMatches_data.getCriterion();
-        List<SearchCriterion> searchCriteria_data_whatsLeftToDo = new ArrayList(searchCriteria_data);
-        searchCriteria_data_whatsLeftToDo.remove(criterionWithTheFewestMatches);
+        List<SearchCriterion> searchCriteria_allCriteriaButTheFirst = new ArrayList(searchCriteria);
+        searchCriteria_allCriteriaButTheFirst.remove(firstCriterionToApply);
 
-        Set<ObjectId> matchingRowIds = getIdsOfRowsThatMatch(criterionWithTheFewestMatches);
+        Set<ObjectId> matchingRowIds = getIdsOfRowsThatMatch(firstCriterionToApply);
 
-        for (SearchCriterion searchCondition : searchCriteria_data_whatsLeftToDo) {
-
-            // DESIGN NOTE: Each time this is called, it'll likely make the set of IDs smaller.
-            matchingRowIds = getIdsOfSubsetOfRowsThatMatch(matchingRowIds, searchCondition);
-        }
-
-        for (SearchCriterion searchCondition : searchCriteria_metadata) {
+        for (SearchCriterion searchCondition : searchCriteria_allCriteriaButTheFirst) {
 
             // DESIGN NOTE: Each time this is called, it'll likely make the set of IDs smaller.
             matchingRowIds = getIdsOfSubsetOfRowsThatMatch(matchingRowIds, searchCondition);
         }
 
+        Set<String> dataColumnNamesToIncludedInQueryResults = new LinkedHashSet<>();
 
-        List<String> dataColumnNamesToIncludedInQueryResults = new ArrayList();
+        for (SearchCriterion searchCriterion : searchCriteria) {
 
-        for (SearchCriterion searchCriterion : searchCriteria_data) {
+            // FIXME: This somehow needs to omit columns that are metadata columns
             dataColumnNamesToIncludedInQueryResults.add(searchCriterion.getName());
         }
 
@@ -209,7 +172,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
         return rows;
     }
 
-    protected List<Document> getRows(Set<ObjectId> matchingIds, List<String> dataColumnNamesToIncludedInQueryResults) {
+    protected List<Document> getRows(Set<ObjectId> matchingIds, Set<String> dataColumnNamesToIncludedInQueryResults) {
 
         List<String> attributesToInclude = new ArrayList<>();
         attributesToInclude.add(RowDocument.ATTR_KEY__ID);
@@ -250,7 +213,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
 
         for (SearchCriterion searchCriterion : searchConditia) {
 
-            long count = getCountOfRowsThatMatch(searchCriterion);
+            long count = getCountOfCellsThatMatch(searchCriterion);
 
             if (count == 0) {
                 return new CriterionAndItsNumberOfMatches(searchCriterion, 0);
@@ -278,7 +241,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
         return matchingIds;
     }
 
-    public long getCountOfRowsThatMatch(SearchCriterion searchCriterion) {
+    public long getCountOfCellsThatMatch(SearchCriterion searchCriterion) {
 
         // CAUTION: Do NOT change the order of these, as these reflect an index set within the
         //          database.  If you do, you'll have to change the index as well.
@@ -426,6 +389,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
     private static boolean HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = false;
 
     protected void makeSureTableColumnsIRelyUponAreIndexed() {
+
         if (HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED == false) {
 
             // DESIGN NOTE: Even though these indexes are on the cell collectoin, they are being set here because this

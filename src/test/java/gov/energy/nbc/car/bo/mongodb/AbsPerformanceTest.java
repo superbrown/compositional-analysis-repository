@@ -5,31 +5,26 @@ import gov.energy.nbc.car.Application;
 import gov.energy.nbc.car.bo.IBusinessObjects;
 import gov.energy.nbc.car.bo.IRowBO;
 import gov.energy.nbc.car.bo.TestMode;
-import gov.energy.nbc.car.dao.dto.RowSearchCriteria;
+import gov.energy.nbc.car.dao.dto.SearchCriterion;
 import gov.energy.nbc.car.dao.dto.StoredFile;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.mongodb.MongoFieldNameEncoder;
 import gov.energy.nbc.car.dao.mongodb.TestUsingTestData;
+import gov.energy.nbc.car.utilities.PerformanceLogger;
 import gov.energy.nbc.car.utilities.fileReader.exception.InvalidValueFoundInHeader;
 import gov.energy.nbc.car.utilities.fileReader.exception.UnsupportedFileExtension;
-import gov.energy.nbc.car.model.mongodb.common.Metadata;
-import gov.energy.nbc.car.model.mongodb.document.RowDocument;
-import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
-import org.bson.conversions.Bson;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Projections.fields;
-import static com.mongodb.client.model.Projections.include;
+import static gov.energy.nbc.car.dao.dto.ComparisonOperator.CONTAINS;
 import static gov.energy.nbc.car.dao.dto.ComparisonOperator.EQUALS;
-import static gov.energy.nbc.car.dao.dto.ComparisonOperator.LIKE;
 import static org.junit.Assert.assertTrue;
 
 
@@ -42,7 +37,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
         TestUsingTestData.beforeClass();
     }
 
-    protected abstract void initializeBusinessObject();
+    protected abstract void initializeBusinessObjects();
 
     @AfterClass
     public static void afterClass() {
@@ -51,8 +46,10 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
 
     @Before
     public void before() {
+
+        initializeBusinessObjects();
+
         super.before();
-        initializeBusinessObject();
     }
 
     @After
@@ -90,75 +87,28 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
         }
     }
 
-    protected void performQueries(int numberOfDatasetsSeeded) {
-
-        log.info("=============================== " + numberOfDatasetsSeeded + " ===============================");
-
-        PerformanceLogger performanceLogger;
-
-        String metadata = RowDocument.ATTR_KEY__METADATA;
-        Bson dataCategoryQuery = eq(metadata + "." + Metadata.ATTR_KEY__SAMPLE_TYPE, "sample type");
-        Bson valueQuery = eq(RowDocument.ATTR_KEY__DATA + ".2497" + MongoFieldNameEncoder.DECIMAL_POINT_SUBSTITUTE + "0", 2.0932496);
-        Bson bothQueries = and(dataCategoryQuery, valueQuery);
-
-        Bson projection = fields(include(
-                RowDocument.ATTR_KEY__ID,
-                RowDocument.ATTR_KEY__DATASET_ID,
-                metadata + "." + Metadata.ATTR_KEY__SAMPLE_TYPE,
-                metadata + "." + Metadata.ATTR_KEY__SUBMISSION_DATE,
-                metadata + "." + Metadata.ATTR_KEY__SUBMITTER,
-                metadata + "." + Metadata.ATTR_KEY__UPLOADED_FILE));
-
-        performanceLogger = new PerformanceLogger(log, "[performQueries()] rowBO.getRows(" + dataCategoryQuery.toString() + ")", true);
-        IBusinessObjects businessObjects = Application.getBusinessObjects();
-        IRowBO rowBO = businessObjects.getRowBO();
-
-        String rows = rowBO.getRows(
-                TestMode.TEST_MODE,
-                dataCategoryQuery,
-                projection);
-        performanceLogger.done();
-        BasicDBList results = (BasicDBList) DAOUtilities.parse(rows);
-
-        performanceLogger = new PerformanceLogger(log, "[performQueries()] rowBO.getRows(" + valueQuery.toString() + ")", true);
-        rows = rowBO.getRows(
-                TestMode.TEST_MODE,
-                valueQuery,
-                projection);
-        performanceLogger.done();
-        results = (BasicDBList)DAOUtilities.parse(rows);
-        performanceLogger = new PerformanceLogger(log, "[performQueries()] rowBO.getRows(" + bothQueries.toString() + ")", true);
-        rows = rowBO.getRows(
-                TestMode.TEST_MODE,
-                bothQueries,
-                projection);
-        performanceLogger.done();
-        results = (BasicDBList)DAOUtilities.parse(rows);
-    }
-
-
     protected void performQueries_homeGrownWay(int numberOfDatasetsSeeded) {
 
         log.info("=============================== " + numberOfDatasetsSeeded + " ===============================");
 
-        RowSearchCriteria rowSearchCriteria = new RowSearchCriteria();
+        List<SearchCriterion> rowSearchCriteria = new ArrayList ();
 
         // Test drive all the operators
 
-        rowSearchCriteria.addCriterion_data(
+        rowSearchCriteria.add(new SearchCriterion(
                 "FEEDSTOCK",
                 "corn stover",
-                EQUALS);
+                EQUALS));
 
-        rowSearchCriteria.addCriterion_data(
+        rowSearchCriteria.add(new SearchCriterion(
                 "SCANNING_METHOD",
                 "Quarter",
-                LIKE);
+                CONTAINS));
 
-        rowSearchCriteria.addCriterion_data(
+        rowSearchCriteria.add(new SearchCriterion(
                 "2497" + MongoFieldNameEncoder.DECIMAL_POINT_SUBSTITUTE + "0",
                 0.5887146,
-                EQUALS);
+                EQUALS));
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "[performQueries_homeGrownWay()] rowBO.getRows(" + rowSearchCriteria.toString() + ")", true);
 
@@ -178,11 +128,11 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
         assertTrue(numberOfResults > 0);
 
 
-        rowSearchCriteria = new RowSearchCriteria();
-        rowSearchCriteria.addCriterion_data(
+        rowSearchCriteria = new ArrayList();
+        rowSearchCriteria.add(new SearchCriterion(
                 "FEEDSTOCK",
                 "corn stover",
-                EQUALS);
+                EQUALS));
 
         performanceLogger = new PerformanceLogger(log, "[performQueries_homeGrownWay()] rowBO.getRows(" + rowSearchCriteria.toString() + ")", true);
 

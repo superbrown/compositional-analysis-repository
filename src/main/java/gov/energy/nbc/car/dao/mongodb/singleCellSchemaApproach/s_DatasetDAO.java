@@ -60,7 +60,7 @@ public class s_DatasetDAO extends DAO implements IDatasetDAO
         if (dataCategoryDocument == null) {
 
             dataCategoryDocument = new DataCategoryDocument();
-            dataCategoryDocument.setDataCategory(dataCategory);
+            dataCategoryDocument.setName(dataCategory);
             ObjectId objectId = dataCategoryDAO.add(dataCategoryDocument);
             dataCategoryDocument = dataCategoryDAO.get(objectId);
         }

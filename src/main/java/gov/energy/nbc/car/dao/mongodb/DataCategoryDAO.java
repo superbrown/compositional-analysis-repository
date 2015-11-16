@@ -1,5 +1,6 @@
 package gov.energy.nbc.car.dao.mongodb;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import gov.energy.nbc.car.ISettings;
 import gov.energy.nbc.car.dao.IDataCategoryDAO;
@@ -8,6 +9,9 @@ import gov.energy.nbc.car.model.mongodb.document.DataCategoryDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -38,9 +42,26 @@ public class DataCategoryDAO extends DAO implements IDataCategoryDAO {
     }
 
     @Override
+    public List<String> getAllNames() {
+
+        List<Document> documents = DAOUtilities.get(
+                getCollection(),
+                new BasicDBObject(),
+                new BasicDBObject().append(DataCategoryDocument.ATTR_KEY__NAME, 1));
+
+        List<String> names = new ArrayList<>();
+        for (Document document : documents) {
+
+            names.add((String) document.get(DataCategoryDocument.ATTR_KEY__NAME));
+        }
+
+        return names;
+    }
+
+    @Override
     public IDataCategoryDocument getByName(Object name) {
 
-        Bson filter = eq(DataCategoryDocument.ATTR_KEY__SAMPLE_TYPE, name);
+        Bson filter = eq(DataCategoryDocument.ATTR_KEY__NAME, name);
 
         MongoCollection<Document> collection = getCollection();
         Document document = DAOUtilities.getOne(collection, filter, null);

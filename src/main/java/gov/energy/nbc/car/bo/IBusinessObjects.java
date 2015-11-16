@@ -1,7 +1,6 @@
 package gov.energy.nbc.car.bo;
 
 import gov.energy.nbc.car.Settings;
-import gov.energy.nbc.car.Settings_forUnitTestPurposes;
 
 
 public interface IBusinessObjects {
@@ -10,7 +9,7 @@ public interface IBusinessObjects {
 
     Settings getSettings();
 
-    Settings_forUnitTestPurposes getSettings_forUnitTestPurposes();
+    Settings getSettings_forUnitTestPurposes();
 
     IDataCategoryBO getDataCategoryBO();
 

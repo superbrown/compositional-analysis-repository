@@ -3,11 +3,14 @@ package gov.energy.nbc.car.utilities.fileReader;
 import gov.energy.nbc.car.utilities.fileReader.dto.RowCollection;
 import gov.energy.nbc.car.utilities.fileReader.exception.InvalidValueFoundInHeader;
 import gov.energy.nbc.car.utilities.fileReader.exception.UnsupportedFileExtension;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 
 public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDatasetReader_AllFileTypes {
+
+    Logger log = Logger.getLogger(this.getClass());
 
     public IDatasetReader_ExcelWorkbook excelWorkbookReader;
     public IDatasetReader_CSVFile csvFileReader;
@@ -40,6 +43,7 @@ public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDat
         }
         catch (IOException e) {
             // FIXME: Log
+            log.error(e);
             throw new RuntimeException(e);
         }
 

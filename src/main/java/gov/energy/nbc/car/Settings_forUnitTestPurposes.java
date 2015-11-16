@@ -14,6 +14,7 @@ public class Settings_forUnitTestPurposes extends Settings {
         setMongoDbHost("localhost");
         setMongoDbPort("27017");
         setMongoDatabaseName("car_forUnitTestPurposes");
-        setRootDirectoryForDataFiles("C:/projects/car/target/test-classes");
+        setRootDirectoryForUploadedDataFiles("C:/projects/car/target/test-classes");
+        setDefaultSetOfDataCategories(new String[] {});
     }
 }
