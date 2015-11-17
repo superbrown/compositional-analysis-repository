@@ -2,7 +2,8 @@ package gov.energy.nbc.car.dao.mongodb.singleCellSchemaApproach;
 
 
 import com.mongodb.client.result.DeleteResult;
-import gov.energy.nbc.car.Settings;
+import gov.energy.nbc.car.settings.ISettings;
+import gov.energy.nbc.car.settings.Settings;
 import gov.energy.nbc.car.dao.ICellDAO;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
 import gov.energy.nbc.car.dao.mongodb.DAO;
@@ -23,7 +24,7 @@ public class s_CellDAO extends DAO implements ICellDAO {
         super(collectionName, settings);
     }
 
-    public s_CellDAO(Settings settings) {
+    public s_CellDAO(ISettings settings) {
         super(COLLECTION_NAME, settings);
     }
 

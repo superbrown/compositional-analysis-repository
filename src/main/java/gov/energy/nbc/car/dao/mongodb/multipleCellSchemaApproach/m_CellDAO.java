@@ -4,7 +4,7 @@ package gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.DeleteResult;
-import gov.energy.nbc.car.ISettings;
+import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.dao.ICellDAO;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
 import gov.energy.nbc.car.dao.mongodb.DAO;
@@ -25,7 +25,6 @@ public class m_CellDAO extends DAO implements ICellDAO {
         makeSureTableColumnsIRelyUponAreIndexed();
     }
 
-    @Override
     public List<ObjectId> add(ObjectId rowId, IRow row) {
 
         List<ObjectId> idsOfCellsAdded = new ArrayList();

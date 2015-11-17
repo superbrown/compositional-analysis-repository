@@ -1,10 +1,8 @@
 package gov.energy.nbc.car.bo.mongodb;
 
 import com.mongodb.BasicDBList;
-import gov.energy.nbc.car.Application;
-import gov.energy.nbc.car.bo.IBusinessObjects;
+import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.IRowBO;
-import gov.energy.nbc.car.bo.TestMode;
 import gov.energy.nbc.car.dao.dto.SearchCriterion;
 import gov.energy.nbc.car.dao.dto.StoredFile;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
@@ -37,8 +35,6 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
         TestUsingTestData.beforeClass();
     }
 
-    protected abstract void initializeBusinessObjects();
-
     @AfterClass
     public static void afterClass() {
         TestUsingTestData.afterClass();
@@ -46,8 +42,6 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
 
     @Before
     public void before() {
-
-        initializeBusinessObjects();
 
         super.before();
     }
@@ -112,11 +106,9 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "[performQueries_homeGrownWay()] rowBO.getRows(" + rowSearchCriteria.toString() + ")", true);
 
-        IRowBO rowBO = Application.getBusinessObjects().getRowBO();
+        IRowBO rowBO = getBusinessObjects().getRowBO();
 
-        String json = rowBO.getRows(
-                TestMode.TEST_MODE,
-                rowSearchCriteria);
+        String json = rowBO.getRows(rowSearchCriteria);
 
         performanceLogger.done();
 
@@ -136,9 +128,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
 
         performanceLogger = new PerformanceLogger(log, "[performQueries_homeGrownWay()] rowBO.getRows(" + rowSearchCriteria.toString() + ")", true);
 
-        json = rowBO.getRows(
-                TestMode.TEST_MODE,
-                rowSearchCriteria);
+        json = rowBO.getRows(rowSearchCriteria);
 
         performanceLogger.done();
 
@@ -154,12 +144,11 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "Seeding " + number + " additional datasets for test.", true);
 
-        IBusinessObjects businessObjects = Application.getBusinessObjects();
+        IDatasetBO datasetBO = getBusinessObjects().getDatasetBO();
 
         for (int i = 0; i < number; i++) {
 
-            String id = businessObjects.getDatasetBO().addDataset(
-                    TestMode.TEST_MODE,
+            String id = datasetBO.addDataset(
                     "sample type",
                     new Date(),
                     "submitter",

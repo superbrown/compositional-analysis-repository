@@ -1,11 +1,12 @@
 package gov.energy.nbc.car.bo;
 
-import gov.energy.nbc.car.Settings;
+import gov.energy.nbc.car.settings.ISettings;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbsBusinessObjects implements IBusinessObjects {
 
-    protected Settings settings;
-    protected Settings settings_forUnitTestPurposes;
+    @Autowired
+    protected ISettings settings;
 
     protected IDataCategoryBO dataCategoryBO;
     protected IDatasetBO datasetBO;
@@ -13,37 +14,19 @@ public abstract class AbsBusinessObjects implements IBusinessObjects {
     protected IPhysicalFileBO physicalFileBO;
     protected ITestDataBO testDataBO;
 
-    public AbsBusinessObjects(Settings settings, Settings settings_forUnitTestPurposes) {
+
+    public AbsBusinessObjects(ISettings settings) {
 
         this.settings = settings;
-        this.settings_forUnitTestPurposes = settings_forUnitTestPurposes;
-
         init();
     }
 
     protected abstract void init();
 
     @Override
-    public Settings getSettings(TestMode testMode) {
-
-        if (testMode == TestMode.TEST_MODE) {
-            return settings_forUnitTestPurposes;
-        }
-        else {
-            return settings;
-        }
-    }
-
-    @Override
-    public Settings getSettings() {
+    public ISettings getSettings() {
         return settings;
     }
-
-    @Override
-    public Settings getSettings_forUnitTestPurposes() {
-        return settings_forUnitTestPurposes;
-    }
-
 
     @Override
     public IDataCategoryBO getDataCategoryBO() {

@@ -1,15 +1,15 @@
 package gov.energy.nbc.car.bo.mongodb.multipleCellSchemaApproach;
 
-import gov.energy.nbc.car.Application;
-import gov.energy.nbc.car.Settings;
+import gov.energy.nbc.car.app.AbsAppConfig;
+import gov.energy.nbc.car.settings.Settings;
 import gov.energy.nbc.car.bo.mongodb.AbsRowBOTest;
+import gov.energy.nbc.car.app.m_AppConfig;
 
 
 public class m_DatasetBOTest extends AbsRowBOTest
 {
-    protected void initializeBusinessObjects() {
-
-        Settings settings = createSettingsForUnitTesting();
-        Application.setBusinessObjects(new m_BusinessObjects(settings, settings));
+    @Override
+    protected AbsAppConfig createAppConfig(Settings settings) {
+        return new m_AppConfig(settings);
     }
 }

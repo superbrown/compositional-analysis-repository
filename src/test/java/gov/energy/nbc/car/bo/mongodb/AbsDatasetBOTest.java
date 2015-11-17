@@ -1,8 +1,6 @@
 package gov.energy.nbc.car.bo.mongodb;
 
 import com.mongodb.BasicDBObject;
-import gov.energy.nbc.car.Application;
-import gov.energy.nbc.car.bo.TestMode;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.mongodb.TestUsingTestData;
 import org.apache.log4j.Logger;
@@ -44,7 +42,7 @@ public abstract class AbsDatasetBOTest extends TestUsingTestData
     public void testGetById() {
 
         String datasetId = TestData.dataset_1_objectId.toHexString();
-        String json = Application.getBusinessObjects().getDatasetBO().getDataset(TestMode.TEST_MODE, datasetId);
+        String json = getBusinessObjects().getDatasetBO().getDataset(datasetId);
 
         assertTrue(json != null);
 

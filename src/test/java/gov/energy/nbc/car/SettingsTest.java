@@ -1,5 +1,6 @@
 package gov.energy.nbc.car;
 
+import gov.energy.nbc.car.settings.Settings;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.After;

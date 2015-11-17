@@ -15,7 +15,6 @@ import java.util.List;
 public interface IDatasetBO {
 
     String addDataset(
-            TestMode testMode,
             String dataCategory,
             Date submissionDate,
             String submitter,
@@ -27,15 +26,13 @@ public interface IDatasetBO {
             List<StoredFile> attachmentFiles)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader;
 
-        String getDataset(TestMode testMode, String datasetId);
+        String getDataset(String datasetId);
 
-        String getAllDatasets(TestMode testMode);
+        String getAllDatasets();
 
-        long deleteDataset(TestMode testMode,
-                           String datasetId) throws DeletionFailure;
+        long deleteDataset(String datasetId) throws DeletionFailure;
 
         String addDataset(
-                TestMode testMode,
                 String dataCategory,
                 Date submissionDate,
                 String submitter,
@@ -45,13 +42,12 @@ public interface IDatasetBO {
                 FileAsRawBytes dataFile,
                 String nameOfSheetContainingData,
                 List<FileAsRawBytes> attachmentFiles)
-                                                          throws UnsupportedFileExtension, InvalidValueFoundInHeader;
+                throws UnsupportedFileExtension, InvalidValueFoundInHeader;
 
-        String addDataset(TestMode testMode,
-                          String metadataJson,
+        String addDataset(String metadataJson,
                           File file,
                           String nameOfWorksheetContainingTheData)
-                                                                  throws UnsupportedFileExtension, InvalidValueFoundInHeader;
+                          throws UnsupportedFileExtension, InvalidValueFoundInHeader;
 
-        IDatasetDAO getDatasetDAO(TestMode testMode);
+        IDatasetDAO getDatasetDAO();
 }

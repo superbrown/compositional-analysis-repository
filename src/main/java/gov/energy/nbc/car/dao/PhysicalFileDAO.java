@@ -1,6 +1,6 @@
 package gov.energy.nbc.car.dao;
 
-import gov.energy.nbc.car.Settings;
+import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
 import gov.energy.nbc.car.dao.dto.StoredFile;
 import gov.energy.nbc.car.dao.exception.CouldNoCreateDirectory;
@@ -17,9 +17,9 @@ import java.util.UUID;
 
 public class PhysicalFileDAO implements IPhysicalFileDAO {
 
-    protected Settings settings;
+    protected ISettings settings;
 
-    public PhysicalFileDAO(Settings settings) {
+    public PhysicalFileDAO(ISettings settings) {
 
         this.settings = settings;
     }
@@ -78,6 +78,23 @@ public class PhysicalFileDAO implements IPhysicalFileDAO {
         return storedFile;
     }
 
+
+    @Override
+    public void deletFile(String file)
+            throws UnableToDeleteFile {
+
+        boolean success = (new File(getRootDirectoryForDataFiles() + file).delete());
+        if (success == false) {
+            throw new UnableToDeleteFile(file);
+        }
+    }
+
+    @Override
+    public File getFile(String storageLocation) {
+
+        return new File(getRootDirectoryForDataFiles() + storageLocation);
+    }
+
     protected String getRootDirectoryForDataFiles() {
 
         String dataFilesDirectoryPath = settings.getRootDirectoryForUploadedDataFiles();
@@ -132,23 +149,6 @@ public class PhysicalFileDAO implements IPhysicalFileDAO {
 
         return true;
     }
-
-    @Override
-    public void deletFile(String file)
-            throws UnableToDeleteFile {
-
-        boolean success = (new File(file).delete());
-        if (success == false) {
-            throw new UnableToDeleteFile(file);
-        }
-    }
-
-    @Override
-    public File getFile(String storageLocation) {
-
-        return new File(getRootDirectoryForDataFiles() + storageLocation);
-    }
-
 
     private static long mostRecentTimestampUsed;
 

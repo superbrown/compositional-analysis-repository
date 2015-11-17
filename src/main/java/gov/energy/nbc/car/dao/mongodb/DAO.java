@@ -7,7 +7,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import gov.energy.nbc.car.ISettings;
+import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.dao.IDAO;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
@@ -86,6 +86,11 @@ public abstract class DAO implements IDAO, IMongodbDAO {
         return createDocumentOfTypeDAOHandles(document);
     }
 
+    @Override
+    public Long getCount() {
+        return getCollection().count();
+    }
+
     protected abstract Document createDocumentOfTypeDAOHandles(Document document);
 
     @Override
@@ -119,7 +124,7 @@ public abstract class DAO implements IDAO, IMongodbDAO {
     public List<Document> get(Bson filter) {
 
         List<Document> documents = DAOUtilities.get(getCollection(), filter);
-        return createDocumentsOfTypeDAOHandles(documents);
+        return documents;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package gov.energy.nbc.car.dao.mongodb.singleCellSchemaApproach;
 
-import gov.energy.nbc.car.Settings;
+import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.dao.IDataCategoryDAO;
 import gov.energy.nbc.car.dao.IDatasetDAO;
 import gov.energy.nbc.car.dao.IRowDAO;
@@ -23,7 +23,7 @@ public class s_DatasetDAO extends DAO implements IDatasetDAO
     protected DataCategoryDAO dataCategoryDAO;
     protected IRowDAO rowDAO;
 
-    public s_DatasetDAO(Settings settings) {
+    public s_DatasetDAO(ISettings settings) {
 
         super(COLLECTION_NAME, settings);
 
@@ -43,11 +43,8 @@ public class s_DatasetDAO extends DAO implements IDatasetDAO
 
         rowDAO.add(objectId, datasetDocument, data);
 
-        makeSureCollectionIsIndexedForAllColumns(data);
-
-        String dataCategory = datasetDocument.getDataCategory();
+        String dataCategory = datasetDocument.getMetadata().getDataCategory();
         Set columnNames = data.getColumnNames();
-
         associateColumnNamesToTheDataCategory(dataCategory, columnNames);
 
         return objectId;
@@ -97,15 +94,5 @@ public class s_DatasetDAO extends DAO implements IDatasetDAO
 
     public IDataCategoryDAO getDataCategoryDAO() {
         return dataCategoryDAO;
-    }
-
-    protected void makeSureCollectionIsIndexedForAllColumns(IRowCollection rowCollection) {
-
-//        Row firstRow = rowCollection.get(0);
-//
-//        for (String fieldName : firstRow.keySet()) {
-//
-//            rowDAO.getCollection().createIndex(new BasicDBObject(fieldName, 1));
-//        }
     }
 }

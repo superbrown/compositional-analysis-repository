@@ -1,5 +1,6 @@
 package gov.energy.nbc.car.bo;
 
+import gov.energy.nbc.car.app.TestMode;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertTrue;

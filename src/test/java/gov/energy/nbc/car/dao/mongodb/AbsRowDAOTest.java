@@ -1,8 +1,5 @@
 package gov.energy.nbc.car.dao.mongodb;
 
-import gov.energy.nbc.car.Application;
-import gov.energy.nbc.car.Settings;
-import gov.energy.nbc.car.bo.TestMode;
 import gov.energy.nbc.car.bo.mongodb.TestData;
 import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.dto.SearchCriterion;
@@ -40,18 +37,10 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
     @Before
     public void before() {
 
-        Settings settings = createSettingsForUnitTesting();
-        initializeBusinessObjects();
-
         super.before();
 
-        rowDAO = Application.
-                getBusinessObjects().
-                getRowBO().
-                getRowDAO(TestMode.TEST_MODE);
+        rowDAO = getBusinessObjects().getRowBO().getRowDAO();
     }
-
-    protected abstract void initializeBusinessObjects();
 
     @After
     public void after() {

@@ -1,8 +1,6 @@
 package gov.energy.nbc.car.dao.mongodb;
 
-import gov.energy.nbc.car.Application;
 import gov.energy.nbc.car.bo.ITestDataBO;
-import gov.energy.nbc.car.bo.TestMode;
 import gov.energy.nbc.car.bo.mongodb.TestData;
 import gov.energy.nbc.car.dao.IDataCategoryDAO;
 import gov.energy.nbc.car.dao.IDatasetDAO;
@@ -27,9 +25,6 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
         TestUsingTestData.beforeClass();
 
     }
-
-    protected abstract void initializeBusinessObjects();
-
     @AfterClass
     public static void afterClass() {
         TestUsingTestData.afterClass();
@@ -38,14 +33,9 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
     @Before
     public void before() {
 
-        initializeBusinessObjects();
-
         super.before();
 
-        datasetDAO = Application.
-                getBusinessObjects().
-                getDatasetBO().
-                getDatasetDAO(TestMode.TEST_MODE);
+        datasetDAO = getBusinessObjects().getDatasetBO().getDatasetDAO();
     }
 
     @After
@@ -85,7 +75,7 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
 
         IDataCategoryDAO dataCategoryDAO = datasetDAO.getDataCategoryDAO();
 
-        ITestDataBO testDataBO = Application.getBusinessObjects().getTestDataBO();
+        ITestDataBO testDataBO = getBusinessObjects().getTestDataBO();
         if (SUSPEND_DATA_CLEANUP == false) {
             testDataBO.removeTestData();
         }
@@ -124,8 +114,22 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
         assertTrue(columnNames.contains("Additional Column Name 1"));
         assertTrue(columnNames.contains("Additional new Column Name 2"));
 
+        // Check that delete works as we'd expect
+        assertTrue(datasetDAO.getCount() == 2);
+        assertTrue(datasetDAO.getRowDAO().getCount() == 9);
+        assertTrue(datasetDAO.getDataCategoryDAO().getCount() == 1);
+
         datasetDAO.delete(TestData.dataset_1_objectId);
+
+        assertTrue(datasetDAO.getCount() == 1);
+        assertTrue(datasetDAO.getRowDAO().getCount() == 4);
+        assertTrue(datasetDAO.getDataCategoryDAO().getCount() == 1);
+
         datasetDAO.delete(TestData.dataset_2_objectId);
+
+        assertTrue(datasetDAO.getCount() == 0);
+        assertTrue(datasetDAO.getRowDAO().getCount() == 0);
+        assertTrue(datasetDAO.getDataCategoryDAO().getCount() == 1);
 
         dataCategoryDocument = dataCategoryDAO.getByName(TestData.ALGEA);
         columnNames = dataCategoryDocument.getColumnNames();

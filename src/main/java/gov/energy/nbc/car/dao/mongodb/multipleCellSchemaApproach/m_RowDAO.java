@@ -1,18 +1,18 @@
 package gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach;
 
-import gov.energy.nbc.car.ISettings;
+import com.mongodb.client.result.DeleteResult;
 import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
 import gov.energy.nbc.car.dao.dto.SearchCriterion;
 import gov.energy.nbc.car.dao.mongodb.DAO;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.mongodb.MongoFieldNameEncoder;
-import gov.energy.nbc.car.dao.mongodb.dto.DataOrMetatdata;
 import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
 import gov.energy.nbc.car.model.*;
 import gov.energy.nbc.car.model.mongodb.common.Metadata;
 import gov.energy.nbc.car.model.mongodb.document.CellDocument;
 import gov.energy.nbc.car.model.mongodb.document.RowDocument;
+import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
 import org.bson.Document;
@@ -69,23 +69,23 @@ public class m_RowDAO extends DAO implements IRowDAO {
 
             // add metadata into cell collections
 
-            addToCellCollection(rowId, DataOrMetatdata.METADATA, Metadata.ATTR_KEY__SUBMISSION_DATE, metadata.getSubmissionDate());
-            addToCellCollection(rowId, DataOrMetatdata.METADATA, Metadata.ATTR_KEY__SUBMITTER, metadata.getSubmitter());
-            addToCellCollection(rowId, DataOrMetatdata.METADATA, Metadata.ATTR_KEY__PROJECT_NAME, metadata.getProjectName());
-            addToCellCollection(rowId, DataOrMetatdata.METADATA, Metadata.ATTR_KEY__CHARGE_NUMBER, metadata.getChargeNumber());
+            addCell(rowId, Metadata.ATTR_KEY__SUBMISSION_DATE, metadata.getSubmissionDate());
+            addCell(rowId, Metadata.ATTR_KEY__SUBMITTER, metadata.getSubmitter());
+            addCell(rowId, Metadata.ATTR_KEY__PROJECT_NAME, metadata.getProjectName());
+            addCell(rowId, Metadata.ATTR_KEY__CHARGE_NUMBER, metadata.getChargeNumber());
 
             // add data into cell collections
 
             for (String columnName : row.getColumnNames()) {
 
-                addToCellCollection(rowId, DataOrMetatdata.DATA, columnName, row.getValue(columnName));
+                addCell(rowId, columnName, row.getValue(columnName));
             }
         }
 
         return idsOfRowsAdded;
     }
 
-    protected void addToCellCollection(ObjectId rowId, DataOrMetatdata dataOrMetatdata, String columnName, Object value) {
+    protected void addCell(ObjectId rowId, String columnName, Object value) {
 
         m_CellDAO cellDAO = getCellDAO(columnName);
         cellDAO.add(rowId, value);
@@ -98,29 +98,45 @@ public class m_RowDAO extends DAO implements IRowDAO {
         Document datasetIdFilter = new Document().
                 append(RowDocument.ATTR_KEY__DATASET_ID, datasetId);
 
-        Bson projection = fields(include(RowDocument.ATTR_KEY__ID));
+//        Bson projection = fields(include(RowDocument.ATTR_KEY__ID));
 
-        List<Document> rowsAssociatedWithDataset = get(datasetIdFilter, projection);
+//        List<Document> rowIds = get(datasetIdFilter, projection);
+        List<Document> rows = get(datasetIdFilter);
 
-        if (rowsAssociatedWithDataset.size() > 0) {
+        if (rows.size() > 0) {
 
-            Document firstRow = rowsAssociatedWithDataset.get(0);
+            Document firstRow = rows.get(0);
             Document data = (Document) firstRow.get(RowDocument.ATTR_KEY__DATA);
 
             for (String columnName : data.keySet()) {
 
                 m_CellDAO cellDAO = getCellDAO(columnName);
 
-                for (Document rowDocument : rowsAssociatedWithDataset) {
+                for (Document rowDocument : rows) {
 
                     ObjectId rowId = (ObjectId) rowDocument.get("_id");
-                    IDeleteResults deleteResults = cellDAO.deleteCellsAssociatedWithRow(rowId);
-                    allDeleteResults.addAll(deleteResults);
+
+                    // delete all cells associated with the row
+                    allDeleteResults.addAll(cellDAO.deleteCellsAssociatedWithRow(rowId));
+
+                    // detlete the row
+                    allDeleteResults.addAll(deleteRow(rowId));
                 }
             }
         }
 
         return allDeleteResults;
+    }
+
+    private IDeleteResults deleteRow(ObjectId rowId) {
+
+        Document idFilter = createIdFilter(rowId);
+
+        DeleteResult deleteResult = getCollection().deleteOne(idFilter);
+
+        DeleteResults deleteResults = new DeleteResults(deleteResult);
+
+        return deleteResults;
     }
 
     protected Document createDocumentOfTypeDAOHandles(Document document) {
@@ -218,7 +234,7 @@ public class m_RowDAO extends DAO implements IRowDAO {
 
         performanceLogger.done();
         log.info("[RESULTS] results.size() = " + results.size() +
-                ", row.count() = " + getCollection().count());
+                ", row.count() = " + getCount());
 
         return results;
     }
@@ -318,8 +334,8 @@ public class m_RowDAO extends DAO implements IRowDAO {
         List<Document> documents = cellDAO.get(query, projection);
         performanceLogger.done();
         log.info("[RESULTS] results.size() = " + documents.size() +
-                ", row.count() = " + getCollection().count() +
-                ", cell.count() = " + cellDAO.getCollection().count());
+                ", row.count() = " + getCount() +
+                ", cell.count() = " + cellDAO.getCount());
 
         return toSetOfRowIds(documents);
     }

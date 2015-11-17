@@ -44,7 +44,7 @@ public class RowDocument extends AbstractDocument implements gov.energy.nbc.car.
 
         ObjectId rowCollectionId = (ObjectId) document.get(ATTR_KEY__DATASET_ID);
         IMetadata metada = new Metadata((Document) document.get(ATTR_KEY__METADATA));
-        IRow data = new Row(document.get(ATTR_KEY__DATA));
+        IRow data = new Row();
 
         init(rowCollectionId, metada, data);
     }

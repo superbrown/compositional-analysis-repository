@@ -8,19 +8,19 @@ import java.util.List;
 
 public interface IRowBO {
 
-    String getRow(TestMode testMode, String rowId);
+    String getRow(String rowId);
 
-    String getRows(TestMode testMode, String query);
+    String getRows(String query);
 
-//    String getRows(TestMode testMode, RowSearchCriteria rowSearchCriteria, String projection);
+//    String getRows(RowSearchCriteria rowSearchCriteria, String projection);
 
-//    String getRows(TestMode testMode, Bson query, Bson projection);
+//    String getRows(Bson query, Bson projection);
 
-    String getRows(TestMode testMode, List<SearchCriterion> rowSearchCriteria);
+    String getRows(List<SearchCriterion> rowSearchCriteria);
 
-    String getAllRows(TestMode testMode);
+    String getAllRows();
 
-    String getRowAssociatedWithDataset(TestMode testMode, String datasetId);
+    String getRowAssociatedWithDataset(String datasetId);
 
-    IRowDAO getRowDAO(TestMode testMode);
+    IRowDAO getRowDAO();
 }
