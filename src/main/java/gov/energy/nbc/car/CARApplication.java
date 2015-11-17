@@ -1,6 +1,5 @@
 package gov.energy.nbc.car;
 
-import gov.energy.nbc.car.bo.mongodb.multipleCellSchemaApproach.m_BusinessObjects;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -15,8 +14,6 @@ import java.util.Arrays;
 public class CARApplication {
 
     public static void main(String[] args) {
-
-        Application.setBusinessObjects(new m_BusinessObjects(new Settings(), new Settings_forUnitTestPurposes()));
 
         SpringApplication.run(CARApplication.class, args);
 

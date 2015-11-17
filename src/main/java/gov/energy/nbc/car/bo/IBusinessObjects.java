@@ -1,15 +1,11 @@
 package gov.energy.nbc.car.bo;
 
-import gov.energy.nbc.car.Settings;
+import gov.energy.nbc.car.settings.ISettings;
 
 
 public interface IBusinessObjects {
 
-    Settings getSettings(TestMode testMode);
-
-    Settings getSettings();
-
-    Settings getSettings_forUnitTestPurposes();
+    ISettings getSettings();
 
     IDataCategoryBO getDataCategoryBO();
 

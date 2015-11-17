@@ -3,9 +3,8 @@ package gov.energy.nbc.car.bo.mongodb;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
-import gov.energy.nbc.car.Settings;
+import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.bo.IRowBO;
-import gov.energy.nbc.car.bo.TestMode;
 import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.dto.ComparisonOperator;
 import gov.energy.nbc.car.dao.dto.SearchCriterion;
@@ -25,19 +24,18 @@ public abstract class AbsRowBO implements IRowBO {
     protected Logger log = Logger.getLogger(getClass());
 
     protected IRowDAO rowDAO;
-    protected IRowDAO rowDAO_FOR_TESTING_PURPOSES;
 
-    public AbsRowBO(Settings settings, Settings settings_forUnitTestingPurposes) {
+    public AbsRowBO(ISettings settings) {
 
-        init(settings, settings_forUnitTestingPurposes);
+        init(settings);
     }
 
-    protected abstract void init(Settings settings, Settings settings_forUnitTestingPurposes);
+    protected abstract void init(ISettings settings);
 
     @Override
-    public String getRow(TestMode testMode, String rowId) {
+    public String getRow(String rowId) {
 
-        IRowDocument rowDocument = getRowDAO(testMode).get(rowId);
+        IRowDocument rowDocument = getRowDAO().get(rowId);
 
         if (rowDocument == null) { return null; }
 
@@ -46,7 +44,7 @@ public abstract class AbsRowBO implements IRowBO {
     }
 
     @Override
-    public String getRows(TestMode testMode, String query) {
+    public String getRows(String query) {
 
         BasicDBList list = (BasicDBList)JSON.parse(query);
 
@@ -65,7 +63,7 @@ public abstract class AbsRowBO implements IRowBO {
             rowSearchCriteria.add(searchCriterion);
         }
 
-        List <Document> rowDocuments = getRowDAO(testMode).query(rowSearchCriteria);
+        List <Document> rowDocuments = getRowDAO().query(rowSearchCriteria);
 
         if (rowDocuments.size() == 0) { return null; }
 
@@ -74,7 +72,7 @@ public abstract class AbsRowBO implements IRowBO {
     }
 
 //    @Override
-//    public String getRows(TestMode testMode, RowSearchCriteria rowSearchCriteria, String projection) {
+//    public String getRows(RowSearchCriteria rowSearchCriteria, String projection) {
 //
 //        List<Document> rowDocuments = getRowDAO(testMode).query(rowSearchCriteria);
 //
@@ -84,7 +82,7 @@ public abstract class AbsRowBO implements IRowBO {
 //        return json;
 //    }
 
-//    public String getRows(TestMode testMode, Bson query, Bson projection) {
+//    public String getRows(Bson query, Bson projection) {
 //
 //        List<Document> rowDocuments = getRowDAO(testMode).query(query);
 //
@@ -95,9 +93,9 @@ public abstract class AbsRowBO implements IRowBO {
 //    }
 
     @Override
-    public String getRows(TestMode testMode, List<SearchCriterion> rowSearchCriteria) {
+    public String getRows(List<SearchCriterion> rowSearchCriteria) {
 
-        List<Document> rowDocuments = getRowDAO(testMode).query(rowSearchCriteria);
+        List<Document> rowDocuments = getRowDAO().query(rowSearchCriteria);
 
         if (rowDocuments.size() == 0) { return null; }
 
@@ -106,9 +104,9 @@ public abstract class AbsRowBO implements IRowBO {
     }
 
     @Override
-    public String getAllRows(TestMode testMode) {
+    public String getAllRows() {
 
-        Iterable<Document> rowDocuments = getRowDAO(testMode).getAll();
+        Iterable<Document> rowDocuments = getRowDAO().getAll();
 
         String jsonOut = DAOUtilities.serialize(rowDocuments);
         return jsonOut;
@@ -116,14 +114,14 @@ public abstract class AbsRowBO implements IRowBO {
 
 
     @Override
-    public String getRowAssociatedWithDataset(TestMode testMode, String datasetId) {
+    public String getRowAssociatedWithDataset(String datasetId) {
 
         Document idFilter = new Document().append(
                 RowDocument.ATTR_KEY__DATASET_ID, new
                 ObjectId(datasetId));
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "getRows(testMode).query(" + idFilter.toJson() + ")");
-        List<Document> rowDocuments = getRowDAO(testMode).get(idFilter, null);
+        List<Document> rowDocuments = getRowDAO().get(idFilter, null);
         performanceLogger.done();
 
         String jsonOut = DAOUtilities.serialize(rowDocuments);
@@ -132,13 +130,7 @@ public abstract class AbsRowBO implements IRowBO {
 
 
     @Override
-    public IRowDAO getRowDAO(TestMode testMode) {
-
-        if (testMode == TestMode.NOT_TEST_MODE) {
-            return rowDAO;
-        }
-        else {
-            return rowDAO_FOR_TESTING_PURPOSES;
-        }
+    public IRowDAO getRowDAO() {
+        return rowDAO;
     }
 }

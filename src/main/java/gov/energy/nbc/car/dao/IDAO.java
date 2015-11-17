@@ -1,8 +1,8 @@
 package gov.energy.nbc.car.dao;
 
-import gov.energy.nbc.car.ISettings;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
+import gov.energy.nbc.car.settings.ISettings;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -43,4 +43,6 @@ public interface IDAO {
     String getCollectionName();
 
     ISettings getSettings();
+
+    Long getCount();
 }

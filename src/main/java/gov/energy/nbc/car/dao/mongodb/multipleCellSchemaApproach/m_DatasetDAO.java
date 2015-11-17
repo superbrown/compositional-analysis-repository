@@ -1,6 +1,6 @@
 package gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach;
 
-import gov.energy.nbc.car.ISettings;
+import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.dao.IDataCategoryDAO;
 import gov.energy.nbc.car.dao.IDatasetDAO;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
@@ -44,9 +44,8 @@ public class m_DatasetDAO extends DAO implements IDatasetDAO {
 
         rowDAO.add(objectId, datasetDocument, data);
 
-        String dataCategory = datasetDocument.getDataCategory();
+        String dataCategory = datasetDocument.getMetadata().getDataCategory();
         Set columnNames = data.getColumnNames();
-
         associateColumnNamesToTheDataCategory(dataCategory, columnNames);
 
         return objectId;
@@ -76,14 +75,14 @@ public class m_DatasetDAO extends DAO implements IDatasetDAO {
     @Override
     public IDeleteResults delete(ObjectId objectId) {
 
-        IDeleteResults deleteResults = super.delete(objectId);
+        IDeleteResults deleteResults = rowDAO.deleteRowsAssociatedWithDataset(objectId);
+
+        IDeleteResults deleteResultForDataset = super.delete(objectId);
+        deleteResults.addAll(deleteResultForDataset);
 
         if (deleteResults.wasAcknowledged() == false) {
             return deleteResults;
         }
-
-        IDeleteResults deleteResultsForRows = rowDAO.deleteRowsAssociatedWithDataset(objectId);
-        deleteResults.addAll(deleteResultsForRows);
 
         return deleteResults;
     }

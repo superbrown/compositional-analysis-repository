@@ -1,8 +1,7 @@
 package gov.energy.nbc.car.bo.mongodb;
 
-import gov.energy.nbc.car.Settings;
+import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.bo.IDataCategoryBO;
-import gov.energy.nbc.car.bo.TestMode;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.dao.IDataCategoryDAO;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
@@ -24,24 +23,20 @@ public class DataCategoryBO implements IDataCategoryBO {
     Logger log = Logger.getLogger(this.getClass());
 
     protected DataCategoryDAO dataCategoryDAO;
-    protected DataCategoryDAO dataCategoryDAO_FOR_UNIT_TESTING_PURPOSES;
 
     protected IDatasetReader_AllFileTypes generalFileReader;
 
-    public DataCategoryBO(Settings settings,
-                          Settings settings_forUnitTestingPurposes) {
+    public DataCategoryBO(ISettings settings) {
 
         dataCategoryDAO = new DataCategoryDAO(settings);
-        dataCategoryDAO_FOR_UNIT_TESTING_PURPOSES = new DataCategoryDAO(settings_forUnitTestingPurposes);
 
         generalFileReader = new DatasetReader_AllFileTypes();
     }
 
     @Override
-    public String getDataCategory(TestMode testMode,
-                                  String dataCategoryId) {
+    public String getDataCategory(String dataCategoryId) {
 
-        IDataCategoryDocument dataCategoryDocument = getDataCategoryDocument(testMode, dataCategoryId);
+        IDataCategoryDocument dataCategoryDocument = getDataCategoryDocument(dataCategoryId);
         if (dataCategoryDocument == null) { return null; }
 
         String jsonOut = DAOUtilities.serialize(dataCategoryDocument);
@@ -49,10 +44,9 @@ public class DataCategoryBO implements IDataCategoryBO {
     }
 
     @Override
-    public String getDataCategoryWithName(TestMode testMode,
-                                          String name) {
+    public String getDataCategoryWithName(String name) {
 
-        IDataCategoryDocument dataCategoryDocument = getDataCategoryDAO(testMode).getByName(name);
+        IDataCategoryDocument dataCategoryDocument = getDataCategoryDAO().getByName(name);
         if (dataCategoryDocument == null) { return null; }
 
         String jsonOut = DAOUtilities.serialize(dataCategoryDocument);
@@ -60,18 +54,18 @@ public class DataCategoryBO implements IDataCategoryBO {
     }
 
     @Override
-    public String getAllDataCategories(TestMode testMode) {
+    public String getAllDataCategories() {
 
-        Iterable<Document> dataCategoryDocuments = getDataCategoryDAO(testMode).getAll();
+        Iterable<Document> dataCategoryDocuments = getDataCategoryDAO().getAll();
 
         String jsonOut = DAOUtilities.serialize(dataCategoryDocuments);
         return jsonOut;
     }
 
     @Override
-    public String getAllDataCategoryNames(TestMode testMode) {
+    public String getAllDataCategoryNames() {
 
-        List<String> dataCategoryNames = getDataCategoryDAO(testMode).getAllNames();
+        List<String> dataCategoryNames = getDataCategoryDAO().getAllNames();
 
         // FIXME: This doesn't sort correctly if the string contains a number.  This is a problem with the
         // implementation of String.
@@ -83,10 +77,9 @@ public class DataCategoryBO implements IDataCategoryBO {
 
 
     @Override
-    public String getColumnNamesForDataCategoryName(TestMode testMode,
-                                                    String dataCategoryName) {
+    public String getColumnNamesForDataCategoryName(String dataCategoryName) {
 
-        IDataCategoryDocument document = getDataCategoryDAO(testMode).getByName(dataCategoryName);
+        IDataCategoryDocument document = getDataCategoryDAO().getByName(dataCategoryName);
 
         Set<String> columnNames = document.getColumnNames();
 
@@ -95,17 +88,15 @@ public class DataCategoryBO implements IDataCategoryBO {
     }
 
     @Override
-    public void deleteDataCategory(TestMode testMode,
-                                   String dataCategoryId) throws DeletionFailure {
+    public void deleteDataCategory(String dataCategoryId) throws DeletionFailure {
 
-        getDataCategoryDAO(testMode).delete(dataCategoryId);
+        getDataCategoryDAO().delete(dataCategoryId);
     }
 
     @Override
-    public String addDataCategory(TestMode testMode,
-                                  String jsonIn) {
+    public String addDataCategory(String jsonIn) {
 
-        IDataCategoryDAO dataCategoryDAO = getDataCategoryDAO(testMode);
+        IDataCategoryDAO dataCategoryDAO = getDataCategoryDAO();
 
         DataCategoryDocument dataCategoryDocument = new DataCategoryDocument(jsonIn);
         ObjectId objectId = dataCategoryDAO.add(dataCategoryDocument);
@@ -113,21 +104,14 @@ public class DataCategoryBO implements IDataCategoryBO {
         return objectId.toHexString();
     }
 
-    protected IDataCategoryDocument getDataCategoryDocument(TestMode testMode,
-                                                         String dataCategoryId) {
+    protected IDataCategoryDocument getDataCategoryDocument(String dataCategoryId) {
 
-        IDataCategoryDocument document = getDataCategoryDAO(testMode).get(dataCategoryId);
+        IDataCategoryDocument document = getDataCategoryDAO().get(dataCategoryId);
         return document;
     }
 
     @Override
-    public IDataCategoryDAO getDataCategoryDAO(TestMode testMode) {
-
-        if (testMode == TestMode.NOT_TEST_MODE) {
-            return dataCategoryDAO;
-        }
-        else {
-            return dataCategoryDAO_FOR_UNIT_TESTING_PURPOSES;
-        }
+    public IDataCategoryDAO getDataCategoryDAO() {
+        return dataCategoryDAO;
     }
 }

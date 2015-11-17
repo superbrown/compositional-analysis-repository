@@ -2,7 +2,7 @@ package gov.energy.nbc.car.dao.mongodb;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
-import gov.energy.nbc.car.ISettings;
+import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.dao.IDataCategoryDAO;
 import gov.energy.nbc.car.model.IDataCategoryDocument;
 import gov.energy.nbc.car.model.mongodb.document.DataCategoryDocument;

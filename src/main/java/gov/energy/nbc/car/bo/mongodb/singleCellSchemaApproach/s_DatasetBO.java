@@ -1,9 +1,8 @@
 package gov.energy.nbc.car.bo.mongodb.singleCellSchemaApproach;
 
-import gov.energy.nbc.car.Application;
-import gov.energy.nbc.car.Settings;
 import gov.energy.nbc.car.bo.IDatasetBO;
-import gov.energy.nbc.car.bo.TestMode;
+import gov.energy.nbc.car.bo.IPhysicalFileBO;
+import gov.energy.nbc.car.bo.PhysicalFileBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.dao.IDatasetDAO;
 import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
@@ -17,6 +16,7 @@ import gov.energy.nbc.car.model.IStoredFile;
 import gov.energy.nbc.car.model.mongodb.common.Metadata;
 import gov.energy.nbc.car.model.mongodb.common.StoredFile;
 import gov.energy.nbc.car.model.mongodb.document.DatasetDocument;
+import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
 import gov.energy.nbc.car.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nbc.car.utilities.fileReader.IDatasetReader_AllFileTypes;
@@ -38,21 +38,18 @@ public class s_DatasetBO implements IDatasetBO {
     Logger log = Logger.getLogger(this.getClass());
 
     protected IDatasetDAO datasetDAO;
-    protected IDatasetDAO datasetDAO_FOR_UNIT_TESTING_PURPOSES;
+    protected IPhysicalFileBO physicalFileBO;
 
     protected IDatasetReader_AllFileTypes generalFileReader;
 
-    public s_DatasetBO(Settings settings,
-                       Settings settings_forUnitTestingPurposes) {
+    public s_DatasetBO(ISettings settings) {
 
         datasetDAO = new s_DatasetDAO(settings);
-        datasetDAO_FOR_UNIT_TESTING_PURPOSES = new s_DatasetDAO(settings_forUnitTestingPurposes);
-
+        physicalFileBO = new PhysicalFileBO(settings);
         generalFileReader = new DatasetReader_AllFileTypes();
     }
 
     public String addDataset(
-            TestMode testMode,
             String dataCategory,
             Date submissionDate,
             String submitter,
@@ -64,7 +61,7 @@ public class s_DatasetBO implements IDatasetBO {
             List<gov.energy.nbc.car.dao.dto.StoredFile> attachmentFiles)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
-        File storedFile = getPhysicalFile(testMode, dataFile.storageLocation);
+        File storedFile = getPhysicalFile(dataFile.storageLocation);
         RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfWorksheetContainingTheData, -1);
         IRowCollection rowCollection = new gov.energy.nbc.car.model.mongodb.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
@@ -85,7 +82,7 @@ public class s_DatasetBO implements IDatasetBO {
                 new StoredFile(dataFile.originalFileName, dataFile.storageLocation),
                 attachments);
 
-        ObjectId objectId = getDatasetDAO(testMode).add(datasetDocument, rowCollection);
+        ObjectId objectId = getDatasetDAO().add(datasetDocument, rowCollection);
 
         return objectId.toHexString();
     }
@@ -103,7 +100,7 @@ public class s_DatasetBO implements IDatasetBO {
             List<gov.energy.nbc.car.dao.dto.StoredFile> attachmentFiles)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
-        File storedFile = getPhysicalFile(TestMode.TEST_MODE, dataFile.storageLocation);
+        File storedFile = getPhysicalFile(dataFile.storageLocation);
         RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfWorksheetContainingTheData, maxNumberOfValuesPerRow);
         IRowCollection rowCollection = new gov.energy.nbc.car.model.mongodb.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
@@ -122,52 +119,62 @@ public class s_DatasetBO implements IDatasetBO {
                 new StoredFile(dataFile.originalFileName, dataFile.storageLocation),
                 attachments);
 
-        ObjectId objectId = getDatasetDAO(TestMode.TEST_MODE).add(datasetDocument, rowCollection);
+        ObjectId objectId = getDatasetDAO().add(datasetDocument, rowCollection);
 
         return objectId.toHexString();
     }
 
-    protected File getPhysicalFile(TestMode testMode, String storageLocation) {
+    protected File getPhysicalFile(String storageLocation) {
 
-        return Application.getBusinessObjects().getPhysicalFileBO().getDataFileDAO(testMode).getFile(storageLocation);
+        return getPhysicalFileBO().getPyhsicalFileDAO().getFile(storageLocation);
     }
 
-    public String getDataset(TestMode testMode, String datasetId) {
+    public String getDataset(String datasetId) {
 
-        IDatasetDocument datasetDocument = getDatasetDAO(testMode).getDataset(datasetId);
+        IDatasetDocument datasetDocument = getDatasetDAO().getDataset(datasetId);
         if (datasetDocument == null) { return null; }
 
         String jsonOut = DAOUtilities.serialize(datasetDocument);
         return jsonOut;
     }
 
-    public String getAllDatasets(TestMode testMode) {
+    public String getAllDatasets() {
 
-        Iterable<Document> datasets = getDatasetDAO(testMode).getAll();
+        Iterable<Document> datasets = getDatasetDAO().getAll();
 
         String jsonOut = DAOUtilities.serialize(datasets);
         return jsonOut;
     }
 
-    public long deleteDataset(TestMode testMode,
-                              String datasetId) throws DeletionFailure {
+    public long deleteDataset(String datasetId) throws DeletionFailure {
 
-        IDatasetDAO datasetDAO = getDatasetDAO(testMode);
+        IDatasetDAO datasetDAO = getDatasetDAO();
         IDatasetDocument datasetDocument = datasetDAO.getDataset(datasetId);
-        datasetDAO.delete(datasetId);
 
         String storageLocation = datasetDocument.getMetadata().getUploadedFile().getStorageLocation();
         try {
-            Application.getBusinessObjects().getPhysicalFileBO().deletFile(storageLocation);
+            physicalFileBO.deletFile(storageLocation);
         }
         catch (UnableToDeleteFile e) {
             log.warn(e);
         }
+
+        List<IStoredFile> attachments = datasetDocument.getMetadata().getAttachments();
+        for (IStoredFile attachment : attachments) {
+            try {
+
+                physicalFileBO.deletFile(attachment.getStorageLocation());
+            }
+            catch (UnableToDeleteFile e) {
+                log.warn(e);
+            }
+        }
+
+        datasetDAO.delete(datasetId);
         return 0;
     }
 
     public String addDataset(
-            TestMode testMode,
             String dataCategory,
             Date submissionDate,
             String submitter,
@@ -179,17 +186,15 @@ public class s_DatasetBO implements IDatasetBO {
             List<FileAsRawBytes> attachmentFiles)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
-        gov.energy.nbc.car.dao.dto.StoredFile theDataFileThatWasStored =
-                Application.getBusinessObjects().getPhysicalFileBO().saveFile(testMode, dataFile);
+        gov.energy.nbc.car.dao.dto.StoredFile theDataFileThatWasStored = physicalFileBO.saveFile(dataFile);
 
         List<gov.energy.nbc.car.dao.dto.StoredFile> theAttachmentsThatWereStored = new ArrayList();
 
         for (FileAsRawBytes attachmentFile : attachmentFiles) {
-            theAttachmentsThatWereStored.add(Application.getBusinessObjects().getPhysicalFileBO().saveFile(testMode, attachmentFile));
+            theAttachmentsThatWereStored.add(physicalFileBO.saveFile(attachmentFile));
         }
 
         String objectId = addDataset(
-                testMode,
                 dataCategory,
                 submissionDate,
                 submitter,
@@ -203,24 +208,12 @@ public class s_DatasetBO implements IDatasetBO {
         return objectId;
     }
 
-//    public String addDataset(TestMode testMode,
-//                                 String jsonIn) {
-//
-//        DatasetDAO datasetDAO = getDatasetDAO(testMode);
-//
-//        Dataset dataset = new Dataset(jsonIn);
-//        ObjectId objectId = datasetDAO.add(dataset, data);
-//
-//        return objectId.toHexString();
-//    }
-
-    public String addDataset(TestMode testMode,
-                                 String metadataJson,
-                                 File file,
-                                 String nameOfWorksheetContainingTheData)
+    public String addDataset(String metadataJson,
+                             File file,
+                             String nameOfWorksheetContainingTheData)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
-        IDatasetDAO datasetDAO = getDatasetDAO(testMode);
+        IDatasetDAO datasetDAO = getDatasetDAO();
 
         try {
             RowCollection dataUpload = generalFileReader.extractDataFromDataset(file, nameOfWorksheetContainingTheData);
@@ -242,13 +235,11 @@ public class s_DatasetBO implements IDatasetBO {
         }
     }
 
-    public IDatasetDAO getDatasetDAO(TestMode testMode) {
+    public IDatasetDAO getDatasetDAO() {
+        return datasetDAO;
+    }
 
-        if (testMode == TestMode.NOT_TEST_MODE) {
-            return datasetDAO;
-        }
-        else {
-            return datasetDAO_FOR_UNIT_TESTING_PURPOSES;
-        }
+    public IPhysicalFileBO getPhysicalFileBO() {
+        return physicalFileBO;
     }
 }

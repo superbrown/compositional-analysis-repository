@@ -1,23 +1,33 @@
 package gov.energy.nbc.car.dao.mongodb;
 
-import gov.energy.nbc.car.Application;
-import gov.energy.nbc.car.Settings;
-import gov.energy.nbc.car.Settings_forUnitTestPurposes;
+import gov.energy.nbc.car.app.AbsAppConfig;
+import gov.energy.nbc.car.settings.Settings;
+import gov.energy.nbc.car.bo.IBusinessObjects;
 import gov.energy.nbc.car.bo.ITestDataBO;
+import gov.energy.nbc.car.app.TestMode;
 
-public class TestUsingTestData {
+public abstract class TestUsingTestData {
 
     static public boolean SUSPEND_DATA_SEEDING = false;
     static public boolean SUSPEND_DATA_CLEANUP = false;
 
-    private static final Settings SETTINGS = new Settings_forUnitTestPurposes();
+    private AbsAppConfig appConfig;
+    {
+        Settings settings = new Settings();
 
-    static {
-        SETTINGS.setMongoDbHost("localhost");
-        SETTINGS.setMongoDbPort("27017");
-        SETTINGS.setMongoDatabaseName("car_forUnitTestPurposes");
-        SETTINGS.setRootDirectoryForUploadedDataFiles("target/test-classes");
-        SETTINGS.setDefaultSetOfDataCategories(Application.DEFAULT_SET_OF_DATA_CATEGORIES);
+        settings.setMongoDbHost("localhost");
+        settings.setMongoDbPort("27017");
+        settings.setMongoDatabaseName("car");
+        settings.setRootDirectoryForUploadedDataFiles("target/test-classes");
+        settings.setDefaultSetOfDataCategories(AbsAppConfig.DEFAULT_SET_OF_DATA_CATEGORIES);
+
+        appConfig = createAppConfig(settings);
+    }
+
+    protected abstract AbsAppConfig createAppConfig(Settings settings);
+
+    public AbsAppConfig getAppConfig() {
+        return appConfig;
     }
 
     public static void beforeClass() {
@@ -25,7 +35,7 @@ public class TestUsingTestData {
 
     public void before() {
 
-        ITestDataBO testDataBO = Application.getBusinessObjects().getTestDataBO();
+        ITestDataBO testDataBO = getBusinessObjects().getTestDataBO();
 
         // (just in case it's necessary)
         if (SUSPEND_DATA_CLEANUP == false) {
@@ -37,24 +47,20 @@ public class TestUsingTestData {
         }
     }
 
+    protected IBusinessObjects getBusinessObjects() {
+
+        return getAppConfig().getBusinessObjects(TestMode.TEST_MODE);
+    }
+
     public void after() {
 
         if (SUSPEND_DATA_CLEANUP == false) {
-            ITestDataBO testDataBO = Application.getBusinessObjects().getTestDataBO();
-            testDataBO.removeTestData();
+            ITestDataBO testDataBO = getBusinessObjects().getTestDataBO();
+            testDataBO.dropTheTestDatabase();
         }
     }
 
     public static void afterClass() {
 
-        if (SUSPEND_DATA_CLEANUP == false) {
-            ITestDataBO testDataBO = Application.getBusinessObjects().getTestDataBO();
-            testDataBO.dropTheTestDatabase();
-        }
-    }
-
-    protected Settings createSettingsForUnitTesting() {
-
-        return SETTINGS;
     }
 }

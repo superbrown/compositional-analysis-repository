@@ -1,11 +1,17 @@
-package gov.energy.nbc.car;
+package gov.energy.nbc.car.settings;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.stereotype.Component;
 
 @Configuration
-@PropertySource("classpath:/application.properties")
+@Component
+@ComponentScan(basePackages = { "gov.energy.nbc.car.*" })
+@AutoConfigureBefore
 public class Settings implements ISettings {
 
     @Value("${mongoDb.host}")
@@ -22,6 +28,20 @@ public class Settings implements ISettings {
 
     @Value("${defaultSetOfDataCategories}")
     private String[] defaultSetOfDataCategories;
+
+    public Settings(ISettings settings) {
+
+        this.mongoDbHost = settings.getMongoDbHost();
+        this.mongoDbPort = settings.getMongoDbPort();
+        this.mongoDatabaseName = settings.getMongoDatabaseName();
+        this.rootDirectoryForUploadedDataFiles = settings.getRootDirectoryForUploadedDataFiles();
+        this.defaultSetOfDataCategories = settings.getDefaultSetOfDataCategories();
+    }
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 
     public Settings() {
 

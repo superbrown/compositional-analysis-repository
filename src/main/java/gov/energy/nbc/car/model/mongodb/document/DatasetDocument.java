@@ -72,9 +72,4 @@ public class DatasetDocument extends AbstractDocument implements IDatasetDocumen
     public Metadata getMetadata() {
         return (Metadata) get(ATTR_KEY__METADATA);
     }
-
-    @Override
-    public String getDataCategory() {
-        return (String) getMetadata().get(Metadata.ATTR_KEY__SAMPLE_TYPE);
-    }
 }

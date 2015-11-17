@@ -5,24 +5,19 @@ import gov.energy.nbc.car.dao.IDataCategoryDAO;
 
 public interface IDataCategoryBO {
 
-    String getDataCategory(TestMode testMode,
-                           String dataCategoryId);
+    String getDataCategory(String dataCategoryId);
 
-    String getDataCategoryWithName(TestMode testMode,
-                                   String name);
+    String getDataCategoryWithName(String name);
 
-    String getAllDataCategories(TestMode testMode);
+    String getAllDataCategories();
 
-    String getAllDataCategoryNames(TestMode testMode);
+    String getAllDataCategoryNames();
 
-    void deleteDataCategory(TestMode testMode,
-                            String dataCategoryId) throws DeletionFailure;
+    void deleteDataCategory(String dataCategoryId) throws DeletionFailure;
 
-    String addDataCategory(TestMode testMode,
-                           String jsonIn);
+    String addDataCategory(String jsonIn);
 
-    String getColumnNamesForDataCategoryName(TestMode testMode,
-                                             String dataCategoryName);
+    String getColumnNamesForDataCategoryName(String dataCategoryName);
 
-    IDataCategoryDAO getDataCategoryDAO(TestMode testMode);
+    IDataCategoryDAO getDataCategoryDAO();
 }

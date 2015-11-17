@@ -1,13 +1,13 @@
 package gov.energy.nbc.car.bo.mongodb.multipleCellSchemaApproach;
 
 import com.mongodb.client.MongoDatabase;
-import gov.energy.nbc.car.Settings;
+import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.bo.ITestDataBO;
-import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
+import gov.energy.nbc.car.bo.mongodb.TestData;
 import gov.energy.nbc.car.dao.IDatasetDAO;
+import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.mongodb.IMongodbDAO;
 import gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach.m_DatasetDAO;
-import gov.energy.nbc.car.bo.mongodb.TestData;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -16,10 +16,10 @@ import java.util.List;
 
 public class m_TestDataBO implements ITestDataBO {
 
-    private final Settings settings;
+    private final ISettings settings;
     public IDatasetDAO datasetDAO;
 
-    public m_TestDataBO(Settings settings) {
+    public m_TestDataBO(ISettings settings) {
 
         this.settings = settings;
         datasetDAO = new m_DatasetDAO(settings);

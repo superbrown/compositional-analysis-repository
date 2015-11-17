@@ -2,10 +2,8 @@ package gov.energy.nbc.car.bo.mongodb;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.util.JSON;
-import gov.energy.nbc.car.Application;
-import gov.energy.nbc.car.bo.IBusinessObjects;
+import gov.energy.nbc.car.app.AbsAppConfig;
 import gov.energy.nbc.car.bo.IRowBO;
-import gov.energy.nbc.car.bo.TestMode;
 import gov.energy.nbc.car.dao.dto.ComparisonOperator;
 import gov.energy.nbc.car.dao.dto.SearchCriterion;
 import gov.energy.nbc.car.dao.dto.StoredFile;
@@ -30,12 +28,12 @@ public abstract class AbsRowBOTest extends TestUsingTestData
 {
     Logger log = Logger.getLogger(getClass());
 
+    AbsAppConfig appConfig;
+
     @BeforeClass
     public static void beforeClass() {
         TestUsingTestData.beforeClass();
     }
-
-    protected abstract void initializeBusinessObjects();
 
     @AfterClass
     public static void afterClass() {
@@ -45,15 +43,12 @@ public abstract class AbsRowBOTest extends TestUsingTestData
     @Before
     public void before() {
 
-        initializeBusinessObjects();
-
         super.before();
 
         StoredFile dataFile = new StoredFile("SpreadsheetWithDifferentTypesOfValues.xlsx", "/SpreadsheetWithDifferentTypesOfValues.xlsx");
 
         try {
-            String id = Application.getBusinessObjects().getDatasetBO().addDataset(
-                    TestMode.TEST_MODE,
+            String id = getBusinessObjects().getDatasetBO().addDataset(
                     "sample type",
                     new Date(),
                     "submitter",
@@ -80,12 +75,10 @@ public abstract class AbsRowBOTest extends TestUsingTestData
     @Test
     public void testQueryCriteria_numbers() {
 
-        IBusinessObjects businessObjects = Application.getBusinessObjects();
-
         String columnName = "Number";
         double doubleValue = 3;
 
-        IRowBO rowBO = businessObjects.getRowBO();
+        IRowBO rowBO = getBusinessObjects().getRowBO();
 
         assertTrue(exerciseANumbericQuery(rowBO, columnName, doubleValue, EQUALS).size() == 1);
         assertTrue(exerciseANumbericQuery(rowBO, columnName, doubleValue, GREATER_THAN).size() == 2);
@@ -97,8 +90,6 @@ public abstract class AbsRowBOTest extends TestUsingTestData
     @Test
     public void testQueryCriteria_dates() {
 
-        IBusinessObjects businessObjects = Application.getBusinessObjects();
-
         String columnName = "Date";
         Date dateValue = null;
 
@@ -109,7 +100,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
             e.printStackTrace();
         }
 
-        IRowBO rowBO = businessObjects.getRowBO();
+        IRowBO rowBO = getBusinessObjects().getRowBO();
 
         assertTrue(exerciseADateQuery(rowBO, columnName, dateValue, GREATER_THAN).size() == 2);
         assertTrue(exerciseADateQuery(rowBO, columnName, dateValue, GREATER_THAN_OR_EQUAL).size() == 3);
@@ -121,12 +112,10 @@ public abstract class AbsRowBOTest extends TestUsingTestData
     @Test
     public void testQueryCriteria_strings() {
 
-        IBusinessObjects businessObjects = Application.getBusinessObjects();
-
         String columnName = "String";
         String stringValue = "c string";
 
-        IRowBO rowBO = businessObjects.getRowBO();
+        IRowBO rowBO = getBusinessObjects().getRowBO();
 
         assertTrue(exerciseAStringQuery(rowBO, columnName, stringValue, EQUALS).size() == 1);
         assertTrue(exerciseAStringQuery(rowBO, columnName, stringValue, GREATER_THAN).size() == 2);
@@ -142,12 +131,10 @@ public abstract class AbsRowBOTest extends TestUsingTestData
     @Test
     public void testQueryCriteria_booleans() {
 
-        IBusinessObjects businessObjects = Application.getBusinessObjects();
-
         String columnName = "Boolean";
         boolean booleanValue = false;
 
-        IRowBO rowBO = businessObjects.getRowBO();
+        IRowBO rowBO = getBusinessObjects().getRowBO();
 
         assertTrue(exerciseABooleanQuery(rowBO, columnName, booleanValue, EQUALS).size() == 2);
 
@@ -159,7 +146,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
 
         List<SearchCriterion> rowSearchCriteria = new ArrayList();
         rowSearchCriteria.add(new SearchCriterion(name, value, comparisonOperator));
-        String json = rowBO.getRows(TestMode.TEST_MODE, rowSearchCriteria);
+        String json = getBusinessObjects().getRowBO().getRows(rowSearchCriteria);
         BasicDBList basicDBList = (BasicDBList) JSON.parse(json);
         return basicDBList;
     }
@@ -168,7 +155,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
 
         List<SearchCriterion> rowSearchCriteria = new ArrayList();
         rowSearchCriteria.add(new SearchCriterion(name, value, comparisonOperator));
-        String json = rowBO.getRows(TestMode.TEST_MODE, rowSearchCriteria);
+        String json = rowBO.getRows(rowSearchCriteria);
         BasicDBList basicDBList = (BasicDBList) JSON.parse(json);
         return basicDBList;
     }
@@ -177,7 +164,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
 
         List<SearchCriterion> rowSearchCriteria = new ArrayList();
         rowSearchCriteria.add(new SearchCriterion(name, value, comparisonOperator));
-        String json = rowBO.getRows(TestMode.TEST_MODE, rowSearchCriteria);
+        String json = rowBO.getRows(rowSearchCriteria);
         BasicDBList basicDBList = (BasicDBList) JSON.parse(json);
         return basicDBList;
     }
@@ -186,7 +173,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
 
         List<SearchCriterion> rowSearchCriteria = new ArrayList ();
         rowSearchCriteria.add(new SearchCriterion(name, value, comparisonOperator));
-        String json = rowBO.getRows(TestMode.TEST_MODE, rowSearchCriteria);
+        String json = rowBO.getRows(rowSearchCriteria);
         BasicDBList basicDBList = (BasicDBList) JSON.parse(json);
         return basicDBList;
     }

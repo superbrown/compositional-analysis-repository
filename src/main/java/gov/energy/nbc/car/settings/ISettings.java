@@ -1,8 +1,6 @@
-package gov.energy.nbc.car;
+package gov.energy.nbc.car.settings;
 
-/**
- * Created by mbrown on 11/8/2015.
- */
+
 public interface ISettings {
 
     String getMongoDatabaseName();

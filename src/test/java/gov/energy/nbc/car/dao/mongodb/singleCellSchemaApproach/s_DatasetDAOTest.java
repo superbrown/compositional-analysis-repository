@@ -1,15 +1,14 @@
 package gov.energy.nbc.car.dao.mongodb.singleCellSchemaApproach;
 
-import gov.energy.nbc.car.Application;
-import gov.energy.nbc.car.Settings;
-import gov.energy.nbc.car.bo.mongodb.singleCellSchemaApproach.s_BusinessObjects;
+import gov.energy.nbc.car.app.AbsAppConfig;
+import gov.energy.nbc.car.settings.Settings;
 import gov.energy.nbc.car.dao.mongodb.AbsDatasetDAOTest;
+import gov.energy.nbc.car.app.s_AppConfig;
 
 public class s_DatasetDAOTest extends AbsDatasetDAOTest{
 
-    protected void initializeBusinessObjects() {
-
-        Settings settings = createSettingsForUnitTesting();
-        Application.setBusinessObjects(new s_BusinessObjects(settings, settings));
+    @Override
+    protected AbsAppConfig createAppConfig(Settings settings) {
+        return new s_AppConfig(settings);
     }
 }

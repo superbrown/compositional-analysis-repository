@@ -1,9 +1,10 @@
 package gov.energy.nbc.car.restEndpoint;
 
-import gov.energy.nbc.car.Application;
+import gov.energy.nbc.car.app.AppSingleton;
 import gov.energy.nbc.car.bo.IDataCategoryBO;
-import gov.energy.nbc.car.bo.TestMode;
+import gov.energy.nbc.car.app.TestMode;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,20 +17,15 @@ public class Endpoints_DataCategories {
 
     protected Logger log = Logger.getLogger(getClass());
 
-    private IDataCategoryBO dataCategoryBO;
-
-    public Endpoints_DataCategories() {
-
-        dataCategoryBO = Application.getBusinessObjects().getDataCategoryBO();
-    }
+    @Autowired
+    protected AppSingleton appSingleton;
 
     @RequestMapping(value="/api/dataCategory/{dataCategoryId}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getDataCategory(
             @PathVariable(value = "dataCategoryId") String dataCategoryId,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String dataCategory = dataCategoryBO.getDataCategory(
-                TestMode.value(testMode),
+        String dataCategory = getDataCategoryBO(testMode).getDataCategory(
                 dataCategoryId);
 
         if (dataCategory == null) {
@@ -44,8 +40,7 @@ public class Endpoints_DataCategories {
             @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String dataCategory = dataCategoryBO.getDataCategoryWithName(
-                TestMode.value(testMode),
+        String dataCategory = getDataCategoryBO(testMode).getDataCategoryWithName(
                 dataCategoryName);
 
         if (dataCategory == null) {
@@ -60,8 +55,7 @@ public class Endpoints_DataCategories {
             @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName,
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String columnNamesForDataCategoryName = dataCategoryBO.getColumnNamesForDataCategoryName(
-                TestMode.value(testMode),
+        String columnNamesForDataCategoryName = getDataCategoryBO(testMode).getColumnNamesForDataCategoryName(
                 dataCategoryName);
 
         if (columnNamesForDataCategoryName == null) {
@@ -75,8 +69,8 @@ public class Endpoints_DataCategories {
     public ResponseEntity getAllDataCategoryNames(
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String dataCategoryNames = dataCategoryBO.getAllDataCategoryNames(
-                TestMode.value(testMode));
+        String dataCategoryNames = getDataCategoryBO(testMode).getAllDataCategoryNames(
+        );
 
         if (dataCategoryNames == null) {
             return create_NOT_FOUND_response();
@@ -89,13 +83,19 @@ public class Endpoints_DataCategories {
     public ResponseEntity getDataCategoryByName(
             @RequestParam(value = "inTestMode", required = false) String testMode) {
 
-        String dataCategory = dataCategoryBO.getAllDataCategories(
-                TestMode.value(testMode));
+        String dataCategory = getDataCategoryBO(testMode).getAllDataCategories(
+        );
 
         if (dataCategory == null) {
             return create_NOT_FOUND_response();
         }
 
         return create_SUCCESS_response(dataCategory);
+    }
+
+
+    protected IDataCategoryBO getDataCategoryBO(@RequestParam(value = "inTestMode", required = false) String testMode) {
+
+        return appSingleton.getBusinessObjects(TestMode.value(testMode)).getDataCategoryBO();
     }
 }
