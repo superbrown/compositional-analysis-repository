@@ -1,12 +1,12 @@
 package gov.energy.nbc.car.bo.mongodb.singleCellSchemaApproach;
 
 import com.mongodb.client.MongoDatabase;
-import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.bo.mongodb.TestData;
 import gov.energy.nbc.car.dao.IDatasetDAO;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.mongodb.IMongodbDAO;
 import gov.energy.nbc.car.dao.mongodb.singleCellSchemaApproach.s_DatasetDAO;
+import gov.energy.nbc.car.settings.ISettings;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -22,6 +22,7 @@ public class s_TestDataBO implements gov.energy.nbc.car.bo.ITestDataBO {
 
         this.settings = settings;
         datasetDAO = new s_DatasetDAO(settings);
+
     }
 
     @Override

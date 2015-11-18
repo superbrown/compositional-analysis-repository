@@ -25,8 +25,7 @@ import org.bson.types.ObjectId;
 
 import java.util.*;
 
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Projections.include;
 
@@ -133,44 +132,70 @@ public class s_RowDAO extends DAO implements IRowDAO {
         return documents;
     }
 
+    @Override
     public List<Document> query(List<SearchCriterion> searchCriteria) {
 
-        CriterionAndItsNumberOfMatches criterionWithTheFewestMatches = null;
-
-        if (searchCriteria.isEmpty() == false) {
-            criterionWithTheFewestMatches = determineCriterionWithTheFewestMatches(searchCriteria);
+        if (searchCriteria.size() == 0) {
+            throw new RuntimeException();
         }
 
-        if (criterionWithTheFewestMatches.getNubmerOfMatches() == 0) {
-            // this means there can be no matches
+        encodeColumnNamesForMongoSafety(searchCriteria);
+
+        List<CriterionAndItsNumberOfMatches> numberOfMatchesForEachCriterion =
+                getNumberOfMatchesForEachCriterion(searchCriteria);
+
+        // Sort these in descending order to promote search speed. So we'll first search with the most restrictive
+        // criterion and work our way up.
+        Collections.sort(numberOfMatchesForEachCriterion);
+
+        CriterionAndItsNumberOfMatches firstCriterion = numberOfMatchesForEachCriterion.get(0);
+        if (firstCriterion.getNubmerOfMatches() == 0) {
+            // since the search is performed as an AND operation, this means that, by definition, there are no matches
             return new ArrayList();
         }
 
-        SearchCriterion firstCriterionToApply = criterionWithTheFewestMatches.getCriterion();
-
         // get the row numbers of all cells that match the first criterion
-        List<SearchCriterion> searchCriteria_allCriteriaButTheFirst = new ArrayList(searchCriteria);
-        searchCriteria_allCriteriaButTheFirst.remove(firstCriterionToApply);
+        List<CriterionAndItsNumberOfMatches> criteria_allButTheFirst = new ArrayList(numberOfMatchesForEachCriterion);
+        criteria_allButTheFirst.remove(firstCriterion);
 
-        Set<ObjectId> matchingRowIds = getIdsOfRowsThatMatch(firstCriterionToApply);
+        Set<ObjectId> matchingRowIds = getIdsOfRowsThatMatch(firstCriterion.getCriterion());
 
-        for (SearchCriterion searchCondition : searchCriteria_allCriteriaButTheFirst) {
+        for (CriterionAndItsNumberOfMatches criterion : criteria_allButTheFirst) {
 
             // DESIGN NOTE: Each time this is called, it'll likely make the set of IDs smaller.
-            matchingRowIds = getIdsOfSubsetOfRowsThatMatch(matchingRowIds, searchCondition);
+            matchingRowIds = getIdsOfRowsInSubsetThatMatch(matchingRowIds, criterion.getCriterion());
         }
 
         Set<String> dataColumnNamesToIncludedInQueryResults = new LinkedHashSet<>();
 
         for (SearchCriterion searchCriterion : searchCriteria) {
 
-            // FIXME: This somehow needs to omit columns that are metadata columns
             dataColumnNamesToIncludedInQueryResults.add(searchCriterion.getName());
         }
 
         List<Document> rows = getRows(matchingRowIds, dataColumnNamesToIncludedInQueryResults);
 
         return rows;
+    }
+
+    protected List<CriterionAndItsNumberOfMatches> getNumberOfMatchesForEachCriterion(
+            List<SearchCriterion> searchCriteria) {
+
+        List<CriterionAndItsNumberOfMatches> results = new ArrayList<>();
+
+        for (SearchCriterion searchCriterion : searchCriteria) {
+
+            long count = getCountOfCellsThatMatch(searchCriterion);
+            CriterionAndItsNumberOfMatches result = new CriterionAndItsNumberOfMatches(searchCriterion, count);
+
+            results.add(result);
+
+            if (count == 0) {
+                return results;
+            }
+        }
+
+        return results;
     }
 
     protected List<Document> getRows(Set<ObjectId> matchingIds, Set<String> dataColumnNamesToIncludedInQueryResults) {
@@ -181,12 +206,14 @@ public class s_RowDAO extends DAO implements IRowDAO {
         attributesToInclude.add(RowDocument.ATTR_KEY__METADATA);
 
         for (String columnIncludedInQuery : dataColumnNamesToIncludedInQueryResults) {
-            attributesToInclude.add(RowDocument.ATTR_KEY__DATA + "." + toMongoSafeFieldName(columnIncludedInQuery));
+            attributesToInclude.add(RowDocument.ATTR_KEY__DATA + "." +
+                    toMongoSafeFieldName(columnIncludedInQuery));
         }
 
         Bson projection = fields(include(attributesToInclude));
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "getting rows for the matching IDs");
+
         List<Document> results = new ArrayList();
         for (ObjectId matchingId : matchingIds) {
 
@@ -201,44 +228,43 @@ public class s_RowDAO extends DAO implements IRowDAO {
         performanceLogger.done();
         log.info("[RESULTS] results.size() = " + results.size() +
                 ", row.count() = " + getCount() +
-                ", cell.count() = " + ((IMongodbDAO)cellDAO).getCollection().count());
+                ", cell.count() = " + cellDAO.getCollection().count());
 
         return results;
     }
 
-    protected CriterionAndItsNumberOfMatches determineCriterionWithTheFewestMatches(
-            List<SearchCriterion> searchConditia) {
+    protected Set<ObjectId> getIdsOfRowsInSubsetThatMatch(Set<ObjectId> rowIds, SearchCriterion searchCriterion) {
 
-        long lowestNumber = -1;
-        SearchCriterion criterionWithTheFewestMatches = null;
+        // CAUTION: Do NOT change the order of these, as these reflect an index set within the
+        //          database.  If you do, you'll have to change the index as well.
+        Bson query = and(
+                in(CellDocument.ATTR_KEY__ROW_ID, rowIds),
 
-        for (SearchCriterion searchCriterion : searchConditia) {
+                DAOUtilities.toCriterion(
+                        CellDocument.ATTR_KEY__COLUMN_NAME,
+                        searchCriterion.getName(),
+                        searchCriterion.getComparisonOperator()),
 
-            long count = getCountOfCellsThatMatch(searchCriterion);
+                DAOUtilities.toCriterion(
+                        CellDocument.ATTR_KEY__VALUE,
+                        searchCriterion.getValue(),
+                        searchCriterion.getComparisonOperator()));
 
-            if (count == 0) {
-                return new CriterionAndItsNumberOfMatches(searchCriterion, 0);
-            }
+        Bson projection = fields(include(CellDocument.ATTR_KEY__ROW_ID));
 
-            if (lowestNumber == -1 || (count < lowestNumber)) {
+        PerformanceLogger performanceLogger = new PerformanceLogger(
+                log,
+                "[getIdsOfRowsInSubsetThatMatch()] cellDAO.get(" + query.toString() + ")",
+                true);
+        List<Document> results = cellDAO.get(query, projection);
 
-                lowestNumber = count;
-                criterionWithTheFewestMatches = searchCriterion;
-            }
-        }
-
-        return new CriterionAndItsNumberOfMatches(criterionWithTheFewestMatches, lowestNumber);
-    }
-
-    protected Set<ObjectId> getIdsOfSubsetOfRowsThatMatch(Set<ObjectId> rowIds, SearchCriterion secondCondition) {
         Set<ObjectId> matchingIds = new HashSet();
-
-        for (ObjectId rowId : rowIds) {
-
-            if (rowMatchesTheCriterion(rowId, secondCondition)) {
-                matchingIds.add(rowId);
-            }
+        for (Document document : results) {
+            matchingIds.add((ObjectId) document.get(CellDocument.ATTR_KEY__ROW_ID));
         }
+
+        performanceLogger.done();
+
         return matchingIds;
     }
 
@@ -268,12 +294,6 @@ public class s_RowDAO extends DAO implements IRowDAO {
         return count;
     }
 
-    protected String toMongoSafeFieldName(String name) {
-
-        return MongoFieldNameEncoder.toMongoSafeFieldName(name);
-    }
-
-
     public Set<ObjectId> getIdsOfRowsThatMatch(SearchCriterion searchCriterion) {
 
         Bson rowIdCriterion = eq(CellDocument.ATTR_KEY__COLUMN_NAME, toMongoSafeFieldName(searchCriterion.getName()));
@@ -297,11 +317,6 @@ public class s_RowDAO extends DAO implements IRowDAO {
                 ", cell.count() = " + ((IMongodbDAO)cellDAO).getCollection().count());
 
         return toSetOfRowIds(documents);
-    }
-
-    @Override
-    public ICellDAO getCellDAO(String columnName) {
-        return getCellDAO();
     }
 
     protected boolean rowMatchesTheCriterion(ObjectId rowId, SearchCriterion searchCriterion) {
@@ -345,10 +360,6 @@ public class s_RowDAO extends DAO implements IRowDAO {
         return objectIds;
     }
 
-    public ICellDAO getCellDAO() {
-        return cellDAO;
-    }
-
     protected void convertTotoClientSideFieldName(Document document) {
 
         Map<String, Object> temporaryMapToAvoidConcurrentModificationOfTheDocument = new HashMap();
@@ -364,26 +375,6 @@ public class s_RowDAO extends DAO implements IRowDAO {
         for (String key : temporaryMapToAvoidConcurrentModificationOfTheDocument.keySet()) {
 
             document.put(key, temporaryMapToAvoidConcurrentModificationOfTheDocument.get(key));
-        }
-    }
-
-    private class CriterionAndItsNumberOfMatches {
-
-        private final SearchCriterion criterion;
-        private final long nubmerOfMatches;
-
-        public CriterionAndItsNumberOfMatches(SearchCriterion criterion, long nubmerOfMatches) {
-
-            this.criterion = criterion;
-            this.nubmerOfMatches = nubmerOfMatches;
-        }
-
-        public SearchCriterion getCriterion() {
-            return criterion;
-        }
-
-        public long getNubmerOfMatches() {
-            return nubmerOfMatches;
         }
     }
 
@@ -421,6 +412,59 @@ public class s_RowDAO extends DAO implements IRowDAO {
             }
 
             HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = true;
+        }
+    }
+
+    @Override
+    public ICellDAO getCellDAO(String columnName) {
+        return getCellDAO();
+    }
+
+    public ICellDAO getCellDAO() {
+        return cellDAO;
+    }
+
+    protected void encodeColumnNamesForMongoSafety(List<SearchCriterion> searchCriteria_data) {
+
+        for (SearchCriterion searchCriterion : searchCriteria_data) {
+
+            searchCriterion.setName(toMongoSafeFieldName(searchCriterion.getName()));
+        }
+    }
+
+    protected String toMongoSafeFieldName(String name) {
+
+        return MongoFieldNameEncoder.toMongoSafeFieldName(name);
+    }
+
+    private class CriterionAndItsNumberOfMatches implements Comparable {
+
+        private final SearchCriterion criterion;
+        private final Long nubmerOfMatches;
+
+        public CriterionAndItsNumberOfMatches(SearchCriterion criterion, long nubmerOfMatches) {
+
+            this.criterion = criterion;
+            this.nubmerOfMatches = nubmerOfMatches;
+        }
+
+        public SearchCriterion getCriterion() {
+            return criterion;
+        }
+
+        public long getNubmerOfMatches() {
+            return nubmerOfMatches;
+        }
+
+
+        @Override
+        public int compareTo(Object o) {
+
+            long delta = this.getNubmerOfMatches() - ((CriterionAndItsNumberOfMatches) o).getNubmerOfMatches();
+
+            if (delta < 0) return -1;
+            if (delta > 0) return 1;
+            return 0;
         }
     }
 }

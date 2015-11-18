@@ -5,6 +5,7 @@ import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.IRowBO;
 import gov.energy.nbc.car.app.TestMode;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
+import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
 import gov.energy.nbc.car.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nbc.car.utilities.fileReader.IDatasetReader_AllFileTypes;
@@ -69,15 +70,17 @@ public class Endpoints_Datasets {
 
         String objectId = null;
         try {
-            List<FileAsRawBytes> attachmentFiles = new ArrayList<>();
+            List<FileAsRawBytes> attachmentFilesAsRawBytes = new ArrayList<>();
             for (MultipartFile attachment : attachments) {
 
                 // DESIGN NOTE: I don't know why this is necessary, but for some reason
                 //              attachment attributes sometimes are empty.
                 if (StringUtils.isNotBlank(attachment.getOriginalFilename())) {
-                    attachmentFiles.add(toFileAsRawBytes(attachment));
+                    attachmentFilesAsRawBytes.add(toFileAsRawBytes(attachment));
                 }
             }
+
+            FileAsRawBytes dataFileAsRawBytes = toFileAsRawBytes(dataFile);
 
             objectId = getDatasetBO(testMode).addDataset(
                     dataCategory,
@@ -86,9 +89,84 @@ public class Endpoints_Datasets {
                     projectName,
                     chargeNumber,
                     comments,
-                    toFileAsRawBytes(dataFile),
+                    dataFileAsRawBytes,
                     nameOfSheetContainingData,
-                    attachmentFiles);
+                    attachmentFilesAsRawBytes);
+        }
+        catch (UnsupportedFileExtension e) {
+            log.info(e);
+            return create_BAD_REQUEST_response(e.toString());
+        }
+        catch (InvalidValueFoundInHeader e) {
+            log.info(e);
+            return create_BAD_REQUEST_response(e.toString());
+        }
+        catch (IOException e) {
+            log.error(e);
+            return create_INTERNAL_SERVER_ERROR_response();
+        }
+
+        return create_SUCCESS_response(objectId);
+    }
+
+    @RequestMapping(value="/api/seedBigData", method = RequestMethod.POST)
+    public ResponseEntity seedBigData(
+            @RequestParam(value = "dataCategory", required = false) String dataCategory,
+            @RequestParam(value = "submissionDate", required = false) String submissionDate,
+            @RequestParam(value = "submitter", required = false) String submitter,
+            @RequestParam(value = "projectName", required = false) String projectName,
+            @RequestParam(value = "chargeNumber", required = false) String chargeNumber,
+            @RequestParam(value = "comments", required = false) String comments,
+            @RequestParam(value = "dataFile", required = false) MultipartFile dataFile,
+            @RequestParam(value = "attachments", required = false) List<MultipartFile> attachments,
+            @RequestParam(value = "nameOfSheetContainingData", required = false) String nameOfSheetContainingData,
+            @RequestParam(value = "testMode", required = false) String testMode) {
+
+        if (StringUtils.isBlank(dataCategory)) { return create_BAD_REQUEST_missingRequiredParam_response("dataCategory");}
+        if (StringUtils.isBlank(submissionDate)) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
+        if (StringUtils.isBlank(submissionDate)) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
+        if (dataFile == null) { return create_BAD_REQUEST_missingRequiredParam_response("dataFile");}
+        if (isAnExcelFile(dataFile)) { if (StringUtils.isBlank(nameOfSheetContainingData)) { return create_BAD_REQUEST_missingRequiredParam_response("nameOfSheetContainingData");} }
+
+        Date submissionDate_date = null;
+        try {
+            submissionDate_date = DATE_FORMAT.parse(submissionDate);
+        }
+        catch (ParseException e) {
+            return create_BAD_REQUEST_response("Invalid format for submissionDate. Must be conform to: " + DATE_FORMAT.toString() +
+                    ". The value was " + submissionDate + ".");
+        }
+
+        String objectId = null;
+        try {
+
+            IRowDAO rowDAO = getDatasetBO(testMode).getDatasetDAO().getRowDAO();
+
+            while (rowDAO.getCellDAO(null).getCount() <= 1000000) {
+
+                List<FileAsRawBytes> attachmentFilesAsRawBytes = new ArrayList<>();
+                for (MultipartFile attachment : attachments) {
+
+                    // DESIGN NOTE: I don't know why this is necessary, but for some reason
+                    //              attachment attributes sometimes are empty.
+                    if (StringUtils.isNotBlank(attachment.getOriginalFilename())) {
+                        attachmentFilesAsRawBytes.add(toFileAsRawBytes(attachment));
+                    }
+                }
+
+                FileAsRawBytes dataFileAsRawBytes = toFileAsRawBytes(dataFile);
+
+                objectId = getDatasetBO(testMode).addDataset(
+                        dataCategory,
+                        submissionDate_date,
+                        submitter,
+                        projectName,
+                        chargeNumber,
+                        comments,
+                        dataFileAsRawBytes,
+                        nameOfSheetContainingData,
+                        attachmentFilesAsRawBytes);
+            }
         }
         catch (UnsupportedFileExtension e) {
             log.info(e);
@@ -174,17 +252,16 @@ public class Endpoints_Datasets {
     }
 
 
-    protected IDatasetBO getDatasetBO(@RequestParam(value = "inTestMode", required = false) String testMode) {
+    protected IDatasetBO getDatasetBO(String testMode) {
         return appSingleton.getAppConfig().getBusinessObjects(TestMode.value(testMode)).getDatasetBO();
     }
 
-    protected IRowBO getRowBO(@RequestParam(value = "inTestMode", required = false) String testMode) {
+    protected IRowBO getRowBO(String testMode) {
         return appSingleton.getBusinessObjects(TestMode.value(testMode)).getRowBO();
     }
 
-    protected FileAsRawBytes toFileAsRawBytes(@RequestParam(value = "dataFile", required = false) MultipartFile dataFile)
+    protected FileAsRawBytes toFileAsRawBytes(MultipartFile dataFile)
             throws IOException {
-
         return new FileAsRawBytes(dataFile.getOriginalFilename(), dataFile.getBytes());
     }
 

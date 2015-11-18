@@ -12,10 +12,7 @@ import gov.energy.nbc.car.utilities.PerformanceLogger;
 import gov.energy.nbc.car.utilities.fileReader.exception.InvalidValueFoundInHeader;
 import gov.energy.nbc.car.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,7 +63,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
                 int numberOfDatasetsSeeded = 0;
                 int increment = 1;
 
-                for (int AbsDatasetBOTest = 0; AbsDatasetBOTest < 1; AbsDatasetBOTest++) {
+                for (int i = 0; i < 5; i++) {
 
                     numberOfDatasetsSeeded += increment;
                     seedData(dataFile, increment);
