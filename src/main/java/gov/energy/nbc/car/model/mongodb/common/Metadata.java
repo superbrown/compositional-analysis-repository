@@ -24,6 +24,11 @@ public class Metadata extends AbstractDocument implements IMetadata {
     public static final String ATTR_KEY__UPLOADED_FILE = "_uploadedFile";
     public static final String ATTR_KEY__ATTACHMENTS = "_attachments";
 
+
+    public Metadata() {
+        super();
+    }
+
     public Metadata(
             String dataCategory,
             Date submissionDate,
@@ -44,7 +49,7 @@ public class Metadata extends AbstractDocument implements IMetadata {
                 comments,
                 uploadedFile,
                 attachments);
-   }
+    }
 
     public Metadata(Document document) {
         super(document);
@@ -155,4 +160,21 @@ public class Metadata extends AbstractDocument implements IMetadata {
     @Override
     public List<IStoredFile> getAttachments() { return (List<IStoredFile>) get(ATTR_KEY__ATTACHMENTS); }
 
+
+    @Override
+    public String setDataCategory(String value) { return (String)  put(ATTR_KEY__SAMPLE_TYPE, value); }
+    @Override
+    public Date setSubmissionDate(Date value) { return (Date)  put(ATTR_KEY__SUBMISSION_DATE, value); }
+    @Override
+    public String setSubmitter(String value) { return (String)  put(ATTR_KEY__SUBMITTER, value); }
+    @Override
+    public String setChargeNumber(String value) { return (String)  put(ATTR_KEY__CHARGE_NUMBER, value); }
+    @Override
+    public String setProjectName(String value) { return (String)  put(ATTR_KEY__PROJECT_NAME, value); }
+    @Override
+    public String setComments(String value) { return (String)  put(ATTR_KEY__COMMENTS, value); }
+    @Override
+    public IStoredFile setUploadedFile(IStoredFile value) { return (IStoredFile)  put(ATTR_KEY__UPLOADED_FILE, value); }
+    @Override
+    public List<IStoredFile> setAttachments(List<IStoredFile> value) { return (List<IStoredFile>)  put(ATTR_KEY__ATTACHMENTS, value); }
 }

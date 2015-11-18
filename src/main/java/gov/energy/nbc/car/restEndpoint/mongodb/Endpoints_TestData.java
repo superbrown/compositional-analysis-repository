@@ -27,6 +27,12 @@ public class Endpoints_TestData {
         return create_SUCCESS_response(getTestDataBO().seedTestDataInTheDatabase_dataset_1_and_2());
     }
 
+    @RequestMapping(value="/api/seedBigAmountsOfData", method = RequestMethod.GET)
+    public ResponseEntity seedBigAmountsOfData() {
+
+        return create_SUCCESS_response(getTestDataBO().seedTestDataInTheDatabase_dataset_1_and_2());
+    }
+
     @RequestMapping(value="/api/removeTestData", method = RequestMethod.GET)
     public ResponseEntity removeTestData() {
 
