@@ -7,7 +7,7 @@ import gov.energy.nbc.car.bo.mongodb.TestData;
 import gov.energy.nbc.car.dao.IDatasetDAO;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.mongodb.IMongodbDAO;
-import gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach.m_DatasetDAO;
+import gov.energy.nbc.car.dao.mongodb.multipleCellCollectionsApproach.m_DatasetDAO;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 

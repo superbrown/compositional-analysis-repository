@@ -2,7 +2,7 @@ package gov.energy.nbc.car.bo.mongodb.multipleCellSchemaApproach;
 
 import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.bo.mongodb.AbsRowBO;
-import gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach.m_RowDAO;
+import gov.energy.nbc.car.dao.mongodb.multipleCellCollectionsApproach.m_RowDAO;
 import org.apache.log4j.Logger;
 
 public class m_RowBO extends AbsRowBO {

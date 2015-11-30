@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 @AutoConfigureBefore
 public class Settings implements ISettings {
 
+    // DESIGN NOTE: These are all values in the application.properties file.
+
     @Value("${mongoDb.host}")
     protected String mongoDbHost;
 

@@ -3,7 +3,6 @@ package gov.energy.nbc.car.restEndpoint;
 import gov.energy.nbc.car.app.AppSingleton;
 import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.IRowBO;
-import gov.energy.nbc.car.app.TestMode;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
@@ -50,8 +49,7 @@ public class Endpoints_Datasets {
             @RequestParam(value = "comments", required = false) String comments,
             @RequestParam(value = "dataFile", required = false) MultipartFile dataFile,
             @RequestParam(value = "attachments", required = false) List<MultipartFile> attachments,
-            @RequestParam(value = "nameOfSheetContainingData", required = false) String nameOfSheetContainingData,
-            @RequestParam(value = "testMode", required = false) String testMode) {
+            @RequestParam(value = "nameOfSheetContainingData", required = false) String nameOfSheetContainingData) {
 
         if (StringUtils.isBlank(dataCategory)) { return create_BAD_REQUEST_missingRequiredParam_response("dataCategory");}
         if (StringUtils.isBlank(submissionDate)) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
@@ -82,7 +80,7 @@ public class Endpoints_Datasets {
 
             FileAsRawBytes dataFileAsRawBytes = toFileAsRawBytes(dataFile);
 
-            objectId = getDatasetBO(testMode).addDataset(
+            objectId = getDatasetBO().addDataset(
                     dataCategory,
                     submissionDate_date,
                     submitter,
@@ -119,8 +117,7 @@ public class Endpoints_Datasets {
             @RequestParam(value = "comments", required = false) String comments,
             @RequestParam(value = "dataFile", required = false) MultipartFile dataFile,
             @RequestParam(value = "attachments", required = false) List<MultipartFile> attachments,
-            @RequestParam(value = "nameOfSheetContainingData", required = false) String nameOfSheetContainingData,
-            @RequestParam(value = "testMode", required = false) String testMode) {
+            @RequestParam(value = "nameOfSheetContainingData", required = false) String nameOfSheetContainingData) {
 
         if (StringUtils.isBlank(dataCategory)) { return create_BAD_REQUEST_missingRequiredParam_response("dataCategory");}
         if (StringUtils.isBlank(submissionDate)) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
@@ -140,7 +137,7 @@ public class Endpoints_Datasets {
         String objectId = null;
         try {
 
-            IRowDAO rowDAO = getDatasetBO(testMode).getDatasetDAO().getRowDAO();
+            IRowDAO rowDAO = getDatasetBO().getDatasetDAO().getRowDAO();
 
             while (rowDAO.getCellDAO(null).getCount() <= 1000000) {
 
@@ -156,7 +153,7 @@ public class Endpoints_Datasets {
 
                 FileAsRawBytes dataFileAsRawBytes = toFileAsRawBytes(dataFile);
 
-                objectId = getDatasetBO(testMode).addDataset(
+                objectId = getDatasetBO().addDataset(
                         dataCategory,
                         submissionDate_date,
                         submitter,
@@ -186,9 +183,9 @@ public class Endpoints_Datasets {
 
     @RequestMapping(value="/api/datasets/all", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getAllDatasets(
-            @RequestParam(value = "inTestMode", required = false) String testMode) {
+            ) {
 
-        IDatasetBO datasetBO = getDatasetBO(testMode);
+        IDatasetBO datasetBO = getDatasetBO();
 
         String datasets = datasetBO.getAllDatasets();
 
@@ -201,10 +198,9 @@ public class Endpoints_Datasets {
 
     @RequestMapping(value="/api/dataset/{datasetId}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getDataset(
-            @PathVariable(value = "datasetId") String datasetId,
-            @RequestParam(value = "inTestMode", required = false) String testMode) {
+            @PathVariable(value = "datasetId") String datasetId) {
 
-        IDatasetBO datasetBO = getDatasetBO(testMode);
+        IDatasetBO datasetBO = getDatasetBO();
 
         String dataset = datasetBO.getDataset(datasetId);
 
@@ -217,10 +213,9 @@ public class Endpoints_Datasets {
 
     @RequestMapping(value="/api/dataset/{datasetId}/rows", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getRows(
-            @PathVariable(value = "datasetId") String datasetId,
-            @RequestParam(value = "inTestMode", required = false) String testMode) {
+            @PathVariable(value = "datasetId") String datasetId) {
 
-        String rowsForDataset = getRowBO(testMode).getRowAssociatedWithDataset(datasetId);
+        String rowsForDataset = getRowBO().getRowAssociatedWithDataset(datasetId);
 
         if (rowsForDataset == null) {
             return create_NOT_FOUND_response();
@@ -231,12 +226,11 @@ public class Endpoints_Datasets {
 
     @RequestMapping(value="/api/dataset/{datasetId}", method = RequestMethod.DELETE, produces = "application/json")
     public ResponseEntity deleteDataset(
-            @PathVariable(value = "datasetId") String datasetId,
-            @RequestParam(value = "inTestMode", required = false) String testMode) {
+            @PathVariable(value = "datasetId") String datasetId) {
 
         long numberOfObjectsDeleted = 0;
         try {
-            IDatasetBO datasetBO = getDatasetBO(testMode);
+            IDatasetBO datasetBO = getDatasetBO();
             numberOfObjectsDeleted = datasetBO.deleteDataset(datasetId);
         }
         catch (DeletionFailure deletionFailure) {
@@ -252,12 +246,12 @@ public class Endpoints_Datasets {
     }
 
 
-    protected IDatasetBO getDatasetBO(String testMode) {
-        return appSingleton.getAppConfig().getBusinessObjects(TestMode.value(testMode)).getDatasetBO();
+    protected IDatasetBO getDatasetBO() {
+        return appSingleton.getBusinessObjects().getDatasetBO();
     }
 
-    protected IRowBO getRowBO(String testMode) {
-        return appSingleton.getBusinessObjects(TestMode.value(testMode)).getRowBO();
+    protected IRowBO getRowBO() {
+        return appSingleton.getBusinessObjects().getRowBO();
     }
 
     protected FileAsRawBytes toFileAsRawBytes(MultipartFile dataFile)

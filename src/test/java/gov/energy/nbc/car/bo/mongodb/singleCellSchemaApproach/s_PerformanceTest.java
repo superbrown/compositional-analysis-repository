@@ -1,16 +1,16 @@
 package gov.energy.nbc.car.bo.mongodb.singleCellSchemaApproach;
 
-import gov.energy.nbc.car.app.AbsAppConfig;
-import gov.energy.nbc.car.settings.Settings;
+import gov.energy.nbc.car.app.AppSingleton;
 import gov.energy.nbc.car.bo.mongodb.AbsPerformanceTest;
-import gov.energy.nbc.car.app.s_AppConfig;
+import gov.energy.nbc.car.bo.mongodb.multipleCellSchemaApproach.m_BusinessObjects;
+import gov.energy.nbc.car.settings.Settings;
 
 
 public class s_PerformanceTest extends AbsPerformanceTest
 {
     @Override
-    protected AbsAppConfig createAppConfig(Settings settings) {
+    protected AppSingleton createAppSingleton(Settings settings) {
 
-        return new s_AppConfig(settings);
+        return new AppSingleton(settings, new s_BusinessObjects(settings));
     }
 }

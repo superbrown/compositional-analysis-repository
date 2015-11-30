@@ -2,7 +2,7 @@ package gov.energy.nbc.car.restEndpoint.mongodb;
 
 import gov.energy.nbc.car.app.AppSingleton;
 import gov.energy.nbc.car.bo.ITestDataBO;
-import gov.energy.nbc.car.app.TestMode;
+//import gov.energy.nbc.car.app.TestMode;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +50,6 @@ public class Endpoints_TestData {
 
     private ITestDataBO getTestDataBO() {
 
-        return appSingleton.getBusinessObjects(TestMode.TEST_MODE).getTestDataBO();
+        return appSingleton.getBusinessObjects().getTestDataBO();
     }
 }
