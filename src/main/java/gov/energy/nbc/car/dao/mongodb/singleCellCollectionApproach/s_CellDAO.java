@@ -29,22 +29,24 @@ public class s_CellDAO extends DAO implements ICellDAO {
     }
 
 
-    public List<ObjectId> add(ObjectId rowId, IRow row) {
+    public void add(ObjectId rowId, IRow row) {
 
-        List<ObjectId> cellIDs = new ArrayList();
+        List<Document> cellDocuments = new ArrayList<>();
 
         for (String columnName : row.getColumnNames()) {
 
             Object value = row.getValue(columnName);
 
-            CellDocument cellDocument = new CellDocument(rowId, columnName, value);
+            // DESIGN NOTE: I don't know why we need to create a wrapper here, but if we don't, Mongo throws the
+            // following exception:
+            //
+            // org.bson.codecs.configuration.CodecConfigurationException: Can't find a codec for class
+            // gov.energy.nbc.dataset.model.document.CellDocument.
 
-            ObjectId cellID = add(cellDocument);
-            cellIDs.add(cellID);
+            cellDocuments.add(new Document(new CellDocument(rowId, columnName, value)));
         }
 
-        return cellIDs;
-
+        addMany(cellDocuments);
     }
 
     @Override

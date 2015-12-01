@@ -48,7 +48,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
         super.after();
     }
 
-//    @Test
+    @Test
     public void testPerformance() {
 
         try {
@@ -63,7 +63,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
                 int numberOfDatasetsSeeded = 0;
                 int increment = 1;
 
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < 1; i++) {
 
                     numberOfDatasetsSeeded += increment;
                     seedData(dataFile, increment);
@@ -101,10 +101,9 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
                 0.5887146,
                 EQUALS));
 
-        PerformanceLogger performanceLogger = new PerformanceLogger(log, "[performQueries_homeGrownWay()] rowBO.getRows(" + rowSearchCriteria.toString() + ")", true);
+        PerformanceLogger performanceLogger = new PerformanceLogger(log, "[performQueries_homeGrownWay()] rowBO.getRows(" + rowSearchCriteria.toString() + ")");
 
         IRowBO rowBO = getBusinessObjects().getRowBO();
-
         String json = rowBO.getRows(rowSearchCriteria);
 
         performanceLogger.done();
@@ -123,7 +122,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
                 "corn stover",
                 EQUALS));
 
-        performanceLogger = new PerformanceLogger(log, "[performQueries_homeGrownWay()] rowBO.getRows(" + rowSearchCriteria.toString() + ")", true);
+        performanceLogger = new PerformanceLogger(log, "[performQueries_homeGrownWay()] rowBO.getRows(" + rowSearchCriteria.toString() + ")");
 
         json = rowBO.getRows(rowSearchCriteria);
 
@@ -139,7 +138,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
 
     protected void seedData(StoredFile dataFile, int number) throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
-        PerformanceLogger performanceLogger = new PerformanceLogger(log, "Seeding " + number + " additional datasets for test.", true);
+        PerformanceLogger performanceLogger = new PerformanceLogger(log, "Seeding " + number + " additional datasets for test.");
 
         IDatasetBO datasetBO = getBusinessObjects().getDatasetBO();
 

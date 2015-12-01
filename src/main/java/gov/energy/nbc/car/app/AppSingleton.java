@@ -7,6 +7,7 @@ import gov.energy.nbc.car.dao.IDataCategoryDAO;
 import gov.energy.nbc.car.model.mongodb.common.Metadata;
 import gov.energy.nbc.car.model.mongodb.document.DataCategoryDocument;
 import gov.energy.nbc.car.settings.ISettings;
+import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +25,16 @@ public class AppSingleton {
     protected IBusinessObjects businessObjects;
 
     public AppSingleton(ISettings settings, IBusinessObjects businessObjects) {
+
         this.settings = settings;
+
+        if (settings.getPerformanceLoggingEnabled() == true) {
+            PerformanceLogger.enable();
+        }
+        else {
+            PerformanceLogger.disable();
+        }
+
         setBuninsessObject(businessObjects);
     }
 

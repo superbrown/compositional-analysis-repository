@@ -64,9 +64,9 @@ public class r_RowDAO extends DAO implements IRowDAO {
                     metadata,
                     row);
 
-            PerformanceLogger performanceLogger = new PerformanceLogger(log, "insert(rowDocument)");
+//            PerformanceLogger performanceLogger = new PerformanceLogger(log, "insert(rowDocument)");
             ObjectId rowId = add(rowDocument);
-            performanceLogger.done();
+//            performanceLogger.done();
 
             rowIds.add(rowId);
 
@@ -254,8 +254,8 @@ public class r_RowDAO extends DAO implements IRowDAO {
 
         PerformanceLogger performanceLogger = new PerformanceLogger(
                 log,
-                "[getIdsOfRowsInSubsetThatMatch()] cellDAO.get(" + query.toString() + ")",
-                true);
+                "[getIdsOfRowsInSubsetThatMatch()] cellDAO.get(" + DAOUtilities.toJSON(query) + ")"
+        );
         List<Document> results = cellDAO.get(query, projection);
 
         Set<ObjectId> matchingIds = new HashSet();
@@ -286,8 +286,8 @@ public class r_RowDAO extends DAO implements IRowDAO {
 
         PerformanceLogger performanceLogger = new PerformanceLogger(
                 log,
-                "[getCountOfRowsThatMatch()] cellDAO.getCollection().count(" + query.toString() + ")",
-                true);
+                "[getCountOfRowsThatMatch()] cellDAO.getCollection().count(" + DAOUtilities.toJSON(query) + ")"
+        );
         long count = ((IMongodbDAO)cellDAO).getCollection().count(query);
         performanceLogger.done();
 
@@ -309,7 +309,7 @@ public class r_RowDAO extends DAO implements IRowDAO {
 
         Bson projection = fields(include(CellDocument.ATTR_KEY__ROW_ID));
 
-        PerformanceLogger performanceLogger = new PerformanceLogger(log, "[getIdsOfRowsThatMatch()] cellDAO.get(" + query.toString() + ")", true);
+        PerformanceLogger performanceLogger = new PerformanceLogger(log, "[getIdsOfRowsThatMatch()] cellDAO.get(" + DAOUtilities.toJSON(query) + ")");
         List<Document> documents = cellDAO.get(query, projection);
         performanceLogger.done();
         log.info("[RESULTS] results.size() = " + documents.size() +
@@ -341,7 +341,7 @@ public class r_RowDAO extends DAO implements IRowDAO {
         Bson projection = fields(include(
                 CellDocument.ATTR_KEY__ROW_ID));
 
-        PerformanceLogger performanceLogger = new PerformanceLogger(log, "[rowMatchesTheCriterion()] cellDAO.getOne(" + query.toString() + ")", true);
+        PerformanceLogger performanceLogger = new PerformanceLogger(log, "[rowMatchesTheCriterion()] cellDAO.getOne(" + DAOUtilities.toJSON(query) + ")");
         Document document = cellDAO.getOne(query, projection);
         performanceLogger.done();
 

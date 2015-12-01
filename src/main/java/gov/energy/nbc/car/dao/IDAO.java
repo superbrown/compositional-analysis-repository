@@ -16,6 +16,8 @@ public interface IDAO {
 
     ObjectId add(Object model);
 
+    void addMany(List<Document> models);
+
     Document getOne(Bson filter);
 
     Document getOne(Bson filter, Bson projection);

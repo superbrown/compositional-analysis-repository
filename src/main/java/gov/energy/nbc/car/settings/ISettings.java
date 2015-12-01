@@ -24,4 +24,8 @@ public interface ISettings {
     String[] getDefaultSetOfDataCategories();
 
     void setDefaultSetOfDataCategories(String[] defaultSetOfDataCategories);
+
+    boolean getPerformanceLoggingEnabled();
+
+    void setPerformanceLoggingEnabled(Boolean performanceLoggingEnabled);
 }

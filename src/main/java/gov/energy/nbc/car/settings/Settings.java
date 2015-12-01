@@ -31,14 +31,8 @@ public class Settings implements ISettings {
     @Value("${defaultSetOfDataCategories}")
     private String[] defaultSetOfDataCategories;
 
-    public Settings(ISettings settings) {
-
-        this.mongoDbHost = settings.getMongoDbHost();
-        this.mongoDbPort = settings.getMongoDbPort();
-        this.mongoDatabaseName = settings.getMongoDatabaseName();
-        this.rootDirectoryForUploadedDataFiles = settings.getRootDirectoryForUploadedDataFiles();
-        this.defaultSetOfDataCategories = settings.getDefaultSetOfDataCategories();
-    }
+    @Value("${performanceLoggingEnabled}")
+    private boolean performanceLoggingEnabled;
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
@@ -112,5 +106,15 @@ public class Settings implements ISettings {
     @Override
     public void setDefaultSetOfDataCategories(String[] defaultSetOfDataCategories) {
         this.defaultSetOfDataCategories = defaultSetOfDataCategories;
+    }
+
+    @Override
+    public boolean getPerformanceLoggingEnabled() {
+        return this.performanceLoggingEnabled;
+    }
+
+    @Override
+    public void setPerformanceLoggingEnabled(Boolean performanceLoggingEnabled) {
+        this.performanceLoggingEnabled = performanceLoggingEnabled;
     }
 }

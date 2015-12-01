@@ -13,6 +13,8 @@ public abstract class TestUsingTestData {
     public static final String[] DEFAULT_SET_OF_DATA_CATEGORIES = new String[] {"Algea", "ATP3", "Biomas"};
 
     private AppSingleton appSingleton;
+
+    protected abstract AppSingleton createAppSingleton(Settings settings);
     {
         Settings settings = new Settings();
 
@@ -21,11 +23,13 @@ public abstract class TestUsingTestData {
         settings.setMongoDatabaseName("car_forUnitTestingPurposes");
         settings.setRootDirectoryForUploadedDataFiles("target/test-classes");
         settings.setDefaultSetOfDataCategories(DEFAULT_SET_OF_DATA_CATEGORIES);
+        settings.setPerformanceLoggingEnabled(false);
 
         appSingleton = createAppSingleton(settings);
     }
 
-    protected abstract AppSingleton createAppSingleton(Settings settings);
+    public TestUsingTestData() {
+    }
 
     public AppSingleton getAppSingleton() {
         return appSingleton;

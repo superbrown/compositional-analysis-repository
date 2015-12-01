@@ -12,4 +12,9 @@ public class m_PerformanceTest extends AbsPerformanceTest
 
         return new AppSingleton(settings, new m_BusinessObjects(settings));
     }
+
+    @Override
+    public void testPerformance() {
+        // do nothing
+    }
 }

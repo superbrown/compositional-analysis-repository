@@ -62,9 +62,9 @@ public class s_RowDAO extends DAO implements IRowDAO {
                     metadata,
                     row);
 
-            PerformanceLogger performanceLogger = new PerformanceLogger(log, "insert(rowDocument)");
+//            PerformanceLogger performanceLogger = new PerformanceLogger(log, "insert(rowDocument)");
             ObjectId rowId = add(rowDocument);
-            performanceLogger.done();
+//            performanceLogger.done();
 
             rowIds.add(rowId);
 
@@ -172,7 +172,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
             dataColumnNamesToIncludedInQueryResults.add(searchCriterion.getName());
         }
 
-        List<Document> rows = getRows(matchingRowIds, dataColumnNamesToIncludedInQueryResults);
+        List<Document> rows = getRowWithIds(matchingRowIds, dataColumnNamesToIncludedInQueryResults);
 
         return rows;
     }
@@ -197,9 +197,11 @@ public class s_RowDAO extends DAO implements IRowDAO {
         return results;
     }
 
-    protected List<Document> getRows(Set<ObjectId> matchingIds, Set<String> dataColumnNamesToIncludedInQueryResults) {
+    protected List<Document> getRowWithIds(Set<ObjectId> rowIds, Set<String> dataColumnNamesToIncludedInQueryResults) {
 
         List<String> attributesToInclude = new ArrayList<>();
+
+        // mandatory
         attributesToInclude.add(RowDocument.ATTR_KEY__ID);
         attributesToInclude.add(RowDocument.ATTR_KEY__DATASET_ID);
         attributesToInclude.add(RowDocument.ATTR_KEY__METADATA);
@@ -213,21 +215,18 @@ public class s_RowDAO extends DAO implements IRowDAO {
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "getting rows for the matching IDs");
 
-        List<Document> results = new ArrayList();
-        for (ObjectId matchingId : matchingIds) {
+        Bson query = in(RowDocument.ATTR_KEY__ID, rowIds);
 
-            Document document = getOne(matchingId, projection);
+        List<Document> results = get(query, projection);
 
+        for (Document document : results) {
             Document data = (Document) document.get(RowDocument.ATTR_KEY__DATA);
             convertFieldNamesToClientSideFieldNames(data);
-
-            results.add(document);
         }
 
-        performanceLogger.done();
-        log.info("[RESULTS] results.size() = " + results.size() +
-                ", row.count() = " + getCount() +
-                ", cell.count() = " + cellDAO.getCollection().count());
+        performanceLogger.done("[RESULTS] results.size(): " + results.size() +
+                ", row.count():" + getCount() +
+                ", cell.count():" + cellDAO.getCollection().count());
 
         return results;
     }
@@ -253,18 +252,16 @@ public class s_RowDAO extends DAO implements IRowDAO {
 
         PerformanceLogger performanceLogger = new PerformanceLogger(
                 log,
-                "[getIdsOfRowsInSubsetThatMatch()] cellDAO.get(" + query.toString() + ")",
-                true);
-        List<Document> results = cellDAO.get(query, projection);
+                "[getIdsOfRowsInSubsetThatMatch()] cellDAO.get(" + DAOUtilities.toJSON(query) + ")"
+        );
 
-        Set<ObjectId> matchingIds = new HashSet();
-        for (Document document : results) {
-            matchingIds.add((ObjectId) document.get(CellDocument.ATTR_KEY__ROW_ID));
-        }
+        List<Document> documents = cellDAO.get(query, projection);
 
-        performanceLogger.done();
+        performanceLogger.done("[RESULTS] results.size(): " + documents.size() +
+                ", row.count():" + getCount() +
+                ", cell.count():" + cellDAO.getCollection().count());
 
-        return matchingIds;
+        return toSetOfRowIds(documents);
     }
 
     public long getCountOfCellsThatMatch(SearchCriterion searchCriterion) {
@@ -285,10 +282,12 @@ public class s_RowDAO extends DAO implements IRowDAO {
 
         PerformanceLogger performanceLogger = new PerformanceLogger(
                 log,
-                "[getCountOfRowsThatMatch()] cellDAO.getCollection().count(" + query.toString() + ")",
-                true);
+                "[getCountOfRowsThatMatch()] cellDAO.getCollection().count(" + DAOUtilities.toJSON(query) + ")"
+        );
         long count = cellDAO.getCollection().count(query);
-        performanceLogger.done();
+        performanceLogger.done("[RESULTS] count: " + count +
+                ", row.count():" + getCount() +
+                ", cell.count():" + cellDAO.getCollection().count());
 
         return count;
     }
@@ -308,12 +307,13 @@ public class s_RowDAO extends DAO implements IRowDAO {
 
         Bson projection = fields(include(CellDocument.ATTR_KEY__ROW_ID));
 
-        PerformanceLogger performanceLogger = new PerformanceLogger(log, "[getIdsOfRowsThatMatch()] cellDAO.get(" + query.toString() + ")", true);
+        PerformanceLogger performanceLogger = new PerformanceLogger(log, "[getIdsOfRowsThatMatch()] cellDAO.get(" + DAOUtilities.toJSON(query) + ")");
+
         List<Document> documents = cellDAO.get(query, projection);
-        performanceLogger.done();
-        log.info("[RESULTS] results.size() = " + documents.size() +
-                ", row.count() = " + getCount() +
-                ", cell.count() = " + cellDAO.getCollection().count());
+
+        performanceLogger.done("[RESULTS] results.size(): " + documents.size() +
+                ", row.count():" + getCount() +
+                ", cell.count():" + cellDAO.getCollection().count());
 
         return toSetOfRowIds(documents);
     }
@@ -340,7 +340,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
         Bson projection = fields(include(
                 CellDocument.ATTR_KEY__ROW_ID));
 
-        PerformanceLogger performanceLogger = new PerformanceLogger(log, "[rowMatchesTheCriterion()] cellDAO.getOne(" + query.toString() + ")", true);
+        PerformanceLogger performanceLogger = new PerformanceLogger(log, "[rowMatchesTheCriterion()] cellDAO.getOne(" + DAOUtilities.toJSON(query) + ")");
         Document document = cellDAO.getOne(query, projection);
         performanceLogger.done();
 
