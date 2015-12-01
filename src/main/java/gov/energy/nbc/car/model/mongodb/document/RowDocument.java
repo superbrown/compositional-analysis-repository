@@ -1,14 +1,15 @@
 package gov.energy.nbc.car.model.mongodb.document;
 
-import gov.energy.nbc.car.model.mongodb.AbstractDocument;
 import gov.energy.nbc.car.model.IMetadata;
 import gov.energy.nbc.car.model.IRow;
+import gov.energy.nbc.car.model.IRowDocument;
+import gov.energy.nbc.car.model.mongodb.AbstractDocument;
 import gov.energy.nbc.car.model.mongodb.common.Metadata;
 import gov.energy.nbc.car.model.mongodb.common.Row;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-public class RowDocument extends AbstractDocument implements gov.energy.nbc.car.model.IRowDocument {
+public class RowDocument extends AbstractDocument implements IRowDocument {
 
     public static final String ATTR_KEY__DATASET_ID = "datasetId";
     public static final String ATTR_KEY__METADATA = "metadata";

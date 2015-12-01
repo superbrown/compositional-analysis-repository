@@ -79,6 +79,12 @@ public abstract class DAO implements IDAO, IMongodbDAO {
         return objectId;
     }
 
+    @Override
+    public void addMany(List<Document> models) {
+
+        getCollection().insertMany(models);
+    }
+
 
     @Override
     public Document getOne(Bson filter) {

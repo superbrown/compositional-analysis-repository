@@ -12,11 +12,23 @@ public class PerformanceLogger {
     public long startTime;
     public long endTime;
 
-    public boolean DISABLED = true;
+    protected static boolean ENABLED = false;
+
+    public static void disable() {
+        ENABLED = false;
+    }
+
+    public static void enable() {
+        ENABLED = true;
+    }
+
+    public static boolean isEnabled() {
+        return ENABLED == false;
+    }
 
     public PerformanceLogger(Logger log, String label) {
 
-        if (DISABLED) return;
+        if (ENABLED == false) return;
 
         this.log = log;
 
@@ -27,37 +39,23 @@ public class PerformanceLogger {
 
     }
 
-    public PerformanceLogger(Logger log, String label, boolean force) {
-
-        this.log = log;
-
-        if (force) DISABLED = false;
-        if (DISABLED) return;
-
-        this.label = label;
-
-//        log.info("[BEGIN] " + label);
-        startTime = new Date().getTime();
-
-    }
-
     public void done() {
 
-        if (DISABLED) return;
+        if (ENABLED == false) return;
 
         endTime = new Date().getTime();
         log.info("[END]   " + label + "," +
-                " duration: " + (endTime - startTime) + " miliseconds (" + ((endTime - startTime) / 1000) + " seconds) ");
+                " duration: " + (endTime - startTime) + " ms (" + ((endTime - startTime) / 1000) + " sec) ");
     }
 
 
     public void done(String comment) {
 
-        if (DISABLED) return;
+        if (ENABLED == false) return;
 
         endTime = new Date().getTime();
         log.info("[END]   " + label + "," +
-                " duration: " + (endTime - startTime) + " miliseconds (" + ((endTime - startTime) / 1000) + " seconds) " +
+                " duration: " + (endTime - startTime) + " ms (" + ((endTime - startTime) / 1000) + " sec) " +
                 comment);
     }
 }

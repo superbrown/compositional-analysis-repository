@@ -73,11 +73,11 @@ public class DataCategoryDocument extends AbstractDocument implements IDataCateg
     public Set<String> getColumnNames() {
 
         Set columnNames = (Set) get(ATTR_KEY__COLUMN_NAMES);
-        Set<String> decodedColumnNames = convertToClientSideFieldNames(columnNames);
+        Set<String> decodedColumnNames = convertFieldNamesToClientSideFieldNamess(columnNames);
         return decodedColumnNames;
     }
 
-    protected Set<String> convertToClientSideFieldNames(Set<String> columnNames) {
+    protected Set<String> convertFieldNamesToClientSideFieldNamess(Set<String> columnNames) {
 
         Set<String> decodedColumnNames = new HashSet<>();
 

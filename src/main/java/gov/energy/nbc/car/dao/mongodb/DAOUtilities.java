@@ -6,6 +6,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.util.JSON;
 import gov.energy.nbc.car.dao.dto.ComparisonOperator;
+import gov.energy.nbc.car.utilities.PerformanceLogger;
+import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -18,11 +20,19 @@ import static gov.energy.nbc.car.dao.dto.ComparisonOperator.*;
 
 public class DAOUtilities {
 
+    private static Logger log = Logger.getLogger(DAOUtilities.class);
+
     public static List<Document> get(MongoCollection<Document> collection, Bson query) {
 
         try {
+            PerformanceLogger performanceLogger = new PerformanceLogger(log, "= = = = = = [MONGO] find(query)");
             FindIterable<Document> resultsCursor = collection.find(query);
+            performanceLogger.done();
+
+            performanceLogger = new PerformanceLogger(log, "= = = = = = toList(resultsCursor)");
             List<Document> results = toList(resultsCursor);
+            performanceLogger.done();
+
             return results;
 
         } catch (Throwable e) {
@@ -39,8 +49,14 @@ public class DAOUtilities {
         }
 
         try {
+            PerformanceLogger performanceLogger = new PerformanceLogger(log, "= = = = = = [MONGO] find(query)");
             FindIterable<Document> resultsCursor = collection.find(query).projection(projection);
+            performanceLogger.done();
+
+            performanceLogger = new PerformanceLogger(log, "= = = = = = toList(resultsCursor)");
             List<Document> results = toList(resultsCursor);
+            performanceLogger.done();
+
             return results;
 
         } catch (Throwable e) {
@@ -51,12 +67,16 @@ public class DAOUtilities {
 
     public static Document getOne(MongoCollection<Document> collection, Bson query, Bson projection) {
 
+        PerformanceLogger performanceLogger = new PerformanceLogger(log, "= = = = = = [MONGO] find(query).projection(projection).limit(-1)");
         FindIterable<Document> resultsCursor = collection.find(query).projection(projection).
                 // If the number is negative, the database will return that number and close the cursor.
                 // From: https://docs.mongodb.org/manual/reference/mongodb-wire-protocol/
                         limit(-1);
+        performanceLogger.done();
 
+        performanceLogger = new PerformanceLogger(log, "= = = = = = toList(resultsCursor)");
         List<Document> results = toList(resultsCursor);
+        performanceLogger.done();
 
         if (results.size() != 0) {
             return results.get(0);
@@ -88,15 +108,17 @@ public class DAOUtilities {
     public static List<Document> toList(FindIterable<Document> resultsCursor) {
 
         MongoCursor<Document> resultsIterator = resultsCursor.iterator();
-        List<Document> results = toList(resultsIterator);
-        return results;
-    }
 
-    public static List<Document> toList(Iterable<Document> resultsCursor) {
+        List<Document> list = new ArrayList<>();
 
-        Iterator<Document> resultsIterator = resultsCursor.iterator();
-        List<Document> results = toList(resultsIterator);
-        return results;
+        if (resultsIterator.hasNext() != false) {
+
+            while (resultsIterator.hasNext()) {
+                list.add(resultsIterator.next());
+            }
+        }
+
+        return list;
     }
 
     private static List<Document> toList(Iterator<Document> resultsIterator) {
@@ -114,24 +136,13 @@ public class DAOUtilities {
         return list;
     }
 
-    public static List<Document> toList(MongoCursor<Document> resultsIterator) {
-
-        List<Document> list = new ArrayList<>();
-
-        if (resultsIterator.hasNext() == false) {
-            return list;
-        }
-
-        while (resultsIterator.hasNext()) {
-            list.add(resultsIterator.next());
-        }
-
-        return list;
-    }
-
     public static String serialize(Object object) {
 
-        return JSON.serialize(object);
+        try {
+            return JSON.serialize(object);
+        } catch (RuntimeException e) {
+            return object.toString();
+        }
     }
 
     public static Object parse(String json) {
@@ -149,7 +160,10 @@ public class DAOUtilities {
         return parse(json);
     }
 
-    public static Bson toCriterion(String name, Object value, ComparisonOperator comparisonOperator) {
+    public static Bson toCriterion(
+            String name,
+            Object value,
+            ComparisonOperator comparisonOperator) {
 
         Bson criterion;
 

@@ -117,8 +117,7 @@ public abstract class AbsRowBO implements IRowBO {
     public String getRowAssociatedWithDataset(String datasetId) {
 
         Document idFilter = new Document().append(
-                RowDocument.ATTR_KEY__DATASET_ID, new
-                ObjectId(datasetId));
+                RowDocument.ATTR_KEY__DATASET_ID, new ObjectId(datasetId));
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "getRows(testMode).query(" + idFilter.toJson() + ")");
         List<Document> rowDocuments = getRowDAO().get(idFilter, null);

@@ -2,7 +2,6 @@ package gov.energy.nbc.car.restEndpoint;
 
 import gov.energy.nbc.car.app.AppSingleton;
 import gov.energy.nbc.car.bo.IRowBO;
-import gov.energy.nbc.car.app.TestMode;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +22,9 @@ public class Endpoints_Rows {
 
     @RequestMapping(value="/api/rows", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity getRows(
-            @RequestBody String query,
-            @RequestParam(value = "inTestMode", required = false) String testMode) {
+            @RequestBody String query) {
 
-        String rows = getiRowBO(testMode).getRows(query);
+        String rows = getiRowBO().getRows(query);
 
         if (rows == null) {
             return create_NOT_FOUND_response();
@@ -37,10 +35,9 @@ public class Endpoints_Rows {
 
     @RequestMapping(value="/api/row/{rowId}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getRow(
-            @PathVariable(value = "rowId") String rowId,
-            @RequestParam(value = "inTestMode", required = false) String testMode) {
+            @PathVariable(value = "rowId") String rowId) {
 
-        String row = getiRowBO(testMode).getRow(rowId);
+        String row = getiRowBO().getRow(rowId);
 
         if (row == null) {
             return create_NOT_FOUND_response();
@@ -50,8 +47,8 @@ public class Endpoints_Rows {
     }
 
 
-    protected IRowBO getiRowBO(@RequestParam(value = "inTestMode", required = false) String testMode) {
+    protected IRowBO getiRowBO() {
 
-        return appSingleton.getBusinessObjects(TestMode.value(testMode)).getRowBO();
+        return appSingleton.getBusinessObjects().getRowBO();
     }
 }

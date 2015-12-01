@@ -2,7 +2,6 @@ package gov.energy.nbc.car.bo.mongodb;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.util.JSON;
-import gov.energy.nbc.car.app.AbsAppConfig;
 import gov.energy.nbc.car.bo.IRowBO;
 import gov.energy.nbc.car.dao.dto.ComparisonOperator;
 import gov.energy.nbc.car.dao.dto.SearchCriterion;
@@ -27,8 +26,6 @@ import static org.junit.Assert.fail;
 public abstract class AbsRowBOTest extends TestUsingTestData
 {
     Logger log = Logger.getLogger(getClass());
-
-    AbsAppConfig appConfig;
 
     @BeforeClass
     public static void beforeClass() {

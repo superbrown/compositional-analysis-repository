@@ -2,7 +2,6 @@ package gov.energy.nbc.car.restEndpoint;
 
 import gov.energy.nbc.car.app.AppSingleton;
 import gov.energy.nbc.car.bo.IDataCategoryBO;
-import gov.energy.nbc.car.app.TestMode;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +21,9 @@ public class Endpoints_DataCategories {
 
     @RequestMapping(value="/api/dataCategory/{dataCategoryId}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getDataCategory(
-            @PathVariable(value = "dataCategoryId") String dataCategoryId,
-            @RequestParam(value = "inTestMode", required = false) String testMode) {
+            @PathVariable(value = "dataCategoryId") String dataCategoryId) {
 
-        String dataCategory = getDataCategoryBO(testMode).getDataCategory(
+        String dataCategory = getDataCategoryBO().getDataCategory(
                 dataCategoryId);
 
         if (dataCategory == null) {
@@ -37,10 +35,9 @@ public class Endpoints_DataCategories {
 
     @RequestMapping(value="/api/dataCategory", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getDataCategoryByName(
-            @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName,
-            @RequestParam(value = "inTestMode", required = false) String testMode) {
+            @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName) {
 
-        String dataCategory = getDataCategoryBO(testMode).getDataCategoryWithName(
+        String dataCategory = getDataCategoryBO().getDataCategoryWithName(
                 dataCategoryName);
 
         if (dataCategory == null) {
@@ -52,10 +49,9 @@ public class Endpoints_DataCategories {
 
     @RequestMapping(value="/api/dataCategory/columnNames", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getColumnNamesForDataCategoryName(
-            @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName,
-            @RequestParam(value = "inTestMode", required = false) String testMode) {
+            @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName) {
 
-        String columnNamesForDataCategoryName = getDataCategoryBO(testMode).getColumnNamesForDataCategoryName(
+        String columnNamesForDataCategoryName = getDataCategoryBO().getColumnNamesForDataCategoryName(
                 dataCategoryName);
 
         if (columnNamesForDataCategoryName == null) {
@@ -67,9 +63,9 @@ public class Endpoints_DataCategories {
 
     @RequestMapping(value="/api/dataCategory/names/all", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getAllDataCategoryNames(
-            @RequestParam(value = "inTestMode", required = false) String testMode) {
+            ) {
 
-        String dataCategoryNames = getDataCategoryBO(testMode).getAllDataCategoryNames(
+        String dataCategoryNames = getDataCategoryBO().getAllDataCategoryNames(
         );
 
         if (dataCategoryNames == null) {
@@ -81,9 +77,9 @@ public class Endpoints_DataCategories {
 
     @RequestMapping(value="/api/dataCategories/all", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getDataCategoryByName(
-            @RequestParam(value = "inTestMode", required = false) String testMode) {
+            ) {
 
-        String dataCategory = getDataCategoryBO(testMode).getAllDataCategories(
+        String dataCategory = getDataCategoryBO().getAllDataCategories(
         );
 
         if (dataCategory == null) {
@@ -94,8 +90,8 @@ public class Endpoints_DataCategories {
     }
 
 
-    protected IDataCategoryBO getDataCategoryBO(@RequestParam(value = "inTestMode", required = false) String testMode) {
+    protected IDataCategoryBO getDataCategoryBO() {
 
-        return appSingleton.getBusinessObjects(TestMode.value(testMode)).getDataCategoryBO();
+        return appSingleton.getBusinessObjects().getDataCategoryBO();
     }
 }

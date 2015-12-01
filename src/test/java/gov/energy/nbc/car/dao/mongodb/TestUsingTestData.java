@@ -1,33 +1,38 @@
 package gov.energy.nbc.car.dao.mongodb;
 
-import gov.energy.nbc.car.app.AbsAppConfig;
-import gov.energy.nbc.car.settings.Settings;
+import gov.energy.nbc.car.app.AppSingleton;
 import gov.energy.nbc.car.bo.IBusinessObjects;
 import gov.energy.nbc.car.bo.ITestDataBO;
-import gov.energy.nbc.car.app.TestMode;
+import gov.energy.nbc.car.settings.Settings;
 
 public abstract class TestUsingTestData {
 
     static public boolean SUSPEND_DATA_SEEDING = false;
     static public boolean SUSPEND_DATA_CLEANUP = false;
 
-    private AbsAppConfig appConfig;
+    public static final String[] DEFAULT_SET_OF_DATA_CATEGORIES = new String[] {"Algea", "ATP3", "Biomas"};
+
+    private AppSingleton appSingleton;
+
+    protected abstract AppSingleton createAppSingleton(Settings settings);
     {
         Settings settings = new Settings();
 
         settings.setMongoDbHost("localhost");
         settings.setMongoDbPort("27017");
-        settings.setMongoDatabaseName("car");
+        settings.setMongoDatabaseName("car_forUnitTestingPurposes");
         settings.setRootDirectoryForUploadedDataFiles("target/test-classes");
-        settings.setDefaultSetOfDataCategories(AbsAppConfig.DEFAULT_SET_OF_DATA_CATEGORIES);
+        settings.setDefaultSetOfDataCategories(DEFAULT_SET_OF_DATA_CATEGORIES);
+        settings.setPerformanceLoggingEnabled(false);
 
-        appConfig = createAppConfig(settings);
+        appSingleton = createAppSingleton(settings);
     }
 
-    protected abstract AbsAppConfig createAppConfig(Settings settings);
+    public TestUsingTestData() {
+    }
 
-    public AbsAppConfig getAppConfig() {
-        return appConfig;
+    public AppSingleton getAppSingleton() {
+        return appSingleton;
     }
 
     public static void beforeClass() {
@@ -49,7 +54,7 @@ public abstract class TestUsingTestData {
 
     protected IBusinessObjects getBusinessObjects() {
 
-        return getAppConfig().getBusinessObjects(TestMode.TEST_MODE);
+        return getAppSingleton().getBusinessObjects();
     }
 
     public void after() {

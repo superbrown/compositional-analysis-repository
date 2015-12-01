@@ -1,6 +1,5 @@
 package gov.energy.nbc.car.bo.mongodb.multipleCellSchemaApproach;
 
-import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.PhysicalFileBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
@@ -9,7 +8,7 @@ import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
 import gov.energy.nbc.car.dao.exception.UnableToDeleteFile;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
-import gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach.m_DatasetDAO;
+import gov.energy.nbc.car.dao.mongodb.multipleCellCollectionsApproach.m_DatasetDAO;
 import gov.energy.nbc.car.model.IDatasetDocument;
 import gov.energy.nbc.car.model.IMetadata;
 import gov.energy.nbc.car.model.IRowCollection;
@@ -17,6 +16,7 @@ import gov.energy.nbc.car.model.IStoredFile;
 import gov.energy.nbc.car.model.mongodb.common.Metadata;
 import gov.energy.nbc.car.model.mongodb.common.StoredFile;
 import gov.energy.nbc.car.model.mongodb.document.DatasetDocument;
+import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
 import gov.energy.nbc.car.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nbc.car.utilities.fileReader.IDatasetReader_AllFileTypes;
