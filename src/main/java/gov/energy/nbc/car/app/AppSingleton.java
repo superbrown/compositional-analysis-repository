@@ -24,6 +24,9 @@ public class AppSingleton {
 
     protected IBusinessObjects businessObjects;
 
+    public AppSingleton() {
+    }
+
     public AppSingleton(ISettings settings, IBusinessObjects businessObjects) {
 
         this.settings = settings;
