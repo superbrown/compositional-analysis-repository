@@ -11,9 +11,10 @@
     </select>
     <br/>
 
-    <legend>Search Criteria</legend>
-
     <div ng-hide="dataCategory === ''">
+
+      <legend>Search Criteria</legend>
+
       <select name="columnName" id="columnName" ng-model="columnName"
               ng-options="knownColumnName as knownColumnName for knownColumnName in knownDataCategoryColumnNames">
       </select>
@@ -47,6 +48,15 @@
               <input ng-model="value_asBoolean" required type="text" style="background-color: #9999FF"/>
             </span>
 
+              <br/>
+              <br/>
+              <button class="btn btn-default" ng-click="handleSearchSubmission()">
+                Search
+              </button>
+  <!--<div style="float: bottom; clear: both">-->
+    <!--<a href="#" class="btn btn-default" ng-click="handleSearchSubmission()">Search</a>-->
+  <!--</div>-->
+
           </span>
 
         </span>
@@ -54,17 +64,34 @@
       </span>
 
       <br/>
-      <div>Criterion: {{columnName}} <i>{{comparisonOperatorId}}</i> {{value_asDate}} </div>
+      <br/>
+      <!--<div>Criterion: {{columnName}} <i>{{comparisonOperatorId}}</i> {{value_asDate}} </div>-->
     </div>
   </div>
 
-
-  <!--<div style="float: bottom; clear: both">-->
-    <a href="#" class="btn btn-default" ng-click="handleSearchSubmission()">Search</a>
+  <!--<div ng-controller="DashboardController as vm">-->
+    <!--<h1>Dashboard</h1>-->
+    <!--<p>{{vm.title}}</p>-->
+    <!--<div ng-repeat="row in searchResults">-->
+      <!--<div ng-repeat="col in row">-->
+        <!--<div>{{row[col]}}</div>-->
+      <!--</div>-->
+    <!--</div>-->
   <!--</div>-->
 
-  <div>
-    {{searchResults}}
-  </div>
+  <div class="gridStyle" ng-grid="searchResults">
+
+  <table>
+    <tr ng-repeat="searchResult in searchResults">
+      <td ng-repeat="cell in searchResult.metadata">
+        {{cell}}
+      </td>
+    </tr>
+  </table>
+
+
+  <!--<div>-->
+    <!--{{searchResults}}-->
+  <!--</div>-->
 
 </div>

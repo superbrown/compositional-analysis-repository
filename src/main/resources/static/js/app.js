@@ -131,6 +131,7 @@ drApp.controller('findDataController',
 
             $scope.handleSearchSubmission = function() {
                 restService.findData($scope, $http);
+//                console.info("I'm here!")
             }
 
             // init
