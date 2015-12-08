@@ -15,16 +15,6 @@ import java.util.List;
 
 public class Metadata extends AbstractDocument implements IMetadata {
 
-    public static final String ATTR_KEY__SAMPLE_TYPE = "_dataCategory";
-    public static final String ATTR_KEY__SUBMISSION_DATE = "_submissionDate";
-    public static final String ATTR_KEY__SUBMITTER = "_submitter";
-    public static final String ATTR_KEY__CHARGE_NUMBER = "_chargeNumber";
-    public static final String ATTR_KEY__PROJECT_NAME = "_projectName";
-    public static final String ATTR_KEY__COMMENTS = "_comments";
-    public static final String ATTR_KEY__UPLOADED_FILE = "_uploadedFile";
-    public static final String ATTR_KEY__ATTACHMENTS = "_attachments";
-
-
     public Metadata() {
         super();
     }
@@ -68,7 +58,7 @@ public class Metadata extends AbstractDocument implements IMetadata {
                       IStoredFile uploadedFile,
                       List<IStoredFile> attachments) {
 
-        put(ATTR_KEY__SAMPLE_TYPE, dataCategory);
+        put(ATTR_KEY__DATA_CATEGORY, dataCategory);
         put(ATTR_KEY__SUBMISSION_DATE, submissionDate);
         put(ATTR_KEY__SUBMITTER, submitter);
         put(ATTR_KEY__CHARGE_NUMBER, chargeNumber);
@@ -95,7 +85,7 @@ public class Metadata extends AbstractDocument implements IMetadata {
 
         initObjectId(document);
 
-        String dataCategory = (String) document.get(ATTR_KEY__SAMPLE_TYPE);
+        String dataCategory = (String) document.get(ATTR_KEY__DATA_CATEGORY);
         Date submissionDate = (Date) document.get(ATTR_KEY__SUBMISSION_DATE);
         String submitter = (String) document.get(ATTR_KEY__SUBMITTER);
         String chargeNumber = (String) document.get(ATTR_KEY__CHARGE_NUMBER);
@@ -135,7 +125,7 @@ public class Metadata extends AbstractDocument implements IMetadata {
     }
 
     private void verifyRequiredFieldsAreSet() {
-        verify(StringUtils.isNotBlank((String)this.get(ATTR_KEY__SAMPLE_TYPE)), "dataCategory is blank");
+        verify(StringUtils.isNotBlank((String)this.get(ATTR_KEY__DATA_CATEGORY)), "dataCategory is blank");
         verify(this.get(ATTR_KEY__UPLOADED_FILE) != null, "datasetPath is blank");
     }
 
@@ -144,7 +134,7 @@ public class Metadata extends AbstractDocument implements IMetadata {
     }
 
     @Override
-    public String getDataCategory() { return (String) get(ATTR_KEY__SAMPLE_TYPE); }
+    public String getDataCategory() { return (String) get(ATTR_KEY__DATA_CATEGORY); }
     @Override
     public Date getSubmissionDate() { return (Date) get(ATTR_KEY__SUBMISSION_DATE); }
     @Override
@@ -162,7 +152,7 @@ public class Metadata extends AbstractDocument implements IMetadata {
 
 
     @Override
-    public String setDataCategory(String value) { return (String)  put(ATTR_KEY__SAMPLE_TYPE, value); }
+    public String setDataCategory(String value) { return (String)  put(ATTR_KEY__DATA_CATEGORY, value); }
     @Override
     public Date setSubmissionDate(Date value) { return (Date)  put(ATTR_KEY__SUBMISSION_DATE, value); }
     @Override
@@ -177,4 +167,16 @@ public class Metadata extends AbstractDocument implements IMetadata {
     public IStoredFile setUploadedFile(IStoredFile value) { return (IStoredFile)  put(ATTR_KEY__UPLOADED_FILE, value); }
     @Override
     public List<IStoredFile> setAttachments(List<IStoredFile> value) { return (List<IStoredFile>)  put(ATTR_KEY__ATTACHMENTS, value); }
+
+    public static boolean isAMetadataFieldName(String name) {
+
+        return ATTR_KEY__DATA_CATEGORY.equals(name) ||
+                ATTR_KEY__ATTACHMENTS.equals(name) ||
+                ATTR_KEY__CHARGE_NUMBER.equals(name) ||
+                ATTR_KEY__COMMENTS.equals(name) ||
+                ATTR_KEY__PROJECT_NAME.equals(name) ||
+                ATTR_KEY__SUBMISSION_DATE.equals(name) ||
+                ATTR_KEY__SUBMITTER.equals(name) ||
+                ATTR_KEY__UPLOADED_FILE.equals(name);
+    }
 }

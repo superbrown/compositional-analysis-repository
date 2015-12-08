@@ -16,4 +16,6 @@ public interface IBusinessObjects {
     IRowBO getRowBO();
 
     ITestDataBO getTestDataBO();
+
+    IDataTypeBO getDataTypeBO();
 }

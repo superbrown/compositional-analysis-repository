@@ -1,8 +1,13 @@
 
-// needed for the date picker widget
+// needed for the date picker widgets
 $(function() {
     $( "#submissionDate" ).datepicker();
 });
+
+$(function() {
+    $( "#value_asDate" ).datepicker();
+});
+
 
 function hasExcelWorkbookFileSuffix(str, fileName) {
     return (endsWith(fileName, ".xls") || endsWith(fileName, ".xlsx") || endsWith(fileName, ".xlsm")) == true;
@@ -14,48 +19,63 @@ function endsWith(str, suffix) {
 
 // A N G U L A R   s t u f f
 
-var angular_module = angular.module('angular_module', ['ngMessages', 'ngResource', 'ngRoute']);
+var drApp = angular.module('drApp', ['ngMessages', 'ngResource', 'ngRoute']);
 
-angular_module.config(function ($routeProvider) {
+drApp.config(function ($routeProvider) {
 
     $routeProvider
         .when('/uploadData',
         {
             templateUrl: 'pages/uploadData.html',
-            controller: 'angular_uploadController'
+            controller: 'uploadController'
         })
         .when('/findData',
         {
             templateUrl: 'pages/findData.html',
-            controller: 'angular_findDataController'
+            controller: 'findDataController'
         });
 });
 
-angular_module.controller('angular_uploadController',
+drApp.controller('menuController',
     [
-        '$scope', '$http', '$log', '$filter', '$resource', '$location',
-        function($scope, $http, $log, $filter, $resource, $location) {
+        '$scope', '$http', '$log', '$filter', '$resource', '$location', 'restService', 'globalValues',
+        function($scope, $http, $log, $filter, $resource, $location, restService, globalValues) {
 
-            $scope.dataCategory = '';
-            $scope.dataCategoryNames = '';
-            $scope.dataCategory_submissionDate = '';
-            $scope.dataCategory_submitter = '';
-            $scope.dataCategory_projectName = '';
-            $scope.dataCategory_chargeNumber = '';
-            $scope.dataCategory_comments = '';
+            $scope.dataCategory = globalValues.dataCategory;
+        }
+    ]
+);
+
+drApp.controller('uploadController',
+    [
+        '$scope', '$http', '$log', '$filter', '$resource', '$location', 'restService', 'globalValues',
+        function($scope, $http, $log, $filter, $resource, $location, restService, globalValues) {
+
+            $scope.knownDataCategories = '';
+
+            $scope.dataCategory = globalValues.dataCategory;
+            $scope.submissionDate = '';
+            $scope.submitter = '';
+            $scope.projectName = '';
+            $scope.chargeNumber = '';
+            $scope.comments = '';
             $scope.columnNames = '';
 
-            $scope.uploadData = function() {
+            $scope.$watch('dataCategory', function() {
+                globalValues.dataCategory = $scope.dataCategory;
+                restService.getKnownColumnNames($scope, $http);
+            });
+
+            $scope.uploadData = function () {
 
                 $http.post('/api/addDataset',
                     {
                         dataCategory: $scope.dataCategory,
-                        dataCategoryNames: $scope.dataCategoryNames,
-                        dataCategory_submissionDate: $scope.dataCategory_submissionDate,
-                        dataCategory_submitter: $scope.dataCategory_submitter,
-                        dataCategory_projectName: $scope.dataCategory_projectName,
-                        dataCategory_chargeNumber: $scope.dataCategory_chargeNumber,
-                        dataCategory_comments: $scope.dataCategory_comments
+                        submissionDate: $scope.submissionDate,
+                        submitter: $scope.submitter,
+                        projectName: $scope.projectName,
+                        chargeNumber: $scope.chargeNumber,
+                        comments: $scope.comments
                     }
                 )
                     .success(
@@ -64,157 +84,144 @@ angular_module.controller('angular_uploadController',
                     }
                 )
                     .error(
-                    function(data, status) {
+                    function (data, status) {
                         console.log(data);
                         alert("A failure occurred why attempting to ingest the data.");
                     }
                 );
             }
 
-            $scope.handleDataCategorySelection = function() {
-
-                $http.get('/api/dataCategory/columnNames',
-                    {
-                        dataCategoryName: $scope.dataCategory
-                    })
-                    .success(function (result) {
-
-                        $scope.columnNames = result;
-                    })
-                    .error(function(data, status) {
-
-                    });
-            }
-
-            $http.get('/api/dataCategory/names/all')
-                .success(function (result) {
-
-                    $scope.dataCategoryNames = result;
-                })
-                .error(function(data, status) {
-
-                });
-
-            var req = {
-                method: 'POST',
-                url: '/api/rows',
-                headers: {
-                    'Content-Type': undefined
-                },
-                data:
-                    [
-                        {name: 'Some Column Name', value: 4, comparisonOperator: 'EQUALS'},
-                        {name: 'Float Values Column Name', value: 4.55, comparisonOperator: 'EQUALS'},
-                        {name: 'Additional new Column Name 2', value: 'b4', comparisonOperator: 'EQUALS'},
-                        {name: '_submitter', value: 'Submitter 2', comparisonOperator: 'EQUALS'}
-                    ]
-            }
-
-            $http(req)
-                .success(function (result) {
-
-                    $scope.dataCategories = result;
-                })
-                .error(function(data, status) {
-
-                });
-
-
+            // init
+            restService.getKnownDataCategories($http, $scope);
         }
     ]
 );
 
-angular_module.controller('angular_findDataController',
+drApp.controller('findDataController',
     [
-        '$scope', '$http', '$log', '$filter', '$resource', '$location',
-        function($scope, $http, $log, $filter, $resource, $location) {
+        '$scope', '$http', '$log', '$filter', '$resource', '$location', 'restService', 'globalValues',
+        function($scope, $http, $log, $filter, $resource, $location, restService, globalValues) {
 
-            $scope.dataCategory = '';
-            $scope.dataCategoryNames = '';
-            $scope.dataCategory_submissionDate = '';
-            $scope.dataCategory_submitter = '';
-            $scope.dataCategory_projectName = '';
-            $scope.dataCategory_chargeNumber = '';
-            $scope.dataCategory_comments = '';
-            $scope.columnNames = '';
+            $scope.knownDataCategories = '';
+            $scope.knownDataCategoryColumnNames = '';
+            $scope.knownDataTypes = '';
+            $scope.knownComparisonOperators = '';
 
-            $scope.uploadData = function() {
+            $scope.dataCategory = globalValues.dataCategory;
 
-                $http.post('/api/addDataset',
-                    {
-                        dataCategory: $scope.dataCategory,
-                        dataCategoryNames: $scope.dataCategoryNames,
-                        dataCategory_submissionDate: $scope.dataCategory_submissionDate,
-                        dataCategory_submitter: $scope.dataCategory_submitter,
-                        dataCategory_projectName: $scope.dataCategory_projectName,
-                        dataCategory_chargeNumber: $scope.dataCategory_chargeNumber,
-                        dataCategory_comments: $scope.dataCategory_comments
-                    }
-                )
-                    .success(
-                    function (result) {
-                        alert("Data has been fully ingested.");
-                    }
-                )
-                    .error(
-                    function(data, status) {
-                        console.log(data);
-                        alert("A failure occurred why attempting to ingest the data.");
-                    }
-                );
+            $scope.columnName = '';
+            $scope.dataTypeId = '';
+            $scope.comparisonOperatorId = '';
+
+            $scope.value_asString = '';
+            $scope.value_asNumber = '';
+            $scope.value_asDate = '';
+            $scope.value_asBoolean = '';
+
+            $scope.searchResults = '';
+
+            $scope.$watch('dataCategory', function() {
+                globalValues.dataCategory = $scope.dataCategory;
+                restService.getKnownColumnNames($scope, $http);
+            });
+
+            $scope.$watch('dataTypeId', function() {
+                restService.getKnownComparisonOperators($scope, $http);
+            });
+
+            $scope.handleSearchSubmission = function() {
+                restService.findData($scope, $http);
+//                console.info("I'm here!")
             }
 
-            $scope.handleDataCategorySelection = function() {
-
-                $http.get('/api/dataCategory/columnNames',
-                    {
-                        dataCategoryName: $scope.dataCategory
-                    })
-                    .success(function (result) {
-
-                        $scope.columnNames = result;
-                    })
-                    .error(function(data, status) {
-
-                    });
-            }
-
-            $http.get('/api/dataCategory/names/all')
-                .success(function (result) {
-
-                    $scope.dataCategoryNames = result;
-                })
-                .error(function(data, status) {
-
-                });
-
-            var req = {
-                method: 'POST',
-                url: '/api/rows',
-                headers: {
-                    'Content-Type': undefined
-                },
-                data:
-                    [
-                        {name: 'Some Column Name', value: 4, comparisonOperator: 'EQUALS'},
-                        {name: 'Float Values Column Name', value: 4.55, comparisonOperator: 'EQUALS'},
-                        {name: 'Additional new Column Name 2', value: 'b4', comparisonOperator: 'EQUALS'},
-                        {name: '_submitter', value: 'Submitter 2', comparisonOperator: 'EQUALS'}
-                    ]
-            }
-
-            $http(req)
-                .success(function (result) {
-
-                    $scope.dataCategories = result;
-                })
-                .error(function(data, status) {
-
-                });
-
-
+            // init
+            restService.getKnownDataCategories($http, $scope);
+            restService.getKnownDataTypes($http, $scope);
         }
     ]
 );
 
+drApp.service('globalValues', function() {
+
+    this.dataCategory = '';
+});
+
+drApp.service('restService', function() {
+
+    this.getKnownDataCategories = function (http, scope) {
+
+        http.get('/api/dataCategory/names/all')
+            .success(function (result) {
+                scope.knownDataCategories = result;
+            })
+            .error(function (data, status) {
+                console.log(status + ': ' + data);
+            });
+    }
+
+    this.getKnownColumnNames = function (scope, http) {
+
+        if (scope.dataCategory === '') return;
+
+        http.get('/api/dataCategory/columnNames?dataCategoryName=' + scope.dataCategory)
+            .success(function (result) {
+                scope.knownDataCategoryColumnNames = result;
+            })
+            .error(function (data, status) {
+                console.log(status + ': ' + data);
+            });
+    }
+
+    this.getKnownDataTypes = function (http, scope) {
+
+        http.get('api/dataTypes/all')
+            .success(function (result) {
+                scope.knownDataTypes = result;
+            })
+            .error(function (data, status) {
+                console.log(status + ': ' + data);
+            });
+    }
+
+    this.getKnownComparisonOperators = function (scope, http) {
+
+        var dataTypeId = scope.dataTypeId;
+        if (dataTypeId === '') return;
+
+        http.get('api/dataType/comparisonOperators?dataType=' + dataTypeId)
+            .success(function (result) {
+                scope.knownComparisonOperators = result;
+            })
+            .error(function (data, status) {
+                console.log(status + ': ' + data);
+            });
+    }
+
+    this.findData = function ($scope, $http) {
+        var req = {
+            method: 'POST',
+            url: '/api/rows',
+            headers: {
+                'Content-Type': undefined
+            },
+            data: [
+                {
+                    'name': $scope.columnName,
+                    'comparisonOperator': $scope.comparisonOperatorId,
+                    'value': $scope.value_asString
+                }
+            ]
+        }
+
+        $http(req)
+            .success(function (result) {
+
+                $scope.searchResults = result;
+            })
+            .error(function (data, status) {
+
+            });
+    }
+
+})
 

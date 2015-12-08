@@ -11,9 +11,7 @@ import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static com.mongodb.client.model.Filters.*;
 import static gov.energy.nbc.car.dao.dto.ComparisonOperator.*;
@@ -193,5 +191,41 @@ public class DAOUtilities {
         }
 
         return criterion;
+    }
+
+    public static List<Document> toDocumentsWithClientSideFieldNames(List<Document> documents) {
+
+        List<Document> documentasWithClientSidFiledNames = new ArrayList();
+
+        for (Document document : documents) {
+            documentasWithClientSidFiledNames.add(toClientSideFieldNames(document));
+        }
+
+        return documentasWithClientSidFiledNames;
+    }
+
+    public static Document toClientSideFieldNames(Document document) {
+
+        Document clientSideFieldNames = new Document();
+
+        for (String key : document.keySet()) {
+
+            String clientSideName = MongoFieldNameEncoder.toClientSideFieldName(key);
+            clientSideFieldNames.put(clientSideName, document.get(key));
+        }
+
+        return clientSideFieldNames;
+    }
+
+    public static Set<String> toClientSideFieldNames(Set<String> columnNames) {
+
+        Set<String> clientSideFieldNames = new HashSet<>();
+
+        for (String columnName : columnNames) {
+
+            clientSideFieldNames.add(MongoFieldNameEncoder.toClientSideFieldName(columnName));
+        }
+
+        return clientSideFieldNames;
     }
 }

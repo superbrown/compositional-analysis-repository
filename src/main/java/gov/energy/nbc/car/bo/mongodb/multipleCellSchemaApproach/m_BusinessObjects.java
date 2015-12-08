@@ -1,5 +1,6 @@
 package gov.energy.nbc.car.bo.mongodb.multipleCellSchemaApproach;
 
+import gov.energy.nbc.car.bo.mongodb.DataTypeBO;
 import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.bo.AbsBusinessObjects;
 import gov.energy.nbc.car.bo.PhysicalFileBO;
@@ -19,5 +20,6 @@ public class m_BusinessObjects extends AbsBusinessObjects {
         dataCategoryBO = new DataCategoryBO(settings);
         physicalFileBO = new PhysicalFileBO(settings);
         testDataBO = new m_TestDataBO(settings);
+        dataTypeBO = new DataTypeBO();
     }
 }

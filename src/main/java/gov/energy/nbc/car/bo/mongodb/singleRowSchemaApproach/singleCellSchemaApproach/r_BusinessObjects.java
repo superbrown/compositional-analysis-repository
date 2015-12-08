@@ -3,6 +3,7 @@ package gov.energy.nbc.car.bo.mongodb.singleRowSchemaApproach.singleCellSchemaAp
 import gov.energy.nbc.car.bo.AbsBusinessObjects;
 import gov.energy.nbc.car.bo.PhysicalFileBO;
 import gov.energy.nbc.car.bo.mongodb.DataCategoryBO;
+import gov.energy.nbc.car.bo.mongodb.DataTypeBO;
 import gov.energy.nbc.car.settings.ISettings;
 
 public class r_BusinessObjects extends AbsBusinessObjects {
@@ -20,5 +21,6 @@ public class r_BusinessObjects extends AbsBusinessObjects {
         dataCategoryBO = new DataCategoryBO(settings);
         physicalFileBO = new PhysicalFileBO(settings);
         testDataBO = new r_TestDataBO(settings);
+        dataTypeBO = new DataTypeBO();
     }
 }

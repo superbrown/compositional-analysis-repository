@@ -1,6 +1,6 @@
 package gov.energy.nbc.car.dao.mongodb;
 
-import gov.energy.nbc.car.app.AppSingleton;
+import gov.energy.nbc.car.app.DataRepositoryApplication;
 import gov.energy.nbc.car.bo.IBusinessObjects;
 import gov.energy.nbc.car.bo.ITestDataBO;
 import gov.energy.nbc.car.settings.Settings;
@@ -8,31 +8,31 @@ import gov.energy.nbc.car.settings.Settings;
 public abstract class TestUsingTestData {
 
     static public boolean SUSPEND_DATA_SEEDING = false;
-    static public boolean SUSPEND_DATA_CLEANUP = false;
+    static public boolean SUSPEND_DATA_CLEANUP = true;
 
     public static final String[] DEFAULT_SET_OF_DATA_CATEGORIES = new String[] {"Algea", "ATP3", "Biomas"};
 
-    private AppSingleton appSingleton;
+    private DataRepositoryApplication dataRepositoryApplication;
 
-    protected abstract AppSingleton createAppSingleton(Settings settings);
+    protected abstract DataRepositoryApplication createAppSingleton(Settings settings);
     {
         Settings settings = new Settings();
 
         settings.setMongoDbHost("localhost");
         settings.setMongoDbPort("27017");
-        settings.setMongoDatabaseName("car_forUnitTestingPurposes");
+        settings.setMongoDatabaseName("car_s");
         settings.setRootDirectoryForUploadedDataFiles("target/test-classes");
         settings.setDefaultSetOfDataCategories(DEFAULT_SET_OF_DATA_CATEGORIES);
         settings.setPerformanceLoggingEnabled(false);
 
-        appSingleton = createAppSingleton(settings);
+        dataRepositoryApplication = createAppSingleton(settings);
     }
 
     public TestUsingTestData() {
     }
 
-    public AppSingleton getAppSingleton() {
-        return appSingleton;
+    public DataRepositoryApplication getDataRepositoryApplication() {
+        return dataRepositoryApplication;
     }
 
     public static void beforeClass() {
@@ -54,7 +54,7 @@ public abstract class TestUsingTestData {
 
     protected IBusinessObjects getBusinessObjects() {
 
-        return getAppSingleton().getBusinessObjects();
+        return getDataRepositoryApplication().getBusinessObjects();
     }
 
     public void after() {

@@ -13,6 +13,7 @@ import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.mongodb.MongoFieldNameEncoder;
 import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
 import gov.energy.nbc.car.model.*;
+import gov.energy.nbc.car.model.mongodb.common.Metadata;
 import gov.energy.nbc.car.model.mongodb.document.CellDocument;
 import gov.energy.nbc.car.model.mongodb.document.RowDocument;
 import gov.energy.nbc.car.settings.ISettings;
@@ -68,7 +69,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
 
             rowIds.add(rowId);
 
-            cellDAO.add(rowId, row);
+            cellDAO.add(rowId, metadata, row);
         }
 
         return rowIds;
@@ -169,7 +170,12 @@ public class s_RowDAO extends DAO implements IRowDAO {
 
         for (SearchCriterion searchCriterion : searchCriteria) {
 
-            dataColumnNamesToIncludedInQueryResults.add(searchCriterion.getName());
+            String name = searchCriterion.getName();
+
+            if (Metadata.isAMetadataFieldName(MongoFieldNameEncoder.toClientSideFieldName(name)) == false) {
+
+                dataColumnNamesToIncludedInQueryResults.add(name);
+            }
         }
 
         List<Document> rows = getRowWithIds(matchingRowIds, dataColumnNamesToIncludedInQueryResults);
@@ -207,8 +213,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
         attributesToInclude.add(RowDocument.ATTR_KEY__METADATA);
 
         for (String columnIncludedInQuery : dataColumnNamesToIncludedInQueryResults) {
-            attributesToInclude.add(RowDocument.ATTR_KEY__DATA + "." +
-                    toMongoSafeFieldName(columnIncludedInQuery));
+            attributesToInclude.add(RowDocument.ATTR_KEY__DATA + "." + columnIncludedInQuery);
         }
 
         Bson projection = fields(include(attributesToInclude));
@@ -219,9 +224,15 @@ public class s_RowDAO extends DAO implements IRowDAO {
 
         List<Document> results = get(query, projection);
 
-        for (Document document : results) {
-            Document data = (Document) document.get(RowDocument.ATTR_KEY__DATA);
-            convertFieldNamesToClientSideFieldNames(data);
+        for (Document result : results) {
+
+            Document data = (Document) result.get(RowDocument.ATTR_KEY__DATA);
+            if (data == null) {
+                result.put(RowDocument.ATTR_KEY__DATA, new Document());
+            }
+            else {
+                result.put(RowDocument.ATTR_KEY__DATA, DAOUtilities.toClientSideFieldNames(data));
+            }
         }
 
         performanceLogger.done("[RESULTS] results.size(): " + results.size() +
@@ -366,25 +377,6 @@ public class s_RowDAO extends DAO implements IRowDAO {
 
     public ICellDAO getCellDAO() {
         return cellDAO;
-    }
-
-
-    protected void convertFieldNamesToClientSideFieldNames(Document document) {
-
-        Map<String, Object> temporaryMapToAvoidConcurrentModificationOfTheDocument = new HashMap();
-
-        for (String key : document.keySet()) {
-
-            String clientSideName = MongoFieldNameEncoder.toClientSideFieldName(key);
-            temporaryMapToAvoidConcurrentModificationOfTheDocument.put(clientSideName, document.get(key));
-        }
-
-        document.clear();
-
-        for (String key : temporaryMapToAvoidConcurrentModificationOfTheDocument.keySet()) {
-
-            document.put(key, temporaryMapToAvoidConcurrentModificationOfTheDocument.get(key));
-        }
     }
 
     private static boolean HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = false;

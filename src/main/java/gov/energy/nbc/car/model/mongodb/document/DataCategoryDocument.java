@@ -1,6 +1,6 @@
 package gov.energy.nbc.car.model.mongodb.document;
 
-import gov.energy.nbc.car.dao.mongodb.MongoFieldNameEncoder;
+import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.model.mongodb.AbstractDocument;
 import gov.energy.nbc.car.model.IDataCategoryDocument;
 import org.bson.Document;
@@ -73,19 +73,6 @@ public class DataCategoryDocument extends AbstractDocument implements IDataCateg
     public Set<String> getColumnNames() {
 
         Set columnNames = (Set) get(ATTR_KEY__COLUMN_NAMES);
-        Set<String> decodedColumnNames = convertFieldNamesToClientSideFieldNamess(columnNames);
-        return decodedColumnNames;
-    }
-
-    protected Set<String> convertFieldNamesToClientSideFieldNamess(Set<String> columnNames) {
-
-        Set<String> decodedColumnNames = new HashSet<>();
-
-        for (String columnName : columnNames) {
-
-            decodedColumnNames.add(MongoFieldNameEncoder.toClientSideFieldName(columnName));
-        }
-
-        return decodedColumnNames;
+        return DAOUtilities.toClientSideFieldNames(columnNames);
     }
 }

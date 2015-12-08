@@ -1,6 +1,6 @@
 package gov.energy.nbc.car.restEndpoint;
 
-import gov.energy.nbc.car.app.AppSingleton;
+import gov.energy.nbc.car.app.DataRepositoryApplication;
 import gov.energy.nbc.car.bo.IRowBO;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class Endpoints_Rows {
     protected Logger log = Logger.getLogger(getClass());
 
     @Autowired
-    protected AppSingleton appSingleton;
+    protected DataRepositoryApplication dataRepositoryApplication;
 
 
     @RequestMapping(value="/api/rows", method = RequestMethod.POST, produces = "application/json")
@@ -25,10 +25,6 @@ public class Endpoints_Rows {
             @RequestBody String query) {
 
         String rows = getiRowBO().getRows(query);
-
-        if (rows == null) {
-            return create_NOT_FOUND_response();
-        }
 
         return create_SUCCESS_response(rows);
     }
@@ -46,9 +42,8 @@ public class Endpoints_Rows {
         return create_SUCCESS_response(row);
     }
 
-
     protected IRowBO getiRowBO() {
 
-        return appSingleton.getBusinessObjects().getRowBO();
+        return dataRepositoryApplication.getBusinessObjects().getRowBO();
     }
 }

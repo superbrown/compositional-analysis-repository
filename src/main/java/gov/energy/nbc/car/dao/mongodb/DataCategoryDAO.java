@@ -73,6 +73,7 @@ public class DataCategoryDAO extends DAO implements IDataCategoryDAO {
         String json = DAOUtilities.serialize(document);
 
         DataCategoryDocument dataCategoryDocument = new DataCategoryDocument(json);
+
         return dataCategoryDocument;
     }
 }

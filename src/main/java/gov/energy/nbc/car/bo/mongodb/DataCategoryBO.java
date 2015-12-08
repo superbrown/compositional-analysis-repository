@@ -14,9 +14,7 @@ import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class DataCategoryBO implements IDataCategoryBO {
 
@@ -83,7 +81,10 @@ public class DataCategoryBO implements IDataCategoryBO {
 
         Set<String> columnNames = document.getColumnNames();
 
-        String jsonOut = DAOUtilities.serialize(columnNames);
+        SortedSet<String> columnNames_sofrted = new TreeSet();
+        columnNames_sofrted.addAll(columnNames);
+
+        String jsonOut = DAOUtilities.serialize(columnNames_sofrted);
         return jsonOut;
     }
 
