@@ -4,74 +4,61 @@
 
 <div class="page-content">
 
-  <form id="inputForm" action="/api/addDataset" method="POST" enctype="multipart/form-data" >
+  <div>
+    <legend>Metadata</legend>
 
-    <div>
-      <legend>Metadata</legend>
+    <label for="dataCategory">Data Category*</label>
+    <select name="dataCategory" id="dataCategory" ng-model="dataCategory">
+      <option ng-repeat="option in knownDataCategories" value="{{option}}">{{option}}</option>
+    </select>
+    <br/>
 
-      <label>Data Catagory*</label>
-      <select name="dataCategory" id="dataCategory" ng-model="dataCategory"
-              ng-options="dataCategoryName as dataCategoryName for dataCategoryName in dataCategoryNames">
-      </select>
+    <label for="submissionDate">Submission Date*</label>
+    <input ng-model="submissionDate" required type="text" id="submissionDate" name="submissionDate"/>
+    <br/>
+
+    <label for="submitter">Submitter*</label>
+    <input ng-model="submitter" required id="submitter" name="submitter" type="text" style="width: 300px;"/>
+    <!--<span class="alert" ng-class="{'alert-warning':submitter.length > 5}" >Sumitter is required!</span>-->
+    <br/>
+
+    <label for="projectName">Project Name</label>
+    <input ng-model="projectName" required id="projectName" name="projectName" type="text" style="width: 300px;"/>
+    <br/>
+
+    <label for="chargeNumber">Charge #</label>
+    <input ng-model="chargeNumber" id="chargeNumber" name="chargeNumber" type="text" style="width: 300px;"/>
+    <br/>
+
+    <label for="comments">Comments</label>
+    <textarea ng-model="comments" id="comments" name="comments" rows="2" style="width: 300px;" ></textarea>
+    <br/>
+
+  </div>
+
+  <div>
+    <legend>Data File</legend>
+
+    <label for="dataFile">Excel or CSV file</label>
+    <br/>
+    <input id="dataFile" ng-model="dataFile" required name="dataFile" type="file" style="display: inline; margin-bottom: 5px;" />
+    <br/>
+    <span ng-show="hasExcelWorkbookFileSuffix(dataFile)">
+      <label style="width: auto;" for="nameOfSheetContainingData">Name of sheet within the workbook containing the data to be ingested*</label>
       <br/>
+      <input id="nameOfSheetContainingData" ng-model="nameOfSheetContainingData" name="nameOfSheetContainingData" type="text" style="width: 300px;" />
+    </span>
+  </div>
 
-      <!--<label for="dataCategory">Sample Type*</label>-->
-      <!--<select id="dataCategory" name="dataCategory" style="width: auto;">-->
-      <!--<option value="Algea">Algea</option>-->
-      <!--<option value="ATP3">ATP3</option>-->
-      <!--<option value="Biomass">Biomass</option>-->
-      <!--</select>-->
-      <!--<br/>-->
+  <div>
+    <legend>Attachments</legend>
 
-      <label for="submissionDate">Submission Date*</label>
-      <input ng-model="submissionDate" required type="text" id="submissionDate" name="submissionDate"/>
-      <br/>
+    <input id="attachments" ng-model="attachments" name="attachments" type="file" multiple="multiple" /><br/><br/>
 
-      <label for="submitter">Submitter*</label>
-      <input ng-model="submitter" required id="submitter" name="submitter" type="text" style="width: 300px;"/>
-      <!--<span class="alert" ng-class="{'alert-warning':submitter.length > 5}" >Sumitter is required!</span>-->
-      <br/>
+  </div>
 
-      <label for="projectName">Project Name</label>
-      <input ng-model="projectName" required id="projectName" name="projectName" type="text" style="width: 300px;"/>
-      <br/>
-
-      <label for="chargeNumber">Charge #</label>
-      <input ng-model="chargeNumber" id="chargeNumber" name="chargeNumber" type="text" style="width: 300px;"/>
-      <br/>
-
-      <label for="comments">Comments</label>
-      <textarea ng-model="comments" id="comments" name="comments" rows="2" style="width: 300px;" ></textarea>
-      <br/>
-
-    </div>
-
-    <div>
-      <legend>Data File</legend>
-
-      <label for="dataFile">Excel or CSV file</label>
-      <br/>
-      <input id="dataFile" ng-model="dataFile" required name="dataFile" type="file" style="display: inline; margin-bottom: 5px;" />
-      <br/>
-              <span ng-show="hasExcelWorkbookFileSuffix(dataFile)">
-                <label style="width: auto;" for="nameOfSheetContainingData">Name of sheet within the workbook containing the data to be ingested*</label>
-                <br/>
-                <input id="nameOfSheetContainingData" ng-model="nameOfSheetContainingData" name="nameOfSheetContainingData" type="text" style="width: 300px;" />
-              </span>
-
-    </div>
-
-    <div>
-      <legend>Attachments</legend>
-
-      <input id="attachments" ng-model="attachments" name="attachments" type="file" multiple="multiple" /><br/><br/>
-
-    </div>
-
-    <div style="float: bottom; clear: both">
-      <a href="#" class="btn btn-default" ng-click="uploadData()">Upload</a>
-    </div>
-
-  </form>
+  <div style="float: bottom; clear: both">
+    <a href="#" class="btn btn-default" ng-click="uploadData()">Upload</a>
+  </div>
 
 </div>

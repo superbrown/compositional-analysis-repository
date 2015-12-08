@@ -3,7 +3,6 @@ package gov.energy.nbc.car.bo.mongodb;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
-import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.bo.IRowBO;
 import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.dto.ComparisonOperator;
@@ -11,6 +10,7 @@ import gov.energy.nbc.car.dao.dto.SearchCriterion;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.model.IRowDocument;
 import gov.energy.nbc.car.model.mongodb.document.RowDocument;
+import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
 import org.bson.Document;
@@ -56,7 +56,12 @@ public abstract class AbsRowBO implements IRowBO {
 
             String name = (String) document.get("name");
             Object value = document.get("value");
+//            DataType dataType = DataType.valueOf((String) document.get("dataType"));
             ComparisonOperator comparisonOperator = ComparisonOperator.valueOf((String) document.get("comparisonOperator"));
+
+//            if (dataType == DataType.STRING) {
+//
+//            }
 
             SearchCriterion searchCriterion = new SearchCriterion(name, value, comparisonOperator);
 
@@ -64,8 +69,6 @@ public abstract class AbsRowBO implements IRowBO {
         }
 
         List <Document> rowDocuments = getRowDAO().query(rowSearchCriteria);
-
-        if (rowDocuments.size() == 0) { return null; }
 
         String json = DAOUtilities.serialize(rowDocuments);
         return json;

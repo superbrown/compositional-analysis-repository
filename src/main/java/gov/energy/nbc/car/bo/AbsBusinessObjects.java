@@ -13,6 +13,7 @@ public abstract class AbsBusinessObjects implements IBusinessObjects {
     protected IRowBO rowBO;
     protected IPhysicalFileBO physicalFileBO;
     protected ITestDataBO testDataBO;
+    protected IDataTypeBO dataTypeBO;
 
 
     public AbsBusinessObjects(ISettings settings) {
@@ -51,5 +52,10 @@ public abstract class AbsBusinessObjects implements IBusinessObjects {
     @Override
     public ITestDataBO getTestDataBO() {
         return testDataBO;
+    }
+
+    @Override
+    public IDataTypeBO getDataTypeBO() {
+        return dataTypeBO;
     }
 }

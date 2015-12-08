@@ -1,6 +1,6 @@
 package gov.energy.nbc.car.restEndpoint;
 
-import gov.energy.nbc.car.app.AppSingleton;
+import gov.energy.nbc.car.app.DataRepositoryApplication;
 import gov.energy.nbc.car.bo.IDataCategoryBO;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class Endpoints_DataCategories {
     protected Logger log = Logger.getLogger(getClass());
 
     @Autowired
-    protected AppSingleton appSingleton;
+    protected DataRepositoryApplication dataRepositoryApplication;
 
     @RequestMapping(value="/api/dataCategory/{dataCategoryId}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getDataCategory(
@@ -92,6 +92,6 @@ public class Endpoints_DataCategories {
 
     protected IDataCategoryBO getDataCategoryBO() {
 
-        return appSingleton.getBusinessObjects().getDataCategoryBO();
+        return dataRepositoryApplication.getBusinessObjects().getDataCategoryBO();
     }
 }

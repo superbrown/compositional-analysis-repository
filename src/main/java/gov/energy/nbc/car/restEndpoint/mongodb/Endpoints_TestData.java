@@ -1,6 +1,6 @@
 package gov.energy.nbc.car.restEndpoint.mongodb;
 
-import gov.energy.nbc.car.app.AppSingleton;
+import gov.energy.nbc.car.app.DataRepositoryApplication;
 import gov.energy.nbc.car.bo.ITestDataBO;
 //import gov.energy.nbc.car.app.TestMode;
 import org.apache.log4j.Logger;
@@ -19,7 +19,7 @@ public class Endpoints_TestData {
     protected Logger log = Logger.getLogger(getClass());
 
     @Autowired
-    protected AppSingleton appSingleton;
+    protected DataRepositoryApplication dataRepositoryApplication;
 
     @RequestMapping(value="/api/seedTestData", method = RequestMethod.GET)
     public ResponseEntity seedTestData() {
@@ -50,6 +50,6 @@ public class Endpoints_TestData {
 
     private ITestDataBO getTestDataBO() {
 
-        return appSingleton.getBusinessObjects().getTestDataBO();
+        return dataRepositoryApplication.getBusinessObjects().getTestDataBO();
     }
 }

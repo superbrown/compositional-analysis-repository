@@ -220,7 +220,7 @@ public class r_RowDAO extends DAO implements IRowDAO {
             Document document = getOne(matchingId, projection);
 
             List<Document> data = (List) document.get(RowDocument.ATTR_KEY__DATA);
-            convertFieldNamesToClientSideFieldNames(data);
+            DAOUtilities.toDocumentsWithClientSideFieldNames(data);
 
             results.add(document);
         }
@@ -358,31 +358,6 @@ public class r_RowDAO extends DAO implements IRowDAO {
         }
 
         return objectIds;
-    }
-
-    protected void convertFieldNamesToClientSideFieldNames(List<Document> documents) {
-
-        for (Document document : documents) {
-            convertFieldNamesToClientSideFieldNames(document);
-        }
-    }
-
-    protected void convertFieldNamesToClientSideFieldNames(Document document) {
-
-        Map<String, Object> temporaryMapToAvoidConcurrentModificationOfTheDocument = new HashMap();
-
-        for (String key : document.keySet()) {
-
-            String clientSideName = MongoFieldNameEncoder.toClientSideFieldName(key);
-            temporaryMapToAvoidConcurrentModificationOfTheDocument.put(clientSideName, document.get(key));
-        }
-
-        document.clear();
-
-        for (String key : temporaryMapToAvoidConcurrentModificationOfTheDocument.keySet()) {
-
-            document.put(key, temporaryMapToAvoidConcurrentModificationOfTheDocument.get(key));
-        }
     }
 
     private static boolean HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = false;

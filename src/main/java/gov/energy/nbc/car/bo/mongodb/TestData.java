@@ -53,7 +53,7 @@ public class TestData {
     public static List<IStoredFile> attachments_2;
     public static List<String> tags_2;
 
-    public static final String ALGEA = "algea";
+    public static final String ALGEA = "Algea";
 
     static {
         try {

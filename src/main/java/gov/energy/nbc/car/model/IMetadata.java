@@ -6,6 +6,15 @@ import java.util.List;
 
 public interface IMetadata {
 
+    String ATTR_KEY__DATA_CATEGORY = " Data Category";
+    String ATTR_KEY__SUBMISSION_DATE = " Submission Date";
+    String ATTR_KEY__SUBMITTER = " Submitter";
+    String ATTR_KEY__CHARGE_NUMBER = " Charge Number";
+    String ATTR_KEY__PROJECT_NAME = " Project Name";
+    String ATTR_KEY__COMMENTS = " Comments";
+    String ATTR_KEY__UPLOADED_FILE = " Uploaded File";
+    String ATTR_KEY__ATTACHMENTS = " Attachments";
+
     String getDataCategory();
 
     Date getSubmissionDate();

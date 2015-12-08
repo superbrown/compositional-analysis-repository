@@ -145,7 +145,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
         for (int i = 0; i < number; i++) {
 
             String id = datasetBO.addDataset(
-                    "sample type",
+                    TestUsingTestData.DEFAULT_SET_OF_DATA_CATEGORIES[0],
                     new Date(),
                     "submitter",
                     "project name",

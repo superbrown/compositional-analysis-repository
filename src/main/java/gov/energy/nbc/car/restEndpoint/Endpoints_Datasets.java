@@ -1,6 +1,6 @@
 package gov.energy.nbc.car.restEndpoint;
 
-import gov.energy.nbc.car.app.AppSingleton;
+import gov.energy.nbc.car.app.DataRepositoryApplication;
 import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.IRowBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
@@ -36,7 +36,7 @@ public class Endpoints_Datasets {
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("mm/dd/yyyy");
 
     @Autowired
-    protected AppSingleton appSingleton;
+    protected DataRepositoryApplication dataRepositoryApplication;
 
 
     @RequestMapping(value="/api/addDataset", method = RequestMethod.POST)
@@ -247,11 +247,11 @@ public class Endpoints_Datasets {
 
 
     protected IDatasetBO getDatasetBO() {
-        return appSingleton.getBusinessObjects().getDatasetBO();
+        return dataRepositoryApplication.getBusinessObjects().getDatasetBO();
     }
 
     protected IRowBO getRowBO() {
-        return appSingleton.getBusinessObjects().getRowBO();
+        return dataRepositoryApplication.getBusinessObjects().getRowBO();
     }
 
     protected FileAsRawBytes toFileAsRawBytes(MultipartFile dataFile)
@@ -261,7 +261,7 @@ public class Endpoints_Datasets {
 
     protected static final IDatasetReader_AllFileTypes GENERAL_FILE_READER = new DatasetReader_AllFileTypes();
 
-    protected boolean isAnExcelFile(@RequestParam(value = "dataFile", required = false) MultipartFile dataFile) {
+    protected boolean isAnExcelFile(MultipartFile dataFile) {
 
         return GENERAL_FILE_READER.isAnExcelFile(dataFile.getOriginalFilename());
     }

@@ -9,7 +9,6 @@ import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.mongodb.MongoFieldNameEncoder;
 import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
 import gov.energy.nbc.car.model.*;
-import gov.energy.nbc.car.model.mongodb.common.Metadata;
 import gov.energy.nbc.car.model.mongodb.document.CellDocument;
 import gov.energy.nbc.car.model.mongodb.document.RowDocument;
 import gov.energy.nbc.car.settings.ISettings;
@@ -69,10 +68,10 @@ public class m_RowDAO extends DAO implements IRowDAO {
 
             // add metadata into cell collections
 
-            addCell(rowId, Metadata.ATTR_KEY__SUBMISSION_DATE, metadata.getSubmissionDate());
-            addCell(rowId, Metadata.ATTR_KEY__SUBMITTER, metadata.getSubmitter());
-            addCell(rowId, Metadata.ATTR_KEY__PROJECT_NAME, metadata.getProjectName());
-            addCell(rowId, Metadata.ATTR_KEY__CHARGE_NUMBER, metadata.getChargeNumber());
+            addCell(rowId, IMetadata.ATTR_KEY__SUBMISSION_DATE, metadata.getSubmissionDate());
+            addCell(rowId, IMetadata.ATTR_KEY__SUBMITTER, metadata.getSubmitter());
+            addCell(rowId, IMetadata.ATTR_KEY__PROJECT_NAME, metadata.getProjectName());
+            addCell(rowId, IMetadata.ATTR_KEY__CHARGE_NUMBER, metadata.getChargeNumber());
 
             // add data into cell collections
 
@@ -226,9 +225,8 @@ public class m_RowDAO extends DAO implements IRowDAO {
             Document document = getOne(matchingId, projection);
 
             Document data = (Document) document.get(RowDocument.ATTR_KEY__DATA);
-            convertFieldNamesToClientSideFieldNames(data);
 
-            results.add(document);
+            results.add(DAOUtilities.toClientSideFieldNames(data));
         }
 
         performanceLogger.done();
@@ -241,24 +239,6 @@ public class m_RowDAO extends DAO implements IRowDAO {
     private String toMongoSafeFieldName(String columnIncludedInQuery) {
 
         return MongoFieldNameEncoder.toMongoSafeFieldName(columnIncludedInQuery);
-    }
-
-    protected void convertFieldNamesToClientSideFieldNames(Document document) {
-
-        Map<String, Object> temporaryMapToAvoidConcurrentModificationOfTheDocument = new HashMap();
-
-        for (String key : document.keySet()) {
-
-            String clientSideName = MongoFieldNameEncoder.toClientSideFieldName(key);
-            temporaryMapToAvoidConcurrentModificationOfTheDocument.put(clientSideName, document.get(key));
-        }
-
-        document.clear();
-
-        for (String key : temporaryMapToAvoidConcurrentModificationOfTheDocument.keySet()) {
-
-            document.put(key, temporaryMapToAvoidConcurrentModificationOfTheDocument.get(key));
-        }
     }
 
     protected List<CriterionAndItsNumberOfMatches> getNumberOfMatchesForEachCriterion(

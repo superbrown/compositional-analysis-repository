@@ -3,7 +3,7 @@ package gov.energy.nbc.car.dao.mongodb;
 import gov.energy.nbc.car.bo.mongodb.TestData;
 import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.dto.SearchCriterion;
-import gov.energy.nbc.car.model.mongodb.common.Metadata;
+import gov.energy.nbc.car.model.IMetadata;
 import gov.energy.nbc.car.model.mongodb.document.DatasetDocument;
 import gov.energy.nbc.car.model.mongodb.document.RowDocument;
 import org.bson.Document;
@@ -121,7 +121,7 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
     public void testQueryForOneFilter_3() {
 
         Bson filter = and(
-                eq(DatasetDocument.ATTR_KEY__METADATA + "." + Metadata.ATTR_KEY__SAMPLE_TYPE, TestData.dataCategory),
+                eq(DatasetDocument.ATTR_KEY__METADATA + "." + IMetadata.ATTR_KEY__DATA_CATEGORY, TestData.dataCategory),
                 eq(RowDocument.ATTR_KEY__DATA + "." +
                         MongoFieldNameEncoder.toMongoSafeFieldName(
                                 "Date Values Column Name"),
@@ -162,6 +162,7 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
 
         if (data instanceof Document) {
             Document dataDocument = (Document) data;
+            assertTrue(dataDocument.keySet().size() == 3);
             assertTrue(((Integer)dataDocument.get("Some Column Name")) == 1);
             assertTrue(((Double)dataDocument.get("Float Values Column Name")) == 1.22);
             assertTrue(dataDocument.get("Additional Column Name 1").equals("a1"));

@@ -1,77 +1,70 @@
 <div class="page-header">
-  <h1>Upload Data</h1>
+  <h1>Find Data</h1>
 </div>
 
 <div class="page-content">
 
-  <form id="inputForm" action="/api/addDataset" method="POST" enctype="multipart/form-data" >
+  <div>
+    <label for="dataCategory">Data Category*</label>
+    <select name="dataCategory" id="dataCategory" ng-model="dataCategory">
+      <option ng-repeat="dataCategory in knownDataCategories" value="{{dataCategory}}">{{dataCategory}}</option>
+    </select>
+    <br/>
 
-    <div>
-      <legend>Metadata</legend>
+    <legend>Search Criteria</legend>
 
-      <label>Data Catagory*</label>
-      <select name="dataCategory" id="dataCategory" ng-model="dataCategory"
-              ng-options="dataCategoryName as dataCategoryName for dataCategoryName in dataCategoryNames">
+    <div ng-hide="dataCategory === ''">
+      <select name="columnName" id="columnName" ng-model="columnName"
+              ng-options="knownColumnName as knownColumnName for knownColumnName in knownDataCategoryColumnNames">
       </select>
+
+      <span ng-hide="columnName === ''">
+
+        <select name="dataTypeId" id="dataTypeId" ng-model="dataTypeId">
+          <option ng:repeat="knownDataType in knownDataTypes" value="{{knownDataType.id}}">{{knownDataType.label}}</option>
+        </select>
+
+        <span ng-hide="dataTypeId === ''">
+          <select name="comparisonOperatorId" id="comparisonOperatorId" ng-model="comparisonOperatorId">
+            <option ng:repeat="knownComparisonOperator in knownComparisonOperators" value="{{knownComparisonOperator.id}}">{{knownComparisonOperator.label}}</option>
+          </select>
+
+          <span ng-hide="comparisonOperatorId === ''">
+
+            <span ng-show="dataTypeId === 'STRING'">
+              <input ng-model="value_asString" required type="text" style="background-color: #99CC66                                       "/>
+            </span>
+
+            <span ng-show="dataTypeId === 'NUMBER'">
+              <input ng-model="value_asNumber" required type="text" style="background-color: #007fff"/>
+            </span>
+
+            <span ng-show="dataTypeId === 'DATE'">
+              <input ng-model="value_asDate" required type="text" style="background-color: #985f0d"/>
+            </span>
+
+            <span ng-show="dataTypeId === 'BOOLEAN'">
+              <input ng-model="value_asBoolean" required type="text" style="background-color: #9999FF"/>
+            </span>
+
+          </span>
+
+        </span>
+
+      </span>
+
       <br/>
-
-      <!--<label for="dataCategory">Sample Type*</label>-->
-      <!--<select id="dataCategory" name="dataCategory" style="width: auto;">-->
-      <!--<option value="Algea">Algea</option>-->
-      <!--<option value="ATP3">ATP3</option>-->
-      <!--<option value="Biomass">Biomass</option>-->
-      <!--</select>-->
-      <!--<br/>-->
-
-      <label for="submissionDate">Submission Date*</label>
-      <input ng-model="submissionDate" required type="text" id="submissionDate" name="submissionDate"/>
-      <br/>
-
-      <label for="submitter">Submitter*</label>
-      <input ng-model="submitter" required id="submitter" name="submitter" type="text" style="width: 300px;"/>
-      <!--<span class="alert" ng-class="{'alert-warning':submitter.length > 5}" >Sumitter is required!</span>-->
-      <br/>
-
-      <label for="projectName">Project Name</label>
-      <input ng-model="projectName" required id="projectName" name="projectName" type="text" style="width: 300px;"/>
-      <br/>
-
-      <label for="chargeNumber">Charge #</label>
-      <input ng-model="chargeNumber" id="chargeNumber" name="chargeNumber" type="text" style="width: 300px;"/>
-      <br/>
-
-      <label for="comments">Comments</label>
-      <textarea ng-model="comments" id="comments" name="comments" rows="2" style="width: 300px;" ></textarea>
-      <br/>
-
+      <div>Criterion: {{columnName}} <i>{{comparisonOperatorId}}</i> {{value_asDate}} </div>
     </div>
+  </div>
 
-    <div>
-      <legend>Data File</legend>
 
-      <label for="dataFile">Excel or CSV file</label>
-      <br/>
-      <input id="dataFile" ng-model="dataFile" required name="dataFile" type="file" style="display: inline; margin-bottom: 5px;" />
-      <br/>
-              <span ng-show="hasExcelWorkbookFileSuffix(dataFile)">
-                <label style="width: auto;" for="nameOfSheetContainingData">Name of sheet within the workbook containing the data to be ingested*</label>
-                <br/>
-                <input id="nameOfSheetContainingData" ng-model="nameOfSheetContainingData" name="nameOfSheetContainingData" type="text" style="width: 300px;" />
-              </span>
+  <!--<div style="float: bottom; clear: both">-->
+    <a href="#" class="btn btn-default" ng-click="handleSearchSubmission()">Search</a>
+  <!--</div>-->
 
-    </div>
-
-    <div>
-      <legend>Attachments</legend>
-
-      <input id="attachments" ng-model="attachments" name="attachments" type="file" multiple="multiple" /><br/><br/>
-
-    </div>
-
-    <div style="float: bottom; clear: both">
-      <a href="#" class="btn btn-default" ng-click="uploadData()">Upload</a>
-    </div>
-
-  </form>
+  <div>
+    {{searchResults}}
+  </div>
 
 </div>
