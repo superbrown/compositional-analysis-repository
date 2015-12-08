@@ -226,11 +226,13 @@ public class s_RowDAO extends DAO implements IRowDAO {
 
         for (Document result : results) {
 
-            Document metadata = (Document) result.get(RowDocument.ATTR_KEY__METADATA);
-            result.put(RowDocument.ATTR_KEY__METADATA, DAOUtilities.toClientSideFieldNames(metadata));
-
             Document data = (Document) result.get(RowDocument.ATTR_KEY__DATA);
-            result.put(RowDocument.ATTR_KEY__DATA, DAOUtilities.toClientSideFieldNames(data));
+            if (data == null) {
+                result.put(RowDocument.ATTR_KEY__DATA, new Document());
+            }
+            else {
+                result.put(RowDocument.ATTR_KEY__DATA, DAOUtilities.toClientSideFieldNames(data));
+            }
         }
 
         performanceLogger.done("[RESULTS] results.size(): " + results.size() +
