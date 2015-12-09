@@ -215,7 +215,7 @@ public class Endpoints_Datasets {
     public ResponseEntity getRows(
             @PathVariable(value = "datasetId") String datasetId) {
 
-        String rowsForDataset = getRowBO().getRowAssociatedWithDataset(datasetId);
+        String rowsForDataset = getRowBO().getRowsAssociatedWithDataset(datasetId);
 
         if (rowsForDataset == null) {
             return create_NOT_FOUND_response();

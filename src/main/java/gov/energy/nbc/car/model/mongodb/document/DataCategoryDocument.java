@@ -73,6 +73,6 @@ public class DataCategoryDocument extends AbstractDocument implements IDataCateg
     public Set<String> getColumnNames() {
 
         Set columnNames = (Set) get(ATTR_KEY__COLUMN_NAMES);
-        return DAOUtilities.toClientSideFieldNames(columnNames);
+        return DAOUtilities.toDocumentsWithClientSideFieldNames(columnNames);
     }
 }

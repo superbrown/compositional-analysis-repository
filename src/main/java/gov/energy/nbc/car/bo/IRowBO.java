@@ -20,7 +20,9 @@ public interface IRowBO {
 
     String getAllRows();
 
-    String getRowAssociatedWithDataset(String datasetId);
+    String getRowsAssociatedWithDataset(String datasetId);
 
     IRowDAO getRowDAO();
+
+    String getRowsFlat(String rowId);
 }

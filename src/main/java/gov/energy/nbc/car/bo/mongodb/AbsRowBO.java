@@ -9,6 +9,8 @@ import gov.energy.nbc.car.dao.dto.ComparisonOperator;
 import gov.energy.nbc.car.dao.dto.SearchCriterion;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.model.IRowDocument;
+import gov.energy.nbc.car.model.mongodb.common.Metadata;
+import gov.energy.nbc.car.model.mongodb.common.StoredFile;
 import gov.energy.nbc.car.model.mongodb.document.RowDocument;
 import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
@@ -16,7 +18,9 @@ import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public abstract class AbsRowBO implements IRowBO {
@@ -46,31 +50,80 @@ public abstract class AbsRowBO implements IRowBO {
     @Override
     public String getRows(String query) {
 
-        BasicDBList list = (BasicDBList)JSON.parse(query);
+        List<Document> rowDocuments = getRowsAsDocuments(query);
+
+        String json = DAOUtilities.serialize(rowDocuments);
+        return json;
+    }
+
+    protected List<Document> getRowsAsDocuments(String query) {
+
+        BasicDBList criteria = (BasicDBList) JSON.parse(query);
 
         List<SearchCriterion> rowSearchCriteria = new ArrayList<>();
 
-        for (Object element : list) {
+        for (Object criterion : criteria) {
 
-            BasicDBObject document = (BasicDBObject)element;
+            BasicDBObject criterionDocument = (BasicDBObject)criterion;
 
-            String name = (String) document.get("name");
-            Object value = document.get("value");
-//            DataType dataType = DataType.valueOf((String) document.get("dataType"));
-            ComparisonOperator comparisonOperator = ComparisonOperator.valueOf((String) document.get("comparisonOperator"));
-
-//            if (dataType == DataType.STRING) {
-//
-//            }
+            String name = (String) criterionDocument.get("name");
+            Object value = criterionDocument.get("value");
+            ComparisonOperator comparisonOperator = ComparisonOperator.valueOf((String) criterionDocument.get("comparisonOperator"));
 
             SearchCriterion searchCriterion = new SearchCriterion(name, value, comparisonOperator);
 
             rowSearchCriteria.add(searchCriterion);
         }
 
-        List <Document> rowDocuments = getRowDAO().query(rowSearchCriteria);
+        return getRowDAO().query(rowSearchCriteria);
+    }
 
-        String json = DAOUtilities.serialize(rowDocuments);
+    @Override
+    public String getRowsFlat(String query) {
+
+        List<Document> rowDocuments = getRowsAsDocuments(query);
+
+        BasicDBList rowsFlat = new BasicDBList();
+
+        for (Document document : rowDocuments) {
+
+            Document row = new Document();
+
+            row.put(RowDocument.ATTR_KEY__DATASET_ID, ((ObjectId) document.get(RowDocument.ATTR_KEY__DATASET_ID)).toHexString());
+
+            Document metadata = (Document) document.get(RowDocument.ATTR_KEY__METADATA);
+
+            for (String name : metadata.keySet()) {
+
+                Object value = metadata.get(name);
+
+                if (Metadata.ATTR_KEY__UPLOADED_FILE.equals(name)) {
+                    row.put(name, ((Document) value).get(StoredFile.ATTR_KEY__ORIGINAL_FILE_NAME));
+                }
+                else if (Metadata.ATTR_KEY__ID.equals(name)) {
+                    row.put(name, ((ObjectId) value).toHexString());
+                }
+                else if (Metadata.ATTR_KEY__ATTACHMENTS.equals(name)) {
+                    // don't include
+                }
+                else if (value instanceof Date) {
+                    row.put(name, toString((Date) value));
+                }
+                else {
+                    row.put(name, value);
+                }
+            }
+
+            Document data = (Document) document.get(RowDocument.ATTR_KEY__DATA);
+
+            for (String name : data.keySet()) {
+                row.put(name, metadata.get(name));
+            }
+
+            rowsFlat.add(row);
+        }
+
+        String json = DAOUtilities.serialize(rowsFlat);
         return json;
     }
 
@@ -117,7 +170,7 @@ public abstract class AbsRowBO implements IRowBO {
 
 
     @Override
-    public String getRowAssociatedWithDataset(String datasetId) {
+    public String getRowsAssociatedWithDataset(String datasetId) {
 
         Document idFilter = new Document().append(
                 RowDocument.ATTR_KEY__DATASET_ID, new ObjectId(datasetId));
@@ -130,9 +183,13 @@ public abstract class AbsRowBO implements IRowBO {
         return jsonOut;
     }
 
-
     @Override
     public IRowDAO getRowDAO() {
         return rowDAO;
+    }
+
+    protected String toString(Date date) {
+        String string = new SimpleDateFormat("yyyy-MM-dd").format(date);
+        return string;
     }
 }

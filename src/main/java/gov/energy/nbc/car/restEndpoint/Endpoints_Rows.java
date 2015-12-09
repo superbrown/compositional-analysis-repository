@@ -29,6 +29,15 @@ public class Endpoints_Rows {
         return create_SUCCESS_response(rows);
     }
 
+    @RequestMapping(value="/api/rows/flat", method = RequestMethod.POST, produces = "application/json")
+    public ResponseEntity getRowsFlat(
+            @RequestBody String query) {
+
+        String rowsFlat = getiRowBO().getRowsFlat(query);
+
+        return create_SUCCESS_response(rowsFlat);
+    }
+
     @RequestMapping(value="/api/row/{rowId}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getRow(
             @PathVariable(value = "rowId") String rowId) {

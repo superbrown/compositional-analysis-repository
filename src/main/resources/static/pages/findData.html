@@ -1,4 +1,4 @@
-<div class="page-header">
+<div class="page-header" xmlns:float="http://www.w3.org/1999/xhtml" xmlns:float="http://www.w3.org/1999/xhtml">
   <h1>Find Data</h1>
 </div>
 
@@ -6,17 +6,17 @@
 
   <div>
     <label for="dataCategory">Data Category*</label>
-    <select name="dataCategory" id="dataCategory" ng-model="dataCategory">
+    <select name="dataCategory" id="dataCategory" ng-model="$root.dataCategory">
       <option ng-repeat="dataCategory in knownDataCategories" value="{{dataCategory}}">{{dataCategory}}</option>
     </select>
     <br/>
 
-    <div ng-hide="dataCategory === ''">
+    <div ng-hide="$root.dataCategory === ''">
 
       <legend>Search Criteria</legend>
 
       <select name="columnName" id="columnName" ng-model="columnName"
-              ng-options="knownColumnName as knownColumnName for knownColumnName in knownDataCategoryColumnNames">
+              ng-options="knownColumnName as knownColumnName for knownColumnName in knownColumnNames">
       </select>
 
       <span ng-hide="columnName === ''">
@@ -33,65 +33,54 @@
           <span ng-hide="comparisonOperatorId === ''">
 
             <span ng-show="dataTypeId === 'STRING'">
-              <input ng-model="value_asString" required type="text" style="background-color: #99CC66                                       "/>
+              <input ng-model="value_asString" required type="text"/>
             </span>
 
             <span ng-show="dataTypeId === 'NUMBER'">
-              <input ng-model="value_asNumber" required type="text" style="background-color: #007fff"/>
+              <input ng-model="value_asNumber" required type="text"/>
             </span>
 
             <span ng-show="dataTypeId === 'DATE'">
-              <input ng-model="value_asDate" required type="text" style="background-color: #985f0d"/>
+              <input ng-model="value_asDate" required type="text"/>
             </span>
 
             <span ng-show="dataTypeId === 'BOOLEAN'">
-              <input ng-model="value_asBoolean" required type="text" style="background-color: #9999FF"/>
+              <input ng-model="value_asBoolean" required type="text"/>
             </span>
 
-              <br/>
-              <br/>
+            <div style="margin-top: 20px">
               <button class="btn btn-default" ng-click="handleSearchSubmission()">
                 Search
               </button>
-  <!--<div style="float: bottom; clear: both">-->
-    <!--<a href="#" class="btn btn-default" ng-click="handleSearchSubmission()">Search</a>-->
-  <!--</div>-->
-
+            </div>
           </span>
 
         </span>
 
       </span>
 
-      <br/>
-      <br/>
-      <!--<div>Criterion: {{columnName}} <i>{{comparisonOperatorId}}</i> {{value_asDate}} </div>-->
     </div>
   </div>
 
-  <!--<div ng-controller="DashboardController as vm">-->
-    <!--<h1>Dashboard</h1>-->
-    <!--<p>{{vm.title}}</p>-->
-    <!--<div ng-repeat="row in searchResults">-->
-      <!--<div ng-repeat="col in row">-->
-        <!--<div>{{row[col]}}</div>-->
-      <!--</div>-->
-    <!--</div>-->
-  <!--</div>-->
+  <div ng-hide="searchComplete === false" style="margin-top: 20px">
 
-  <div class="gridStyle" ng-grid="searchResults">
+    <div style="width: inherit;">
+      <span>
+        Number of matches: {{searchResults.length}}
+      </span>
+      <span style="float: right" ng-click="downloadSearchResults">
+        <a href="#/findData" ng-click="downloadSearchResults">download search results</a>
+      </span>
+    </div>
 
-  <table>
-    <tr ng-repeat="searchResult in searchResults">
-      <td ng-repeat="cell in searchResult.metadata">
-        {{cell}}
-      </td>
-    </tr>
-  </table>
+    <div
+        ng-hide="searchResults.length === 0"
+         ui-grid="searchResultsGridConfig"
+            ui-grid-auto-resize
+            ui-grid-move-columns
+            ui-grid-resize-columns
+            ui-grid-auto-resize />
 
-
-  <!--<div>-->
-    <!--{{searchResults}}-->
-  <!--</div>-->
+  </div>
 
 </div>
