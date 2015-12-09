@@ -8,7 +8,7 @@
     <legend>Metadata</legend>
 
     <label for="dataCategory">Data Category*</label>
-    <select name="dataCategory" id="dataCategory" ng-model="dataCategory">
+    <select name="dataCategory" id="dataCategory" ng-model="$root.dataCategory">
       <option ng-repeat="option in knownDataCategories" value="{{option}}">{{option}}</option>
     </select>
     <br/>

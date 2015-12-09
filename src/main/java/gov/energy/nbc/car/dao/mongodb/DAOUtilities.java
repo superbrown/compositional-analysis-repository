@@ -198,13 +198,13 @@ public class DAOUtilities {
         List<Document> documentasWithClientSidFiledNames = new ArrayList();
 
         for (Document document : documents) {
-            documentasWithClientSidFiledNames.add(toClientSideFieldNames(document));
+            documentasWithClientSidFiledNames.add(toDocumentWithClientSideFieldNames(document));
         }
 
         return documentasWithClientSidFiledNames;
     }
 
-    public static Document toClientSideFieldNames(Document document) {
+    public static Document toDocumentWithClientSideFieldNames(Document document) {
 
         Document clientSideFieldNames = new Document();
 
@@ -217,7 +217,7 @@ public class DAOUtilities {
         return clientSideFieldNames;
     }
 
-    public static Set<String> toClientSideFieldNames(Set<String> columnNames) {
+    public static Set<String> toDocumentsWithClientSideFieldNames(Set<String> columnNames) {
 
         Set<String> clientSideFieldNames = new HashSet<>();
 

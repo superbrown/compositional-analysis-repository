@@ -226,7 +226,7 @@ public class m_RowDAO extends DAO implements IRowDAO {
 
             Document data = (Document) document.get(RowDocument.ATTR_KEY__DATA);
 
-            results.add(DAOUtilities.toClientSideFieldNames(data));
+            results.add(DAOUtilities.toDocumentWithClientSideFieldNames(data));
         }
 
         performanceLogger.done();

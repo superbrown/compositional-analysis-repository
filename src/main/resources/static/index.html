@@ -39,7 +39,8 @@
   <script src="code.angularjs.org/angular-1.4.7/angular-resource.min.js"></script>
   <script src="code.angularjs.org/angular-1.4.7/angular-route.min.js"></script>
 
-  <script type="text/javascript" src="ng-grid-1.3.2.js"></script>
+  <script type="text/javascript" src="bower_components/angular-ui-grid/ui-grid.min.js"></script>
+  <link href="bower_components/angular-ui-grid/ui-grid.css" rel="stylesheet"/>
 
   <!-- Our Stuff -->
   <link href="css/app.css" rel="stylesheet">
@@ -62,12 +63,18 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#">Data Repository - {{dataCategory}} </a>
+
+        <span class="navbar-brand">{{$root.dataCategory}} Data Repository
+        </span>
+
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
+
           <li class="active"><a href="#/uploadData">Upload Data</a></li>
+
           <li><a href="#/findData">Find Data</a></li>
+
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Settings <span class="caret"></span></a>
             <ul class="dropdown-menu">
@@ -88,7 +95,12 @@
 
 <div class="container theme-showcase" role="main">
 
-  <div ng-view></div>
+  <img src="/img/progressAnimation.gif" ng-show="$root.showProgressAnimation" />
 
+  <!--area where pages display-->
+  <div ng-view>
+  </div>
+
+  </div>
 </body>
 </html>
