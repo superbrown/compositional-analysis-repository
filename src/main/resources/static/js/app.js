@@ -117,16 +117,9 @@ drApp.controller('findDataController',
             $scope.knownDataTypes = '';
             $scope.knownComparisonOperators = '';
 
-            $scope.columnName = '';
-            $scope.dataTypeId = '';
-            $scope.comparisonOperatorId = '';
+            $scope.criteria = [];
 
-            $scope.value_asString = '';
-            $scope.value_asNumber = '';
-            $scope.value_asDate = '';
-            $scope.value_asBoolean = '';
-
-            $scope.searchResults = '';
+            $scope.searchResults = [];
             $scope.searchResultsGridConfig = {
                 data: 'searchResults',
                 enableSorting: true,
@@ -140,15 +133,9 @@ drApp.controller('findDataController',
 
             $scope.searchComplete = false;
 
-            $scope.$root.$watch('dataCategory', function() {
+            $scope.$root.$watch('$root.dataCategory', function() {
                 $scope.$root.showProgressAnimation = true;
                 restService.getKnownColumnNames($scope, $http);
-                $scope.$root.showProgressAnimation = false;
-            });
-
-            $scope.$watch('dataTypeId', function() {
-                $scope.$root.showProgressAnimation = true;
-                restService.getKnownComparisonOperators($scope, $http);
                 $scope.$root.showProgressAnimation = false;
             });
 
@@ -158,7 +145,37 @@ drApp.controller('findDataController',
                 $scope.$root.showProgressAnimation = false;
             }
 
+            $scope.addCriterion = function() {
+
+                var criterion = {};
+                criterion.columnName = '';
+                criterion.dataTypeId = '';
+                criterion.knownComparisonOperators == [];
+                criterion.comparisonOperatorId = '';
+
+                criterion.value_asString = '';
+                criterion.value_asNumber = '';
+                criterion.value_asDate = '';
+                criterion.value_asBoolean = '';
+
+                criterion.removeMe = function() {
+                    var index = $scope.criteria.indexOf(criterion);
+                    $scope.criteria = $scope.criteria.splice(index, 1);
+                };
+
+                $scope.criteria.push(criterion);
+
+                var indexOfThisNewCriterion = ($scope.criteria.length - 1);
+
+                $scope.$watch('criteria[' + indexOfThisNewCriterion + '].dataTypeId', function() {
+                    $scope.$root.showProgressAnimation = true;
+                    restService.getKnownComparisonOperators($http, criterion);
+                    $scope.$root.showProgressAnimation = false;
+                });
+            }
+
             // init
+            $scope.addCriterion();
             restService.getKnownDataCategories($http, $scope);
             restService.getKnownDataTypes($http, $scope);
         }
@@ -206,14 +223,15 @@ drApp.service('restService', function() {
             });
     }
 
-    this.getKnownComparisonOperators = function (scope, http) {
+    this.getKnownComparisonOperators = function (http, criterion) {
 
-        var dataTypeId = scope.dataTypeId;
-        if (dataTypeId === '') return;
+        dataTypeId = criterion.dataTypeId;
+
+        if (dataTypeId === '' || dataTypeId === undefined) return;
 
         http.get('api/dataType/comparisonOperators?dataType=' + dataTypeId)
             .success(function (result) {
-                scope.knownComparisonOperators = result;
+                criterion.knownComparisonOperators = result;
             })
             .error(function (data, status) {
                 console.log(status + ': ' + data);
@@ -225,24 +243,44 @@ drApp.service('restService', function() {
         scope.searchComplete = false;
         scope.searchResults = [];
 
+        var criteriaPackagedForRestCall = [];
+
+        // make sure we're limitting outselves to the data category in question
+        criteriaPackagedForRestCall.push(
+            {
+                'name': ' Data Category',
+                'comparisonOperator': 'EQUALS',
+                'value': scope.$root.dataCategory
+            }
+        );
+
+        for (i = 0; i < scope.criteria.length; i++) {
+
+            var criterion = scope.criteria[i];
+            var value;
+
+            var dataTypeId = criterion.dataTypeId;
+            if (dataTypeId == 'STRING') {value = criterion.value_asString;}
+            else if (dataTypeId == 'NUMBER') {value = criterion.value_asNumber;}
+            else if (dataTypeId == 'DATE') {value = criterion.value_asDate;}
+            else if (dataTypeId == 'BOOLEAN') {value = criterion.value_asBoolean;}
+
+            criteriaPackagedForRestCall.push(
+                {
+                    'name': criterion.columnName,
+                    'comparisonOperator': criterion.comparisonOperatorId,
+                    'value': value
+                }
+            );
+        }
+
         var req = {
             method: 'POST',
             url: '/api/rows/flat',
             headers: {
                 'Content-Type': undefined
             },
-            data: [
-                {
-                    'name': ' Data Category',
-                    'comparisonOperator': 'EQUALS',
-                    'value': scope.$root.dataCategory
-                },
-                {
-                    'name': scope.columnName,
-                    'comparisonOperator': scope.comparisonOperatorId,
-                    'value': scope.value_asString
-                }
-            ]
+            data: criteriaPackagedForRestCall
         }
 
         http(req)

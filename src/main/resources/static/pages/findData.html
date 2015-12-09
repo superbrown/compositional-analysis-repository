@@ -5,82 +5,103 @@
 <div class="page-content">
 
   <div>
-    <label for="dataCategory">Data Category*</label>
-    <select name="dataCategory" id="dataCategory" ng-model="$root.dataCategory">
-      <option ng-repeat="dataCategory in knownDataCategories" value="{{dataCategory}}">{{dataCategory}}</option>
-    </select>
-    <br/>
+
+    <div>
+      <label for="dataCategory">Data Category*</label>
+      <select name="dataCategory" id="dataCategory" ng-model="$root.dataCategory">
+        <option ng-repeat="dataCategory in knownDataCategories" value="{{dataCategory}}">{{dataCategory}}</option>
+      </select>
+    </div>
 
     <div ng-hide="$root.dataCategory === ''">
 
       <legend>Search Criteria</legend>
 
-      <select name="columnName" id="columnName" ng-model="columnName"
-              ng-options="knownColumnName as knownColumnName for knownColumnName in knownColumnNames">
-      </select>
+      <div ng:repeat="criterion in criteria">
 
-      <span ng-hide="columnName === ''">
-
-        <select name="dataTypeId" id="dataTypeId" ng-model="dataTypeId">
-          <option ng:repeat="knownDataType in knownDataTypes" value="{{knownDataType.id}}">{{knownDataType.label}}</option>
+        <select name="columnName" id="columnName" ng-model="criterion.columnName"
+                ng-options="knownColumnName as knownColumnName for knownColumnName in knownColumnNames">
         </select>
 
-        <span ng-hide="dataTypeId === ''">
-          <select name="comparisonOperatorId" id="comparisonOperatorId" ng-model="comparisonOperatorId">
-            <option ng:repeat="knownComparisonOperator in knownComparisonOperators" value="{{knownComparisonOperator.id}}">{{knownComparisonOperator.label}}</option>
+        <span ng-hide="criterion.columnName === ''">
+
+          <select name="dataTypeId" id="dataTypeId" ng-model="criterion.dataTypeId">
+            <option ng:repeat="knownDataType in knownDataTypes" value="{{knownDataType.id}}">
+              {{knownDataType.label}}
+            </option>
           </select>
 
-          <span ng-hide="comparisonOperatorId === ''">
+          <span ng-hide="criterion.dataTypeId === ''">
 
-            <span ng-show="dataTypeId === 'STRING'">
-              <input ng-model="value_asString" required type="text"/>
+            <select name="comparisonOperatorId" id="comparisonOperatorId" ng-model="criterion.comparisonOperatorId">
+              <option ng:repeat="knownComparisonOperator in criterion.knownComparisonOperators" value="{{knownComparisonOperator.id}}">
+                {{knownComparisonOperator.label}}
+              </option>
+            </select>
+
+            <span ng-hide="criterion.comparisonOperatorId === ''">
+
+              <span ng-show="criterion.dataTypeId === 'STRING'">
+                <input ng-model="criterion.value_asString" required type="text"/>
+              </span>
+
+              <span ng-show="criterion.dataTypeId === 'NUMBER'">
+                <input ng-model="criterion.value_asNumber" required type="text"/>
+              </span>
+
+              <span ng-show="criterion.dataTypeId === 'DATE'">
+                <input ng-model="criterion.value_asDate" required type="text"/>
+              </span>
+
+              <span ng-show="criterion.dataTypeId === 'BOOLEAN'">
+                <input ng-model="criterion.value_asBoolean" required type="text"/>
+              </span>
+
+              <span class="glyphicon glyphicon-plus" aria-hidden="true" ng-click="addCriterion(criterion)"></span>
+              <span class="glyphicon glyphicon-minus" aria-hidden="true" ng-click="criterion.removeMe()" ng-show="true"></span>
             </span>
 
-            <span ng-show="dataTypeId === 'NUMBER'">
-              <input ng-model="value_asNumber" required type="text"/>
-            </span>
-
-            <span ng-show="dataTypeId === 'DATE'">
-              <input ng-model="value_asDate" required type="text"/>
-            </span>
-
-            <span ng-show="dataTypeId === 'BOOLEAN'">
-              <input ng-model="value_asBoolean" required type="text"/>
-            </span>
-
-            <div style="margin-top: 20px">
-              <button class="btn btn-default" ng-click="handleSearchSubmission()">
-                Search
-              </button>
-            </div>
           </span>
 
         </span>
 
-      </span>
+      </div>
 
     </div>
+
   </div>
+</div>
 
-  <div ng-hide="searchComplete === false" style="margin-top: 20px">
+<span ng-hide="criteria[0].comparisonOperatorId === ''">
 
-    <div style="width: inherit;">
+    <div style="margin-top: 20px">
+      <button class="btn btn-default" ng-click="handleSearchSubmission()">
+        Search
+      </button>
+    </div>
+
+   </span>
+
+
+<div ng-hide="searchComplete === false" style="margin-top: 20px">
+
+  <div style="width: inherit;">
       <span>
         Number of matches: {{searchResults.length}}
       </span>
-      <span style="float: right" ng-click="downloadSearchResults">
+      <span style="float: right" ng-show="(searchResults.length > 0)" ng-click="downloadSearchResults">
         <a href="#/findData" ng-click="downloadSearchResults">download search results</a>
       </span>
-    </div>
-
-    <div
-        ng-hide="searchResults.length === 0"
-         ui-grid="searchResultsGridConfig"
-            ui-grid-auto-resize
-            ui-grid-move-columns
-            ui-grid-resize-columns
-            ui-grid-auto-resize />
-
   </div>
+
+  <div
+      ng-hide="searchResults.length === 0"
+      ui-grid="searchResultsGridConfig"
+      ui-grid-auto-resize
+      ui-grid-move-columns
+      ui-grid-resize-columns
+      ui-grid-auto-resize />
+
+</div>
 
 </div>
