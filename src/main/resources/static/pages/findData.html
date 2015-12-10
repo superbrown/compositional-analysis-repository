@@ -17,7 +17,7 @@
 
       <legend>Search Criteria</legend>
 
-      <div ng:repeat="criterion in criteria" style="margin-top: 4px">
+      <div ng:repeat="criterion in $root.searchCriteria" style="margin-top: 4px">
 
         <select name="columnName" id="columnName" ng-model="criterion.columnName"
                 ng-options="knownColumnName as knownColumnName for knownColumnName in knownColumnNames">
@@ -42,19 +42,22 @@
             <span ng-hide="criterion.comparisonOperatorId === ''">
 
               <span ng-show="criterion.dataTypeId === 'STRING'">
-                <input ng-model="criterion.value_asString" required type="text"/>
+                <input ng-model="criterion.value_asString" type="text"/>
               </span>
 
               <span ng-show="criterion.dataTypeId === 'NUMBER'">
-                <input ng-model="criterion.value_asNumber" required type="text"/>
+                <input ng-model="criterion.value_asNumber" type="number"/>
               </span>
 
               <span ng-show="criterion.dataTypeId === 'DATE'">
-                <input ng-model="criterion.value_asDate" ui-date required type="text"/>
+                <input ng-model="criterion.value_asDate" ui-date type="text"/>
               </span>
 
               <span ng-show="criterion.dataTypeId === 'BOOLEAN'">
-                <input ng-model="criterion.value_asBoolean" required type="text"/>
+                <select ng-model="criterion.value_asBoolean">
+                  <option value="TRUE">TRUE</option>
+                  <option value="FALSE">FALSE</option>
+                </select>
               </span>
 
             </span>
@@ -63,8 +66,10 @@
 
         </span>
 
-        <span class="glyphicon glyphicon-plus" aria-hidden="true" ng-click="addCriterion(criterion)" ng-show="criterion == criteria[criteria.length - 1]"></span>
-        <span class="glyphicon glyphicon-minus" aria-hidden="true" ng-click="criterion.removeMe()" ng-show="criteria.length > 1"></span>
+        <span style="margin-left: 4px">
+          <span class="glyphicon glyphicon-plus" aria-hidden="true" ng-click="addCriterion(criterion)" ng-show="criterion == $root.searchCriteria[$root.searchCriteria.length - 1]"></span>
+          <span class="glyphicon glyphicon-minus" aria-hidden="true" ng-click="criterion.removeMe()" ng-show="$root.searchCriteria.length > 1"></span>
+        </span>
 
       </div>
 
@@ -73,7 +78,7 @@
   </div>
 </div>
 
-<span ng-hide="criteria[0].comparisonOperatorId === ''">
+<span ng-hide="$root.searchCriteria[0].comparisonOperatorId === ''">
 
     <div style="margin-top: 20px">
       <button class="btn btn-default" ng-click="handleSearchSubmission()">
@@ -84,24 +89,23 @@
    </span>
 
 
-<div ng-hide="searchComplete === false" style="margin-top: 20px">
+<div ng-hide="$root.searchComplete === false" style="margin-top: 20px">
 
   <div style="width: inherit;">
       <span>
-        Number of matches: {{searchResults.length}}
+        Number of matches: {{$root.searchResults.length}}
       </span>
-      <span style="float: right" ng-show="(searchResults.length > 0)" ng-click="downloadSearchResults">
+      <span style="float: right" ng-show="($root.searchResults.length > 0)">
         <a href="#/findData" ng-click="downloadSearchResults">download search results</a>
       </span>
   </div>
 
   <div
-      ng-hide="searchResults.length === 0"
+      ng-hide="$root.searchResults.length === 0"
       ui-grid="searchResultsGridConfig"
       ui-grid-auto-resize
       ui-grid-move-columns
-      ui-grid-resize-columns
-      ui-grid-auto-resize />
+      ui-grid-resize-columns />
 
 </div>
 
