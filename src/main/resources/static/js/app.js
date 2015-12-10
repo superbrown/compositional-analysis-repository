@@ -136,7 +136,7 @@ drApp.controller('uploadController',
             }
 
             // init
-            restService.getKnownDataCategories($http, $scope);
+            restService.populateKnownDataCategories($http, $scope);
         }
     ]
 );
