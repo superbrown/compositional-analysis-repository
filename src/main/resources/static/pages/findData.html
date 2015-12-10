@@ -17,7 +17,7 @@
 
       <legend>Search Criteria</legend>
 
-      <div ng:repeat="criterion in criteria">
+      <div ng:repeat="criterion in criteria" style="margin-top: 4px">
 
         <select name="columnName" id="columnName" ng-model="criterion.columnName"
                 ng-options="knownColumnName as knownColumnName for knownColumnName in knownColumnNames">
@@ -50,20 +50,21 @@
               </span>
 
               <span ng-show="criterion.dataTypeId === 'DATE'">
-                <input ng-model="criterion.value_asDate" required type="text"/>
+                <input ng-model="criterion.value_asDate" ui-date required type="text"/>
               </span>
 
               <span ng-show="criterion.dataTypeId === 'BOOLEAN'">
                 <input ng-model="criterion.value_asBoolean" required type="text"/>
               </span>
 
-              <span class="glyphicon glyphicon-plus" aria-hidden="true" ng-click="addCriterion(criterion)"></span>
-              <span class="glyphicon glyphicon-minus" aria-hidden="true" ng-click="criterion.removeMe()" ng-show="true"></span>
             </span>
 
           </span>
 
         </span>
+
+        <span class="glyphicon glyphicon-plus" aria-hidden="true" ng-click="addCriterion(criterion)" ng-show="criterion == criteria[criteria.length - 1]"></span>
+        <span class="glyphicon glyphicon-minus" aria-hidden="true" ng-click="criterion.removeMe()" ng-show="criteria.length > 1"></span>
 
       </div>
 

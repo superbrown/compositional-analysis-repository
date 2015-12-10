@@ -26,7 +26,8 @@ var drApp = angular.module('drApp',
         'ngRoute',
         'ui.grid',
         'ui.grid.resizeColumns',
-        'ui.grid.autoResize'
+        'ui.grid.autoResize',
+        'ui.date',
     ]);
 
 drApp.config(function ($routeProvider) {
@@ -159,8 +160,8 @@ drApp.controller('findDataController',
                 criterion.value_asBoolean = '';
 
                 criterion.removeMe = function() {
-                    var index = $scope.criteria.indexOf(criterion);
-                    $scope.criteria = $scope.criteria.splice(index, 1);
+                    var index = $scope.criteria.indexOf(this);
+                    $scope.criteria.splice(index, 1);
                 };
 
                 $scope.criteria.push(criterion);
@@ -262,7 +263,7 @@ drApp.service('restService', function() {
             var dataTypeId = criterion.dataTypeId;
             if (dataTypeId == 'STRING') {value = criterion.value_asString;}
             else if (dataTypeId == 'NUMBER') {value = criterion.value_asNumber;}
-            else if (dataTypeId == 'DATE') {value = criterion.value_asDate;}
+            else if (dataTypeId == 'DATE') {value = "ISODate('" + JSON.stringify(criterion.value_asDate) + "')";}
             else if (dataTypeId == 'BOOLEAN') {value = criterion.value_asBoolean;}
 
             criteriaPackagedForRestCall.push(
