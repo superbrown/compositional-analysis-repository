@@ -14,24 +14,24 @@
     <br/>
 
     <label for="submissionDate">Submission Date*</label>
-    <input ng-model="submissionDate" required type="text" id="submissionDate" name="submissionDate"/>
+    <input ng-model="$root.submissionDate" required type="text" id="submissionDate" name="submissionDate"/>
     <br/>
 
     <label for="submitter">Submitter*</label>
-    <input ng-model="submitter" required id="submitter" name="submitter" type="text" style="width: 300px;"/>
+    <input ng-model="$root.submitter" required id="submitter" name="submitter" type="text" style="width: 300px;"/>
     <!--<span class="alert" ng-class="{'alert-warning':submitter.length > 5}" >Sumitter is required!</span>-->
     <br/>
 
     <label for="projectName">Project Name</label>
-    <input ng-model="projectName" required id="projectName" name="projectName" type="text" style="width: 300px;"/>
+    <input ng-model="$root.projectName" required id="projectName" name="projectName" type="text" style="width: 300px;"/>
     <br/>
 
     <label for="chargeNumber">Charge #</label>
-    <input ng-model="chargeNumber" id="chargeNumber" name="chargeNumber" type="text" style="width: 300px;"/>
+    <input ng-model="$root.chargeNumber" id="chargeNumber" name="chargeNumber" type="text" style="width: 300px;"/>
     <br/>
 
     <label for="comments">Comments</label>
-    <textarea ng-model="comments" id="comments" name="comments" rows="2" style="width: 300px;" ></textarea>
+    <textarea ng-model="$root.comments" id="comments" name="comments" rows="2" style="width: 300px;" ></textarea>
     <br/>
 
   </div>
@@ -41,19 +41,19 @@
 
     <label for="dataFile">Excel or CSV file</label>
     <br/>
-    <input id="dataFile" ng-model="dataFile" required name="dataFile" type="file" style="display: inline; margin-bottom: 5px;" />
+    <input id="dataFile" ng-model="$root.dataFile" required name="dataFile" type="file" style="display: inline; margin-bottom: 5px;" />
     <br/>
     <span ng-show="hasExcelWorkbookFileSuffix(dataFile)">
       <label style="width: auto;" for="nameOfSheetContainingData">Name of sheet within the workbook containing the data to be ingested*</label>
       <br/>
-      <input id="nameOfSheetContainingData" ng-model="nameOfSheetContainingData" name="nameOfSheetContainingData" type="text" style="width: 300px;" />
+      <input id="nameOfSheetContainingData" ng-model="$root.nameOfSheetContainingData" name="nameOfSheetContainingData" type="text" style="width: 300px;" />
     </span>
   </div>
 
   <div>
     <legend>Attachments</legend>
 
-    <input id="attachments" ng-model="attachments" name="attachments" type="file" multiple="multiple" /><br/><br/>
+    <input id="attachments" ng-model="$root.attachments" name="attachments" type="file" multiple="multiple" /><br/><br/>
 
   </div>
 

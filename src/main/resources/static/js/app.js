@@ -27,6 +27,7 @@ var drApp = angular.module('drApp',
         'ui.grid',
         'ui.grid.resizeColumns',
         'ui.grid.autoResize',
+        'ui.grid.moveColumns',
         'ui.date',
     ]);
 
@@ -47,32 +48,67 @@ drApp.config(function ($routeProvider) {
 
 drApp.controller('menuController',
     [
-        '$scope', '$http', '$log', '$filter', '$resource', '$location', 'restService', 'globalValues',
-        function($scope, $http, $log, $filter, $resource, $location, restService, globalValues) {
+        '$scope', '$http', '$log', '$filter', '$resource', '$location', 'restService',
+        function($scope, $http, $log, $filter, $resource, $location, restService) {
 
             $scope.$root.showProgressAnimation = false;
             $scope.$root.dataCategory = '';
+
+            $scope.$root.showProgressAnimation = false;
+
+            $scope.$root.knownDataCategories = '';
+            $scope.$root.knownColumnNames = '';
+            $scope.$root.knownDataTypes = '';
+            $scope.$root.knownComparisonOperators = '';
+
+            $scope.$root.knownDataCategories = '';
+
+            $scope.$root.submissionDate = '';
+            $scope.$root.submitter = '';
+            $scope.$root.projectName = '';
+            $scope.$root.chargeNumber = '';
+            $scope.$root.comments = '';
+            $scope.$root.columnNames = '';
+            $scope.$root.nameOfSheetContainingData = '';
+
+            $scope.$root.searchCriteria = [];
+
+            $scope.$root.searchResults = [];
+            $scope.$root.searchResultsGridConfig = {
+                data: '$root.searchResults',
+                enableSorting: true,
+                enableColumnResizing: true,
+                enableFiltering: false,
+                enableGridMenu: false,
+                showGridFooter: false,
+                showColumnFooter: false,
+                fastWatch: false,
+            }
+
+            $scope.$root.menuItmeClass_uploadData = '';
+            $scope.$root.menuItmeClass_findData = '';
+
+            $scope.navigate_uploadData = function () {
+                $scope.$root.menuItmeClass_uploadData = 'active';
+                $scope.$root.menuItmeClass_findData = '';
+            }
+
+            $scope.navigate_findData = function () {
+                $scope.$root.menuItmeClass_uploadData = '';
+                $scope.$root.menuItmeClass_findData = 'active';
+            }
         }
     ]
 );
 
 drApp.controller('uploadController',
     [
-        '$scope', '$http', '$log', '$filter', '$resource', '$location', 'restService', 'globalValues',
-        function($scope, $http, $log, $filter, $resource, $location, restService, globalValues) {
+        '$scope', '$http', '$log', '$filter', '$resource', '$location', 'restService',
+        function($scope, $http, $log, $filter, $resource, $location, restService) {
 
             $scope.$root.selectedPage = "Upload Data";
 
             $scope.$root.showProgressAnimation = false;
-
-            $scope.knownDataCategories = '';
-
-            $scope.submissionDate = '';
-            $scope.submitter = '';
-            $scope.projectName = '';
-            $scope.chargeNumber = '';
-            $scope.comments = '';
-            $scope.columnNames = '';
 
             $scope.uploadData = function () {
 
@@ -80,11 +116,12 @@ drApp.controller('uploadController',
 
                 $http.post('/api/addDataset',
                     {
-                        submissionDate: $scope.submissionDate,
-                        submitter: $scope.submitter,
-                        projectName: $scope.projectName,
-                        chargeNumber: $scope.chargeNumber,
-                        comments: $scope.comments
+                        submissionDate: $scope.$root.submissionDate,
+                        submitter: $scope.$root.submitter,
+                        projectName: $scope.$root.projectName,
+                        chargeNumber: $scope.$root.chargeNumber,
+                        comments: $scope.$root.comments,
+                        nameOfSheetContainingData: $scope.$root.nameOfSheetContainingData,
                     }
                 )
                     .success(function (result) {
@@ -106,33 +143,10 @@ drApp.controller('uploadController',
 
 drApp.controller('findDataController',
     [
-        '$scope', '$http', '$log', '$filter', '$resource', '$location', 'restService', 'globalValues',
-        function($scope, $http, $log, $filter, $resource, $location, restService, globalValues) {
+        '$scope', '$http', '$log', '$filter', '$resource', '$location', 'restService',
+        function($scope, $http, $log, $filter, $resource, $location, restService) {
 
             $scope.$root.selectedPage = "Find Data";
-
-            $scope.$root.showProgressAnimation = false;
-
-            $scope.knownDataCategories = '';
-            $scope.knownColumnNames = '';
-            $scope.knownDataTypes = '';
-            $scope.knownComparisonOperators = '';
-
-            $scope.criteria = [];
-
-            $scope.searchResults = [];
-            $scope.searchResultsGridConfig = {
-                data: 'searchResults',
-                enableSorting: true,
-                enableColumnResizing: true,
-                enableFiltering: false,
-                enableGridMenu: false,
-                showGridFooter: false,
-                showColumnFooter: false,
-                fastWatch: false,
-            }
-
-            $scope.searchComplete = false;
 
             $scope.$root.$watch('$root.dataCategory', function() {
                 $scope.$root.showProgressAnimation = true;
@@ -160,15 +174,15 @@ drApp.controller('findDataController',
                 criterion.value_asBoolean = '';
 
                 criterion.removeMe = function() {
-                    var index = $scope.criteria.indexOf(this);
-                    $scope.criteria.splice(index, 1);
+                    var index = $scope.$root.searchCriteria.indexOf(this);
+                    $scope.$root.searchCriteria.splice(index, 1);
                 };
 
-                $scope.criteria.push(criterion);
+                $scope.$root.searchCriteria.push(criterion);
 
-                var indexOfThisNewCriterion = ($scope.criteria.length - 1);
+                var indexOfThisNewCriterion = ($scope.$root.searchCriteria.length - 1);
 
-                $scope.$watch('criteria[' + indexOfThisNewCriterion + '].dataTypeId', function() {
+                $scope.$watch('$root.searchCriteria[' + indexOfThisNewCriterion + '].dataTypeId', function() {
                     $scope.$root.showProgressAnimation = true;
                     restService.getKnownComparisonOperators($http, criterion);
                     $scope.$root.showProgressAnimation = false;
@@ -176,16 +190,15 @@ drApp.controller('findDataController',
             }
 
             // init
-            $scope.addCriterion();
+            if ($scope.$root.searchCriteria.length === 0) {
+                $scope.$root.searchComplete = false;
+                $scope.addCriterion();
+            }
             restService.getKnownDataCategories($http, $scope);
             restService.getKnownDataTypes($http, $scope);
         }
     ]
 );
-
-drApp.service('globalValues', function() {
-
-});
 
 drApp.service('restService', function() {
 
@@ -241,8 +254,8 @@ drApp.service('restService', function() {
 
     this.findData = function (scope, http) {
 
-        scope.searchComplete = false;
-        scope.searchResults = [];
+        scope.$root.searchComplete = false;
+        scope.$root.searchResults = [];
 
         var criteriaPackagedForRestCall = [];
 
@@ -250,25 +263,27 @@ drApp.service('restService', function() {
         criteriaPackagedForRestCall.push(
             {
                 'name': ' Data Category',
+                'dataType': 'STRING',
                 'comparisonOperator': 'EQUALS',
                 'value': scope.$root.dataCategory
             }
         );
 
-        for (i = 0; i < scope.criteria.length; i++) {
+        for (i = 0; i < scope.$root.searchCriteria.length; i++) {
 
-            var criterion = scope.criteria[i];
+            var criterion = scope.$root.searchCriteria[i];
             var value;
 
             var dataTypeId = criterion.dataTypeId;
             if (dataTypeId == 'STRING') {value = criterion.value_asString;}
             else if (dataTypeId == 'NUMBER') {value = criterion.value_asNumber;}
-            else if (dataTypeId == 'DATE') {value = "ISODate('" + JSON.stringify(criterion.value_asDate) + "')";}
-            else if (dataTypeId == 'BOOLEAN') {value = criterion.value_asBoolean;}
+            else if (dataTypeId == 'DATE') {value = criterion.value_asDate;}
+            else if (dataTypeId == 'BOOLEAN') { value = criterion.value_asBoolean;}
 
             criteriaPackagedForRestCall.push(
                 {
                     'name': criterion.columnName,
+                    'dataType': criterion.dataTypeId,
                     'comparisonOperator': criterion.comparisonOperatorId,
                     'value': value
                 }
@@ -286,11 +301,11 @@ drApp.service('restService', function() {
 
         http(req)
             .success(function (result) {
-                scope.searchComplete = true;
-                scope.searchResults = result;
+                scope.$root.searchComplete = true;
+                scope.$root.searchResults = result;
             })
             .error(function (data, status) {
-                scope.searchComplete = true;
+                scope.$root.searchComplete = true;
                 alert("A failure occurred: " + data);
             });
     }

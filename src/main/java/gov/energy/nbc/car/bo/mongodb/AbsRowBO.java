@@ -12,6 +12,7 @@ import gov.energy.nbc.car.model.IRowDocument;
 import gov.energy.nbc.car.model.mongodb.common.Metadata;
 import gov.energy.nbc.car.model.mongodb.common.StoredFile;
 import gov.energy.nbc.car.model.mongodb.document.RowDocument;
+import gov.energy.nbc.car.restEndpoint.DataType;
 import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
@@ -20,6 +21,7 @@ import org.bson.types.ObjectId;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -67,8 +69,31 @@ public abstract class AbsRowBO implements IRowBO {
             BasicDBObject criterionDocument = (BasicDBObject)criterion;
 
             String name = (String) criterionDocument.get("name");
-            Object value = criterionDocument.get("value");
+            String dataTypeString = (String) criterionDocument.get("dataType");
+            Object dataType = DataType.valueOf(dataTypeString);
+            Object rawValue = criterionDocument.get("value");
             ComparisonOperator comparisonOperator = ComparisonOperator.valueOf((String) criterionDocument.get("comparisonOperator"));
+
+            Object value = null;
+            if (dataType == DataType.STRING) {
+                String aString = rawValue.toString();
+                value = aString;
+            }
+            else if (dataType == DataType.NUMBER) {
+//                Double aDouble = new Double.parseDouble(rawValue.toString());
+//                value = double;
+                value = rawValue;
+            }
+            else if (dataType == DataType.DATE) {
+                Calendar calendar = javax.xml.bind.DatatypeConverter.parseDateTime(rawValue.toString());
+                Date aDate = calendar.getTime();
+                value = aDate;
+            }
+            else if (dataType == DataType.BOOLEAN) {
+                Boolean aBoolean = Boolean.valueOf(rawValue.toString());
+                value = aBoolean;
+            }
+
 
             SearchCriterion searchCriterion = new SearchCriterion(name, value, comparisonOperator);
 
@@ -117,7 +142,7 @@ public abstract class AbsRowBO implements IRowBO {
             Document data = (Document) document.get(RowDocument.ATTR_KEY__DATA);
 
             for (String name : data.keySet()) {
-                row.put(name, metadata.get(name));
+                row.put(name, data.get(name));
             }
 
             rowsFlat.add(row);

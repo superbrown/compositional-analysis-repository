@@ -14,6 +14,7 @@ import gov.energy.nbc.car.dao.mongodb.MongoFieldNameEncoder;
 import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
 import gov.energy.nbc.car.model.*;
 import gov.energy.nbc.car.model.mongodb.common.Metadata;
+import gov.energy.nbc.car.model.mongodb.common.Row;
 import gov.energy.nbc.car.model.mongodb.document.CellDocument;
 import gov.energy.nbc.car.model.mongodb.document.RowDocument;
 import gov.energy.nbc.car.settings.ISettings;
@@ -211,9 +212,14 @@ public class s_RowDAO extends DAO implements IRowDAO {
         attributesToInclude.add(RowDocument.ATTR_KEY__ID);
         attributesToInclude.add(RowDocument.ATTR_KEY__DATASET_ID);
         attributesToInclude.add(RowDocument.ATTR_KEY__METADATA);
+        attributesToInclude.add(
+                    RowDocument.ATTR_KEY__DATA + "." +
+                            MongoFieldNameEncoder.toMongoSafeFieldName(Row.ATTR_KEY__ROW_NUMBER));
 
         for (String columnIncludedInQuery : dataColumnNamesToIncludedInQueryResults) {
-            attributesToInclude.add(RowDocument.ATTR_KEY__DATA + "." + columnIncludedInQuery);
+            attributesToInclude.add(
+                    RowDocument.ATTR_KEY__DATA + "." +
+                            MongoFieldNameEncoder.toMongoSafeFieldName(columnIncludedInQuery));
         }
 
         Bson projection = fields(include(attributesToInclude));
