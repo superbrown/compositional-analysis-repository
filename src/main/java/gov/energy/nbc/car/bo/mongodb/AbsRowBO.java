@@ -1,5 +1,6 @@
 package gov.energy.nbc.car.bo.mongodb;
 
+
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
@@ -80,9 +81,8 @@ public abstract class AbsRowBO implements IRowBO {
                 value = aString;
             }
             else if (dataType == DataType.NUMBER) {
-//                Double aDouble = new Double.parseDouble(rawValue.toString());
-//                value = double;
-                value = rawValue;
+                Double aDouble = new Double(rawValue.toString());
+                value = aDouble;
             }
             else if (dataType == DataType.DATE) {
                 Calendar calendar = javax.xml.bind.DatatypeConverter.parseDateTime(rawValue.toString());

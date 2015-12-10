@@ -162,7 +162,8 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
 
         if (data instanceof Document) {
             Document dataDocument = (Document) data;
-            assertTrue(dataDocument.keySet().size() == 3);
+            assertTrue(dataDocument.keySet().size() == 4);
+            assertTrue(((Integer)dataDocument.get(" Original Document Row Number")) == 0);
             assertTrue(((Integer)dataDocument.get("Some Column Name")) == 1);
             assertTrue(((Double)dataDocument.get("Float Values Column Name")) == 1.22);
             assertTrue(dataDocument.get("Additional Column Name 1").equals("a1"));

@@ -8,7 +8,7 @@ import gov.energy.nbc.car.settings.Settings;
 public abstract class TestUsingTestData {
 
     static public boolean SUSPEND_DATA_SEEDING = false;
-    static public boolean SUSPEND_DATA_CLEANUP = true;
+    static public boolean SUSPEND_DATA_CLEANUP = false;
 
     public static final String[] DEFAULT_SET_OF_DATA_CATEGORIES = new String[] {"Algea", "ATP3", "Biomas"};
 
