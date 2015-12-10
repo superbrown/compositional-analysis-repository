@@ -7,32 +7,40 @@
   <div>
     <legend>Metadata</legend>
 
-    <label for="dataCategory">Data Category*</label>
-    <select name="dataCategory" id="dataCategory" ng-model="$root.dataCategory">
-      <option ng-repeat="option in knownDataCategories" value="{{option}}">{{option}}</option>
-    </select>
-    <br/>
+    <div style="margin-bottom: 2px">
+      <label for="dataCategory">Data Category*</label>
+      <select name="dataCategory" id="dataCategory" ng-model="$root.dataCategory">
+        <option ng-repeat="option in knownDataCategories" value="{{option}}">{{option}}</option>
+      </select>
+    </div>
 
-    <label for="submissionDate">Submission Date*</label>
-    <input ng-model="$root.submissionDate" required type="text" id="submissionDate" name="submissionDate"/>
-    <br/>
+    <div style="margin-bottom: 2px">
+      <label for="submissionDate">Submission Date*</label>
+      <input ng-model="$root.submissionDate" required type="text" id="submissionDate" name="submissionDate"/>
+      <br/>
+    </div>
 
-    <label for="submitter">Submitter*</label>
-    <input ng-model="$root.submitter" required id="submitter" name="submitter" type="text" style="width: 300px;"/>
-    <!--<span class="alert" ng-class="{'alert-warning':submitter.length > 5}" >Sumitter is required!</span>-->
-    <br/>
+    <div style="margin-bottom: 2px">
+      <label for="submitter">Submitter*</label>
+      <input ng-model="$root.submitter" required id="submitter" name="submitter" type="text" style="width: 300px;"/>
+      <!--<span class="alert" ng-class="{'alert-warning':submitter.length > 5}" >Sumitter is required!</span>-->
+    </div>
 
-    <label for="projectName">Project Name</label>
-    <input ng-model="$root.projectName" required id="projectName" name="projectName" type="text" style="width: 300px;"/>
-    <br/>
+    <div style="margin-bottom: 2px">
 
-    <label for="chargeNumber">Charge #</label>
-    <input ng-model="$root.chargeNumber" id="chargeNumber" name="chargeNumber" type="text" style="width: 300px;"/>
-    <br/>
+      <label for="projectName">Project Name</label>
+      <input ng-model="$root.projectName" required id="projectName" name="projectName" type="text" style="width: 300px;"/>
+    </div>
 
-    <label for="comments">Comments</label>
-    <textarea ng-model="$root.comments" id="comments" name="comments" rows="2" style="width: 300px;" ></textarea>
-    <br/>
+    <div style="margin-bottom: 2px">
+      <label for="chargeNumber">Charge #</label>
+      <input ng-model="$root.chargeNumber" id="chargeNumber" name="chargeNumber" type="text" style="width: 300px;"/>
+    </div>
+
+    <div style="margin-bottom: 2px">
+      <label for="comments">Comments</label>
+      <textarea ng-model="$root.comments" id="comments" name="comments" rows="2" style="width: 300px;" ></textarea>
+    </div>
 
   </div>
 

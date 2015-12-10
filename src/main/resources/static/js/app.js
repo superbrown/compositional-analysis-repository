@@ -150,7 +150,7 @@ drApp.controller('findDataController',
 
             $scope.$root.$watch('$root.dataCategory', function() {
                 $scope.$root.showProgressAnimation = true;
-                restService.getKnownColumnNames($scope, $http);
+                restService.populateKnownColumnNames($scope, $http);
                 $scope.$root.showProgressAnimation = false;
             });
 
@@ -160,7 +160,7 @@ drApp.controller('findDataController',
                 $scope.$root.showProgressAnimation = false;
             }
 
-            $scope.addCriterion = function() {
+            $scope.createANewCriterion = function() {
 
                 var criterion = {};
                 criterion.columnName = '';
@@ -184,7 +184,7 @@ drApp.controller('findDataController',
 
                 $scope.$watch('$root.searchCriteria[' + indexOfThisNewCriterion + '].dataTypeId', function() {
                     $scope.$root.showProgressAnimation = true;
-                    restService.getKnownComparisonOperators($http, criterion);
+                    restService.poplulateKnownComparisonOperators($http, criterion);
                     $scope.$root.showProgressAnimation = false;
                 });
             }
@@ -192,17 +192,17 @@ drApp.controller('findDataController',
             // init
             if ($scope.$root.searchCriteria.length === 0) {
                 $scope.$root.searchComplete = false;
-                $scope.addCriterion();
+                $scope.createANewCriterion();
             }
-            restService.getKnownDataCategories($http, $scope);
-            restService.getKnownDataTypes($http, $scope);
+            restService.populateKnownDataCategories($http, $scope);
+            restService.populateKnownDataTypes($http, $scope);
         }
     ]
 );
 
 drApp.service('restService', function() {
 
-    this.getKnownDataCategories = function (http, scope) {
+    this.populateKnownDataCategories = function (http, scope) {
 
         http.get('/api/dataCategory/names/all')
             .success(function (result) {
@@ -213,7 +213,7 @@ drApp.service('restService', function() {
             });
     }
 
-    this.getKnownColumnNames = function (scope, http) {
+    this.populateKnownColumnNames = function (scope, http) {
 
         if (scope.$root.dataCategory === '') return;
 
@@ -226,7 +226,7 @@ drApp.service('restService', function() {
             });
     }
 
-    this.getKnownDataTypes = function (http, scope) {
+    this.populateKnownDataTypes = function (http, scope) {
 
         http.get('api/dataTypes/all')
             .success(function (result) {
@@ -237,7 +237,7 @@ drApp.service('restService', function() {
             });
     }
 
-    this.getKnownComparisonOperators = function (http, criterion) {
+    this.poplulateKnownComparisonOperators = function (http, criterion) {
 
         dataTypeId = criterion.dataTypeId;
 
