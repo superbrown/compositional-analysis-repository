@@ -11,6 +11,7 @@ import gov.energy.nbc.car.dao.dto.SearchCriterion;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.model.IRowDocument;
 import gov.energy.nbc.car.model.mongodb.common.Metadata;
+import gov.energy.nbc.car.model.mongodb.common.Row;
 import gov.energy.nbc.car.model.mongodb.common.StoredFile;
 import gov.energy.nbc.car.model.mongodb.document.RowDocument;
 import gov.energy.nbc.car.restEndpoint.DataType;
@@ -114,35 +115,46 @@ public abstract class AbsRowBO implements IRowBO {
 
             Document row = new Document();
 
-            row.put(RowDocument.ATTR_KEY__DATASET_ID, ((ObjectId) document.get(RowDocument.ATTR_KEY__DATASET_ID)).toHexString());
-
             Document metadata = (Document) document.get(RowDocument.ATTR_KEY__METADATA);
+            Document data = (Document) document.get(RowDocument.ATTR_KEY__DATA);
 
-            for (String name : metadata.keySet()) {
+            // link for downloading the file
+            // DESIGN NOTE: I know, this is the wrong architectural layer. I'm in a time crunch right now.
+            Document uploadedFile = (Document) metadata.get(Metadata.ATTR_KEY__UPLOADED_FILE);
+            String originalFileName = (String) uploadedFile.get(StoredFile.ATTR_KEY__ORIGINAL_FILE_NAME);
+            String datasetId = ((ObjectId) document.get(RowDocument.ATTR_KEY__DATASET_ID)).toHexString();
+            Integer rowNumber = (Integer) data.get(Row.ATTR_KEY__ROW_NUMBER);
+            row.put("Source",
+                    "<a href='/api/dataset/" + datasetId + "/originallyUploadedFile' target='_blank'>" +
+                            originalFileName + "</a> (row " + rowNumber + ")");
 
-                Object value = metadata.get(name);
+//            row.put(Metadata.ATTR_KEY__DATA_CATEGORY, metadata.get(Metadata.ATTR_KEY__DATA_CATEGORY));
+            row.put(Metadata.ATTR_KEY__SUBMISSION_DATE, toString((Date) metadata.get(Metadata.ATTR_KEY__SUBMISSION_DATE)));
+            row.put(Metadata.ATTR_KEY__SUBMITTER, metadata.get(Metadata.ATTR_KEY__SUBMITTER));
+            row.put(Metadata.ATTR_KEY__PROJECT_NAME, metadata.get(Metadata.ATTR_KEY__PROJECT_NAME));
+            row.put(Metadata.ATTR_KEY__CHARGE_NUMBER, metadata.get(Metadata.ATTR_KEY__CHARGE_NUMBER));
+            row.put(Metadata.ATTR_KEY__COMMENTS, metadata.get(Metadata.ATTR_KEY__COMMENTS));
 
-                if (Metadata.ATTR_KEY__UPLOADED_FILE.equals(name)) {
-                    row.put(name, ((Document) value).get(StoredFile.ATTR_KEY__ORIGINAL_FILE_NAME));
+            for (String name : data.keySet()) {
+
+                Object value = data.get(name);
+
+                if (Row.ATTR_KEY__ROW_NUMBER.equals(name)) {
+                    // we already grabbed this above
                 }
-                else if (Metadata.ATTR_KEY__ID.equals(name)) {
+                else if (value instanceof ObjectId) {
                     row.put(name, ((ObjectId) value).toHexString());
                 }
-                else if (Metadata.ATTR_KEY__ATTACHMENTS.equals(name)) {
-                    // don't include
+                else if (value instanceof Number) {
+                    String stringValue = value.toString();
+                    row.put(name, stringValue);
                 }
                 else if (value instanceof Date) {
                     row.put(name, toString((Date) value));
                 }
                 else {
-                    row.put(name, value);
+                    row.put(name, value.toString());
                 }
-            }
-
-            Document data = (Document) document.get(RowDocument.ATTR_KEY__DATA);
-
-            for (String name : data.keySet()) {
-                row.put(name, data.get(name));
             }
 
             rowsFlat.add(row);

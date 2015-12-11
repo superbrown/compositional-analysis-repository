@@ -4,6 +4,7 @@ import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.IPhysicalFileBO;
 import gov.energy.nbc.car.bo.PhysicalFileBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
+import gov.energy.nbc.car.bo.mongodb.AbsDatasetBO;
 import gov.energy.nbc.car.dao.IDatasetDAO;
 import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
 import gov.energy.nbc.car.dao.exception.UnableToDeleteFile;
@@ -33,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class r_DatasetBO implements IDatasetBO {
+public class r_DatasetBO extends AbsDatasetBO {
 
     Logger log = Logger.getLogger(this.getClass());
 
@@ -43,6 +44,8 @@ public class r_DatasetBO implements IDatasetBO {
     protected IDatasetReader_AllFileTypes generalFileReader;
 
     public r_DatasetBO(ISettings settings) {
+
+        super(settings);
 
         datasetDAO = new r_DatasetDAO(settings);
         physicalFileBO = new PhysicalFileBO(settings);

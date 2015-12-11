@@ -3,6 +3,7 @@ package gov.energy.nbc.car.bo.mongodb.multipleCellSchemaApproach;
 import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.PhysicalFileBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
+import gov.energy.nbc.car.bo.mongodb.AbsDatasetBO;
 import gov.energy.nbc.car.dao.IDatasetDAO;
 import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
@@ -33,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class m_DatasetBO implements IDatasetBO {
+public class m_DatasetBO extends AbsDatasetBO {
 
     Logger log = Logger.getLogger(this.getClass());
 
@@ -43,6 +44,8 @@ public class m_DatasetBO implements IDatasetBO {
     protected IDatasetReader_AllFileTypes generalFileReader;
 
     public m_DatasetBO(ISettings settings) {
+
+        super(settings);
 
         datasetDAO = new m_DatasetDAO(settings);
         physicalFileBO = new PhysicalFileBO(settings);

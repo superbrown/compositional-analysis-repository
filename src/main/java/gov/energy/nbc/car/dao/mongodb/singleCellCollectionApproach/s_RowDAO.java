@@ -179,7 +179,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
             }
         }
 
-        List<Document> rows = getRowWithIds(matchingRowIds, dataColumnNamesToIncludedInQueryResults);
+        List<Document> rows = getRowsWithIds(matchingRowIds, dataColumnNamesToIncludedInQueryResults);
 
         return rows;
     }
@@ -204,7 +204,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
         return results;
     }
 
-    protected List<Document> getRowWithIds(Set<ObjectId> rowIds, Set<String> dataColumnNamesToIncludedInQueryResults) {
+    protected List<Document> getRowsWithIds(Set<ObjectId> rowIds, Set<String> dataColumnNamesToIncludedInQueryResults) {
 
         List<String> attributesToInclude = new ArrayList<>();
 
@@ -213,8 +213,8 @@ public class s_RowDAO extends DAO implements IRowDAO {
         attributesToInclude.add(RowDocument.ATTR_KEY__DATASET_ID);
         attributesToInclude.add(RowDocument.ATTR_KEY__METADATA);
         attributesToInclude.add(
-                    RowDocument.ATTR_KEY__DATA + "." +
-                            MongoFieldNameEncoder.toMongoSafeFieldName(Row.ATTR_KEY__ROW_NUMBER));
+                RowDocument.ATTR_KEY__DATA + "." +
+                        MongoFieldNameEncoder.toMongoSafeFieldName(Row.ATTR_KEY__ROW_NUMBER));
 
         for (String columnIncludedInQuery : dataColumnNamesToIncludedInQueryResults) {
             attributesToInclude.add(

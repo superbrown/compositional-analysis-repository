@@ -29,6 +29,7 @@ var drApp = angular.module('drApp',
         'ui.grid.autoResize',
         'ui.grid.moveColumns',
         'ui.date',
+        'ngSanitize',
     ]);
 
 drApp.config(function ($routeProvider) {
@@ -301,6 +302,7 @@ drApp.service('restService', function() {
 
         http(req)
             .success(function (result) {
+
                 scope.$root.searchComplete = true;
                 scope.$root.searchResults = result;
             })
