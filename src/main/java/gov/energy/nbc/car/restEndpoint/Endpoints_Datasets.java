@@ -13,10 +13,14 @@ import gov.energy.nbc.car.utilities.fileReader.exception.UnsupportedFileExtensio
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -210,6 +214,23 @@ public class Endpoints_Datasets {
 
         return create_SUCCESS_response(dataset);
     }
+
+    @RequestMapping(value="/api/dataset/{datasetId}/originallyUploadedFile", method = RequestMethod.GET, produces = "application/json")
+    public  ResponseEntity<InputStreamResource> downloadDataset(
+            @PathVariable(value = "datasetId") String datasetId) throws IOException {
+
+        IDatasetBO datasetBO = getDatasetBO();
+
+        File originallyUploadedFile = datasetBO.getOriginallyUploadedFile(datasetId);
+
+        ClassPathResource classPathResource = new ClassPathResource(originallyUploadedFile.getAbsolutePath());
+
+        return ResponseEntity
+                .ok()
+                .contentLength(classPathResource.contentLength())
+                .contentType(
+                        MediaType.parseMediaType("application/octet-stream"))
+                .body(new InputStreamResource(classPathResource.getInputStream()));    }
 
     @RequestMapping(value="/api/dataset/{datasetId}/rows", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getRows(

@@ -33,19 +33,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class s_DatasetBO implements IDatasetBO {
+public class s_DatasetBO extends gov.energy.nbc.car.bo.mongodb.AbsDatasetBO implements IDatasetBO {
 
     Logger log = Logger.getLogger(this.getClass());
-
-    protected IDatasetDAO datasetDAO;
-    protected IPhysicalFileBO physicalFileBO;
 
     protected IDatasetReader_AllFileTypes generalFileReader;
 
     public s_DatasetBO(ISettings settings) {
+        super(settings);
 
-        datasetDAO = new s_DatasetDAO(settings);
-        physicalFileBO = new PhysicalFileBO(settings);
         generalFileReader = new DatasetReader_AllFileTypes();
     }
 
@@ -233,10 +229,6 @@ public class s_DatasetBO implements IDatasetBO {
             log.error(e);
             throw new RuntimeException(e);
         }
-    }
-
-    public IDatasetDAO getDatasetDAO() {
-        return datasetDAO;
     }
 
     public IPhysicalFileBO getPhysicalFileBO() {

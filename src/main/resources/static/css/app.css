@@ -29,6 +29,20 @@ h1 {
     color: #003503;
 }
 
+td {
+    white-space: nowrap
+}
+
+table {
+    border-left: 2px black;
+    border-right: 2px black;
+}
+
+thead {
+    font-weight: bold;
+    border-top: 2px black;
+}
+
 .page-header {
     margin-top: 0px;
     margin-bottom: 0px;

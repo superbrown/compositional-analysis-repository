@@ -5,28 +5,28 @@
 <div class="page-content">
 
   <div>
+    <label for="dataCategory">Data Category*</label>
+    <select name="dataCategory" id="dataCategory" ng-model="$root.dataCategory">
+      <option ng-repeat="dataCategory in knownDataCategories" value="{{dataCategory}}">{{dataCategory}}</option>
+    </select>
+  </div>
 
-    <div>
-      <label for="dataCategory">Data Category*</label>
-      <select name="dataCategory" id="dataCategory" ng-model="$root.dataCategory">
-        <option ng-repeat="dataCategory in knownDataCategories" value="{{dataCategory}}">{{dataCategory}}</option>
+  <div ng-hide="$root.dataCategory === ''">
+
+    <legend>Search Criteria</legend>
+
+    <!-- Search Criteria -->
+
+    <div ng-repeat="criterion in $root.searchCriteria" style="margin-top: 4px">
+
+      <select name="columnName" id="columnName" ng-model="criterion.columnName"
+              ng-options="knownColumnName as knownColumnName for knownColumnName in knownColumnNames">
       </select>
-    </div>
-
-    <div ng-hide="$root.dataCategory === ''">
-
-      <legend>Search Criteria</legend>
-
-      <div ng:repeat="criterion in $root.searchCriteria" style="margin-top: 4px">
-
-        <select name="columnName" id="columnName" ng-model="criterion.columnName"
-                ng-options="knownColumnName as knownColumnName for knownColumnName in knownColumnNames">
-        </select>
 
         <span ng-hide="criterion.columnName === ''">
 
           <select name="dataTypeId" id="dataTypeId" ng-model="criterion.dataTypeId">
-            <option ng:repeat="knownDataType in knownDataTypes" value="{{knownDataType.id}}">
+            <option ng-repeat="knownDataType in knownDataTypes" value="{{knownDataType.id}}">
               {{knownDataType.label}}
             </option>
           </select>
@@ -34,7 +34,7 @@
           <span ng-hide="criterion.dataTypeId === ''">
 
             <select name="comparisonOperatorId" id="comparisonOperatorId" ng-model="criterion.comparisonOperatorId">
-              <option ng:repeat="knownComparisonOperator in criterion.knownComparisonOperators" value="{{knownComparisonOperator.id}}">
+              <option ng-repeat="knownComparisonOperator in criterion.knownComparisonOperators" value="{{knownComparisonOperator.id}}">
                 {{knownComparisonOperator.label}}
               </option>
             </select>
@@ -71,14 +71,13 @@
           <span class="glyphicon glyphicon-minus" aria-hidden="true" ng-click="criterion.removeMe()" ng-show="$root.searchCriteria.length > 1"></span>
         </span>
 
-      </div>
-
     </div>
 
   </div>
-</div>
 
-<span ng-hide="$root.searchCriteria[0].comparisonOperatorId === ''">
+  <!-- Submit Button -->
+
+  <div ng-hide="$root.searchCriteria[0].comparisonOperatorId === ''">
 
     <div style="margin-top: 20px">
       <button class="btn btn-default" ng-click="handleSearchSubmission()">
@@ -86,27 +85,58 @@
       </button>
     </div>
 
-   </span>
+  </div>
 
+  <!-- Number of results header -->
 
-<div ng-hide="$root.searchComplete === false" style="margin-top: 20px">
+  <div style="padding: 2px; border-bottom: 2px black; margin-top: 15px; background-color: #EEEEEE" ng-hide="$root.searchComplete === false" style="margin-top: 20px">
 
-  <div style="width: inherit;">
+    <div style="width: inherit;">
       <span>
         Number of matches: {{$root.searchResults.length}}
       </span>
       <span style="float: right" ng-show="($root.searchResults.length > 0)">
         <a href="#/findData" ng-click="downloadSearchResults">download search results</a>
       </span>
+    </div>
+
   </div>
 
-  <div
-      ng-hide="$root.searchResults.length === 0"
-      ui-grid="searchResultsGridConfig"
-      ui-grid-auto-resize
-      ui-grid-move-columns
-      ui-grid-resize-columns />
+  <!-- Results Table -->
 
-</div>
+  <div class="table-responsive" ng-hide="$root.searchResults.length === 0">
+
+    <table class="table" style="border-left: 2px black; border-right: 2px black; border-collapse: collapse;">
+
+      <thead>
+      <tr>
+        <td ng-repeat="(key, value) in $root.searchResults[0]" style="padding-top: 4px; padding-bottom: 1px; height: 100%">
+          {{key}}
+        </td>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr ng-repeat="searchResultRow in $root.searchResults">
+        <td ng-repeat="(key, value) in searchResultRow" ng-bind-html="value" style="padding-top: 0px; padding-bottom: 0px; height: 100%">
+          {{value}}
+        </td>
+      </tr>
+      </tbody>
+
+    </table>
+
+  </div>
+
+
+
+  <!--<div-->
+  <!--ng-hide="false"-->
+  <!--ui-grid="searchResultsGridConfig"-->
+  <!--ui-grid-auto-resize-->
+  <!--ui-grid-move-columns-->
+  <!--ui-grid-resize-columns />-->
+
+  <!--</div>-->
 
 </div>
