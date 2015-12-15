@@ -125,7 +125,8 @@ public abstract class AbsRowBO implements IRowBO {
             String datasetId = ((ObjectId) document.get(RowDocument.ATTR_KEY__DATASET_ID)).toHexString();
             Integer rowNumber = (Integer) data.get(Row.ATTR_KEY__ROW_NUMBER);
             row.put("Source",
-                    "<a href='/api/dataset/" + datasetId + "/originallyUploadedFile' target='_blank'>" +
+                    "<a href='/api/dataset/" + datasetId + "/" + "uploadedFile' " +
+                            "target='_blank'>" +
                             originalFileName + "</a> (row " + rowNumber + ")");
 
 //            row.put(Metadata.ATTR_KEY__DATA_CATEGORY, metadata.get(Metadata.ATTR_KEY__DATA_CATEGORY));

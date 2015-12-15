@@ -53,5 +53,5 @@ public interface IDatasetBO {
 
     IDatasetDAO getDatasetDAO();
 
-    File getOriginallyUploadedFile(String datasetId);
+    File getUploadedFile(String datasetId);
 }
