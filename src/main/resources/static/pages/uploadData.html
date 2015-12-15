@@ -81,7 +81,14 @@
 
     <div>
       <label for="attachments"></label>
-      <input id="attachments" ng-model="$root.attachments" name="attachments" type="file" style="display: inline;" multiple="multiple" />
+      <input type="file"
+             id="attachments"
+             name="attachments"
+             data-bind-file=""
+             data-ng-model="$root.attachments"
+             accept=".xls,.xlsx,.xlsm,.csv"
+             style="display: inline;"
+             multiple="multiple" />
     </div>
 
   </div>

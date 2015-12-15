@@ -293,7 +293,7 @@ drApp.service('drServices', function() {
         formData.append('comments', $root.comments);
         formData.append('nameOfSheetContainingData', $root.nameOfSheetContainingData);
         formData.append('dataFile', $root.dataFile);
-        formData.append('attachements', $root.attachements);
+        formData.append('attachments', $root.attachments);
 
 //        scope.$root.showProgressAnimation = true;
 
