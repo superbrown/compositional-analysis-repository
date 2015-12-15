@@ -5,8 +5,8 @@ import org.springframework.http.ResponseEntity;
 
 public class HTTPResponseUtility {
 
-    public static ResponseEntity create_SUCCESS_response(String body) {
-        return new ResponseEntity(body, HttpStatus.OK);
+    public static ResponseEntity create_SUCCESS_response(String response) {
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
     public static ResponseEntity create_BAD_REQUEST_missingRequiredParam_response(String body) {

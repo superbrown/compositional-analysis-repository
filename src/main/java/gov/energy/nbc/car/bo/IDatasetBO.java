@@ -6,6 +6,7 @@ import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
 import gov.energy.nbc.car.dao.dto.StoredFile;
 import gov.energy.nbc.car.utilities.fileReader.exception.InvalidValueFoundInHeader;
 import gov.energy.nbc.car.utilities.fileReader.exception.UnsupportedFileExtension;
+import org.bson.types.ObjectId;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;

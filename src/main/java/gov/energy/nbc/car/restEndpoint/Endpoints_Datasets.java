@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +47,7 @@ public class Endpoints_Datasets {
     @RequestMapping(value="/api/addDataset", method = RequestMethod.POST)
     public ResponseEntity addDataset(
             @RequestParam(value = "dataCategory", required = false) String dataCategory,
-            @RequestParam(value = "submissionDate", required = false) String submissionDate,
+            @RequestParam(value = "submissionDate", required = false) @DateTimeFormat(iso= DateTimeFormat.ISO.DATE) Date submissionDate,
             @RequestParam(value = "submitter", required = false) String submitter,
             @RequestParam(value = "projectName", required = false) String projectName,
             @RequestParam(value = "chargeNumber", required = false) String chargeNumber,
@@ -56,19 +57,18 @@ public class Endpoints_Datasets {
             @RequestParam(value = "nameOfSheetContainingData", required = false) String nameOfSheetContainingData) {
 
         if (StringUtils.isBlank(dataCategory)) { return create_BAD_REQUEST_missingRequiredParam_response("dataCategory");}
-        if (StringUtils.isBlank(submissionDate)) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
-        if (StringUtils.isBlank(submissionDate)) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
+        if (submissionDate == null) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
         if (dataFile == null) { return create_BAD_REQUEST_missingRequiredParam_response("dataFile");}
         if (isAnExcelFile(dataFile)) { if (StringUtils.isBlank(nameOfSheetContainingData)) { return create_BAD_REQUEST_missingRequiredParam_response("nameOfSheetContainingData");} }
 
-        Date submissionDate_date = null;
-        try {
-            submissionDate_date = DATE_FORMAT.parse(submissionDate);
-        }
-        catch (ParseException e) {
-            return create_BAD_REQUEST_response("Invalid format for submissionDate. Must be conform to: " + DATE_FORMAT.toString() +
-                    ". The value was " + submissionDate + ".");
-        }
+//        Date submissionDate_date = null;
+//        try {
+//            submissionDate_date = DATE_FORMAT.parse(submissionDate);
+//        }
+//        catch (ParseException e) {
+//            return create_BAD_REQUEST_response("Invalid format for submissionDate. Must be conform to: " + DATE_FORMAT.toString() +
+//                    ". The value was " + submissionDate + ".");
+//        }
 
         String objectId = null;
         try {
@@ -86,7 +86,7 @@ public class Endpoints_Datasets {
 
             objectId = getDatasetBO().addDataset(
                     dataCategory,
-                    submissionDate_date,
+                    submissionDate,
                     submitter,
                     projectName,
                     chargeNumber,
@@ -277,6 +277,7 @@ public class Endpoints_Datasets {
 
     protected FileAsRawBytes toFileAsRawBytes(MultipartFile dataFile)
             throws IOException {
+
         return new FileAsRawBytes(dataFile.getOriginalFilename(), dataFile.getBytes());
     }
 

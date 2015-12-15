@@ -1,14 +1,13 @@
 package gov.energy.nbc.car.bo.mongodb.singleCellSchemaApproach;
 
+import com.mongodb.util.JSON;
 import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.IPhysicalFileBO;
-import gov.energy.nbc.car.bo.PhysicalFileBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.dao.IDatasetDAO;
 import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
 import gov.energy.nbc.car.dao.exception.UnableToDeleteFile;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
-import gov.energy.nbc.car.dao.mongodb.singleCellCollectionApproach.s_DatasetDAO;
 import gov.energy.nbc.car.model.IDatasetDocument;
 import gov.energy.nbc.car.model.IMetadata;
 import gov.energy.nbc.car.model.IRowCollection;
@@ -80,7 +79,7 @@ public class s_DatasetBO extends gov.energy.nbc.car.bo.mongodb.AbsDatasetBO impl
 
         ObjectId objectId = getDatasetDAO().add(datasetDocument, rowCollection);
 
-        return objectId.toHexString();
+        return JSON.serialize(objectId);
     }
 
     public String addDataset(

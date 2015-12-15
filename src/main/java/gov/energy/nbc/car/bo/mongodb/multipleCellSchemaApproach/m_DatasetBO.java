@@ -1,6 +1,5 @@
 package gov.energy.nbc.car.bo.mongodb.multipleCellSchemaApproach;
 
-import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.PhysicalFileBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.bo.mongodb.AbsDatasetBO;

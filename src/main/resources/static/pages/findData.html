@@ -7,7 +7,7 @@
   <div>
     <label for="dataCategory">Data Category*</label>
     <select name="dataCategory" id="dataCategory" ng-model="$root.dataCategory">
-      <option ng-repeat="dataCategory in knownDataCategories" value="{{dataCategory}}">{{dataCategory}}</option>
+      <option ng-repeat="dataCategory in $root.knownDataCategories" value="{{dataCategory}}">{{dataCategory}}</option>
     </select>
   </div>
 
@@ -19,14 +19,17 @@
 
     <div ng-repeat="criterion in $root.searchCriteria" style="margin-top: 4px">
 
-      <select name="columnName" id="columnName" ng-model="criterion.columnName"
-              ng-options="knownColumnName as knownColumnName for knownColumnName in knownColumnNames">
+      <select name="columnName" id="columnName" ng-model="criterion.columnName">
+        <option ng-repeat="knownColumnName in $root.knownColumnNames" value="{{knownColumnName}}">
+          {{knownColumnName}}
+        </option>
       </select>
+
 
         <span ng-hide="criterion.columnName === ''">
 
           <select name="dataTypeId" id="dataTypeId" ng-model="criterion.dataTypeId">
-            <option ng-repeat="knownDataType in knownDataTypes" value="{{knownDataType.id}}">
+            <option ng-repeat="knownDataType in $root.knownDataTypes" value="{{knownDataType.id}}">
               {{knownDataType.label}}
             </option>
           </select>
@@ -104,7 +107,7 @@
 
   <!-- Results Table -->
 
-  <div class="table-responsive" ng-hide="$root.searchResults.length === 0">
+  <div class="table-responsive" ng-hide="$root.searchResults.length != 0">
 
     <table class="table" style="border-left: 2px black; border-right: 2px black; border-collapse: collapse;">
 

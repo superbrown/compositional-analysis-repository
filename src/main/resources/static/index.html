@@ -47,15 +47,19 @@
   <script type="text/javascript" src="bower_components/angular-ui-date/src/date.js"></script>
   <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.css"/>
   <script src="/bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+  <script src="/bower_components/angular-cookies/angular-cookies.min.js"></script>
+
+  <!--File upload stuff-->
+  <script src="/bower_components/ng-file-upload/ng-file-upload-shim.min.js"></script> <!-- for no html5 browsers support -->
+  <script src="/bower_components/ng-file-upload/ng-file-upload.min.js"></script>
 
   <!-- Our Stuff -->
   <link href="css/app.css" rel="stylesheet">
   <script src="js/app.js"></script>
 
-
-  <script src="http://ui-grid.info/docs/grunt-scripts/csv.js"></script>
-  <script src="http://ui-grid.info/docs/grunt-scripts/pdfmake.js"></script>
-  <script src="http://ui-grid.info/docs/grunt-scripts/vfs_fonts.js"></script>
+  <!--<script src="http://ui-grid.info/docs/grunt-scripts/csv.js"></script>-->
+  <!--<script src="http://ui-grid.info/docs/grunt-scripts/pdfmake.js"></script>-->
+  <!--<script src="http://ui-grid.info/docs/grunt-scripts/vfs_fonts.js"></script>-->
 
 </head>
 
@@ -63,7 +67,7 @@
 
 <!-- F i x e d   n a v b a r  -->
 
-<div ng-controller="menuController">
+<div ng-controller="rootPageController">
 
   <div id="progressAnimation" ng-show="$root.showProgressAnimation">
     <img src="img/progressAnimation.gif" alt="" />
@@ -87,9 +91,9 @@
 
         <ul class="nav navbar-nav">
 
-          <li class="{{$root.menuItmeClass_uploadData}}"><a href="#/uploadData" ng-click="navigate_uploadData()">Upload Data</a></li>
+          <li class="{{$root.menuItemClass_uploadData}}"><a href="#/uploadData" ng-click="navigate_uploadData()">Upload Data</a></li>
 
-          <li class="{{$root.menuItmeClass_findData}}"><a href="#/findData" ng-click="navigate_findData()">Find Data</a></li>
+          <li class="{{$root.menuItemClass_findData}}"><a href="#/findData" ng-click="navigate_findData()">Find Data</a></li>
 
           <!--<li class="dropdown">-->
             <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Settings <span class="caret"></span></a>-->
@@ -108,7 +112,7 @@
 
 <div class="container theme-showcase" role="main">
 
-  <img src="/img/progressAnimation.gif" ng-show="$root.showProgressAnimation" />
+  <!--<img src="/img/progressAnimation.gif" ng-show="$root.showProgressAnimation" />-->
 
   <!--area where pages display-->
   <div ng-view>

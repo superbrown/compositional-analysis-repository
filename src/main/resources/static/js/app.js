@@ -9,8 +9,12 @@ $(function() {
 });
 
 
-function hasExcelWorkbookFileSuffix(str, fileName) {
-    return (endsWith(fileName, ".xls") || endsWith(fileName, ".xlsx") || endsWith(fileName, ".xlsm")) == true;
+function hasExcelWorkbookFileSuffix(fileName) {
+
+    return (
+        endsWith(fileName, ".xls") ||
+        endsWith(fileName, ".xlsx") ||
+        endsWith(fileName, ".xlsm")) == true;
 }
 
 function endsWith(str, suffix) {
@@ -30,73 +34,86 @@ var drApp = angular.module('drApp',
         'ui.grid.moveColumns',
         'ui.date',
         'ngSanitize',
+        'ngCookies',
+        'ngFileUpload',
     ]);
 
-drApp.config(function ($routeProvider) {
+drApp.config(
+    function ($routeProvider) {
 
-    $routeProvider
-        .when('/uploadData',
-        {
-            templateUrl: 'pages/uploadData.html',
-            controller: 'uploadController'
-        })
-        .when('/findData',
-        {
-            templateUrl: 'pages/findData.html',
-            controller: 'findDataController'
-        });
-});
+        $routeProvider
+            .when('/uploadData',
+            {
+                templateUrl: 'pages/uploadData.html',
+                controller: 'uploadController'
+            })
+            .when('/findData',
+            {
+                templateUrl: 'pages/findData.html',
+                controller: 'findDataController'
+            });
+    });
 
-drApp.controller('menuController',
+drApp.run(
+    function ($rootScope) {
+
+        $rootScope.showProgressAnimation = false;
+
+        $rootScope.knownDataCategories = [];
+        $rootScope.knownColumnNames = [];
+        $rootScope.knownDataTypes = [];
+        $rootScope.knownComparisonOperators = [];
+        $rootScope.knownNamesOfSheetsWithinSelectedWorkbook = [];
+
+        $rootScope.dataCategory = '';
+        $rootScope.submissionDate = '';
+        $rootScope.submitter = '';
+        $rootScope.projectName = '';
+        $rootScope.chargeNumber = '';
+        $rootScope.comments = '';
+        $rootScope.dataFile = '';
+        $rootScope.nameOfSheetContainingData = '';
+        $rootScope.attachments = '';
+
+        $rootScope.searchCriteria = [];
+        $rootScope.searchResults = [];
+
+        $rootScope.menuItemClass_uploadData = '';
+        $rootScope.menuItemClass_findData = '';
+    });
+
+drApp.controller('rootPageController',
     [
-        '$scope', '$http', '$log', '$filter', '$resource', '$location', 'restService',
-        function($scope, $http, $log, $filter, $resource, $location, restService) {
-
-            $scope.$root.showProgressAnimation = false;
-            $scope.$root.dataCategory = '';
-
-            $scope.$root.showProgressAnimation = false;
-
-            $scope.$root.knownDataCategories = '';
-            $scope.$root.knownColumnNames = '';
-            $scope.$root.knownDataTypes = '';
-            $scope.$root.knownComparisonOperators = '';
-
-            $scope.$root.knownDataCategories = '';
-
-            $scope.$root.submissionDate = '';
-            $scope.$root.submitter = '';
-            $scope.$root.projectName = '';
-            $scope.$root.chargeNumber = '';
-            $scope.$root.comments = '';
-            $scope.$root.columnNames = '';
-            $scope.$root.nameOfSheetContainingData = '';
-
-            $scope.$root.searchCriteria = [];
-
-            $scope.$root.searchResults = [];
-            $scope.$root.searchResultsGridConfig = {
-                data: '$root.searchResults',
-                enableSorting: true,
-                enableColumnResizing: true,
-                enableFiltering: false,
-                enableGridMenu: false,
-                showGridFooter: false,
-                showColumnFooter: false,
-                fastWatch: false,
-            }
-
-            $scope.$root.menuItmeClass_uploadData = '';
-            $scope.$root.menuItmeClass_findData = '';
+        '$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', '$cookies', 'drServices',
+        function($scope, $rootScope, $http, $log, $filter, $resource, $location, $cookies, drServices) {
 
             $scope.navigate_uploadData = function () {
-                $scope.$root.menuItmeClass_uploadData = 'active';
-                $scope.$root.menuItmeClass_findData = '';
+                $rootScope.menuItemClass_uploadData = 'active';
+                $rootScope.menuItemClass_findData = '';
             }
 
             $scope.navigate_findData = function () {
-                $scope.$root.menuItmeClass_uploadData = '';
-                $scope.$root.menuItmeClass_findData = 'active';
+                $rootScope.menuItemClass_uploadData = '';
+                $rootScope.menuItemClass_findData = 'active';
+            }
+
+            $rootScope.$watch('$root.dataCategory', function() {
+                $cookies.put('dataCategory', $rootScope.dataCategory);
+                drServices.populateKnownColumnNames($scope, $http);
+            });
+
+            $rootScope.$watch('$root.dataFile', function() {
+                drServices.populateNamesOfSheetsWithinExcelWorkbook($scope, $http);
+            });
+
+            drServices.populateKnownDataCategories($scope, $http);
+
+            drServices.populateKnownDataTypes($scope, $http);
+
+            var dataCategoryFromCookie = $cookies.get('dataCategory');
+            if (dataCategoryFromCookie != undefined &&
+                dataCategoryFromCookie != '') {
+                $rootScope.dataCategory = dataCategoryFromCookie;
             }
         }
     ]
@@ -104,112 +121,104 @@ drApp.controller('menuController',
 
 drApp.controller('uploadController',
     [
-        '$scope', '$http', '$log', '$filter', '$resource', '$location', 'restService',
-        function($scope, $http, $log, $filter, $resource, $location, restService) {
+        '$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', 'Upload', 'drServices',
+        function($scope, $rootScope, $http, $log, $filter, $resource, $location, Upload, drServices) {
 
-            $scope.$root.selectedPage = "Upload Data";
-
-            $scope.$root.showProgressAnimation = false;
+            $rootScope.selectedPage = "Upload Data";
 
             $scope.uploadData = function () {
-
-                $scope.$root.showProgressAnimation = true;
-
-                $http.post('/api/addDataset',
-                    {
-                        submissionDate: $scope.$root.submissionDate,
-                        submitter: $scope.$root.submitter,
-                        projectName: $scope.$root.projectName,
-                        chargeNumber: $scope.$root.chargeNumber,
-                        comments: $scope.$root.comments,
-                        nameOfSheetContainingData: $scope.$root.nameOfSheetContainingData,
-                    }
-                )
-                    .success(function (result) {
-                        $scope.$root.showProgressAnimation = false;
-                    }
-                )
-                    .error(function (data, status) {
-                        $scope.$root.showProgressAnimation = false;
-                        alert("A failure occurred: " + data);
-                    }
-                );
+                drServices.uploadData($scope, $http);
             }
-
-            // init
-            restService.populateKnownDataCategories($http, $scope);
         }
     ]
 );
+
+// For the file selection widget
+drApp.directive('bindFile', [function () {
+    return {
+        require: "ngModel",
+        restrict: 'A',
+        link: function ($scope, el, attrs, ngModel) {
+            el.bind('change', function (event) {
+                ngModel.$setViewValue(event.target.files[0]);
+                $scope.$apply();
+            });
+
+            $scope.$watch(function () {
+                return ngModel.$viewValue;
+            }, function (value) {
+                if (!value) {
+                    el.val("");
+                }
+            });
+        }
+    };
+}]);
 
 drApp.controller('findDataController',
     [
-        '$scope', '$http', '$log', '$filter', '$resource', '$location', 'restService',
-        function($scope, $http, $log, $filter, $resource, $location, restService) {
+        '$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', 'drServices',
+        function($scope, $rootScope, $http, $log, $filter, $resource, $location, drServices)
+        {
+            $rootScope.selectedPage = "Find Data";
 
-            $scope.$root.selectedPage = "Find Data";
-
-            $scope.$root.$watch('$root.dataCategory', function() {
-                $scope.$root.showProgressAnimation = true;
-                restService.populateKnownColumnNames($scope, $http);
-                $scope.$root.showProgressAnimation = false;
-            });
-
-            $scope.handleSearchSubmission = function() {
-                $scope.$root.showProgressAnimation = true;
-                restService.findData($scope, $http);
-                $scope.$root.showProgressAnimation = false;
+            $scope.handleSearchSubmission = function()
+            {
+                drServices.findData($scope, $http);
             }
 
-            $scope.createANewCriterion = function() {
+            $scope.createANewCriterion = function()
+            {
+                var newCriterion = {};
+                newCriterion.columnName = '';
+                newCriterion.dataTypeId = '';
+                newCriterion.knownComparisonOperators == [];
+                newCriterion.comparisonOperatorId = '';
 
-                var criterion = {};
-                criterion.columnName = '';
-                criterion.dataTypeId = '';
-                criterion.knownComparisonOperators == [];
-                criterion.comparisonOperatorId = '';
+                newCriterion.value_asString = '';
+                newCriterion.value_asNumber = '';
+                newCriterion.value_asDate = '';
+                newCriterion.value_asBoolean = '';
 
-                criterion.value_asString = '';
-                criterion.value_asNumber = '';
-                criterion.value_asDate = '';
-                criterion.value_asBoolean = '';
-
-                criterion.removeMe = function() {
-                    var index = $scope.$root.searchCriteria.indexOf(this);
-                    $scope.$root.searchCriteria.splice(index, 1);
+                newCriterion.removeMe = function()
+                {
+                    var index = $rootScope.searchCriteria.indexOf(this);
+                    $rootScope.searchCriteria.splice(index, 1);
                 };
 
-                $scope.$root.searchCriteria.push(criterion);
+                var searchCriteria = $rootScope.searchCriteria;
 
-                var indexOfThisNewCriterion = ($scope.$root.searchCriteria.length - 1);
+                searchCriteria.push(newCriterion);
 
-                $scope.$watch('$root.searchCriteria[' + indexOfThisNewCriterion + '].dataTypeId', function() {
-                    $scope.$root.showProgressAnimation = true;
-                    restService.poplulateKnownComparisonOperators($http, criterion);
-                    $scope.$root.showProgressAnimation = false;
+                var indexOfThisNewCriterion = (searchCriteria.length - 1);
+
+                $rootScope.$watch('$root.searchCriteria[' + indexOfThisNewCriterion + '].dataTypeId', function()
+                {
+                    drServices.populateKnownComparisonOperators($scope, $http, newCriterion);
                 });
             }
 
-            // init
-            if ($scope.$root.searchCriteria.length === 0) {
-                $scope.$root.searchComplete = false;
+            if ($rootScope.searchCriteria.length === 0) {
+                $rootScope.searchComplete = false;
                 $scope.createANewCriterion();
             }
-            restService.populateKnownDataCategories($http, $scope);
-            restService.populateKnownDataTypes($http, $scope);
         }
     ]
 );
 
-drApp.service('restService', function() {
+drApp.service('drServices', function() {
 
-    this.populateKnownDataCategories = function (http, scope) {
+    this.populateKnownDataCategories = function (scope, http) {
+
+//        scope.$root.showProgressAnimation = true;
 
         http.get('/api/dataCategory/names/all')
             .success(function (result) {
-                scope.knownDataCategories = result;
+//                scope.$root.showProgressAnimation = false;
+                scope.$root.knownDataCategories = result;
             })
             .error(function (data, status) {
+//                scope.$root.showProgressAnimation = false;
                 console.log(status + ': ' + data);
             });
     }
@@ -218,38 +227,127 @@ drApp.service('restService', function() {
 
         if (scope.$root.dataCategory === '') return;
 
+//        scope.$root.showProgressAnimation = true;
+
         http.get('/api/dataCategory/columnNames?dataCategoryName=' + scope.dataCategory)
             .success(function (result) {
-                scope.knownColumnNames = result;
+//                scope.$root.showProgressAnimation = false;
+                scope.$root.knownColumnNames = result;
             })
             .error(function (data, status) {
+//                scope.$root.showProgressAnimation = false;
                 console.log(status + ': ' + data);
             });
     }
 
-    this.populateKnownDataTypes = function (http, scope) {
+    this.populateNamesOfSheetsWithinExcelWorkbook = function (scope, http) {
+
+        scope.$root.knownNamesOfSheetsWithinSelectedWorkbook = [];
+
+        var dataFile = scope.$root.dataFile;
+
+        if (dataFile === '') {
+            return;
+        }
+
+        if (hasExcelWorkbookFileSuffix(dataFile.name) == false) {
+            // This is fine. They probably selected a CSV file.
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append('dataFile', dataFile);
+
+//        scope.$root.showProgressAnimation = true;
+
+        http.post(
+            '/api/getNamesOfSheetsWithinExcelWorkbook',
+            formData,
+            {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
+            }
+        )
+            .success(function (result) {
+//                scope.$root.showProgressAnimation = false;
+                scope.$root.knownNamesOfSheetsWithinSelectedWorkbook = result;
+            }
+        )
+            .error(function (data, status) {
+//                scope.$root.showProgressAnimation = false;
+                alert("A failure occurred (status: " + status + " data: " + data);
+            }
+        );
+    }
+
+    this.uploadData = function (scope, http) {
+
+        var formData = new FormData();
+        var $root = scope.$root;
+
+        formData.append('dataCategory', $root.dataCategory);
+        formData.append('submissionDate', $root.submissionDate.toJSON());
+        formData.append('submitter', $root.submitter);
+        formData.append('projectName', $root.projectName);
+        formData.append('chargeNumber', $root.chargeNumber);
+        formData.append('comments', $root.comments);
+        formData.append('nameOfSheetContainingData', $root.nameOfSheetContainingData);
+        formData.append('dataFile', $root.dataFile);
+        formData.append('attachements', $root.attachements);
+
+//        scope.$root.showProgressAnimation = true;
+
+        http.post(
+            '/api/addDataset',
+            formData,
+            {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
+            }
+        )
+            .success(function (result) {
+//                scope.$root.showProgressAnimation = false;
+                alert("File successfully uploaded.")
+            }
+        )
+            .error(function (data, status) {
+//                scope.$root.showProgressAnimation = false;
+                alert("A failure occurred (status: " + status + " data: " + data);
+            }
+        );
+    }
+
+    this.populateKnownDataTypes = function (scope, http) {
+
+//        scope.$root.showProgressAnimation = true;
 
         http.get('api/dataTypes/all')
             .success(function (result) {
-                scope.knownDataTypes = result;
+//                scope.$root.showProgressAnimation = false;
+                scope.$root.knownDataTypes = result;
             })
             .error(function (data, status) {
-                console.log(status + ': ' + data);
+//                scope.$root.showProgressAnimation = false;
+                alert("A failure occurred (status: " + status + " data: " + data);
             });
     }
 
-    this.poplulateKnownComparisonOperators = function (http, criterion) {
+    this.populateKnownComparisonOperators = function (scope, http, criterion) {
 
-        dataTypeId = criterion.dataTypeId;
+        var dataTypeId = criterion.dataTypeId;
 
         if (dataTypeId === '' || dataTypeId === undefined) return;
 
+//        scope.$root.showProgressAnimation = true;
+
         http.get('api/dataType/comparisonOperators?dataType=' + dataTypeId)
             .success(function (result) {
+//                scope.$root.showProgressAnimation = false;
                 criterion.knownComparisonOperators = result;
             })
             .error(function (data, status) {
-                console.log(status + ': ' + data);
+//                scope.$root.showProgressAnimation = false;
+                alert("A failure occurred (status: " + status + " data: " + data);
             });
     }
 
@@ -300,15 +398,18 @@ drApp.service('restService', function() {
             data: criteriaPackagedForRestCall
         }
 
+//        scope.$root.showProgressAnimation = true;
+
         http(req)
             .success(function (result) {
-
+//                scope.$root.showProgressAnimation = false;
                 scope.$root.searchComplete = true;
                 scope.$root.searchResults = result;
             })
             .error(function (data, status) {
+//                scope.$root.showProgressAnimation = false;
                 scope.$root.searchComplete = true;
-                alert("A failure occurred: " + data);
+                alert("A failure occurred (status: " + status + " data: " + data);
             });
     }
 

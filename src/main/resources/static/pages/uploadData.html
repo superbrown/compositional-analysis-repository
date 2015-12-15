@@ -10,13 +10,13 @@
     <div style="margin-bottom: 2px">
       <label for="dataCategory">Data Category*</label>
       <select name="dataCategory" id="dataCategory" ng-model="$root.dataCategory">
-        <option ng-repeat="option in knownDataCategories" value="{{option}}">{{option}}</option>
+        <option ng-repeat="option in $root.knownDataCategories" value="{{option}}">{{option}}</option>
       </select>
     </div>
 
     <div style="margin-bottom: 2px">
-      <label for="submissionDate">Submission Date*</label>
-      <input ng-model="$root.submissionDate" required type="text" id="submissionDate" name="submissionDate"/>
+      <label>Submission Date*</label>
+      <input ng-model="$root.submissionDate" ui-date type="text"/>
       <br/>
     </div>
 
@@ -45,27 +45,48 @@
   </div>
 
   <div>
+
     <legend>Data File</legend>
 
-    <label for="dataFile">Excel or CSV file</label>
-    <br/>
-    <input id="dataFile" ng-model="$root.dataFile" required name="dataFile" type="file" style="display: inline; margin-bottom: 5px;" />
-    <br/>
-    <span ng-show="hasExcelWorkbookFileSuffix(dataFile)">
-      <label style="width: auto;" for="nameOfSheetContainingData">Name of sheet within the workbook containing the data to be ingested*</label>
-      <br/>
-      <input id="nameOfSheetContainingData" ng-model="$root.nameOfSheetContainingData" name="nameOfSheetContainingData" type="text" style="width: 300px;" />
-    </span>
+    <div>
+      <label for="dataFile">(Excel or CSV file)</label>
+      <input type="file"
+             id="dataFile"
+             name="dataFile"
+             data-bind-file=""
+             data-ng-model="$root.dataFile"
+             accept=".xls,.xlsx,.xlsm,.csb"
+             required
+             style="display: inline;" />
+    </div>
+
+    <div ng-show="knownNamesOfSheetsWithinSelectedWorkbook.length > 0" style="margin-top: 2px">
+      <div>
+        <label style="width: auto;" for="nameOfSheetContainingData">Select the name of sheet within the workbook containing the data to be ingested*</label>
+      </div>
+      <div>
+        <select name="nameOfSheetContainingData" id="nameOfSheetContainingData" ng-model="$root.nameOfSheetContainingData">
+          <option ng-repeat="sheetName in $root.knownNamesOfSheetsWithinSelectedWorkbook" value="{{sheetName}}">
+            {{sheetName}}
+          </option>
+        </select>
+      </div>
+    </div>
+
   </div>
 
   <div>
+
     <legend>Attachments</legend>
 
-    <input id="attachments" ng-model="$root.attachments" name="attachments" type="file" multiple="multiple" /><br/><br/>
+    <div>
+      <label for="attachments"></label>
+      <input id="attachments" ng-model="$root.attachments" name="attachments" type="file" style="display: inline;" multiple="multiple" />
+    </div>
 
   </div>
 
-  <div style="float: bottom; clear: both">
+  <div style="float: bottom; clear: both; margin-top: 10px">
     <a href="#" class="btn btn-default" ng-click="uploadData()">Upload</a>
   </div>
 
