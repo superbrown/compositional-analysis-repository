@@ -11,9 +11,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +38,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
     public RowCollection extractDataFromFile(File file, String nameOfWorksheetContainingTheData)
             throws IOException, InvalidValueFoundInHeader, UnsupportedFileExtension {
 
-        FileInputStream fileInputStream = null;
+        InputStream fileInputStream = null;
 
         try {
             fileInputStream = new FileInputStream(file);
@@ -135,7 +134,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
         return rowData;
     }
 
-    protected Workbook createWorkbookObject(FileInputStream fileInputStream, String filePath)
+    protected static Workbook createWorkbookObject(InputStream fileInputStream, String filePath)
             throws IOException, UnsupportedFileExtension {
 
         if (filePath.toLowerCase().endsWith(".xls")) {
@@ -216,5 +215,28 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
         }
 
         return headings;
+    }
+
+    public static List<String> getNamesOfSheetsWithinWorkbook(String fileName, InputStream inputStream)
+            throws IOException, UnsupportedFileExtension {
+
+        try {
+            Workbook workbook = createWorkbookObject(inputStream, fileName);
+
+            List<String> namesOfSheetsWithinWorkbook = new ArrayList<>();
+
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                String sheetName = workbook.getSheetAt(i).getSheetName();
+                namesOfSheetsWithinWorkbook.add(sheetName);
+            }
+
+            return namesOfSheetsWithinWorkbook;
+        }
+        finally {
+
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        }
     }
 }

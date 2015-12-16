@@ -18,6 +18,5 @@ public interface IPhysicalFileBO {
     void deletFile(String storageLocation)
             throws UnableToDeleteFile;
 
-    File getFile(String storageLocation)
-            ;
+    File getFile(String storageLocation);
 }

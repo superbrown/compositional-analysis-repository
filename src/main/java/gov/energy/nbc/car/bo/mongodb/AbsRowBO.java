@@ -17,15 +17,13 @@ import gov.energy.nbc.car.model.mongodb.document.RowDocument;
 import gov.energy.nbc.car.restEndpoint.DataType;
 import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
+import gov.energy.nbc.car.utilities.Utilities;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public abstract class AbsRowBO implements IRowBO {
 
@@ -86,22 +84,72 @@ public abstract class AbsRowBO implements IRowBO {
                 value = aDouble;
             }
             else if (dataType == DataType.DATE) {
-                Calendar calendar = javax.xml.bind.DatatypeConverter.parseDateTime(rawValue.toString());
-                Date aDate = calendar.getTime();
-                value = aDate;
+
+                value = toDateWithTheTimeOfDayAdjustedSoComparisonOperatesCorrectly(
+                        rawValue, comparisonOperator);
             }
             else if (dataType == DataType.BOOLEAN) {
                 Boolean aBoolean = Boolean.valueOf(rawValue.toString());
                 value = aBoolean;
             }
 
+            if (value instanceof Date && comparisonOperator == ComparisonOperator.EQUALS) {
 
-            SearchCriterion searchCriterion = new SearchCriterion(name, value, comparisonOperator);
-
-            rowSearchCriteria.add(searchCriterion);
+                List<SearchCriterion> searchCriteria =
+                        crateSearchCriteriaToMakeSureWholeDayIsCovered(name, (Date) value);
+                rowSearchCriteria.addAll(searchCriteria);
+            }
+            else {
+                SearchCriterion searchCriterion = new SearchCriterion(name, value, comparisonOperator);
+                rowSearchCriteria.add(searchCriterion);
+            }
         }
 
         return getRowDAO().query(rowSearchCriteria);
+    }
+
+    protected List<SearchCriterion> crateSearchCriteriaToMakeSureWholeDayIsCovered(String name, Date date) {
+
+        Calendar beginningOfTheDay = Utilities.toCalendar(date);
+        Utilities.setTimeToTheBeginningOfTheDay(beginningOfTheDay);
+
+        Calendar endOfTheDay = Utilities.clone(beginningOfTheDay);
+        Utilities.setTimeToTheEndOfTheDay(endOfTheDay);
+
+        List<SearchCriterion> searchCriteria = new ArrayList<>();
+
+        SearchCriterion laterThanBeginningOfTheDay =
+                new SearchCriterion(name, beginningOfTheDay.getTime(), ComparisonOperator.GREATER_THAN_OR_EQUAL);
+        searchCriteria.add(laterThanBeginningOfTheDay);
+
+        SearchCriterion earlierThanTheEndOfDay = new SearchCriterion(
+                name, endOfTheDay.getTime(), ComparisonOperator.LESS_THAN_OR_EQUAL);
+        searchCriteria.add(earlierThanTheEndOfDay);
+
+        return searchCriteria;
+    }
+
+    protected Date toDateWithTheTimeOfDayAdjustedSoComparisonOperatesCorrectly(Object rawValue, ComparisonOperator comparisonOperator) {
+
+        Calendar calendar = Utilities.toCalendar(rawValue.toString());
+        adjustTimeOfDaySoComparisonsOperatesCorrectly(calendar, comparisonOperator);
+        return calendar.getTime();
+    }
+
+    protected void adjustTimeOfDaySoComparisonsOperatesCorrectly(Calendar calendar, ComparisonOperator comparisonOperator) {
+
+        if (comparisonOperator == ComparisonOperator.GREATER_THAN_OR_EQUAL) {
+            Utilities.setTimeToTheBeginningOfTheDay(calendar);
+        }
+        else if (comparisonOperator == ComparisonOperator.LESS_THAN_OR_EQUAL) {
+            Utilities.setTimeToTheEndOfTheDay(calendar);
+        }
+        else if (comparisonOperator == ComparisonOperator.GREATER_THAN) {
+            Utilities.setTimeToTheEndOfTheDay(calendar);
+        }
+        else if (comparisonOperator == ComparisonOperator.LESS_THAN) {
+            Utilities.setTimeToTheBeginningOfTheDay(calendar);
+        }
     }
 
     @Override
@@ -125,7 +173,8 @@ public abstract class AbsRowBO implements IRowBO {
             String datasetId = ((ObjectId) document.get(RowDocument.ATTR_KEY__DATASET_ID)).toHexString();
             Integer rowNumber = (Integer) data.get(Row.ATTR_KEY__ROW_NUMBER);
             row.put("Source",
-                    "<a href='/api/dataset/" + datasetId + "/originallyUploadedFile' target='_blank'>" +
+                    "<a href='/api/dataset/" + datasetId + "/" + "uploadedFile' " +
+                            "target='_blank'>" +
                             originalFileName + "</a> (row " + rowNumber + ")");
 
 //            row.put(Metadata.ATTR_KEY__DATA_CATEGORY, metadata.get(Metadata.ATTR_KEY__DATA_CATEGORY));
@@ -229,4 +278,5 @@ public abstract class AbsRowBO implements IRowBO {
         String string = new SimpleDateFormat("yyyy-MM-dd").format(date);
         return string;
     }
+
 }

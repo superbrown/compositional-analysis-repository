@@ -25,11 +25,11 @@ public abstract class AbsDatasetBO implements IDatasetBO {
         return datasetDAO;
     }
 
-    public File getOriginallyUploadedFile(String datasetId) {
+    public File getUploadedFile(String datasetId) {
 
         IDatasetDocument dataset = getDatasetDAO().getDataset(datasetId);
         String storageLocation = dataset.getMetadata().getUploadedFile().getStorageLocation();
-        File originallyUploadedFile = physicalFileBO.getFile(storageLocation);
-        return originallyUploadedFile;
+        File uploadedFile = physicalFileBO.getFile(storageLocation);
+        return uploadedFile;
     }
 }

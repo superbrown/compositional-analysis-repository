@@ -1,6 +1,6 @@
 package gov.energy.nbc.car.bo.mongodb.singleRowSchemaApproach.singleCellSchemaApproach;
 
-import gov.energy.nbc.car.bo.IDatasetBO;
+import com.mongodb.util.JSON;
 import gov.energy.nbc.car.bo.IPhysicalFileBO;
 import gov.energy.nbc.car.bo.PhysicalFileBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
@@ -124,7 +124,7 @@ public class r_DatasetBO extends AbsDatasetBO {
 
         ObjectId objectId = getDatasetDAO().add(datasetDocument, rowCollection);
 
-        return objectId.toHexString();
+        return JSON.serialize(objectId);
     }
 
     protected File getPhysicalFile(String storageLocation) {

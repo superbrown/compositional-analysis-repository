@@ -6,6 +6,7 @@ import gov.energy.nbc.car.bo.IRowBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
+import gov.energy.nbc.car.model.IDatasetDocument;
 import gov.energy.nbc.car.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nbc.car.utilities.fileReader.IDatasetReader_AllFileTypes;
 import gov.energy.nbc.car.utilities.fileReader.exception.InvalidValueFoundInHeader;
@@ -15,13 +16,18 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,16 +43,17 @@ public class Endpoints_Datasets {
 
     protected Logger log = Logger.getLogger(getClass());
 
-    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("mm/dd/yyyy");
-
     @Autowired
     protected DataRepositoryApplication dataRepositoryApplication;
 
 
-    @RequestMapping(value="/api/addDataset", method = RequestMethod.POST)
+    @RequestMapping(
+            value="/api/addDataset",
+            method = RequestMethod.POST,
+            produces = "application/json")
     public ResponseEntity addDataset(
             @RequestParam(value = "dataCategory", required = false) String dataCategory,
-            @RequestParam(value = "submissionDate", required = false) String submissionDate,
+            @RequestParam(value = "submissionDate", required = false) @DateTimeFormat(iso= DateTimeFormat.ISO.DATE) Date submissionDate,
             @RequestParam(value = "submitter", required = false) String submitter,
             @RequestParam(value = "projectName", required = false) String projectName,
             @RequestParam(value = "chargeNumber", required = false) String chargeNumber,
@@ -56,19 +63,9 @@ public class Endpoints_Datasets {
             @RequestParam(value = "nameOfSheetContainingData", required = false) String nameOfSheetContainingData) {
 
         if (StringUtils.isBlank(dataCategory)) { return create_BAD_REQUEST_missingRequiredParam_response("dataCategory");}
-        if (StringUtils.isBlank(submissionDate)) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
-        if (StringUtils.isBlank(submissionDate)) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
+        if (submissionDate == null) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
         if (dataFile == null) { return create_BAD_REQUEST_missingRequiredParam_response("dataFile");}
         if (isAnExcelFile(dataFile)) { if (StringUtils.isBlank(nameOfSheetContainingData)) { return create_BAD_REQUEST_missingRequiredParam_response("nameOfSheetContainingData");} }
-
-        Date submissionDate_date = null;
-        try {
-            submissionDate_date = DATE_FORMAT.parse(submissionDate);
-        }
-        catch (ParseException e) {
-            return create_BAD_REQUEST_response("Invalid format for submissionDate. Must be conform to: " + DATE_FORMAT.toString() +
-                    ". The value was " + submissionDate + ".");
-        }
 
         String objectId = null;
         try {
@@ -86,7 +83,7 @@ public class Endpoints_Datasets {
 
             objectId = getDatasetBO().addDataset(
                     dataCategory,
-                    submissionDate_date,
+                    submissionDate,
                     submitter,
                     projectName,
                     chargeNumber,
@@ -111,81 +108,86 @@ public class Endpoints_Datasets {
         return create_SUCCESS_response(objectId);
     }
 
-    @RequestMapping(value="/api/seedBigData", method = RequestMethod.POST)
-    public ResponseEntity seedBigData(
-            @RequestParam(value = "dataCategory", required = false) String dataCategory,
-            @RequestParam(value = "submissionDate", required = false) String submissionDate,
-            @RequestParam(value = "submitter", required = false) String submitter,
-            @RequestParam(value = "projectName", required = false) String projectName,
-            @RequestParam(value = "chargeNumber", required = false) String chargeNumber,
-            @RequestParam(value = "comments", required = false) String comments,
-            @RequestParam(value = "dataFile", required = false) MultipartFile dataFile,
-            @RequestParam(value = "attachments", required = false) List<MultipartFile> attachments,
-            @RequestParam(value = "nameOfSheetContainingData", required = false) String nameOfSheetContainingData) {
+//    @RequestMapping(
+//            value="/api/seedBigData",
+//            method = RequestMethod.POST)
+//    public ResponseEntity seedBigData(
+//            @RequestParam(value = "dataCategory", required = false) String dataCategory,
+//            @RequestParam(value = "submissionDate", required = false) String submissionDate,
+//            @RequestParam(value = "submitter", required = false) String submitter,
+//            @RequestParam(value = "projectName", required = false) String projectName,
+//            @RequestParam(value = "chargeNumber", required = false) String chargeNumber,
+//            @RequestParam(value = "comments", required = false) String comments,
+//            @RequestParam(value = "dataFile", required = false) MultipartFile dataFile,
+//            @RequestParam(value = "attachments", required = false) List<MultipartFile> attachments,
+//            @RequestParam(value = "nameOfSheetContainingData", required = false) String nameOfSheetContainingData) {
+//
+//        if (StringUtils.isBlank(dataCategory)) { return create_BAD_REQUEST_missingRequiredParam_response("dataCategory");}
+//        if (StringUtils.isBlank(submissionDate)) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
+//        if (StringUtils.isBlank(submissionDate)) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
+//        if (dataFile == null) { return create_BAD_REQUEST_missingRequiredParam_response("dataFile");}
+//        if (isAnExcelFile(dataFile)) { if (StringUtils.isBlank(nameOfSheetContainingData)) { return create_BAD_REQUEST_missingRequiredParam_response("nameOfSheetContainingData");} }
+//
+//        Date submissionDate_date = null;
+//        try {
+//            submissionDate_date = DATE_FORMAT.parse(submissionDate);
+//        }
+//        catch (ParseException e) {
+//            return create_BAD_REQUEST_response("Invalid format for submissionDate. Must be conform to: " + DATE_FORMAT.toString() +
+//                    ". The value was " + submissionDate + ".");
+//        }
+//
+//        String objectId = null;
+//        try {
+//
+//            IRowDAO rowDAO = getDatasetBO().getDatasetDAO().getRowDAO();
+//
+//            while (rowDAO.getCellDAO(null).getCount() <= 1000000) {
+//
+//                List<FileAsRawBytes> attachmentFilesAsRawBytes = new ArrayList<>();
+//                for (MultipartFile attachment : attachments) {
+//
+//                    // DESIGN NOTE: I don't know why this is necessary, but for some reason
+//                    //              attachment attributes sometimes are empty.
+//                    if (StringUtils.isNotBlank(attachment.getOriginalFilename())) {
+//                        attachmentFilesAsRawBytes.add(toFileAsRawBytes(attachment));
+//                    }
+//                }
+//
+//                FileAsRawBytes dataFileAsRawBytes = toFileAsRawBytes(dataFile);
+//
+//                objectId = getDatasetBO().addDataset(
+//                        dataCategory,
+//                        submissionDate_date,
+//                        submitter,
+//                        projectName,
+//                        chargeNumber,
+//                        comments,
+//                        dataFileAsRawBytes,
+//                        nameOfSheetContainingData,
+//                        attachmentFilesAsRawBytes);
+//            }
+//        }
+//        catch (UnsupportedFileExtension e) {
+//            log.info(e);
+//            return create_BAD_REQUEST_response(e.toString());
+//        }
+//        catch (InvalidValueFoundInHeader e) {
+//            log.info(e);
+//            return create_BAD_REQUEST_response(e.toString());
+//        }
+//        catch (IOException e) {
+//            log.error(e);
+//            return create_INTERNAL_SERVER_ERROR_response();
+//        }
+//
+//        return create_SUCCESS_response(objectId);
+//    }
 
-        if (StringUtils.isBlank(dataCategory)) { return create_BAD_REQUEST_missingRequiredParam_response("dataCategory");}
-        if (StringUtils.isBlank(submissionDate)) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
-        if (StringUtils.isBlank(submissionDate)) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
-        if (dataFile == null) { return create_BAD_REQUEST_missingRequiredParam_response("dataFile");}
-        if (isAnExcelFile(dataFile)) { if (StringUtils.isBlank(nameOfSheetContainingData)) { return create_BAD_REQUEST_missingRequiredParam_response("nameOfSheetContainingData");} }
-
-        Date submissionDate_date = null;
-        try {
-            submissionDate_date = DATE_FORMAT.parse(submissionDate);
-        }
-        catch (ParseException e) {
-            return create_BAD_REQUEST_response("Invalid format for submissionDate. Must be conform to: " + DATE_FORMAT.toString() +
-                    ". The value was " + submissionDate + ".");
-        }
-
-        String objectId = null;
-        try {
-
-            IRowDAO rowDAO = getDatasetBO().getDatasetDAO().getRowDAO();
-
-            while (rowDAO.getCellDAO(null).getCount() <= 1000000) {
-
-                List<FileAsRawBytes> attachmentFilesAsRawBytes = new ArrayList<>();
-                for (MultipartFile attachment : attachments) {
-
-                    // DESIGN NOTE: I don't know why this is necessary, but for some reason
-                    //              attachment attributes sometimes are empty.
-                    if (StringUtils.isNotBlank(attachment.getOriginalFilename())) {
-                        attachmentFilesAsRawBytes.add(toFileAsRawBytes(attachment));
-                    }
-                }
-
-                FileAsRawBytes dataFileAsRawBytes = toFileAsRawBytes(dataFile);
-
-                objectId = getDatasetBO().addDataset(
-                        dataCategory,
-                        submissionDate_date,
-                        submitter,
-                        projectName,
-                        chargeNumber,
-                        comments,
-                        dataFileAsRawBytes,
-                        nameOfSheetContainingData,
-                        attachmentFilesAsRawBytes);
-            }
-        }
-        catch (UnsupportedFileExtension e) {
-            log.info(e);
-            return create_BAD_REQUEST_response(e.toString());
-        }
-        catch (InvalidValueFoundInHeader e) {
-            log.info(e);
-            return create_BAD_REQUEST_response(e.toString());
-        }
-        catch (IOException e) {
-            log.error(e);
-            return create_INTERNAL_SERVER_ERROR_response();
-        }
-
-        return create_SUCCESS_response(objectId);
-    }
-
-    @RequestMapping(value="/api/datasets/all", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(
+            value="/api/datasets/all",
+            method = RequestMethod.GET,
+            produces = "application/json")
     public ResponseEntity getAllDatasets(
             ) {
 
@@ -215,24 +217,32 @@ public class Endpoints_Datasets {
         return create_SUCCESS_response(dataset);
     }
 
-    @RequestMapping(value="/api/dataset/{datasetId}/originallyUploadedFile", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(
+            value="/api/dataset/{datasetId}/uploadedFile",
+            method = RequestMethod.GET)
     public  ResponseEntity<InputStreamResource> downloadDataset(
             @PathVariable(value = "datasetId") String datasetId) throws IOException {
 
         IDatasetBO datasetBO = getDatasetBO();
 
-        File originallyUploadedFile = datasetBO.getOriginallyUploadedFile(datasetId);
+        IDatasetDocument originallydatasetDocument = datasetBO.getDatasetDAO().getDataset(datasetId);
+        String originalFileName = originallydatasetDocument.getMetadata().getUploadedFile().getOriginalFileName();
 
-        ClassPathResource classPathResource = new ClassPathResource(originallyUploadedFile.getAbsolutePath());
+        File uploadedFile = datasetBO.getUploadedFile(datasetId);
+        InputStream fileInputStream = new FileInputStream(uploadedFile.getAbsolutePath());
+        InputStreamResource inputStreamResource = new InputStreamResource(fileInputStream);
 
         return ResponseEntity
                 .ok()
-                .contentLength(classPathResource.contentLength())
-                .contentType(
-                        MediaType.parseMediaType("application/octet-stream"))
-                .body(new InputStreamResource(classPathResource.getInputStream()));    }
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .header("content-disposition", "attachment; filename=" + originalFileName)
+                .body(inputStreamResource);
+    }
 
-    @RequestMapping(value="/api/dataset/{datasetId}/rows", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(
+            value="/api/dataset/{datasetId}/rows",
+            method = RequestMethod.GET,
+            produces = "application/binary")
     public ResponseEntity getRows(
             @PathVariable(value = "datasetId") String datasetId) {
 
@@ -245,7 +255,10 @@ public class Endpoints_Datasets {
         return create_SUCCESS_response(rowsForDataset);
     }
 
-    @RequestMapping(value="/api/dataset/{datasetId}", method = RequestMethod.DELETE, produces = "application/json")
+    @RequestMapping(
+            value="/api/dataset/{datasetId}",
+            method = RequestMethod.DELETE,
+            produces = "application/json")
     public ResponseEntity deleteDataset(
             @PathVariable(value = "datasetId") String datasetId) {
 
@@ -277,6 +290,7 @@ public class Endpoints_Datasets {
 
     protected FileAsRawBytes toFileAsRawBytes(MultipartFile dataFile)
             throws IOException {
+
         return new FileAsRawBytes(dataFile.getOriginalFilename(), dataFile.getBytes());
     }
 
