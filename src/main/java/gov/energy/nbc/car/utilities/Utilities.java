@@ -7,6 +7,7 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 public class Utilities {
@@ -31,5 +32,33 @@ public class Utilities {
 
         URL fileURL = Utilities.class.getResource(filePath);
         return new File(fileURL.toURI());
+    }
+
+    public static void setHourAndMinutesAndSeconds(Calendar calendar, int hour, int minute, int seconds, int millisec) {
+
+        System.out.println("before: " + toString(calendar));
+
+        calendar.set(
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH),
+                hour,
+                minute,
+                seconds);
+
+        calendar.set(Calendar.MILLISECOND, millisec);
+
+        System.out.println("after: " + toString(calendar));
+    }
+
+    private static String toString(Calendar calendar) {
+        return "" +
+                    calendar.get(Calendar.YEAR) + " " +
+                    calendar.get(Calendar.MONTH) + " " +
+                    calendar.get(Calendar.DAY_OF_MONTH) + " " +
+                    calendar.get(Calendar.HOUR) + " " +
+                    calendar.get(Calendar.MINUTE) + " " +
+                    calendar.get(Calendar.SECOND) + " " +
+                    calendar.get(Calendar.MILLISECOND);
     }
 }

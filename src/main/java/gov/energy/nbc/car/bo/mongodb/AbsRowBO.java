@@ -17,15 +17,15 @@ import gov.energy.nbc.car.model.mongodb.document.RowDocument;
 import gov.energy.nbc.car.restEndpoint.DataType;
 import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
+import gov.energy.nbc.car.utilities.Utilities;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public abstract class AbsRowBO implements IRowBO {
 
@@ -86,15 +86,23 @@ public abstract class AbsRowBO implements IRowBO {
                 value = aDouble;
             }
             else if (dataType == DataType.DATE) {
-                Calendar calendar = javax.xml.bind.DatatypeConverter.parseDateTime(rawValue.toString());
-                Date aDate = calendar.getTime();
-                value = aDate;
+
+                SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+                Date aDate = null;
+                try {
+                    aDate = isoFormat.parse(rawValue.toString());
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+                Calendar calendar = new GregorianCalendar();
+                calendar.setTime(aDate);
+                adjustTimeOfDaySoComparisonsOperatedCorrectly(calendar, comparisonOperator);
+                value = calendar.getTime();
             }
             else if (dataType == DataType.BOOLEAN) {
                 Boolean aBoolean = Boolean.valueOf(rawValue.toString());
                 value = aBoolean;
             }
-
 
             SearchCriterion searchCriterion = new SearchCriterion(name, value, comparisonOperator);
 
@@ -102,6 +110,22 @@ public abstract class AbsRowBO implements IRowBO {
         }
 
         return getRowDAO().query(rowSearchCriteria);
+    }
+
+    protected void adjustTimeOfDaySoComparisonsOperatedCorrectly(Calendar calendar, ComparisonOperator comparisonOperator) {
+
+        if (comparisonOperator == ComparisonOperator.GREATER_THAN_OR_EQUAL) {
+            Utilities.setHourAndMinutesAndSeconds(calendar, 0, 0, 0, 0);
+        }
+        else if (comparisonOperator == ComparisonOperator.LESS_THAN_OR_EQUAL) {
+            Utilities.setHourAndMinutesAndSeconds(calendar, 23, 59, 59, 999);
+        }
+        else if (comparisonOperator == ComparisonOperator.GREATER_THAN) {
+            Utilities.setHourAndMinutesAndSeconds(calendar, 23, 59, 59, 999);
+        }
+        else if (comparisonOperator == ComparisonOperator.LESS_THAN) {
+            Utilities.setHourAndMinutesAndSeconds(calendar, 0, 0, 0, 0);
+        }
     }
 
     @Override
@@ -230,4 +254,5 @@ public abstract class AbsRowBO implements IRowBO {
         String string = new SimpleDateFormat("yyyy-MM-dd").format(date);
         return string;
     }
+
 }

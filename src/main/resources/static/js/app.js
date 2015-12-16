@@ -120,37 +120,74 @@ drApp.controller('rootPageController',
 );
 
 drApp.controller('uploadController',
-    [
-        '$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', 'Upload', 'drServices',
-        function($scope, $rootScope, $http, $log, $filter, $resource, $location, Upload, drServices) {
+    ['$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', 'Upload', 'drServices',
+        function($scope, $rootScope, $http, $log, $filter, $resource, $location, Upload, drServices)  {
 
             $rootScope.selectedPage = "Upload Data";
 
-            $scope.uploadData = function () {
+            $scope.uploadData = function ()  {
                 drServices.uploadData($scope, $http);
+            }
+
+            $scope.populateNamesOfSheetsWithinSelectedWorkbook = function() {
+                drServices.populateNamesOfSheetsWithinExcelWorkbook($scope, $http);
             }
         }
     ]
-);
+)
 
-// For the file selection widget
-drApp.directive('bindFile', [function () {
+//// For the file selection widget
+//drApp.directive('bindFile', [function () {
+//    return {
+//        require: "ngModel",
+//        restrict: 'A',
+//        link: function ($scope, el, attrs, ngModel) {
+//            el.bind('change', function (event) {
+//                ngModel.$setViewValue(event.target.files);
+//                $scope.$apply();
+//            });
+//
+//            $scope.$watch(function () {
+//                return ngModel.$viewValue;
+//            }, function (value) {
+//                if (!value) {
+//                    el.val("");
+//                }
+//            });
+//        }
+//    };
+//}]);
+
+.directive('fileChange', ['$parse', function($parse) {
+
     return {
-        require: "ngModel",
+        require: 'ngModel',
         restrict: 'A',
-        link: function ($scope, el, attrs, ngModel) {
-            el.bind('change', function (event) {
-                ngModel.$setViewValue(event.target.files[0]);
-                $scope.$apply();
-            });
+        link: function ($scope, element, attrs, ngModel) {
 
-            $scope.$watch(function () {
-                return ngModel.$viewValue;
-            }, function (value) {
-                if (!value) {
-                    el.val("");
-                }
-            });
+            // Get the function provided in the file-change attribute.
+            // Note the attribute has become an angular expression,
+            // which is what we are parsing. The provided handler is
+            // wrapped up in an outer function (attrHandler) - we'll
+            // call the provided event handler inside the handler()
+            // function below.
+            var attrHandler = $parse(attrs['fileChange']);
+
+            // This is a wrapper handler which will be attached to the
+            // HTML change event.
+            var handler = function (e) {
+
+                $scope.$apply(function () {
+
+                    // Execute the provided handler in the directive's scope.
+                    // The files variable will be available for consumption
+                    // by the event handler.
+                    attrHandler($scope, { $event: e, files: e.target.files });
+                });
+            };
+
+            // Attach the handler to the HTML change event
+            element[0].addEventListener('change', handler, false);
         }
     };
 }]);
@@ -376,7 +413,7 @@ drApp.service('drServices', function() {
             var dataTypeId = criterion.dataTypeId;
             if (dataTypeId == 'STRING') {value = criterion.value_asString;}
             else if (dataTypeId == 'NUMBER') {value = criterion.value_asNumber;}
-            else if (dataTypeId == 'DATE') {value = criterion.value_asDate;}
+            else if (dataTypeId == 'DATE') {value = criterion.value_asDate.toJSON();}
             else if (dataTypeId == 'BOOLEAN') { value = criterion.value_asBoolean;}
 
             criteriaPackagedForRestCall.push(

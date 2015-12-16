@@ -43,8 +43,6 @@ public class Endpoints_Datasets {
 
     protected Logger log = Logger.getLogger(getClass());
 
-    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("mm/dd/yyyy");
-
     @Autowired
     protected DataRepositoryApplication dataRepositoryApplication;
 
@@ -68,15 +66,6 @@ public class Endpoints_Datasets {
         if (submissionDate == null) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
         if (dataFile == null) { return create_BAD_REQUEST_missingRequiredParam_response("dataFile");}
         if (isAnExcelFile(dataFile)) { if (StringUtils.isBlank(nameOfSheetContainingData)) { return create_BAD_REQUEST_missingRequiredParam_response("nameOfSheetContainingData");} }
-
-//        Date submissionDate_date = null;
-//        try {
-//            submissionDate_date = DATE_FORMAT.parse(submissionDate);
-//        }
-//        catch (ParseException e) {
-//            return create_BAD_REQUEST_response("Invalid format for submissionDate. Must be conform to: " + DATE_FORMAT.toString() +
-//                    ". The value was " + submissionDate + ".");
-//        }
 
         String objectId = null;
         try {

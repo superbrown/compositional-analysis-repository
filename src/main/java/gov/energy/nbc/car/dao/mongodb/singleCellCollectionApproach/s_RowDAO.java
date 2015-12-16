@@ -150,7 +150,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
         Collections.sort(numberOfMatchesForEachCriterion);
 
         CriterionAndItsNumberOfMatches firstCriterion = numberOfMatchesForEachCriterion.get(0);
-        if (firstCriterion.getNubmerOfMatches() == 0) {
+        if (firstCriterion.getNumberOfMatches() == 0) {
             // since the search is performed as an AND operation, this means that, by definition, there are no matches
             return new ArrayList();
         }
@@ -443,27 +443,27 @@ public class s_RowDAO extends DAO implements IRowDAO {
     private class CriterionAndItsNumberOfMatches implements Comparable {
 
         private final SearchCriterion criterion;
-        private final Long nubmerOfMatches;
+        private final Long numberOfMatches;
 
-        public CriterionAndItsNumberOfMatches(SearchCriterion criterion, long nubmerOfMatches) {
+        public CriterionAndItsNumberOfMatches(SearchCriterion criterion, long numberOfMatches) {
 
             this.criterion = criterion;
-            this.nubmerOfMatches = nubmerOfMatches;
+            this.numberOfMatches = numberOfMatches;
         }
 
         public SearchCriterion getCriterion() {
             return criterion;
         }
 
-        public long getNubmerOfMatches() {
-            return nubmerOfMatches;
+        public long getNumberOfMatches() {
+            return numberOfMatches;
         }
 
 
         @Override
         public int compareTo(Object o) {
 
-            long delta = this.getNubmerOfMatches() - ((CriterionAndItsNumberOfMatches) o).getNubmerOfMatches();
+            long delta = this.getNumberOfMatches() - ((CriterionAndItsNumberOfMatches) o).getNumberOfMatches();
 
             if (delta < 0) return -1;
             if (delta > 0) return 1;

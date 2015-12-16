@@ -53,10 +53,10 @@
       <input type="file"
              id="dataFile"
              name="dataFile"
-             data-bind-file=""
              data-ng-model="$root.dataFile"
              accept=".xls,.xlsx,.xlsm,.csv"
              required
+             file-change="populateNamesOfSheetsWithinSelectedWorkbook()"
              style="display: inline;" />
     </div>
 
@@ -84,7 +84,6 @@
       <input type="file"
              id="attachments"
              name="attachments"
-             data-bind-file=""
              data-ng-model="$root.attachments"
              accept=".xls,.xlsx,.xlsm,.csv"
              style="display: inline;"
@@ -92,6 +91,8 @@
     </div>
 
   </div>
+
+  <!--Upload button-->
 
   <div style="float: bottom; clear: both; margin-top: 10px">
     <a href="#" class="btn btn-default" ng-click="uploadData()">Upload</a>
