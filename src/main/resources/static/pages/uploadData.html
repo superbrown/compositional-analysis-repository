@@ -53,18 +53,21 @@
       <input type="file"
              id="dataFile"
              name="dataFile"
-             data-ng-model="$root.dataFile"
+             ng-model="$root.dataFile"
              accept=".xls,.xlsx,.xlsm,.csv"
              required
-             file-change="populateNamesOfSheetsWithinSelectedWorkbook()"
+             file-change="handleDataFileSelection($event, files)"
              style="display: inline;" />
     </div>
 
     <div ng-show="knownNamesOfSheetsWithinSelectedWorkbook.length > 0" style="margin-top: 2px">
       <div>
-        <label style="width: auto;" for="nameOfSheetContainingData">Select the name of sheet within the workbook containing the data to be ingested*</label>
+        <label style="width: auto;" for="nameOfSheetContainingData">
+          Select the name of sheet within the workbook containing the data to be ingested*
+        </label>
       </div>
       <div>
+        <label></label>
         <select name="nameOfSheetContainingData" id="nameOfSheetContainingData" ng-model="$root.nameOfSheetContainingData">
           <option ng-repeat="sheetName in $root.knownNamesOfSheetsWithinSelectedWorkbook" value="{{sheetName}}">
             {{sheetName}}
@@ -84,8 +87,8 @@
       <input type="file"
              id="attachments"
              name="attachments"
-             data-ng-model="$root.attachments"
-             accept=".xls,.xlsx,.xlsm,.csv"
+             ng-model="$root.attachments"
+             file-change="handleAttachmentFilesSelection($event, files)"
              style="display: inline;"
              multiple="multiple" />
     </div>

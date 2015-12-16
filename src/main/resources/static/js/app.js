@@ -120,8 +120,8 @@ drApp.controller('rootPageController',
 );
 
 drApp.controller('uploadController',
-    ['$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', 'Upload', 'drServices',
-        function($scope, $rootScope, $http, $log, $filter, $resource, $location, Upload, drServices)  {
+    ['$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', '$parse', 'drServices',
+        function($scope, $rootScope, $http, $log, $filter, $resource, $location, $parse, drServices)  {
 
             $rootScope.selectedPage = "Upload Data";
 
@@ -129,36 +129,21 @@ drApp.controller('uploadController',
                 drServices.uploadData($scope, $http);
             }
 
-            $scope.populateNamesOfSheetsWithinSelectedWorkbook = function() {
+            $scope.handleDataFileSelection = function(event, dataFile) {
+                $rootScope.dataFile = dataFile[0];
                 drServices.populateNamesOfSheetsWithinExcelWorkbook($scope, $http);
+            }
+
+            $scope.handleAttachmentFilesSelection = function($event, attachments) {
+                $rootScope.attachments = attachments;
             }
         }
     ]
-)
+);
 
-//// For the file selection widget
-//drApp.directive('bindFile', [function () {
-//    return {
-//        require: "ngModel",
-//        restrict: 'A',
-//        link: function ($scope, el, attrs, ngModel) {
-//            el.bind('change', function (event) {
-//                ngModel.$setViewValue(event.target.files);
-//                $scope.$apply();
-//            });
-//
-//            $scope.$watch(function () {
-//                return ngModel.$viewValue;
-//            }, function (value) {
-//                if (!value) {
-//                    el.val("");
-//                }
-//            });
-//        }
-//    };
-//}]);
-
-.directive('fileChange', ['$parse', function($parse) {
+// This came from:
+// http://stackoverflow.com/questions/17922557/angularjs-how-to-check-for-changes-in-file-input-fields#answer-26591042
+drApp.directive('fileChange', ['$parse', function($parse) {
 
     return {
         require: 'ngModel',
@@ -209,7 +194,7 @@ drApp.controller('findDataController',
                 var newCriterion = {};
                 newCriterion.columnName = '';
                 newCriterion.dataTypeId = '';
-                newCriterion.knownComparisonOperators == [];
+                newCriterion.knownComparisonOperators = [];
                 newCriterion.comparisonOperatorId = '';
 
                 newCriterion.value_asString = '';
