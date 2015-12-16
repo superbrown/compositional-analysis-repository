@@ -7,8 +7,8 @@ import org.bson.Document;
 
 public class StoredFile extends AbstractDocument implements IStoredFile {
 
-    public static final String ATTR_KEY__ORIGINAL_FILE_NAME = "originalFileName";
-    public static final String ATTR_KEY__STORAGE_LOCATION = "storageLocation";
+    public static final String ATTR_KEY__ORIGINAL_FILE_NAME = " originalFileName";
+    public static final String ATTR_KEY__STORAGE_LOCATION = " storageLocation";
 
     public StoredFile(Document document) {
         super(document);

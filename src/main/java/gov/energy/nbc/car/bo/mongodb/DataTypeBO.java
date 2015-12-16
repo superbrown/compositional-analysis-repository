@@ -36,7 +36,7 @@ public class DataTypeBO implements IDataTypeBO {
         }
         else if (dataType == DataType.DATE) {
 
-            basicDBList.add(toNameValuePairDocument(ComparisonOperator.EQUALS.toString(), "is"));
+            basicDBList.add(toNameValuePairDocument(ComparisonOperator.EQUALS.toString(), "is on"));
             basicDBList.add(toNameValuePairDocument(ComparisonOperator.LESS_THAN_OR_EQUAL.toString(), "is on or before"));
             basicDBList.add(toNameValuePairDocument(ComparisonOperator.GREATER_THAN_OR_EQUAL.toString(), "is on or after"));
         }

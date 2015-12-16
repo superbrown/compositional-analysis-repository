@@ -1,5 +1,6 @@
 package gov.energy.nbc.car.dao.mongodb;
 
+import gov.energy.nbc.car.ResultsMode;
 import gov.energy.nbc.car.bo.mongodb.TestData;
 import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.dto.SearchCriterion;
@@ -154,7 +155,7 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
         rowSearchCriteria.add(new SearchCriterion("Float Values Column Name", 1.22, EQUALS));
         rowSearchCriteria.add(new SearchCriterion("Additional Column Name 1", "a1", EQUALS));
 
-        List<Document> documents = rowDAO.query(rowSearchCriteria);
+        List<Document> documents = rowDAO.query(rowSearchCriteria, ResultsMode.INCLUDE_ONLY_DATA_COLUMNS_BEING_FILTERED_UPON);
         assertTrue(documents.size() == 1);
 
         Document document = documents.get(0);
