@@ -21,9 +21,7 @@ import gov.energy.nbc.car.utilities.Utilities;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -87,44 +85,70 @@ public abstract class AbsRowBO implements IRowBO {
             }
             else if (dataType == DataType.DATE) {
 
-                SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-                Date aDate = null;
-                try {
-                    aDate = isoFormat.parse(rawValue.toString());
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                }
-                Calendar calendar = new GregorianCalendar();
-                calendar.setTime(aDate);
-                adjustTimeOfDaySoComparisonsOperatedCorrectly(calendar, comparisonOperator);
-                value = calendar.getTime();
+                value = toDateWithTheTimeOfDayAdjustedSoComparisonOperatesCorrectly(
+                        rawValue, comparisonOperator);
             }
             else if (dataType == DataType.BOOLEAN) {
                 Boolean aBoolean = Boolean.valueOf(rawValue.toString());
                 value = aBoolean;
             }
 
-            SearchCriterion searchCriterion = new SearchCriterion(name, value, comparisonOperator);
+            if (value instanceof Date && comparisonOperator == ComparisonOperator.EQUALS) {
 
-            rowSearchCriteria.add(searchCriterion);
+                List<SearchCriterion> searchCriteria =
+                        crateSearchCriteriaToMakeSureWholeDayIsCovered(name, (Date) value);
+                rowSearchCriteria.addAll(searchCriteria);
+            }
+            else {
+                SearchCriterion searchCriterion = new SearchCriterion(name, value, comparisonOperator);
+                rowSearchCriteria.add(searchCriterion);
+            }
         }
 
         return getRowDAO().query(rowSearchCriteria);
     }
 
-    protected void adjustTimeOfDaySoComparisonsOperatedCorrectly(Calendar calendar, ComparisonOperator comparisonOperator) {
+    protected List<SearchCriterion> crateSearchCriteriaToMakeSureWholeDayIsCovered(String name, Date date) {
+
+        Calendar beginningOfTheDay = Utilities.toCalendar(date);
+        Utilities.setTimeToTheBeginningOfTheDay(beginningOfTheDay);
+
+        Calendar endOfTheDay = Utilities.clone(beginningOfTheDay);
+        Utilities.setTimeToTheEndOfTheDay(endOfTheDay);
+
+        List<SearchCriterion> searchCriteria = new ArrayList<>();
+
+        SearchCriterion laterThanBeginningOfTheDay =
+                new SearchCriterion(name, beginningOfTheDay.getTime(), ComparisonOperator.GREATER_THAN_OR_EQUAL);
+        searchCriteria.add(laterThanBeginningOfTheDay);
+
+        SearchCriterion earlierThanTheEndOfDay = new SearchCriterion(
+                name, endOfTheDay.getTime(), ComparisonOperator.LESS_THAN_OR_EQUAL);
+        searchCriteria.add(earlierThanTheEndOfDay);
+
+        return searchCriteria;
+    }
+
+    protected Date toDateWithTheTimeOfDayAdjustedSoComparisonOperatesCorrectly(Object rawValue, ComparisonOperator comparisonOperator) {
+
+        Calendar calendar = Utilities.toCalendar(rawValue.toString());
+        adjustTimeOfDaySoComparisonsOperatesCorrectly(calendar, comparisonOperator);
+        return calendar.getTime();
+    }
+
+    protected void adjustTimeOfDaySoComparisonsOperatesCorrectly(Calendar calendar, ComparisonOperator comparisonOperator) {
 
         if (comparisonOperator == ComparisonOperator.GREATER_THAN_OR_EQUAL) {
-            Utilities.setHourAndMinutesAndSeconds(calendar, 0, 0, 0, 0);
+            Utilities.setTimeToTheBeginningOfTheDay(calendar);
         }
         else if (comparisonOperator == ComparisonOperator.LESS_THAN_OR_EQUAL) {
-            Utilities.setHourAndMinutesAndSeconds(calendar, 23, 59, 59, 999);
+            Utilities.setTimeToTheEndOfTheDay(calendar);
         }
         else if (comparisonOperator == ComparisonOperator.GREATER_THAN) {
-            Utilities.setHourAndMinutesAndSeconds(calendar, 23, 59, 59, 999);
+            Utilities.setTimeToTheEndOfTheDay(calendar);
         }
         else if (comparisonOperator == ComparisonOperator.LESS_THAN) {
-            Utilities.setHourAndMinutesAndSeconds(calendar, 0, 0, 0, 0);
+            Utilities.setTimeToTheBeginningOfTheDay(calendar);
         }
     }
 

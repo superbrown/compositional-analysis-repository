@@ -25,14 +25,15 @@
         </option>
       </select>
 
-
         <span ng-hide="criterion.columnName === ''">
 
+          (which is a
           <select name="dataTypeId" id="dataTypeId" ng-model="criterion.dataTypeId">
             <option ng-repeat="knownDataType in $root.knownDataTypes" value="{{knownDataType.id}}">
               {{knownDataType.label}}
             </option>
           </select>
+          )
 
           <span ng-hide="criterion.dataTypeId === ''">
 
