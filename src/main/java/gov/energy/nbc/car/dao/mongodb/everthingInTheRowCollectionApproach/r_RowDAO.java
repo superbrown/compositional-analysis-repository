@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.ListIndexesIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.DeleteResult;
+import gov.energy.nbc.car.ResultsMode;
 import gov.energy.nbc.car.dao.ICellDAO;
 import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
@@ -133,7 +134,7 @@ public class r_RowDAO extends DAO implements IRowDAO {
     }
 
     @Override
-    public List<Document> query(List<SearchCriterion> searchCriteria) {
+    public List<Document> query(List<SearchCriterion> searchCriteria, ResultsMode resultsMode) {
 
         if (searchCriteria.size() == 0) {
             throw new RuntimeException();

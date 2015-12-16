@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.ListIndexesIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.DeleteResult;
+import gov.energy.nbc.car.ResultsMode;
 import gov.energy.nbc.car.dao.ICellDAO;
 import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
@@ -134,7 +135,7 @@ public class s_RowDAO extends DAO implements IRowDAO {
     }
 
     @Override
-    public List<Document> query(List<SearchCriterion> searchCriteria) {
+    public List<Document> query(List<SearchCriterion> searchCriteria, ResultsMode resultsMode) {
 
         if (searchCriteria.size() == 0) {
             throw new RuntimeException();
@@ -167,19 +168,26 @@ public class s_RowDAO extends DAO implements IRowDAO {
             matchingRowIds = getIdsOfRowsInSubsetThatMatch(matchingRowIds, criterion.getCriterion());
         }
 
-        Set<String> dataColumnNamesToIncludedInQueryResults = new LinkedHashSet<>();
+        List<Document> rows;
 
-        for (SearchCriterion searchCriterion : searchCriteria) {
+        if (resultsMode == ResultsMode.INCLUDE_ONLY_DATA_COLUMNS_BEING_FILTERED_UPON) {
 
-            String name = searchCriterion.getName();
+            Set<String> dataColumnNamesToIncludedInQueryResults = new LinkedHashSet<>();
 
-            if (Metadata.isAMetadataFieldName(MongoFieldNameEncoder.toClientSideFieldName(name)) == false) {
+            for (SearchCriterion searchCriterion : searchCriteria) {
 
-                dataColumnNamesToIncludedInQueryResults.add(name);
+                String name = searchCriterion.getName();
+
+                if (Metadata.isAMetadataFieldName(MongoFieldNameEncoder.toClientSideFieldName(name)) == false) {
+
+                    dataColumnNamesToIncludedInQueryResults.add(name);
+                }
             }
+            rows = getRowsWithIds(matchingRowIds, dataColumnNamesToIncludedInQueryResults);
         }
-
-        List<Document> rows = getRowsWithIds(matchingRowIds, dataColumnNamesToIncludedInQueryResults);
+        else {
+            rows = getRowsWithIds(matchingRowIds, null);
+        }
 
         return rows;
     }
@@ -204,25 +212,39 @@ public class s_RowDAO extends DAO implements IRowDAO {
         return results;
     }
 
-    protected List<Document> getRowsWithIds(Set<ObjectId> rowIds, Set<String> dataColumnNamesToIncludedInQueryResults) {
+    /**
+     * If dataColumnNamesToIncludedInQueryResults is null, all data will be returned.
+     */
+    protected List<Document> getRowsWithIds(Set<ObjectId> rowIds,
+                                            Set<String> dataColumnNamesToIncludedInQueryResults) {
 
-        List<String> attributesToInclude = new ArrayList<>();
 
-        // mandatory
-        attributesToInclude.add(RowDocument.ATTR_KEY__ID);
-        attributesToInclude.add(RowDocument.ATTR_KEY__DATASET_ID);
-        attributesToInclude.add(RowDocument.ATTR_KEY__METADATA);
-        attributesToInclude.add(
-                RowDocument.ATTR_KEY__DATA + "." +
-                        MongoFieldNameEncoder.toMongoSafeFieldName(Row.ATTR_KEY__ROW_NUMBER));
+        Bson projection;
 
-        for (String columnIncludedInQuery : dataColumnNamesToIncludedInQueryResults) {
+        if (dataColumnNamesToIncludedInQueryResults != null) {
+
+            List<String> attributesToInclude = new ArrayList<>();
+
+            // mandatory
+            attributesToInclude.add(RowDocument.ATTR_KEY__ID);
+            attributesToInclude.add(RowDocument.ATTR_KEY__DATASET_ID);
+            attributesToInclude.add(RowDocument.ATTR_KEY__METADATA);
             attributesToInclude.add(
                     RowDocument.ATTR_KEY__DATA + "." +
-                            MongoFieldNameEncoder.toMongoSafeFieldName(columnIncludedInQuery));
-        }
+                            MongoFieldNameEncoder.toMongoSafeFieldName(Row.ATTR_KEY__ROW_NUMBER));
 
-        Bson projection = fields(include(attributesToInclude));
+            for (String columnIncludedInQuery : dataColumnNamesToIncludedInQueryResults) {
+                attributesToInclude.add(
+                        RowDocument.ATTR_KEY__DATA + "." +
+                                MongoFieldNameEncoder.toMongoSafeFieldName(columnIncludedInQuery));
+            }
+
+            projection = fields(include(attributesToInclude));
+        }
+        else {
+
+            projection = null;
+        }
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "getting rows for the matching IDs");
 

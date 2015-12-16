@@ -1,5 +1,6 @@
 package gov.energy.nbc.car.dao;
 
+import gov.energy.nbc.car.ResultsMode;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
 import gov.energy.nbc.car.dao.dto.SearchCriterion;
 import gov.energy.nbc.car.model.IDatasetDocument;
@@ -24,7 +25,7 @@ public interface IRowDAO extends IDAO {
 //
 //    List<Document> query(Bson bson, Bson projection);
 
-    List<Document> query(List<SearchCriterion> searchCriteria);
+    List<Document> query(List<SearchCriterion> searchCriteria, ResultsMode resultsMode);
 
     Set<ObjectId> getIdsOfRowsThatMatch(SearchCriterion searchCriterion);
 

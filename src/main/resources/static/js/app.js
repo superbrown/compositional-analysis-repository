@@ -35,7 +35,6 @@ var drApp = angular.module('drApp',
         'ui.date',
         'ngSanitize',
         'ngCookies',
-        'ngFileUpload',
     ]);
 
 drApp.config(
@@ -98,7 +97,9 @@ drApp.controller('rootPageController',
             }
 
             $rootScope.$watch('$root.dataCategory', function() {
-                $cookies.put('dataCategory', $rootScope.dataCategory);
+                var expireDate = new Date();
+                expireDate.setDate(expireDate.getDate() + 365);
+                $cookies.put('dataCategory', $rootScope.dataCategory, {'expires': expireDate});
                 drServices.populateKnownColumnNames($scope, $http);
             });
 
@@ -229,6 +230,52 @@ drApp.controller('findDataController',
 );
 
 drApp.service('drServices', function() {
+
+    this.toSearchCriteriaAsJson = function(dataCategory, searchCriteria) {
+
+        var criteriaPackagedForRestCall = [];
+
+        // make sure we're limiting outselves to the data category in question
+
+        criteriaPackagedForRestCall.push(
+            {
+                'name': ' Data Category',
+                'dataType': 'STRING',
+                'comparisonOperator': 'EQUALS',
+                'value': dataCategory
+            }
+        );
+
+        for (i = 0; i < searchCriteria.length; i++) {
+
+            var criterion = searchCriteria[i];
+            var value;
+
+            var dataTypeId = criterion.dataTypeId;
+            if (dataTypeId == 'STRING') {
+                value = criterion.value_asString;
+            }
+            else if (dataTypeId == 'NUMBER') {
+                value = criterion.value_asNumber;
+            }
+            else if (dataTypeId == 'DATE') {
+                value = criterion.value_asDate.toJSON();
+            }
+            else if (dataTypeId == 'BOOLEAN') {
+                value = criterion.value_asBoolean;
+            }
+
+            criteriaPackagedForRestCall.push(
+                {
+                    'name': criterion.columnName,
+                    'dataType': criterion.dataTypeId,
+                    'comparisonOperator': criterion.comparisonOperatorId,
+                    'value': value
+                }
+            );
+        }
+        return criteriaPackagedForRestCall;
+    }
 
     this.populateKnownDataCategories = function (scope, http) {
 
@@ -378,38 +425,12 @@ drApp.service('drServices', function() {
         scope.$root.searchComplete = false;
         scope.$root.searchResults = [];
 
-        var criteriaPackagedForRestCall = [];
+        var searchCriteria = scope.$root.searchCriteria;
+        var dataCategory = scope.$root.dataCategory;
 
-        // make sure we're limitting outselves to the data category in question
-        criteriaPackagedForRestCall.push(
-            {
-                'name': ' Data Category',
-                'dataType': 'STRING',
-                'comparisonOperator': 'EQUALS',
-                'value': scope.$root.dataCategory
-            }
-        );
+        var searchCriteriaAsJson = this.toSearchCriteriaAsJson(dataCategory, searchCriteria);
 
-        for (i = 0; i < scope.$root.searchCriteria.length; i++) {
-
-            var criterion = scope.$root.searchCriteria[i];
-            var value;
-
-            var dataTypeId = criterion.dataTypeId;
-            if (dataTypeId == 'STRING') {value = criterion.value_asString;}
-            else if (dataTypeId == 'NUMBER') {value = criterion.value_asNumber;}
-            else if (dataTypeId == 'DATE') {value = criterion.value_asDate.toJSON();}
-            else if (dataTypeId == 'BOOLEAN') { value = criterion.value_asBoolean;}
-
-            criteriaPackagedForRestCall.push(
-                {
-                    'name': criterion.columnName,
-                    'dataType': criterion.dataTypeId,
-                    'comparisonOperator': criterion.comparisonOperatorId,
-                    'value': value
-                }
-            );
-        }
+        scope.$root.searchCriteriaAsJson = searchCriteriaAsJson;
 
         var req = {
             method: 'POST',
@@ -417,7 +438,7 @@ drApp.service('drServices', function() {
             headers: {
                 'Content-Type': undefined
             },
-            data: criteriaPackagedForRestCall
+            data: searchCriteriaAsJson
         }
 
 //        scope.$root.showProgressAnimation = true;
@@ -434,6 +455,5 @@ drApp.service('drServices', function() {
                 alert("A failure occurred (status: " + status + " data: " + data);
             });
     }
-
 })
 

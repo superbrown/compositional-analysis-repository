@@ -5,7 +5,7 @@ import gov.energy.nbc.car.utilities.fileReader.dto.RowCollection;
 import gov.energy.nbc.car.utilities.fileReader.exception.InvalidValueFoundInHeader;
 import gov.energy.nbc.car.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -139,7 +139,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
 
         if (filePath.toLowerCase().endsWith(".xls")) {
 
-            return new HSSFWorkbook(fileInputStream);
+            return new XSSFWorkbook(fileInputStream);
         }
         else if (filePath.toLowerCase().endsWith(".xlsx") ||
                  filePath.toLowerCase().endsWith(".xlsm")) {

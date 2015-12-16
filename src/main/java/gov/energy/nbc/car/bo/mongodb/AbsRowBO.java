@@ -4,6 +4,7 @@ package gov.energy.nbc.car.bo.mongodb;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
+import gov.energy.nbc.car.ResultsMode;
 import gov.energy.nbc.car.bo.IRowBO;
 import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.dto.ComparisonOperator;
@@ -19,6 +20,10 @@ import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
 import gov.energy.nbc.car.utilities.Utilities;
 import org.apache.log4j.Logger;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -50,15 +55,15 @@ public abstract class AbsRowBO implements IRowBO {
     }
 
     @Override
-    public String getRows(String query) {
+    public String getRows(String query, ResultsMode resultsMode) {
 
-        List<Document> rowDocuments = getRowsAsDocuments(query);
+        List<Document> rowDocuments = getRowsAsDocuments(query, resultsMode);
 
         String json = DAOUtilities.serialize(rowDocuments);
         return json;
     }
 
-    protected List<Document> getRowsAsDocuments(String query) {
+    protected List<Document> getRowsAsDocuments(String query, ResultsMode resultsMode) {
 
         BasicDBList criteria = (BasicDBList) JSON.parse(query);
 
@@ -105,7 +110,7 @@ public abstract class AbsRowBO implements IRowBO {
             }
         }
 
-        return getRowDAO().query(rowSearchCriteria);
+        return getRowDAO().query(rowSearchCriteria, resultsMode);
     }
 
     protected List<SearchCriterion> crateSearchCriteriaToMakeSureWholeDayIsCovered(String name, Date date) {
@@ -155,7 +160,22 @@ public abstract class AbsRowBO implements IRowBO {
     @Override
     public String getRowsFlat(String query) {
 
-        List<Document> rowDocuments = getRowsAsDocuments(query);
+        List<Document> rowDocuments = getRowsAsDocuments(
+                query,
+                ResultsMode.INCLUDE_ONLY_DATA_COLUMNS_BEING_FILTERED_UPON);
+
+        BasicDBList rowsFlat = flatten(rowDocuments, Purpose.FOR_SCREEN_DIAPLAYED_SEARCH_RESULTS);
+
+        String json = DAOUtilities.serialize(rowsFlat);
+        return json;
+    }
+
+    private enum Purpose {
+        FOR_FILE_DOWNLOAD,
+        FOR_SCREEN_DIAPLAYED_SEARCH_RESULTS,
+    }
+
+    private BasicDBList flatten(List<Document> rowDocuments, Purpose purpose) {
 
         BasicDBList rowsFlat = new BasicDBList();
 
@@ -169,13 +189,21 @@ public abstract class AbsRowBO implements IRowBO {
             // link for downloading the file
             // DESIGN NOTE: I know, this is the wrong architectural layer. I'm in a time crunch right now.
             Document uploadedFile = (Document) metadata.get(Metadata.ATTR_KEY__UPLOADED_FILE);
+
             String originalFileName = (String) uploadedFile.get(StoredFile.ATTR_KEY__ORIGINAL_FILE_NAME);
-            String datasetId = ((ObjectId) document.get(RowDocument.ATTR_KEY__DATASET_ID)).toHexString();
-            Integer rowNumber = (Integer) data.get(Row.ATTR_KEY__ROW_NUMBER);
-            row.put("Source",
-                    "<a href='/api/dataset/" + datasetId + "/" + "uploadedFile' " +
-                            "target='_blank'>" +
-                            originalFileName + "</a> (row " + rowNumber + ")");
+
+            if (purpose == Purpose.FOR_FILE_DOWNLOAD) {
+                row.put(StoredFile.ATTR_KEY__ORIGINAL_FILE_NAME, originalFileName);
+            }
+
+            if (purpose == Purpose.FOR_SCREEN_DIAPLAYED_SEARCH_RESULTS) {
+                String datasetId = ((ObjectId) document.get(RowDocument.ATTR_KEY__DATASET_ID)).toHexString();
+                Integer rowNumber = (Integer) data.get(Row.ATTR_KEY__ROW_NUMBER);
+                row.put("Source",
+                        "<a href='/api/dataset/" + datasetId + "/" + "uploadedFile' " +
+                                "target='_blank'>" +
+                                originalFileName + "</a> (row " + rowNumber + ")");
+            }
 
 //            row.put(Metadata.ATTR_KEY__DATA_CATEGORY, metadata.get(Metadata.ATTR_KEY__DATA_CATEGORY));
             row.put(Metadata.ATTR_KEY__SUBMISSION_DATE, toString((Date) metadata.get(Metadata.ATTR_KEY__SUBMISSION_DATE)));
@@ -188,7 +216,10 @@ public abstract class AbsRowBO implements IRowBO {
 
                 Object value = data.get(name);
 
-                if (Row.ATTR_KEY__ROW_NUMBER.equals(name)) {
+                if (value == null) {
+
+                }
+                else if (Row.ATTR_KEY__ROW_NUMBER.equals(name)) {
                     // we already grabbed this above
                 }
                 else if (value instanceof ObjectId) {
@@ -209,8 +240,147 @@ public abstract class AbsRowBO implements IRowBO {
             rowsFlat.add(row);
         }
 
-        String json = DAOUtilities.serialize(rowsFlat);
-        return json;
+        return rowsFlat;
+    }
+
+    private static final Comparator ALPHANUMERIC_COMPARATOR = new Comparator() {
+        @Override
+        public int compare(Object o1, Object o2) {
+
+            if ((o1 instanceof String && o2 instanceof String) == false){
+                throw new RuntimeException("Both values must be strings: " +
+                        "o1: " + o1 + " (" + o1.getClass() + "), " +
+                        "o2: " + o2 + " (" + o2.getClass() + ")");
+            }
+
+            String string_1 = (String) o1;
+            String string_2 = (String) o2;
+
+            Double number_1 = toNumberIfPossible(string_1);
+            Double number_2 = toNumberIfPossible(string_2);
+
+            if (number_1 != null) {
+
+                if (number_2 != null) {
+                    // both are numbers
+                    return number_1.compareTo(number_2);
+                }
+                else {
+                    // first is a number, second is not
+                    return 1;
+                }
+            }
+            else {
+
+                if (number_2 != null) {
+                    // first is not a number, second is
+                    return -1;
+                }
+                else {
+                    // neither are numbers
+                    return string_1.compareTo(string_2);
+                }
+            }
+        }
+
+        private Double toNumberIfPossible(String string_1) {
+
+            try {
+                return Double.parseDouble(string_1);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+    };
+
+    @Override
+    public XSSFWorkbook getRowsAsExcelWorkbook(String query) {
+
+        List<Document> documents = getRowsAsDocuments(query, ResultsMode.INCLUDE_ALL_DATA);
+
+        BasicDBList basicDBList = flatten(documents, Purpose.FOR_FILE_DOWNLOAD);
+
+        XSSFWorkbook workbook = toExcelWorkbook(basicDBList);
+        return workbook;
+    }
+
+    private XSSFWorkbook toExcelWorkbook(BasicDBList documents) {
+
+        List<String> allKeys = getAllKeysAsAList(documents);
+        allKeys.remove("Source"); // we don't want to include
+        Collections.sort(allKeys, ALPHANUMERIC_COMPARATOR);
+
+        // Sample code:
+        // http://www.avajava.com/tutorials/lessons/how-do-i-write-to-an-excel-file-using-poi.html
+
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        XSSFSheet worksheet = workbook.createSheet("sheet");
+
+        // create heading row
+        short rowIndex = 0;
+
+        XSSFRow row = worksheet.createRow(rowIndex);
+
+        int columnIndex = 0;
+
+        for (String columnName : allKeys) {
+            XSSFCell cell = row.createCell(columnIndex);
+            cell.setCellValue(columnName);
+            columnIndex++;
+        }
+
+        for (Object object : documents) {
+
+            rowIndex++;
+            Document document = (Document) object;
+
+            row = worksheet.createRow(rowIndex);
+
+            columnIndex = 0;
+            for (String columnName : allKeys) {
+
+                XSSFCell cell = row.createCell(columnIndex);
+
+                if (document.containsKey(columnName)) {
+                    setCellValue(cell, document.get(columnName));
+                }
+                else {
+                    // don't set cell's value
+                }
+
+                columnIndex++;
+            }
+        }
+        return workbook;
+    }
+
+    private void setCellValue(XSSFCell cell, Object value) {
+        if (value instanceof Number) {
+            cell.setCellValue(((Number) value).doubleValue());
+        }
+        else if (value instanceof String) {
+            cell.setCellValue((String) value);
+        }
+        else if (value instanceof Date) {
+            cell.setCellValue((Date) value);
+        }
+        else if (value instanceof Boolean) {
+            cell.setCellValue((Boolean) value);
+        }
+        else {
+            throw new RuntimeException("Encountered unrecognized value: " + value);
+        }
+    }
+
+    private List<String> getAllKeysAsAList(BasicDBList documents) {
+
+        TreeSet<String> allUniqueKeys = new TreeSet<>();
+        for (Object document : documents) {
+            allUniqueKeys.addAll(((Document)document).keySet());
+        }
+
+        return new ArrayList(allUniqueKeys);
     }
 
 //    @Override
@@ -235,9 +405,9 @@ public abstract class AbsRowBO implements IRowBO {
 //    }
 
     @Override
-    public String getRows(List<SearchCriterion> rowSearchCriteria) {
+    public String getRows(List<SearchCriterion> rowSearchCriteria, ResultsMode resultsMode) {
 
-        List<Document> rowDocuments = getRowDAO().query(rowSearchCriteria);
+        List<Document> rowDocuments = getRowDAO().query(rowSearchCriteria, resultsMode);
 
         if (rowDocuments.size() == 0) { return null; }
 

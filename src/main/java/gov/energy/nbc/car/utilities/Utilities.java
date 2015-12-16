@@ -1,7 +1,9 @@
 package gov.energy.nbc.car.utilities;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.bson.Document;
+import org.springframework.core.io.InputStreamResource;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -39,8 +41,6 @@ public class Utilities {
 
     public static void setHourAndMinutesAndSeconds(Calendar calendar, int hour, int minute, int seconds, int millisec) {
 
-        System.out.println("before: " + toString(calendar));
-
         calendar.set(
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -50,8 +50,6 @@ public class Utilities {
                 seconds);
 
         calendar.set(Calendar.MILLISECOND, millisec);
-
-        System.out.println("after: " + toString(calendar));
     }
 
     private static String toString(Calendar calendar) {
@@ -93,5 +91,14 @@ public class Utilities {
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);
         return calendar;
+    }
+
+    public static InputStream toInputStream(XSSFWorkbook workbook)
+            throws IOException {
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+
+        return new ByteArrayInputStream(outputStream.toByteArray());
     }
 }

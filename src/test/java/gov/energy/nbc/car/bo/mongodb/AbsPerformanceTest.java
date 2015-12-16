@@ -1,6 +1,7 @@
 package gov.energy.nbc.car.bo.mongodb;
 
 import com.mongodb.BasicDBList;
+import gov.energy.nbc.car.ResultsMode;
 import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.IRowBO;
 import gov.energy.nbc.car.dao.dto.SearchCriterion;
@@ -104,7 +105,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "[performQueries_homeGrownWay()] rowBO.getRows(" + rowSearchCriteria.toString() + ")");
 
         IRowBO rowBO = getBusinessObjects().getRowBO();
-        String json = rowBO.getRows(rowSearchCriteria);
+        String json = rowBO.getRows(rowSearchCriteria, ResultsMode.INCLUDE_ONLY_DATA_COLUMNS_BEING_FILTERED_UPON);
 
         performanceLogger.done();
 
@@ -124,7 +125,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
 
         performanceLogger = new PerformanceLogger(log, "[performQueries_homeGrownWay()] rowBO.getRows(" + rowSearchCriteria.toString() + ")");
 
-        json = rowBO.getRows(rowSearchCriteria);
+        json = rowBO.getRows(rowSearchCriteria, ResultsMode.INCLUDE_ONLY_DATA_COLUMNS_BEING_FILTERED_UPON);
 
         performanceLogger.done();
 

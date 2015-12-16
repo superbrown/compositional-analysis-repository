@@ -1,6 +1,7 @@
 package gov.energy.nbc.car.dao.mongodb.multipleCellCollectionsApproach;
 
 import com.mongodb.client.result.DeleteResult;
+import gov.energy.nbc.car.ResultsMode;
 import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
 import gov.energy.nbc.car.dao.dto.SearchCriterion;
@@ -158,7 +159,7 @@ public class m_RowDAO extends DAO implements IRowDAO {
     }
 
     @Override
-    public List<Document> query(List<SearchCriterion> searchCriteria) {
+    public List<Document> query(List<SearchCriterion> searchCriteria, ResultsMode resultsMode) {
 
         if (searchCriteria.size() == 0) {
             throw new RuntimeException();

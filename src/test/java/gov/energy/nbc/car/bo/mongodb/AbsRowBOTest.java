@@ -2,6 +2,7 @@ package gov.energy.nbc.car.bo.mongodb;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.util.JSON;
+import gov.energy.nbc.car.ResultsMode;
 import gov.energy.nbc.car.bo.IRowBO;
 import gov.energy.nbc.car.dao.dto.ComparisonOperator;
 import gov.energy.nbc.car.dao.dto.SearchCriterion;
@@ -143,7 +144,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
 
         List<SearchCriterion> rowSearchCriteria = new ArrayList();
         rowSearchCriteria.add(new SearchCriterion(name, value, comparisonOperator));
-        String json = getBusinessObjects().getRowBO().getRows(rowSearchCriteria);
+        String json = getBusinessObjects().getRowBO().getRows(rowSearchCriteria, ResultsMode.INCLUDE_ONLY_DATA_COLUMNS_BEING_FILTERED_UPON);
         BasicDBList basicDBList = (BasicDBList) JSON.parse(json);
         return basicDBList;
     }
@@ -152,7 +153,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
 
         List<SearchCriterion> rowSearchCriteria = new ArrayList();
         rowSearchCriteria.add(new SearchCriterion(name, value, comparisonOperator));
-        String json = rowBO.getRows(rowSearchCriteria);
+        String json = rowBO.getRows(rowSearchCriteria, ResultsMode.INCLUDE_ONLY_DATA_COLUMNS_BEING_FILTERED_UPON);
         BasicDBList basicDBList = (BasicDBList) JSON.parse(json);
         return basicDBList;
     }
@@ -161,7 +162,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
 
         List<SearchCriterion> rowSearchCriteria = new ArrayList();
         rowSearchCriteria.add(new SearchCriterion(name, value, comparisonOperator));
-        String json = rowBO.getRows(rowSearchCriteria);
+        String json = rowBO.getRows(rowSearchCriteria, ResultsMode.INCLUDE_ONLY_DATA_COLUMNS_BEING_FILTERED_UPON);
         BasicDBList basicDBList = (BasicDBList) JSON.parse(json);
         return basicDBList;
     }
@@ -170,7 +171,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
 
         List<SearchCriterion> rowSearchCriteria = new ArrayList ();
         rowSearchCriteria.add(new SearchCriterion(name, value, comparisonOperator));
-        String json = rowBO.getRows(rowSearchCriteria);
+        String json = rowBO.getRows(rowSearchCriteria, ResultsMode.INCLUDE_ONLY_DATA_COLUMNS_BEING_FILTERED_UPON);
         BasicDBList basicDBList = (BasicDBList) JSON.parse(json);
         return basicDBList;
     }
