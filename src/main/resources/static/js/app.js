@@ -243,7 +243,9 @@ drApp.controller('findDataController',
 
 drApp.service('drServices', function() {
 
-    this.toSearchCriteriaAsJson = function(dataCategory, searchCriteria) {
+    var self = this;
+
+    self.toSearchCriteriaAsJson = function(dataCategory, searchCriteria) {
 
         var criteriaPackagedForRestCall = [];
 
@@ -289,7 +291,7 @@ drApp.service('drServices', function() {
         return criteriaPackagedForRestCall;
     }
 
-    this.populateKnownDataCategories = function (scope, http) {
+    self.populateKnownDataCategories = function (scope, http) {
 
 //        scope.$root.showProgressAnimation = true;
 
@@ -304,7 +306,7 @@ drApp.service('drServices', function() {
             });
     }
 
-    this.populateKnownColumnNames = function (scope, http) {
+    self.populateKnownColumnNames = function (scope, http) {
 
         if (scope.$root.dataCategory === '') return;
 
@@ -323,7 +325,7 @@ drApp.service('drServices', function() {
             });
     }
 
-    this.populateNamesOfSheetsWithinExcelWorkbook = function (scope, http) {
+    self.populateNamesOfSheetsWithinExcelWorkbook = function (scope, http) {
 
         scope.$root.knownNamesOfSheetsWithinSelectedWorkbook = [];
 
@@ -363,7 +365,7 @@ drApp.service('drServices', function() {
         );
     }
 
-    this.uploadData = function (scope, http) {
+    self.uploadData = function (scope, http) {
 
         var formData = new FormData();
         var $root = scope.$root;
@@ -391,6 +393,7 @@ drApp.service('drServices', function() {
             .success(function (result) {
 //                scope.$root.showProgressAnimation = false;
                 alert("File successfully uploaded.")
+                self.populateKnownColumnNames(scope, http);
             }
         )
             .error(function (data, status) {
@@ -400,7 +403,7 @@ drApp.service('drServices', function() {
         );
     }
 
-    this.populateKnownDataTypes = function (scope, http) {
+    self.populateKnownDataTypes = function (scope, http) {
 
 //        scope.$root.showProgressAnimation = true;
 
@@ -415,7 +418,7 @@ drApp.service('drServices', function() {
             });
     }
 
-    this.populateKnownComparisonOperators = function (scope, http, criterion) {
+    self.populateKnownComparisonOperators = function (scope, http, criterion) {
 
         var dataTypeId = criterion.dataTypeId;
 
@@ -434,7 +437,7 @@ drApp.service('drServices', function() {
             });
     }
 
-    this.findData = function (scope, http) {
+    self.findData = function (scope, http) {
 
         scope.$root.searchComplete = false;
         scope.$root.searchResults = [];
@@ -442,7 +445,7 @@ drApp.service('drServices', function() {
         var searchCriteria = scope.$root.searchCriteria;
         var dataCategory = scope.$root.dataCategory;
 
-        var searchCriteriaAsJson = this.toSearchCriteriaAsJson(dataCategory, searchCriteria);
+        var searchCriteriaAsJson = self.toSearchCriteriaAsJson(dataCategory, searchCriteria);
 
         scope.$root.searchCriteriaAsJson = searchCriteriaAsJson;
 
