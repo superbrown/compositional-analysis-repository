@@ -205,21 +205,22 @@ public abstract class AbsRowBO implements IRowBO {
             Integer rowNumber = (Integer) data.get(Row.ATTR_KEY__ROW_NUMBER);
 
             if (purpose == Purpose.FOR_FILE_DOWNLOAD) {
-                row.put(ATTR_ORIGINAL_FILE_NAME, originalFileName);
-                row.put(ATTR_ORIGINAL_FILE_ROW_NUMBER, rowNumber);
-            }
 
-            if (purpose == Purpose.FOR_SCREEN_DIAPLAYED_SEARCH_RESULTS) {
+                row.put(ATTR_ORIGINAL_FILE_NAME, originalFileName);
+                row.put(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA, metadata.get(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA));
+                row.put(ATTR_ORIGINAL_FILE_ROW_NUMBER, rowNumber);
+                row.put(Metadata.ATTR_KEY__DATA_CATEGORY, metadata.get(Metadata.ATTR_KEY__DATA_CATEGORY));
+            }
+            else if (purpose == Purpose.FOR_SCREEN_DIAPLAYED_SEARCH_RESULTS) {
+
                 String datasetId = getObjectId(document, RowDocument.ATTR_KEY__DATASET_ID);
                 row.put("Source",
                         "<a href='/api/dataset/" + datasetId + "/" + "uploadedFile' " +
                                 "target='_blank'>" +
                                 originalFileName + "</a> (row " + rowNumber + ")");
+                row.put(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA, metadata.get(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA));
             }
 
-            if (purpose == Purpose.FOR_FILE_DOWNLOAD) {
-                row.put(Metadata.ATTR_KEY__DATA_CATEGORY, metadata.get(Metadata.ATTR_KEY__DATA_CATEGORY));
-            }
             row.put(Metadata.ATTR_KEY__SUBMISSION_DATE, toString((Date) metadata.get(Metadata.ATTR_KEY__SUBMISSION_DATE)));
             row.put(Metadata.ATTR_KEY__SUBMITTER, metadata.get(Metadata.ATTR_KEY__SUBMITTER));
             row.put(Metadata.ATTR_KEY__PROJECT_NAME, metadata.get(Metadata.ATTR_KEY__PROJECT_NAME));
@@ -289,6 +290,7 @@ public abstract class AbsRowBO implements IRowBO {
         METADATA_COLUMNS_TO_RETURN.add(ATTR_SOURCE_UUID);
         METADATA_COLUMNS_TO_RETURN.add(ATTR_ROW_UUID);
         METADATA_COLUMNS_TO_RETURN.add(ATTR_ORIGINAL_FILE_NAME);
+        METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA);
         METADATA_COLUMNS_TO_RETURN.add(ATTR_ORIGINAL_FILE_ROW_NUMBER);
         METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__DATA_CATEGORY);
         METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__SUBMISSION_DATE);

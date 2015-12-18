@@ -73,10 +73,16 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
                 getRootDirectoryForDataFiles() +
                 extractPathToContainingDirectory(filePath);
 
-        Files.move(
+        Files.copy(
                 Paths.get(pathToContainingDirectory),
-                Paths.get(rootDirectoryForRemovedFiles),
-                StandardCopyOption.ATOMIC_MOVE);
+                Paths.get(rootDirectoryForRemovedFiles));
+
+        Files.delete(Paths.get(pathToContainingDirectory));
+
+//        Files.move(
+//                Paths.get(pathToContainingDirectory),
+//                Paths.get(rootDirectoryForRemovedFiles),
+//                StandardCopyOption.ATOMIC_MOVE);
     }
 
     private String extractPathToContainingDirectory(String filePath) {

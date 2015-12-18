@@ -74,6 +74,7 @@ public class s_DatasetBO extends gov.energy.nbc.car.bo.mongodb.AbsDatasetBO impl
                 projectName,
                 comments,
                 new StoredFile(dataFile.originalFileName, dataFile.storageLocation),
+                nameOfWorksheetContainingTheData,
                 attachments);
 
         ObjectId objectId = getDatasetDAO().add(datasetDocument, rowCollection);
@@ -111,6 +112,7 @@ public class s_DatasetBO extends gov.energy.nbc.car.bo.mongodb.AbsDatasetBO impl
                 projectName,
                 comments,
                 new StoredFile(dataFile.originalFileName, dataFile.storageLocation),
+                nameOfWorksheetContainingTheData,
                 attachments);
 
         ObjectId objectId = getDatasetDAO().add(datasetDocument, rowCollection);

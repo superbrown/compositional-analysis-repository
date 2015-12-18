@@ -84,6 +84,7 @@ public class m_DatasetBO extends AbsDatasetBO {
                 projectName,
                 comments,
                 new StoredFile(dataFile.originalFileName, dataFile.storageLocation),
+                nameOfWorksheetContainingTheData,
                 attachments);
 
         ObjectId objectId = getDatasetDAO().add(datasetDocument, rowCollection);

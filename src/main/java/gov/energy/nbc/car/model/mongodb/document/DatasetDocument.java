@@ -35,6 +35,7 @@ public class DatasetDocument extends AbstractDocument implements IDatasetDocumen
                            String projectName,
                            String comments,
                            IStoredFile uploadedFile,
+                           String nameOfSheetContainingData,
                            List<IStoredFile> attachments) {
 
         IMetadata metadata = new Metadata(
@@ -45,6 +46,7 @@ public class DatasetDocument extends AbstractDocument implements IDatasetDocumen
                 projectName,
                 comments,
                 uploadedFile,
+                nameOfSheetContainingData,
                 attachments);
 
         init(metadata);

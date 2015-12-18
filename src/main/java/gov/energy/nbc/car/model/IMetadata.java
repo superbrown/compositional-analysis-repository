@@ -13,6 +13,7 @@ public interface IMetadata {
     String ATTR_KEY__PROJECT_NAME = " Project Name";
     String ATTR_KEY__COMMENTS = " Comments";
     String ATTR_KEY__UPLOADED_FILE = " Uploaded File";
+    String ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA = "Name Of Sheet Containing Data";
     String ATTR_KEY__ATTACHMENTS = " Attachments";
 
     String getDataCategory();
@@ -24,6 +25,8 @@ public interface IMetadata {
     String getChargeNumber();
 
     String getProjectName();
+
+    String getNameOfSheetContainingData();
 
     String getComments();
 
@@ -42,6 +45,8 @@ public interface IMetadata {
     String setProjectName(String value);
 
     String setComments(String value);
+
+    String setNameOfSheetContainingData(String value);
 
     IStoredFile setUploadedFile(IStoredFile value);
 
