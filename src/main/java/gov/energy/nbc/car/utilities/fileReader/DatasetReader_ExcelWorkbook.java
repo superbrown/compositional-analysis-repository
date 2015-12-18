@@ -5,6 +5,7 @@ import gov.energy.nbc.car.utilities.fileReader.dto.RowCollection;
 import gov.energy.nbc.car.utilities.fileReader.exception.InvalidValueFoundInHeader;
 import gov.energy.nbc.car.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -101,7 +102,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
 
         // DESIGN NOTE: We are added the row number number so users will be able to trace the data back to the original
         //              source document.
-        int rowNumber = row.getRowNum();
+        int rowNumber = row.getRowNum() + 1; // This appears to be zero indexed.
         rowData.add(rowNumber);
 
         Iterator<Cell> cellIterator = row.cellIterator();
@@ -139,7 +140,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
 
         if (filePath.toLowerCase().endsWith(".xls")) {
 
-            return new XSSFWorkbook(fileInputStream);
+            return new HSSFWorkbook(fileInputStream);
         }
         else if (filePath.toLowerCase().endsWith(".xlsx") ||
                  filePath.toLowerCase().endsWith(".xlsm")) {

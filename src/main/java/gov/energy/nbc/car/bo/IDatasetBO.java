@@ -16,7 +16,7 @@ import java.util.List;
 
 public interface IDatasetBO {
 
-    String addDataset(
+    ObjectId addDataset(
             String dataCategory,
             Date submissionDate,
             String submitter,
@@ -32,7 +32,7 @@ public interface IDatasetBO {
 
     String getAllDatasets();
 
-    long deleteDataset(String datasetId) throws DeletionFailure;
+    long removeDataset(String datasetId) throws DeletionFailure;
 
     String addDataset(
             String dataCategory,

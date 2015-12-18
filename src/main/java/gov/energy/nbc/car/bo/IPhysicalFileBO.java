@@ -1,22 +1,25 @@
 package gov.energy.nbc.car.bo;
 
-import gov.energy.nbc.car.dao.IPhysicalFileDAO;
+import gov.energy.nbc.car.dao.IFileStorageDAO;
 import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
 import gov.energy.nbc.car.dao.dto.StoredFile;
 import gov.energy.nbc.car.dao.exception.UnableToDeleteFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 
 public interface IPhysicalFileBO {
 
-//    StoredFile saveFile(MultipartFile dataFile);
+    StoredFile saveFile(Date timestamp, FileAsRawBytes file);
 
-    StoredFile saveFile(FileAsRawBytes file);
-
-    IPhysicalFileDAO getPyhsicalFileDAO();
+    IFileStorageDAO getFileStorageDAO();
 
     void deletFile(String storageLocation)
             throws UnableToDeleteFile;
+
+    void moveFilesToRemovedFilesLocation(String pathToFile)
+            throws IOException;
 
     File getFile(String storageLocation);
 }

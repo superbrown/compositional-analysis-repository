@@ -6,7 +6,6 @@ import gov.energy.nbc.car.bo.IPhysicalFileBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.dao.IDatasetDAO;
 import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
-import gov.energy.nbc.car.dao.exception.UnableToDeleteFile;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.model.IDatasetDocument;
 import gov.energy.nbc.car.model.IMetadata;
@@ -44,7 +43,7 @@ public class s_DatasetBO extends gov.energy.nbc.car.bo.mongodb.AbsDatasetBO impl
         generalFileReader = new DatasetReader_AllFileTypes();
     }
 
-    public String addDataset(
+    public ObjectId addDataset(
             String dataCategory,
             Date submissionDate,
             String submitter,
@@ -79,7 +78,7 @@ public class s_DatasetBO extends gov.energy.nbc.car.bo.mongodb.AbsDatasetBO impl
 
         ObjectId objectId = getDatasetDAO().add(datasetDocument, rowCollection);
 
-        return JSON.serialize(objectId);
+        return objectId;
     }
 
     public String addDataset(
@@ -116,12 +115,12 @@ public class s_DatasetBO extends gov.energy.nbc.car.bo.mongodb.AbsDatasetBO impl
 
         ObjectId objectId = getDatasetDAO().add(datasetDocument, rowCollection);
 
-        return objectId.toHexString();
+        return JSON.serialize(objectId);
     }
 
     protected File getPhysicalFile(String storageLocation) {
 
-        return getPhysicalFileBO().getPyhsicalFileDAO().getFile(storageLocation);
+        return getPhysicalFileBO().getFileStorageDAO().getFile(storageLocation);
     }
 
     public String getDataset(String datasetId) {
@@ -141,26 +140,27 @@ public class s_DatasetBO extends gov.energy.nbc.car.bo.mongodb.AbsDatasetBO impl
         return jsonOut;
     }
 
-    public long deleteDataset(String datasetId) throws DeletionFailure {
+    public long removeDataset(String datasetId) throws DeletionFailure {
 
         IDatasetDAO datasetDAO = getDatasetDAO();
         IDatasetDocument datasetDocument = datasetDAO.getDataset(datasetId);
 
         String storageLocation = datasetDocument.getMetadata().getUploadedFile().getStorageLocation();
         try {
-            physicalFileBO.deletFile(storageLocation);
+            physicalFileBO.moveFilesToRemovedFilesLocation(storageLocation);
         }
-        catch (UnableToDeleteFile e) {
+        catch (IOException e) {
             log.warn(e);
+            throw new RuntimeException(e);
         }
 
         List<IStoredFile> attachments = datasetDocument.getMetadata().getAttachments();
         for (IStoredFile attachment : attachments) {
             try {
 
-                physicalFileBO.deletFile(attachment.getStorageLocation());
+                physicalFileBO.moveFilesToRemovedFilesLocation(attachment.getStorageLocation());
             }
-            catch (UnableToDeleteFile e) {
+            catch (IOException e) {
                 log.warn(e);
             }
         }
@@ -181,15 +181,17 @@ public class s_DatasetBO extends gov.energy.nbc.car.bo.mongodb.AbsDatasetBO impl
             List<FileAsRawBytes> attachmentFiles)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
-        gov.energy.nbc.car.dao.dto.StoredFile theDataFileThatWasStored = physicalFileBO.saveFile(dataFile);
+        Date timestamp = new Date();
+
+        gov.energy.nbc.car.dao.dto.StoredFile theDataFileThatWasStored = physicalFileBO.saveFile(timestamp, dataFile);
 
         List<gov.energy.nbc.car.dao.dto.StoredFile> theAttachmentsThatWereStored = new ArrayList();
 
         for (FileAsRawBytes attachmentFile : attachmentFiles) {
-            theAttachmentsThatWereStored.add(physicalFileBO.saveFile(attachmentFile));
+            theAttachmentsThatWereStored.add(physicalFileBO.saveFile(timestamp, attachmentFile));
         }
 
-        String objectId = addDataset(
+        ObjectId objectId = addDataset(
                 dataCategory,
                 submissionDate,
                 submitter,
@@ -200,7 +202,14 @@ public class s_DatasetBO extends gov.energy.nbc.car.bo.mongodb.AbsDatasetBO impl
                 nameOfSheetContainingData,
                 theAttachmentsThatWereStored);
 
-        return objectId;
+        IDatasetDocument persistedDatasetDocument = getDatasetDAO().getDataset(objectId.toHexString());
+
+        FileAsRawBytes datasetDocumentAsRawBytes =
+                new FileAsRawBytes("DATASET_METADATA.json", JSON.serialize(persistedDatasetDocument).getBytes());
+
+        physicalFileBO.saveFile(timestamp, datasetDocumentAsRawBytes);
+
+        return JSON.serialize(objectId);
     }
 
     public String addDataset(String metadataJson,
@@ -222,7 +231,7 @@ public class s_DatasetBO extends gov.energy.nbc.car.bo.mongodb.AbsDatasetBO impl
 
             ObjectId objectId = datasetDAO.add(datasetDocument, rowCollection);
 
-            return objectId.toHexString();
+            return JSON.serialize(objectId);
         }
         catch (IOException e) {
             log.error(e);

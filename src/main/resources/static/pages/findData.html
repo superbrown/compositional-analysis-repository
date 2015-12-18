@@ -137,17 +137,9 @@
   </div>
 
 
+  <!--Hidden form form needed to download search results-->
   <form id="searchResultsDownloadForm" action="/api/rows/asFile" method="post" target="_blank" ng-show="false">
     <input type="hidden" name="query" value="{{$root.searchCriteriaAsJson}}">
   </form>
-
-  <!--<div-->
-  <!--ng-hide="false"-->
-  <!--ui-grid="searchResultsGridConfig"-->
-  <!--ui-grid-auto-resize-->
-  <!--ui-grid-move-columns-->
-  <!--ui-grid-resize-columns />-->
-
-  <!--</div>-->
 
 </div>

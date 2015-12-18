@@ -32,7 +32,12 @@ import java.util.*;
 
 public abstract class AbsRowBO implements IRowBO {
 
+    private static final String ATTR_SOURCE_UUID = " Source UUID";
+    private static final String ATTR_ROW_UUID = " Row UUID";
     protected Logger log = Logger.getLogger(getClass());
+
+    private static final String ATTR_ORIGINAL_FILE_NAME = " Original File Name";
+    private static final String ATTR_ORIGINAL_FILE_ROW_NUMBER = " Original File Row Number";
 
     protected IRowDAO rowDAO;
 
@@ -96,6 +101,9 @@ public abstract class AbsRowBO implements IRowBO {
             else if (dataType == DataType.BOOLEAN) {
                 Boolean aBoolean = Boolean.valueOf(rawValue.toString());
                 value = aBoolean;
+            }
+            else {
+                throw new RuntimeException("Unrecognized data type: " + dataType);
             }
 
             if (value instanceof Date && comparisonOperator == ComparisonOperator.EQUALS) {
@@ -183,6 +191,9 @@ public abstract class AbsRowBO implements IRowBO {
 
             Document row = new Document();
 
+            row.put(ATTR_SOURCE_UUID, getObjectId(document, RowDocument.ATTR_KEY__DATASET_ID));
+            row.put(ATTR_ROW_UUID, getObjectId(document, RowDocument.ATTR_KEY__ID));
+
             Document metadata = (Document) document.get(RowDocument.ATTR_KEY__METADATA);
             Document data = (Document) document.get(RowDocument.ATTR_KEY__DATA);
 
@@ -191,28 +202,34 @@ public abstract class AbsRowBO implements IRowBO {
             Document uploadedFile = (Document) metadata.get(Metadata.ATTR_KEY__UPLOADED_FILE);
 
             String originalFileName = (String) uploadedFile.get(StoredFile.ATTR_KEY__ORIGINAL_FILE_NAME);
+            Integer rowNumber = (Integer) data.get(Row.ATTR_KEY__ROW_NUMBER);
 
             if (purpose == Purpose.FOR_FILE_DOWNLOAD) {
-                row.put(StoredFile.ATTR_KEY__ORIGINAL_FILE_NAME, originalFileName);
+                row.put(ATTR_ORIGINAL_FILE_NAME, originalFileName);
+                row.put(ATTR_ORIGINAL_FILE_ROW_NUMBER, rowNumber);
             }
 
             if (purpose == Purpose.FOR_SCREEN_DIAPLAYED_SEARCH_RESULTS) {
-                String datasetId = ((ObjectId) document.get(RowDocument.ATTR_KEY__DATASET_ID)).toHexString();
-                Integer rowNumber = (Integer) data.get(Row.ATTR_KEY__ROW_NUMBER);
+                String datasetId = getObjectId(document, RowDocument.ATTR_KEY__DATASET_ID);
                 row.put("Source",
                         "<a href='/api/dataset/" + datasetId + "/" + "uploadedFile' " +
                                 "target='_blank'>" +
                                 originalFileName + "</a> (row " + rowNumber + ")");
             }
 
-//            row.put(Metadata.ATTR_KEY__DATA_CATEGORY, metadata.get(Metadata.ATTR_KEY__DATA_CATEGORY));
+            if (purpose == Purpose.FOR_FILE_DOWNLOAD) {
+                row.put(Metadata.ATTR_KEY__DATA_CATEGORY, metadata.get(Metadata.ATTR_KEY__DATA_CATEGORY));
+            }
             row.put(Metadata.ATTR_KEY__SUBMISSION_DATE, toString((Date) metadata.get(Metadata.ATTR_KEY__SUBMISSION_DATE)));
             row.put(Metadata.ATTR_KEY__SUBMITTER, metadata.get(Metadata.ATTR_KEY__SUBMITTER));
             row.put(Metadata.ATTR_KEY__PROJECT_NAME, metadata.get(Metadata.ATTR_KEY__PROJECT_NAME));
             row.put(Metadata.ATTR_KEY__CHARGE_NUMBER, metadata.get(Metadata.ATTR_KEY__CHARGE_NUMBER));
             row.put(Metadata.ATTR_KEY__COMMENTS, metadata.get(Metadata.ATTR_KEY__COMMENTS));
 
-            for (String name : data.keySet()) {
+            Set<String> columnNames = data.keySet();
+            columnNames = Utilities.toSortedSet(columnNames);
+
+            for (String name : columnNames) {
 
                 Object value = data.get(name);
 
@@ -222,19 +239,28 @@ public abstract class AbsRowBO implements IRowBO {
                 else if (Row.ATTR_KEY__ROW_NUMBER.equals(name)) {
                     // we already grabbed this above
                 }
-                else if (value instanceof ObjectId) {
-                    row.put(name, ((ObjectId) value).toHexString());
-                }
-                else if (value instanceof Number) {
-                    String stringValue = value.toString();
-                    row.put(name, stringValue);
-                }
-                else if (value instanceof Date) {
-                    row.put(name, toString((Date) value));
-                }
                 else {
-                    row.put(name, value.toString());
+                    if (purpose == Purpose.FOR_SCREEN_DIAPLAYED_SEARCH_RESULTS) {
+
+                        if (value instanceof ObjectId) {
+                            row.put(name, ((ObjectId) value).toHexString());
+                        }
+                        else if (value instanceof Number) {
+                            String stringValue = value.toString();
+                            row.put(name, stringValue);
+                        }
+                        else if (value instanceof Date) {
+                            row.put(name, toString((Date) value));
+                        }
+                        else {
+                            row.put(name, value.toString());
+                        }
+                    }
+                    else {
+                        row.put(name, value);
+                    }
                 }
+
             }
 
             rowsFlat.add(row);
@@ -243,55 +269,9 @@ public abstract class AbsRowBO implements IRowBO {
         return rowsFlat;
     }
 
-    private static final Comparator ALPHANUMERIC_COMPARATOR = new Comparator() {
-        @Override
-        public int compare(Object o1, Object o2) {
-
-            if ((o1 instanceof String && o2 instanceof String) == false){
-                throw new RuntimeException("Both values must be strings: " +
-                        "o1: " + o1 + " (" + o1.getClass() + "), " +
-                        "o2: " + o2 + " (" + o2.getClass() + ")");
-            }
-
-            String string_1 = (String) o1;
-            String string_2 = (String) o2;
-
-            Double number_1 = toNumberIfPossible(string_1);
-            Double number_2 = toNumberIfPossible(string_2);
-
-            if (number_1 != null) {
-
-                if (number_2 != null) {
-                    // both are numbers
-                    return number_1.compareTo(number_2);
-                }
-                else {
-                    // first is a number, second is not
-                    return 1;
-                }
-            }
-            else {
-
-                if (number_2 != null) {
-                    // first is not a number, second is
-                    return -1;
-                }
-                else {
-                    // neither are numbers
-                    return string_1.compareTo(string_2);
-                }
-            }
-        }
-
-        private Double toNumberIfPossible(String string_1) {
-
-            try {
-                return Double.parseDouble(string_1);
-            } catch (NumberFormatException e) {
-                return null;
-            }
-        }
-    };
+    private String getObjectId(Document document, String attributeName) {
+        return ((ObjectId)document.get(attributeName)).toHexString();
+    }
 
     @Override
     public XSSFWorkbook getRowsAsExcelWorkbook(String query) {
@@ -304,11 +284,32 @@ public abstract class AbsRowBO implements IRowBO {
         return workbook;
     }
 
+    private static final List<String> METADATA_COLUMNS_TO_RETURN = new ArrayList();
+    static {
+        METADATA_COLUMNS_TO_RETURN.add(ATTR_SOURCE_UUID);
+        METADATA_COLUMNS_TO_RETURN.add(ATTR_ROW_UUID);
+        METADATA_COLUMNS_TO_RETURN.add(ATTR_ORIGINAL_FILE_NAME);
+        METADATA_COLUMNS_TO_RETURN.add(ATTR_ORIGINAL_FILE_ROW_NUMBER);
+        METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__DATA_CATEGORY);
+        METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__SUBMISSION_DATE);
+        METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__SUBMITTER);
+        METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__PROJECT_NAME);
+        METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__CHARGE_NUMBER);
+        METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__COMMENTS);
+    }
+
     private XSSFWorkbook toExcelWorkbook(BasicDBList documents) {
 
-        List<String> allKeys = getAllKeysAsAList(documents);
-        allKeys.remove("Source"); // we don't want to include
-        Collections.sort(allKeys, ALPHANUMERIC_COMPARATOR);
+        List<String> allKeys = new ArrayList(extractAllKeys(documents));
+
+        // We are removing these because we want to add them in a specific order before all the
+        // other columns.  In other words, we don't want them alphabetized with the others.
+        allKeys.removeAll(METADATA_COLUMNS_TO_RETURN);
+
+        Utilities.sortAlphaNumerically(allKeys);
+
+        // Add them back to the beginning of the list.
+        allKeys.addAll(0, METADATA_COLUMNS_TO_RETURN);
 
         // Sample code:
         // http://www.avajava.com/tutorials/lessons/how-do-i-write-to-an-excel-file-using-poi.html
@@ -373,14 +374,14 @@ public abstract class AbsRowBO implements IRowBO {
         }
     }
 
-    private List<String> getAllKeysAsAList(BasicDBList documents) {
+    private Set<String> extractAllKeys(BasicDBList documents) {
 
-        TreeSet<String> allUniqueKeys = new TreeSet<>();
+        Set<String> allUniqueKeys = new HashSet<>();
         for (Object document : documents) {
             allUniqueKeys.addAll(((Document)document).keySet());
         }
 
-        return new ArrayList(allUniqueKeys);
+        return allUniqueKeys;
     }
 
 //    @Override
@@ -448,5 +449,4 @@ public abstract class AbsRowBO implements IRowBO {
         String string = new SimpleDateFormat("yyyy-MM-dd").format(date);
         return string;
     }
-
 }

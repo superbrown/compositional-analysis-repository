@@ -58,6 +58,7 @@ public class Endpoints_Rows {
     public ResponseEntity<InputStreamResource> getRowsAsFile(
             @RequestBody String query) throws IOException {
 
+        // It's not clear why this is necessary with this call, but it is.
         query = query.replace("query=", "");
         query = URLDecoder.decode(query, "UTF-8");
 

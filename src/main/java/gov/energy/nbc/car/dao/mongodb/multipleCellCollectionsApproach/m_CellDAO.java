@@ -7,7 +7,7 @@ import com.mongodb.client.result.DeleteResult;
 import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.dao.ICellDAO;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
-import gov.energy.nbc.car.dao.mongodb.DAO;
+import gov.energy.nbc.car.dao.mongodb.AbsDAO;
 import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
 import gov.energy.nbc.car.model.IRow;
 import gov.energy.nbc.car.model.mongodb.document.CellDocument;
@@ -17,7 +17,7 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.List;
 
-public class m_CellDAO extends DAO implements ICellDAO {
+public class m_CellDAO extends AbsDAO implements ICellDAO {
 
     public m_CellDAO(String columnName, ISettings settings) {
 

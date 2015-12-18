@@ -15,9 +15,9 @@ public interface IDataCategoryBO {
 
     void deleteDataCategory(String dataCategoryId) throws DeletionFailure;
 
-    String addDataCategory(String jsonIn);
-
     String getColumnNamesForDataCategoryName(String dataCategoryName);
+
+    void addDataCategory(String categoryName);
 
     IDataCategoryDAO getDataCategoryDAO();
 }

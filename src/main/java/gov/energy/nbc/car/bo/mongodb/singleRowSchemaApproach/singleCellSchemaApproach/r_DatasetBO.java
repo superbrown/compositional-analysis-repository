@@ -2,7 +2,7 @@ package gov.energy.nbc.car.bo.mongodb.singleRowSchemaApproach.singleCellSchemaAp
 
 import com.mongodb.util.JSON;
 import gov.energy.nbc.car.bo.IPhysicalFileBO;
-import gov.energy.nbc.car.bo.PhysicalFileBO;
+import gov.energy.nbc.car.bo.FileStorageBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.bo.mongodb.AbsDatasetBO;
 import gov.energy.nbc.car.dao.IDatasetDAO;
@@ -48,11 +48,11 @@ public class r_DatasetBO extends AbsDatasetBO {
         super(settings);
 
         datasetDAO = new r_DatasetDAO(settings);
-        physicalFileBO = new PhysicalFileBO(settings);
+        physicalFileBO = new FileStorageBO(settings);
         generalFileReader = new DatasetReader_AllFileTypes();
     }
 
-    public String addDataset(
+    public ObjectId addDataset(
             String dataCategory,
             Date submissionDate,
             String submitter,
@@ -87,7 +87,7 @@ public class r_DatasetBO extends AbsDatasetBO {
 
         ObjectId objectId = getDatasetDAO().add(datasetDocument, rowCollection);
 
-        return objectId.toHexString();
+        return objectId;
     }
 
     public String addDataset(
@@ -129,7 +129,7 @@ public class r_DatasetBO extends AbsDatasetBO {
 
     protected File getPhysicalFile(String storageLocation) {
 
-        return getPhysicalFileBO().getPyhsicalFileDAO().getFile(storageLocation);
+        return getPhysicalFileBO().getFileStorageDAO().getFile(storageLocation);
     }
 
     public String getDataset(String datasetId) {
@@ -149,7 +149,7 @@ public class r_DatasetBO extends AbsDatasetBO {
         return jsonOut;
     }
 
-    public long deleteDataset(String datasetId) throws DeletionFailure {
+    public long removeDataset(String datasetId) throws DeletionFailure {
 
         IDatasetDAO datasetDAO = getDatasetDAO();
         IDatasetDocument datasetDocument = datasetDAO.getDataset(datasetId);
@@ -189,15 +189,17 @@ public class r_DatasetBO extends AbsDatasetBO {
             List<FileAsRawBytes> attachmentFiles)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
-        gov.energy.nbc.car.dao.dto.StoredFile theDataFileThatWasStored = physicalFileBO.saveFile(dataFile);
+        Date timestamp = new Date();
+
+        gov.energy.nbc.car.dao.dto.StoredFile theDataFileThatWasStored = physicalFileBO.saveFile(timestamp, dataFile);
 
         List<gov.energy.nbc.car.dao.dto.StoredFile> theAttachmentsThatWereStored = new ArrayList();
 
         for (FileAsRawBytes attachmentFile : attachmentFiles) {
-            theAttachmentsThatWereStored.add(physicalFileBO.saveFile(attachmentFile));
+            theAttachmentsThatWereStored.add(physicalFileBO.saveFile(timestamp, attachmentFile));
         }
 
-        String objectId = addDataset(
+        ObjectId objectId = addDataset(
                 dataCategory,
                 submissionDate,
                 submitter,
@@ -208,7 +210,7 @@ public class r_DatasetBO extends AbsDatasetBO {
                 nameOfSheetContainingData,
                 theAttachmentsThatWereStored);
 
-        return objectId;
+        return JSON.serialize(objectId);
     }
 
     public String addDataset(String metadataJson,

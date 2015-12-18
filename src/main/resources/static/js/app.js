@@ -1,14 +1,4 @@
 
-// needed for the date picker widgets
-$(function() {
-    $( "#submissionDate" ).datepicker();
-});
-
-$(function() {
-    $( "#value_asDate" ).datepicker();
-});
-
-
 function hasExcelWorkbookFileSuffix(fileName) {
 
     return (
@@ -35,6 +25,7 @@ var drApp = angular.module('drApp',
         'ui.date',
         'ngSanitize',
         'ngCookies',
+        'angular-svg-round-progress',
     ]);
 
 drApp.config(
@@ -50,7 +41,15 @@ drApp.config(
             {
                 templateUrl: 'pages/findData.html',
                 controller: 'findDataController'
-            });
+            })
+            .when('/',
+            {
+                redirectTo: '/uploadData'
+            })
+            .otherwise(
+            {
+                redirectTo: '/uploadData'
+            })
     });
 
 drApp.run(
@@ -103,6 +102,13 @@ drApp.controller('rootPageController',
                 drServices.populateKnownColumnNames($scope, $http);
             });
 
+            $rootScope.$watch('$root.submitter', function() {
+                var expireDate = new Date();
+                expireDate.setDate(expireDate.getDate() + 365);
+                $cookies.put('submitter', $rootScope.submitter, {'expires': expireDate});
+                drServices.populateKnownColumnNames($scope, $http);
+            });
+
             $rootScope.$watch('$root.dataFile', function() {
                 drServices.populateNamesOfSheetsWithinExcelWorkbook($scope, $http);
             });
@@ -115,6 +121,12 @@ drApp.controller('rootPageController',
             if (dataCategoryFromCookie != undefined &&
                 dataCategoryFromCookie != '') {
                 $rootScope.dataCategory = dataCategoryFromCookie;
+            }
+
+            var submitterFromCookie = $cookies.get('submitter');
+            if (submitterFromCookie != undefined &&
+                submitterFromCookie != '') {
+                $rootScope.submitter = submitterFromCookie;
             }
         }
     ]
@@ -296,6 +308,8 @@ drApp.service('drServices', function() {
 
         if (scope.$root.dataCategory === '') return;
 
+        scope.$root.knownColumnNames = [];
+
 //        scope.$root.showProgressAnimation = true;
 
         http.get('/api/dataCategory/columnNames?dataCategoryName=' + scope.dataCategory)
@@ -441,16 +455,16 @@ drApp.service('drServices', function() {
             data: searchCriteriaAsJson
         }
 
-//        scope.$root.showProgressAnimation = true;
+        scope.$root.showProgressAnimation = true;
 
         http(req)
             .success(function (result) {
-//                scope.$root.showProgressAnimation = false;
+                scope.$root.showProgressAnimation = false;
                 scope.$root.searchComplete = true;
                 scope.$root.searchResults = result;
             })
             .error(function (data, status) {
-//                scope.$root.showProgressAnimation = false;
+                scope.$root.showProgressAnimation = false;
                 scope.$root.searchComplete = true;
                 alert("A failure occurred (status: " + status + " data: " + data);
             });

@@ -19,7 +19,10 @@ public class Endpoints_DataCategories {
     @Autowired
     protected DataRepositoryApplication dataRepositoryApplication;
 
-    @RequestMapping(value="/api/dataCategory/{dataCategoryId}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(
+            value="/api/dataCategory/{dataCategoryId}",
+            method = RequestMethod.GET,
+            produces = "application/json")
     public ResponseEntity getDataCategory(
             @PathVariable(value = "dataCategoryId") String dataCategoryId) {
 
@@ -33,7 +36,10 @@ public class Endpoints_DataCategories {
         return create_SUCCESS_response(dataCategory);
     }
 
-    @RequestMapping(value="/api/dataCategory", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(
+            value="/api/dataCategory",
+            method = RequestMethod.GET,
+            produces = "application/json")
     public ResponseEntity getDataCategoryByName(
             @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName) {
 
@@ -47,7 +53,10 @@ public class Endpoints_DataCategories {
         return create_SUCCESS_response(dataCategory);
     }
 
-    @RequestMapping(value="/api/dataCategory/columnNames", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(
+            value="/api/dataCategory/columnNames",
+            method = RequestMethod.GET,
+            produces = "application/json")
     public ResponseEntity getColumnNamesForDataCategoryName(
             @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName) {
 
@@ -61,9 +70,11 @@ public class Endpoints_DataCategories {
         return create_SUCCESS_response(columnNamesForDataCategoryName);
     }
 
-    @RequestMapping(value="/api/dataCategory/names/all", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity getAllDataCategoryNames(
-            ) {
+    @RequestMapping(
+            value="/api/dataCategory/names/all",
+            method = RequestMethod.GET,
+            produces = "application/json")
+    public ResponseEntity getAllDataCategoryNames() {
 
         String dataCategoryNames = getDataCategoryBO().getAllDataCategoryNames(
         );
@@ -75,16 +86,30 @@ public class Endpoints_DataCategories {
         return create_SUCCESS_response(dataCategoryNames);
     }
 
-    @RequestMapping(value="/api/dataCategories/all", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity getDataCategoryByName(
-            ) {
+    @RequestMapping(
+            value="/api/dataCategories/all",
+            method = RequestMethod.GET,
+            produces = "application/json")
+    public ResponseEntity getDataCategoryByName() {
 
-        String dataCategory = getDataCategoryBO().getAllDataCategories(
-        );
+        String dataCategory = getDataCategoryBO().getAllDataCategories();
 
         if (dataCategory == null) {
             return create_NOT_FOUND_response();
         }
+
+        return create_SUCCESS_response(dataCategory);
+    }
+
+    @RequestMapping(
+            value="/api/dataCategory",
+            method = RequestMethod.POST,
+            produces = "application/json")
+    public ResponseEntity addDataCategory(
+            @RequestParam(value = "dataCategoryName") String dataCategoryName) {
+
+        getDataCategoryBO().addDataCategory(dataCategoryName);
+        String dataCategory = getDataCategoryBO().getDataCategoryWithName(dataCategoryName);
 
         return create_SUCCESS_response(dataCategory);
     }

@@ -18,7 +18,7 @@ public class MongoFieldNameEncoder {
     public static String toMongoSafeFieldName(String value) {
 
         if (value.startsWith(QUESTION_MARK_CHARACTER)) {
-            value = QUESTION_MARK_SUBSTITUTE + value.substring(1);
+            value = QUESTION_MARK_SUBSTITUTE + value.substring(QUESTION_MARK_CHARACTER.length());
         }
 
         value = value.replace(DECIMAL_POINT_CHARACTER, DECIMAL_POINT_SUBSTITUTE);
@@ -31,7 +31,7 @@ public class MongoFieldNameEncoder {
     public static String toClientSideFieldName(String value) {
 
         if (value.startsWith(QUESTION_MARK_SUBSTITUTE)) {
-            value = QUESTION_MARK_CHARACTER + value.substring(1);
+            value = QUESTION_MARK_CHARACTER + value.substring(QUESTION_MARK_SUBSTITUTE.length());
         }
 
         value = value.replace(DECIMAL_POINT_SUBSTITUTE, DECIMAL_POINT_CHARACTER);

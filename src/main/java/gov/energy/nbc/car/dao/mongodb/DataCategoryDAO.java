@@ -2,6 +2,7 @@ package gov.energy.nbc.car.dao.mongodb;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
+import gov.energy.nbc.car.model.IMetadata;
 import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.dao.IDataCategoryDAO;
 import gov.energy.nbc.car.model.IDataCategoryDocument;
@@ -11,11 +12,13 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public class DataCategoryDAO extends DAO implements IDataCategoryDAO {
+public class DataCategoryDAO extends AbsDAO implements IDataCategoryDAO {
 
     public static final String COLLECTION_NAME = "dataCategory";
 
