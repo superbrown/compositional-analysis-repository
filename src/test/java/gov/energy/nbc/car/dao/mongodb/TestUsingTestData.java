@@ -10,7 +10,7 @@ public abstract class TestUsingTestData {
     static public boolean SUSPEND_DATA_SEEDING = false;
     static public boolean SUSPEND_DATA_CLEANUP = false;
 
-    public static final String[] DEFAULT_SET_OF_DATA_CATEGORIES = new String[] {"Algea", "ATP3", "Biomas"};
+    public static final String[] DEFAULT_SET_OF_DATA_CATEGORIES = new String[] {"Algae", "ATP3", "Biomass"};
 
     private DataRepositoryApplication dataRepositoryApplication;
 

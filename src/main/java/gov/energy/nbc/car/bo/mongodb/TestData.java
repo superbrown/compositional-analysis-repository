@@ -39,6 +39,7 @@ public class TestData {
     public static String chargeNumber_1;
     public static String projectName_1;
     public static String comments_1;
+    public static String nameOfSheetContainingData_1;
     public static IStoredFile uploadedFile_1;
     public static List<IStoredFile> attachments_1;
     public static List<String> tags_1;
@@ -50,6 +51,7 @@ public class TestData {
     public static String projectName_2;
     public static String comments_2;
     public static IStoredFile uploadedFile_2;
+    public static String nameOfSheetContainingData_2;
     public static List<IStoredFile> attachments_2;
     public static List<String> tags_2;
 
@@ -76,6 +78,7 @@ public class TestData {
             comments_1 = "Comment 1";
             tags_1 = Arrays.asList("tag 1", "tag 2", "tag 3");
             uploadedFile_1 = new StoredFile("{ originalFileName: \"Dataset 1.xls\", storageLocation : \"uploadedFiles/2015-10-20_08_12_23_124/Dataset 1.xls\"}");
+            nameOfSheetContainingData_1 = "sheet 1";
             attachments_1 = null;
 
             submissionDate_2 = new Date();
@@ -86,6 +89,7 @@ public class TestData {
             comments_2 = "Comment 2";
             tags_2 = Arrays.asList("tag 2", "tag 2", "tag 3");
             uploadedFile_2 = new StoredFile("{ originalFileName: \"Dataset 2.xls\", storageLocation : \"uploadedFiles/2015-10-20_08_02_00_231/Dataset 2.xls\"}");
+            nameOfSheetContainingData_2 = "sheet 2";
             attachments_2 = new ArrayList<>();
             attachments_2.add(new StoredFile("{ originalFile1ame: \"name_3\", storageLocation : \"uuid_3\"}"));
             attachments_2.add(new StoredFile("{ originalFileName: \"name_4\", storageLocation : \"uuid_4\"}"));
@@ -133,6 +137,7 @@ public class TestData {
                     projectName_1,
                     comments_1,
                     uploadedFile_1,
+                    nameOfSheetContainingData_1,
                     attachments_1);
 
             dataset_2 = new DatasetDocument(
@@ -143,6 +148,7 @@ public class TestData {
                     projectName_2,
                     comments_2,
                     uploadedFile_2,
+                    nameOfSheetContainingData_2,
                     attachments_2);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

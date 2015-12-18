@@ -72,6 +72,7 @@ public class m_RowDAO extends AbsDAO implements IRowDAO {
             addCell(rowId, IMetadata.ATTR_KEY__SUBMISSION_DATE, metadata.getSubmissionDate());
             addCell(rowId, IMetadata.ATTR_KEY__SUBMITTER, metadata.getSubmitter());
             addCell(rowId, IMetadata.ATTR_KEY__PROJECT_NAME, metadata.getProjectName());
+            addCell(rowId, IMetadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA, metadata.getNameOfSheetContainingData());
             addCell(rowId, IMetadata.ATTR_KEY__CHARGE_NUMBER, metadata.getChargeNumber());
 
             // add data into cell collections
