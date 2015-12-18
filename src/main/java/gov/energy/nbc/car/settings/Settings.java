@@ -48,8 +48,8 @@ public class Settings implements ISettings {
 
 //        mongoDbHost = "localhost";
 //        mongoDbPort = "27017";
-//        mongoDatabaseName = "car";
-//        rootDirectoryForDataFiles = "C:/data/research-data/uploadedFiles";
+//        mongoDatabaseName = "data-repository-app";
+//        rootDirectoryForDataFiles = "C:/data/data-repository-app/uploadedFiles";
 //        defaultSetOfDataCategories = new String[] {};
     }
 
@@ -69,8 +69,8 @@ public class Settings implements ISettings {
     }
 
     @Override
-    public void setMongoDatabaseName(String MONGO_DATABASE_NAME) {
-        this.mongoDatabaseName = MONGO_DATABASE_NAME;
+    public void setMongoDatabaseName(String mongoDatabaseName) {
+        this.mongoDatabaseName = mongoDatabaseName;
     }
 
     @Override

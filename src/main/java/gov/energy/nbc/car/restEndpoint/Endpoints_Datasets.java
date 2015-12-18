@@ -4,7 +4,6 @@ import gov.energy.nbc.car.app.DataRepositoryApplication;
 import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.IRowBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
-import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
 import gov.energy.nbc.car.model.IDatasetDocument;
 import gov.energy.nbc.car.utilities.fileReader.DatasetReader_AllFileTypes;
@@ -14,7 +13,6 @@ import gov.energy.nbc.car.utilities.fileReader.exception.UnsupportedFileExtensio
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
@@ -22,15 +20,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +34,7 @@ import static gov.energy.nbc.car.utilities.HTTPResponseUtility.*;
 @RestController
 public class Endpoints_Datasets {
 
+    private static final int ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
     protected Logger log = Logger.getLogger(getClass());
 
     @Autowired
@@ -67,7 +61,11 @@ public class Endpoints_Datasets {
         if (dataFile == null) { return create_BAD_REQUEST_missingRequiredParam_response("dataFile");}
         if (isAnExcelFile(dataFile)) { if (StringUtils.isBlank(nameOfSheetContainingData)) { return create_BAD_REQUEST_missingRequiredParam_response("nameOfSheetContainingData");} }
 
-        String objectId = null;
+        // It appears there might be a bug in the Spring code, as the date is always unmarshalled to be a day behind
+        // what the caller sent it.
+        submissionDate.setTime(submissionDate.getTime() + ONE_DAY_IN_MS);
+
+                String objectId = null;
         try {
             List<FileAsRawBytes> attachmentFilesAsRawBytes = new ArrayList<>();
             for (MultipartFile attachment : attachments) {
@@ -188,8 +186,7 @@ public class Endpoints_Datasets {
             value="/api/datasets/all",
             method = RequestMethod.GET,
             produces = "application/json")
-    public ResponseEntity getAllDatasets(
-            ) {
+    public ResponseEntity getAllDatasets() {
 
         IDatasetBO datasetBO = getDatasetBO();
 
@@ -268,7 +265,7 @@ public class Endpoints_Datasets {
         long numberOfObjectsDeleted = 0;
         try {
             IDatasetBO datasetBO = getDatasetBO();
-            numberOfObjectsDeleted = datasetBO.deleteDataset(datasetId);
+            numberOfObjectsDeleted = datasetBO.removeDataset(datasetId);
         }
         catch (DeletionFailure deletionFailure) {
             log.error(deletionFailure);

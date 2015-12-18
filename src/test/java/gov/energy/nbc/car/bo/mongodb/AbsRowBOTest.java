@@ -11,6 +11,7 @@ import gov.energy.nbc.car.dao.mongodb.TestUsingTestData;
 import gov.energy.nbc.car.utilities.fileReader.exception.InvalidValueFoundInHeader;
 import gov.energy.nbc.car.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.junit.*;
 
 import java.text.ParseException;
@@ -46,7 +47,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
         StoredFile dataFile = new StoredFile("SpreadsheetWithDifferentTypesOfValues.xlsx", "/SpreadsheetWithDifferentTypesOfValues.xlsx");
 
         try {
-            String id = getBusinessObjects().getDatasetBO().addDataset(
+            ObjectId objectId = getBusinessObjects().getDatasetBO().addDataset(
                     "sample type",
                     new Date(),
                     "submitter",

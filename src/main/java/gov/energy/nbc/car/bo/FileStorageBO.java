@@ -1,7 +1,7 @@
 package gov.energy.nbc.car.bo;
 
-import gov.energy.nbc.car.dao.IPhysicalFileDAO;
-import gov.energy.nbc.car.dao.PhysicalFileDAO;
+import gov.energy.nbc.car.dao.IFileStorageDAO;
+import gov.energy.nbc.car.dao.FileStorageStorageDAO;
 import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
 import gov.energy.nbc.car.dao.dto.StoredFile;
 import gov.energy.nbc.car.dao.exception.UnableToDeleteFile;
@@ -10,16 +10,18 @@ import gov.energy.nbc.car.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nbc.car.utilities.fileReader.IDatasetReader_AllFileTypes;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 
-public class PhysicalFileBO implements IPhysicalFileBO {
+public class FileStorageBO implements IPhysicalFileBO {
 
-    protected IPhysicalFileDAO physicalFileDAO;
+    protected IFileStorageDAO fileStorageDAO;
 
     protected IDatasetReader_AllFileTypes generalFileReader;
 
-    public PhysicalFileBO(ISettings settings) {
+    public FileStorageBO(ISettings settings) {
 
-        physicalFileDAO = new PhysicalFileDAO(settings);
+        fileStorageDAO = new FileStorageStorageDAO(settings);
         generalFileReader = new DatasetReader_AllFileTypes();
     }
 
@@ -37,11 +39,11 @@ public class PhysicalFileBO implements IPhysicalFileBO {
 //    }
 
     @Override
-    public StoredFile saveFile(FileAsRawBytes file) {
+    public StoredFile saveFile(Date timestamp, FileAsRawBytes file) {
 
         StoredFile theDataFileThatWasStored = null;
         try {
-            theDataFileThatWasStored = getPyhsicalFileDAO().saveFile(file);
+            theDataFileThatWasStored = getFileStorageDAO().saveFile(timestamp, file);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -53,18 +55,24 @@ public class PhysicalFileBO implements IPhysicalFileBO {
     public void deletFile(String storageLocation)
             throws UnableToDeleteFile {
 
-        getPyhsicalFileDAO().deletFile(storageLocation);
+        getFileStorageDAO().deletFile(storageLocation);
+    }
+
+    @Override
+    public void moveFilesToRemovedFilesLocation(String pathToFile)
+            throws IOException {
+
+        getFileStorageDAO().moveFilesToRemovedFilesLocation(pathToFile);
     }
 
     @Override
     public File getFile(String storageLocation) {
 
-        return getPyhsicalFileDAO().getFile(storageLocation);
+        return getFileStorageDAO().getFile(storageLocation);
     }
 
-
     @Override
-    public IPhysicalFileDAO getPyhsicalFileDAO() {
-        return physicalFileDAO;
+    public IFileStorageDAO getFileStorageDAO() {
+        return fileStorageDAO;
     }
 }

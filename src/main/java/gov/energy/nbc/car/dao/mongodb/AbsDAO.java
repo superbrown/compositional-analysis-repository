@@ -22,7 +22,7 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class DAO implements IDAO, IMongodbDAO {
+public abstract class AbsDAO implements IDAO, IMongodbDAO {
 
     protected MongoDatabase database;
     protected MongoClient mongoClient;
@@ -37,7 +37,7 @@ public abstract class DAO implements IDAO, IMongodbDAO {
 
     }
 
-    public DAO(String collectionName, ISettings settings) {
+    public AbsDAO(String collectionName, ISettings settings) {
 
         init(collectionName, settings);
     }

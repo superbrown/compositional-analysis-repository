@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>gov.energy.nbc.dataset</groupId>
-	<artifactId>data-repository</artifactId>
+	<artifactId>data-repository-app</artifactId>
 	<version>0.0.1</version>
 	<packaging>war</packaging>
 
-	<name>data-repository</name>
+	<name>data-repository-app</name>
 	<description>Data Repository</description>
 
 	<!--Determines versions of things that Srping boot will pull-->

@@ -4,7 +4,7 @@ import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.dao.IDataCategoryDAO;
 import gov.energy.nbc.car.dao.IDatasetDAO;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
-import gov.energy.nbc.car.dao.mongodb.DAO;
+import gov.energy.nbc.car.dao.mongodb.AbsDAO;
 import gov.energy.nbc.car.dao.mongodb.DataCategoryDAO;
 import gov.energy.nbc.car.model.IDataCategoryDocument;
 import gov.energy.nbc.car.model.IDatasetDocument;
@@ -16,7 +16,7 @@ import org.bson.types.ObjectId;
 
 import java.util.Set;
 
-public class m_DatasetDAO extends DAO implements IDatasetDAO {
+public class m_DatasetDAO extends AbsDAO implements IDatasetDAO {
 
     public static final String COLLECTION_NAME = "dataset";
     protected DataCategoryDAO dataCategoryDAO;

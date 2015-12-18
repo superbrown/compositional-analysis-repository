@@ -9,7 +9,7 @@ import gov.energy.nbc.car.dao.ICellDAO;
 import gov.energy.nbc.car.dao.IRowDAO;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
 import gov.energy.nbc.car.dao.dto.SearchCriterion;
-import gov.energy.nbc.car.dao.mongodb.DAO;
+import gov.energy.nbc.car.dao.mongodb.AbsDAO;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.mongodb.MongoFieldNameEncoder;
 import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
@@ -31,7 +31,7 @@ import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Projections.include;
 
-public class s_RowDAO extends DAO implements IRowDAO {
+public class s_RowDAO extends AbsDAO implements IRowDAO {
 
     public static final String COLLECTION_NAME = "row";
 

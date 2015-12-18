@@ -1,5 +1,6 @@
 package gov.energy.nbc.car.bo.mongodb;
 
+import gov.energy.nbc.car.model.IMetadata;
 import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.bo.IDataCategoryBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
@@ -8,6 +9,7 @@ import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.mongodb.DataCategoryDAO;
 import gov.energy.nbc.car.model.IDataCategoryDocument;
 import gov.energy.nbc.car.model.mongodb.document.DataCategoryDocument;
+import gov.energy.nbc.car.utilities.Utilities;
 import gov.energy.nbc.car.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nbc.car.utilities.fileReader.IDatasetReader_AllFileTypes;
 import org.apache.log4j.Logger;
@@ -80,11 +82,9 @@ public class DataCategoryBO implements IDataCategoryBO {
         IDataCategoryDocument document = getDataCategoryDAO().getByName(dataCategoryName);
 
         Set<String> columnNames = document.getColumnNames();
+        columnNames = Utilities.toSortedSet(columnNames);
 
-        SortedSet<String> columnNames_sofrted = new TreeSet();
-        columnNames_sofrted.addAll(columnNames);
-
-        String jsonOut = DAOUtilities.serialize(columnNames_sofrted);
+        String jsonOut = DAOUtilities.serialize(columnNames);
         return jsonOut;
     }
 
@@ -94,21 +94,37 @@ public class DataCategoryBO implements IDataCategoryBO {
         getDataCategoryDAO().delete(dataCategoryId);
     }
 
-    @Override
-    public String addDataCategory(String jsonIn) {
-
-        IDataCategoryDAO dataCategoryDAO = getDataCategoryDAO();
-
-        DataCategoryDocument dataCategoryDocument = new DataCategoryDocument(jsonIn);
-        ObjectId objectId = dataCategoryDAO.add(dataCategoryDocument);
-
-        return objectId.toHexString();
-    }
-
     protected IDataCategoryDocument getDataCategoryDocument(String dataCategoryId) {
 
         IDataCategoryDocument document = getDataCategoryDAO().get(dataCategoryId);
         return document;
+    }
+
+    @Override
+    public void addDataCategory(String categoryName) {
+
+        IDataCategoryDocument dataCategoryDocument = getDataCategoryDAO().getByName(categoryName);
+
+        // if it already exists, don't do anything (we don't want duplicates)
+        if (dataCategoryDocument != null) {
+            return;
+        }
+
+        dataCategoryDocument = new DataCategoryDocument();
+        dataCategoryDocument.setName(categoryName);
+
+        Set<String> columnNames = new HashSet<>();
+
+        columnNames.add(IMetadata.ATTR_KEY__DATA_CATEGORY);
+        columnNames.add(IMetadata.ATTR_KEY__SUBMISSION_DATE);
+        columnNames.add(IMetadata.ATTR_KEY__SUBMITTER);
+        columnNames.add(IMetadata.ATTR_KEY__PROJECT_NAME);
+        columnNames.add(IMetadata.ATTR_KEY__CHARGE_NUMBER);
+        columnNames.add(IMetadata.ATTR_KEY__COMMENTS);
+
+        dataCategoryDocument.setColumnNames(columnNames);
+
+        dataCategoryDAO.add(dataCategoryDocument);
     }
 
     @Override

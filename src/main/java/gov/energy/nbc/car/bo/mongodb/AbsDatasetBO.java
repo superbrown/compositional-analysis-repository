@@ -2,7 +2,7 @@ package gov.energy.nbc.car.bo.mongodb;
 
 import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.IPhysicalFileBO;
-import gov.energy.nbc.car.bo.PhysicalFileBO;
+import gov.energy.nbc.car.bo.FileStorageBO;
 import gov.energy.nbc.car.dao.IDatasetDAO;
 import gov.energy.nbc.car.dao.mongodb.singleCellCollectionApproach.s_DatasetDAO;
 import gov.energy.nbc.car.model.IDatasetDocument;
@@ -17,7 +17,7 @@ public abstract class AbsDatasetBO implements IDatasetBO {
 
     public AbsDatasetBO(ISettings settings) {
 
-        physicalFileBO = new PhysicalFileBO(settings);
+        physicalFileBO = new FileStorageBO(settings);
         datasetDAO = new s_DatasetDAO(settings);
     }
 

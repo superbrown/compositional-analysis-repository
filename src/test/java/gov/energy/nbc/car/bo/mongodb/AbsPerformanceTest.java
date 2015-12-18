@@ -13,6 +13,7 @@ import gov.energy.nbc.car.utilities.PerformanceLogger;
 import gov.energy.nbc.car.utilities.fileReader.exception.InvalidValueFoundInHeader;
 import gov.energy.nbc.car.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.junit.*;
 
 import java.util.ArrayList;
@@ -145,7 +146,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
 
         for (int i = 0; i < number; i++) {
 
-            String id = datasetBO.addDataset(
+            ObjectId objectId = datasetBO.addDataset(
                     TestUsingTestData.DEFAULT_SET_OF_DATA_CATEGORIES[0],
                     new Date(),
                     "submitter",
