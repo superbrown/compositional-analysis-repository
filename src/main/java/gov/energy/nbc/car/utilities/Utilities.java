@@ -109,17 +109,20 @@ public class Utilities {
         @Override
         public int compare(Object o1, Object o2) {
 
-            if ((o1 instanceof String && o2 instanceof String) == false){
-                throw new RuntimeException("Both values must be strings: " +
-                        "o1: " + o1 + " (" + o1.getClass() + "), " +
-                        "o2: " + o2 + " (" + o2.getClass() + ")");
-            }
-
             String string_1 = (String) o1;
             String string_2 = (String) o2;
 
-            Double number_1 = toNumberIfPossible(string_1);
-            Double number_2 = toNumberIfPossible(string_2);
+            Double number_1 = null;
+            try {
+                number_1 = Double.parseDouble(string_1);
+            } catch (NumberFormatException e1) {
+            }
+
+            Double number_2 = null;
+            try {
+                number_2 = Double.parseDouble(string_2);
+            } catch (NumberFormatException e) {
+            }
 
             if (number_1 != null) {
 
@@ -145,14 +148,6 @@ public class Utilities {
             }
         }
 
-        private Double toNumberIfPossible(String string_1) {
-
-            try {
-                return Double.parseDouble(string_1);
-            } catch (NumberFormatException e) {
-                return null;
-            }
-        }
     };
 
     public static void sortAlphaNumerically(List<String> elements) {
