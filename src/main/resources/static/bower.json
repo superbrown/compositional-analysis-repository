@@ -1,0 +1,41 @@
+{
+  "name": "data-repository-app",
+  "homepage": "https://github.com/superbrown/compositional-analysis-repository",
+  "authors": [
+    "mike.public@superbrown.com"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "angular-cookies": "~1.4.8",
+    "angular-sanitize": "~1.4.8",
+    "angular-ui-date": "~0.0.8",
+    "angular-resource": "~1.4.8",
+    "angular-ui-grid": "~3.0.7",
+    "angular-ui": "~0.4.0",
+    "bootstrap": "~3.3.6",
+    "angular": "angularjs#~1.4.8",
+    "jquery-ui": "~1.11.4",
+    "jquery": "~2.1.4",
+    "html5shiv": "~3.7.3",
+    "ng-file-upload-shim": "~10.1.9",
+    "respond": "~1.4.2",
+    "angular-messages": "~1.4.8",
+    "ng-file-upload": "~10.1.9",
+    "angular-route": "~1.4.8",
+    "bootstrap3-ie10-viewport-bug-workaround": "~1.0.0"
+  },
+  "dependencies": {
+    "bootstrap-css": "~3.3.4"
+  }
+}
