@@ -86,13 +86,13 @@ drApp.controller('rootPageController',
         function($scope, $rootScope, $http, $log, $filter, $resource, $location, $cookies, drServices) {
 
             $scope.navigate_uploadData = function () {
-                $rootScope.menuItemClass_uploadData = 'active';
+                $rootScope.menuItemClass_uploadData = '';
                 $rootScope.menuItemClass_findData = '';
             }
 
             $scope.navigate_findData = function () {
                 $rootScope.menuItemClass_uploadData = '';
-                $rootScope.menuItemClass_findData = 'active';
+                $rootScope.menuItemClass_findData = '';
             }
 
             $rootScope.$watch('$root.dataCategory', function() {
@@ -137,6 +137,7 @@ drApp.controller('uploadController',
         function($scope, $rootScope, $http, $log, $filter, $resource, $location, $parse, drServices)  {
 
             $rootScope.selectedPage = "Upload Data";
+            $rootScope.menuItemClass_uploadData = 'active';
 
             $scope.uploadData = function ()  {
                 drServices.uploadData($scope, $http);
@@ -196,6 +197,7 @@ drApp.controller('findDataController',
         function($scope, $rootScope, $http, $log, $filter, $resource, $location, drServices)
         {
             $rootScope.selectedPage = "Find Data";
+            $rootScope.menuItemClass_findData = 'active';
 
             $scope.handleSearchSubmission = function()
             {
@@ -243,9 +245,7 @@ drApp.controller('findDataController',
 
 drApp.service('drServices', function() {
 
-    var self = this;
-
-    self.toSearchCriteriaAsJson = function(dataCategory, searchCriteria) {
+    this.toSearchCriteriaAsJson = function(dataCategory, searchCriteria) {
 
         var criteriaPackagedForRestCall = [];
 
@@ -291,7 +291,7 @@ drApp.service('drServices', function() {
         return criteriaPackagedForRestCall;
     }
 
-    self.populateKnownDataCategories = function (scope, http) {
+    this.populateKnownDataCategories = function (scope, http) {
 
 //        scope.$root.showProgressAnimation = true;
 
@@ -306,7 +306,7 @@ drApp.service('drServices', function() {
             });
     }
 
-    self.populateKnownColumnNames = function (scope, http) {
+    this.populateKnownColumnNames = function (scope, http) {
 
         if (scope.$root.dataCategory === '') return;
 
@@ -325,7 +325,7 @@ drApp.service('drServices', function() {
             });
     }
 
-    self.populateNamesOfSheetsWithinExcelWorkbook = function (scope, http) {
+    this.populateNamesOfSheetsWithinExcelWorkbook = function (scope, http) {
 
         scope.$root.knownNamesOfSheetsWithinSelectedWorkbook = [];
 
@@ -365,7 +365,7 @@ drApp.service('drServices', function() {
         );
     }
 
-    self.uploadData = function (scope, http) {
+    this.uploadData = function (scope, http) {
 
         var formData = new FormData();
         var $root = scope.$root;
@@ -393,7 +393,7 @@ drApp.service('drServices', function() {
             .success(function (result) {
 //                scope.$root.showProgressAnimation = false;
                 alert("File successfully uploaded.")
-                self.populateKnownColumnNames(scope, http);
+                this.populateKnownColumnNames(scope, http);
             }
         )
             .error(function (data, status) {
@@ -403,7 +403,7 @@ drApp.service('drServices', function() {
         );
     }
 
-    self.populateKnownDataTypes = function (scope, http) {
+    this.populateKnownDataTypes = function (scope, http) {
 
 //        scope.$root.showProgressAnimation = true;
 
@@ -418,7 +418,7 @@ drApp.service('drServices', function() {
             });
     }
 
-    self.populateKnownComparisonOperators = function (scope, http, criterion) {
+    this.populateKnownComparisonOperators = function (scope, http, criterion) {
 
         var dataTypeId = criterion.dataTypeId;
 
@@ -437,7 +437,7 @@ drApp.service('drServices', function() {
             });
     }
 
-    self.findData = function (scope, http) {
+    this.findData = function (scope, http) {
 
         scope.$root.searchComplete = false;
         scope.$root.searchResults = [];
@@ -445,7 +445,7 @@ drApp.service('drServices', function() {
         var searchCriteria = scope.$root.searchCriteria;
         var dataCategory = scope.$root.dataCategory;
 
-        var searchCriteriaAsJson = self.toSearchCriteriaAsJson(dataCategory, searchCriteria);
+        var searchCriteriaAsJson = this.toSearchCriteriaAsJson(dataCategory, searchCriteria);
 
         scope.$root.searchCriteriaAsJson = searchCriteriaAsJson;
 
