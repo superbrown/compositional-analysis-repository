@@ -1,10 +1,11 @@
-
 label {display:inline-block; width: 125px; vertical-align: top; }
 
 html, body, input, select, textarea {
 }
 
 body {
+    padding-top: 70px;
+    padding-bottom: 30px;
     font-size: 12px;
 }
 
@@ -75,4 +76,18 @@ thead {
     background:url(../img/transbg.png);
     /*background-color:#666666;
     border:1px solid #000000;*/
+}
+
+.theme-dropdown .dropdown-menu {
+    position: static;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.theme-showcase > p > .btn {
+    margin: 5px 0;
+}
+
+.theme-showcase .navbar .container {
+    width: auto;
 }
