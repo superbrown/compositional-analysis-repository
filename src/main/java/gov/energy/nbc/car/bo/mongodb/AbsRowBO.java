@@ -216,8 +216,8 @@ public abstract class AbsRowBO implements IRowBO {
 
                 String datasetId = getObjectId(document, RowDocument.ATTR_KEY__DATASET_ID);
                 row.put("Source",
-                        "<a href='/" + ServletContainerConfig.CONTEXT_PATH +
-                                "/data-repository-app/api/dataset/" + datasetId + "/" + "uploadedFile' " +
+                        "<a href='" + ServletContainerConfig.CONTEXT_PATH +
+                                "/api/dataset/" + datasetId + "/" + "uploadedFile' " +
                                 "target='_blank'>" +
                                 originalFileName + "</a> (row " + rowNumber + ")");
                 row.put(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA, metadata.get(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA));
