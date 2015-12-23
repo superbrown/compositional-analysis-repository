@@ -11,13 +11,13 @@ import java.util.Arrays;
 @SpringBootApplication
 @Configuration
 @MultipartConfig(location="/tmp", fileSizeThreshold=1024*1024, maxFileSize=1024*1024*50, maxRequestSize=1024*1024*5*50)
-public class CARApplication {
+public class StandAloneApplication {
 
     public static void main(String[] args) {
 
-        SpringApplication.run(CARApplication.class, args);
+        SpringApplication.run(StandAloneApplication.class, args);
 
-        ApplicationContext ctx = SpringApplication.run(CARApplication.class, args);
+        ApplicationContext ctx = SpringApplication.run(StandAloneApplication.class, args);
 
         System.out.println("Let's inspect the beans provided by Spring Boot:");
 

@@ -4,6 +4,15 @@
 
 <div class="page-content">
 
+  <div class="alert alert-success" ng-show="alertMessage_success != ''">
+    <strong>Success!</strong> {{$root.alertMessage_success}}
+    <a href="/data-repository-app/#/uploadData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_success = ''">&times;</a>
+  </div>
+  <div class="alert alert-danger" ng-show="alertMessage_failure != ''">
+    <strong>Success!</strong> {{$root.alertMessage_failure}}
+    <a href="/data-repository-app/#/uploadData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_failure = ''">&times;</a>
+  </div>
+
   <div>
     <legend>Metadata</legend>
 
@@ -82,16 +91,16 @@
 
     <legend>Attachments</legend>
 
-    <div>
+    <span>
       <label for="attachments"></label>
       <input type="file"
-             id="attachments"
-             name="attachments"
-             ng-model="$root.attachments"
-             file-change="handleAttachmentFilesSelection($event, files)"
-             style="display: inline;"
-             multiple="multiple" />
-    </div>
+           id="attachments"
+           name="attachments"
+           ng-model="$root.attachments"
+           file-change="handleAttachmentFilesSelection($event, files)"
+           style="display: inline;"
+           multiple="multiple" />
+    </span>
 
   </div>
 

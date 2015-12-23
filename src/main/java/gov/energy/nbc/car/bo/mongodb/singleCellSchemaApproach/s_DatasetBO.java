@@ -5,7 +5,7 @@ import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.IPhysicalFileBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.dao.IDatasetDAO;
-import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
+import gov.energy.nbc.car.utilities.FileAsRawBytes;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.model.IDatasetDocument;
 import gov.energy.nbc.car.model.IMetadata;
@@ -185,12 +185,12 @@ public class s_DatasetBO extends gov.energy.nbc.car.bo.mongodb.AbsDatasetBO impl
 
         Date timestamp = new Date();
 
-        gov.energy.nbc.car.dao.dto.StoredFile theDataFileThatWasStored = physicalFileBO.saveFile(timestamp, dataFile);
+        gov.energy.nbc.car.dao.dto.StoredFile theDataFileThatWasStored = physicalFileBO.saveFile(timestamp, "", dataFile);
 
         List<gov.energy.nbc.car.dao.dto.StoredFile> theAttachmentsThatWereStored = new ArrayList();
 
         for (FileAsRawBytes attachmentFile : attachmentFiles) {
-            theAttachmentsThatWereStored.add(physicalFileBO.saveFile(timestamp, attachmentFile));
+            theAttachmentsThatWereStored.add(physicalFileBO.saveFile(timestamp, "attachments", attachmentFile));
         }
 
         ObjectId objectId = addDataset(
@@ -204,14 +204,19 @@ public class s_DatasetBO extends gov.energy.nbc.car.bo.mongodb.AbsDatasetBO impl
                 nameOfSheetContainingData,
                 theAttachmentsThatWereStored);
 
-        IDatasetDocument persistedDatasetDocument = getDatasetDAO().getDataset(objectId.toHexString());
-
-        FileAsRawBytes datasetDocumentAsRawBytes =
-                new FileAsRawBytes("DATASET_METADATA.json", JSON.serialize(persistedDatasetDocument).getBytes());
-
-        physicalFileBO.saveFile(timestamp, datasetDocumentAsRawBytes);
+        saveMetadataAsJsonFile(timestamp, objectId);
 
         return JSON.serialize(objectId);
+    }
+
+    private void saveMetadataAsJsonFile(Date timestamp, ObjectId objectId) {
+
+        IDatasetDocument datasetDocument = getDatasetDAO().getDataset(objectId.toHexString());
+        byte[] json = JSON.serialize(datasetDocument).getBytes();
+
+        FileAsRawBytes jsonAsRawBytes = new FileAsRawBytes("DATASET_METADATA.json", json);
+
+        physicalFileBO.saveFile(timestamp, "", jsonAsRawBytes);
     }
 
     public String addDataset(String metadataJson,

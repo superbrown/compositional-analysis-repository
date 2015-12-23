@@ -7,9 +7,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class ServletContainerConfig implements EmbeddedServletContainerCustomizer {
 
+    public static final String CONTEXT_PATH = "/data-repository-app";
+
     @Override
     public void customize(ConfigurableEmbeddedServletContainer container) {
 
-        container.setContextPath("/car");
+        container.setContextPath(CONTEXT_PATH);
     }
 }
