@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.dao.dto;
+package gov.energy.nbc.car.utilities;
 
 public class FileAsRawBytes {
 

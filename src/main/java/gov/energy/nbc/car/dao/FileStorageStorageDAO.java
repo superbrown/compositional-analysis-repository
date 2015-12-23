@@ -1,16 +1,16 @@
 package gov.energy.nbc.car.dao;
 
 import gov.energy.nbc.car.settings.ISettings;
-import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
+import gov.energy.nbc.car.utilities.FileAsRawBytes;
 import gov.energy.nbc.car.dao.dto.StoredFile;
 import gov.energy.nbc.car.dao.exception.CouldNoCreateDirectory;
 import gov.energy.nbc.car.dao.exception.UnableToDeleteFile;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -26,18 +26,21 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
     }
 
     @Override
-    public StoredFile saveFile(Date timestamp, FileAsRawBytes file)
+    public StoredFile saveFile(Date timestamp, String subdirectory, FileAsRawBytes file)
             throws CouldNoCreateDirectory, IOException {
 
         String fileName = file.fileName;
 
-        String rootDirectoryForDataFiles = getRootDirectoryForDataFiles();
+        String rootDirectoryForUploadedDataFiles = getRootDirectoryForUploadedDataFiles();
 
         // DESIGN NOTE: The location is hierarchical by year, month and time. The idea is to avoid having a single
         // directory containing hoards of files.
         String relativeFileLocation = constructRelativeFileLocation(timestamp);
+        if (StringUtils.isNotBlank(subdirectory)) {
+            relativeFileLocation += "/" + subdirectory;
+        }
 
-        String fullyQualifiedFileLocation = rootDirectoryForDataFiles + relativeFileLocation;
+        String fullyQualifiedFileLocation = rootDirectoryForUploadedDataFiles + relativeFileLocation;
 
         if (seeToItThatTheDirectoryExists(fullyQualifiedFileLocation) == false) {
             throw new CouldNoCreateDirectory();
@@ -55,7 +58,7 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
     public void deletFile(String file)
             throws UnableToDeleteFile {
 
-        boolean success = (new File(getRootDirectoryForDataFiles() + file).delete());
+        boolean success = (new File(getRootDirectoryForUploadedDataFiles() + file).delete());
         if (success == false) {
             throw new UnableToDeleteFile(file);
         }
@@ -70,7 +73,7 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
         seeToItThatTheDirectoryExists(rootDirectoryForRemovedFiles);
 
         String pathToContainingDirectory =
-                getRootDirectoryForDataFiles() +
+                getRootDirectoryForUploadedDataFiles() +
                 extractPathToContainingDirectory(filePath);
 
         Files.copy(
@@ -92,10 +95,10 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
     @Override
     public File getFile(String storageLocation) {
 
-        return new File(getRootDirectoryForDataFiles() + storageLocation);
+        return new File(getRootDirectoryForUploadedDataFiles() + storageLocation);
     }
 
-    protected String getRootDirectoryForDataFiles() {
+    protected String getRootDirectoryForUploadedDataFiles() {
 
         String dataFilesDirectoryPath = settings.getRootDirectoryForUploadedDataFiles();
         dataFilesDirectoryPath = seeToItThatItEndsWithAFileSeparator(dataFilesDirectoryPath);
@@ -104,7 +107,7 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
 
     protected String getRootDirectoryForRemovedFiles() {
 
-        return getRootDirectoryForDataFiles() + NAME_OF_DIRECTORY_FOR_REMOVED_FILES + "/";
+        return getRootDirectoryForUploadedDataFiles() + NAME_OF_DIRECTORY_FOR_REMOVED_FILES + "/";
     }
 
     protected File saveTo(byte[] fileContent, String newFilePath) throws IOException {

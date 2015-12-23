@@ -2,7 +2,7 @@ package gov.energy.nbc.car.bo;
 
 import gov.energy.nbc.car.dao.IFileStorageDAO;
 import gov.energy.nbc.car.dao.FileStorageStorageDAO;
-import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
+import gov.energy.nbc.car.utilities.FileAsRawBytes;
 import gov.energy.nbc.car.dao.dto.StoredFile;
 import gov.energy.nbc.car.dao.exception.UnableToDeleteFile;
 import gov.energy.nbc.car.settings.ISettings;
@@ -39,11 +39,11 @@ public class FileStorageBO implements IPhysicalFileBO {
 //    }
 
     @Override
-    public StoredFile saveFile(Date timestamp, FileAsRawBytes file) {
+    public StoredFile saveFile(Date timestamp, String subdirectory, FileAsRawBytes file) {
 
         StoredFile theDataFileThatWasStored = null;
         try {
-            theDataFileThatWasStored = getFileStorageDAO().saveFile(timestamp, file);
+            theDataFileThatWasStored = getFileStorageDAO().saveFile(timestamp, subdirectory, file);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.bson.Document;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -166,5 +167,27 @@ public class Utilities {
         sortedSet.addAll(elements);
 
         return sortedSet;
+    }
+
+    public static List<FileAsRawBytes> toFilesAsRawBytes(List<MultipartFile> files)
+            throws IOException {
+
+        List<FileAsRawBytes> attachmentFilesAsRawBytes = new ArrayList<>();
+        for (MultipartFile attachment : files) {
+
+            // DESIGN NOTE: I don't know why this is necessary, but for some reason
+            //              attachment attributes sometimes are empty.
+            if (StringUtils.isNotBlank(attachment.getOriginalFilename())) {
+                attachmentFilesAsRawBytes.add(toFileAsRawBytes(attachment));
+            }
+        }
+
+        return attachmentFilesAsRawBytes;
+    }
+
+    public static FileAsRawBytes toFileAsRawBytes(MultipartFile dataFile)
+            throws IOException {
+
+        return new FileAsRawBytes(dataFile.getOriginalFilename(), dataFile.getBytes());
     }
 }

@@ -5,7 +5,7 @@ import gov.energy.nbc.car.bo.FileStorageBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
 import gov.energy.nbc.car.bo.mongodb.AbsDatasetBO;
 import gov.energy.nbc.car.dao.IDatasetDAO;
-import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
+import gov.energy.nbc.car.utilities.FileAsRawBytes;
 import gov.energy.nbc.car.dao.dto.IDeleteResults;
 import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
 import gov.energy.nbc.car.dao.mongodb.multipleCellCollectionsApproach.m_DatasetDAO;
@@ -155,12 +155,12 @@ public class m_DatasetBO extends AbsDatasetBO {
 
         Date timestamp = new Date();
 
-        gov.energy.nbc.car.dao.dto.StoredFile theDataFileThatWasStored = fileStorageBO.saveFile(timestamp, dataFile);
+        gov.energy.nbc.car.dao.dto.StoredFile theDataFileThatWasStored = fileStorageBO.saveFile(timestamp, "", dataFile);
 
         List<gov.energy.nbc.car.dao.dto.StoredFile> theAttachmentsThatWereStored = new ArrayList();
 
         for (FileAsRawBytes attachmentFile : attachmentFiles) {
-            theAttachmentsThatWereStored.add(fileStorageBO.saveFile(timestamp, attachmentFile));
+            theAttachmentsThatWereStored.add(fileStorageBO.saveFile(timestamp, "attachments", attachmentFile));
         }
 
         ObjectId objectId = addDataset(

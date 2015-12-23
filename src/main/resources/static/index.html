@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="drApp">
 
+<head>
+
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,48 +13,54 @@
 
   <title>Data Repository</title>
 
+  <base href="/data-repository-app/" />
+
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
   <!--[if lt IE 9]>
-  <script src="/bower_components/html5shiv/html5shiv.min.js"></script>
-  <script src="/bower_components/respond/respond.min.js"></script>
+  <script src="/data-repository-app/bower_components/html5shiv/html5shiv.js"></script>
+  <script src="/data-repository-app/bower_components/respond/respond.js"></script>
   <![endif]-->
 
   <!-- JQuery -->
-  <!--<script src="ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>-->
-  <script src="/bower_components/jquery/dist/jquery.min.js"></script>
-  <script src="/bower_components/jquery-ui/jquery-ui.min.js"></script>
+  <!--<script src="ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.js"></script>-->
+  <script src="/data-repository-app/bower_components/jquery/dist/jquery.js"></script>
+  <script src="/data-repository-app/bower_components/jquery-ui/jquery-ui.js"></script>
 
   <!-- Bootstrap -->
-  <script src="/bower_components/bootstrap-css/js/bootstrap.min.js"></script>
-  <link href="/bower_components/bootstrap-css/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="/bower_components/bootstrap-css/css/bootstrap-theme.min.css" rel="stylesheet" />
+  <script src="/data-repository-app/bower_components/bootstrap-css/js/bootstrap.js"></script>
+  <link href="/data-repository-app/bower_components/bootstrap-css/css/bootstrap.css" rel="stylesheet" />
+  <link href="/data-repository-app/bower_components/bootstrap-css/css/bootstrap-theme.css" rel="stylesheet" />
   <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-  <script src="/bower_components/bootstrap3-ie10-viewport-bug-workaround/ie10-viewport-bug-workaround.js"></script>
+  <script src="/data-repository-app/bower_components/bootstrap3-ie10-viewport-bug-workaround/ie10-viewport-bug-workaround.js"></script>
 
   <!--AngularJS-->
-  <script src="/bower_components/angular/angular.min.js"></script>
-  <script src="/bower_components/angular-messages/angular-messages.min.js"></script>
-  <script src="/bower_components/angular-resource/angular-resource.min.js"></script>
-  <script src="/bower_components/angular-route/angular-route.min.js"></script>
-  <script src="/bower_components/angular-ui-grid/ui-grid.min.js"></script>
-  <link href="/bower_components/angular-ui-grid/ui-grid.css" rel="stylesheet" />
+  <script src="/data-repository-app/bower_components/angular/angular.js"></script>
+  <script src="/data-repository-app/bower_components/angular-messages/angular-messages.js"></script>
+  <script src="/data-repository-app/bower_components/angular-resource/angular-resource.js"></script>
+  <script src="/data-repository-app/bower_components/angular-route/angular-route.js"></script>
+  <script src="/data-repository-app/bower_components/angular-ui-grid/ui-grid.js"></script>
+  <link href="/data-repository-app/bower_components/angular-ui-grid/ui-grid.css" rel="stylesheet" />
 
   <!--AngularJS, date (for date widgets)-->
-  <script src="/bower_components/angular-ui-date/src/date.js"></script>
-  <link href="/bower_components/jquery-ui/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+  <script src="/data-repository-app/bower_components/angular-ui-date/src/date.js"></script>
+  <link href="/data-repository-app/bower_components/jquery-ui/themes/smoothness/jquery-ui.css" rel="stylesheet" />
   <!--Cookie support-->
-  <script src="/bower_components/angular-cookies/angular-cookies.min.js"></script>
+  <script src="/data-repository-app/bower_components/angular-cookies/angular-cookies.js"></script>
 
   <!--Necessary for round progress indicator-->
-  <script src="/bower_components/angular-svg-round-progressbar/roundProgress.min.js"></script>
+  <script src="/data-repository-app/bower_components/angular-svg-round-progressbar/roundProgress.js"></script>
 
   <!--Necessary for being able to display a link returned by a REST call (as we have one within the
   search resutls)-->
-  <script src="/bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+  <script src="/data-repository-app/bower_components/angular-sanitize/angular-sanitize.js"></script>
+
+  <script src="http://ui-grid.info/docs/grunt-scripts/csv.js"></script>
+  <script src="http://ui-grid.info/docs/grunt-scripts/pdfmake.js"></script>
+  <script src="http://ui-grid.info/docs/grunt-scripts/vfs_fonts.js"></script>
 
   <!-- Our Stuff -->
-  <link href="/css/app.css" rel="stylesheet" />
-  <script src="/js/app.js"></script>
+  <link href="/data-repository-app/css/app.css" rel="stylesheet" />
+  <script src="/data-repository-app/js/app.js"></script>
 
 </head>
 
@@ -60,11 +68,7 @@
 
 <!-- F i x e d   n a v b a r  -->
 
-<div ng-controller="rootPageController">
-
-  <div id="progressAnimation" ng-show="$root.showProgressAnimation">
-    <img src="img/progressAnimation.gif" alt="" />
-  </div>
+<div ng-controller="rootPageController" ng-disabled="($root.numberOfBlockingProcesses > 0)">
 
   <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
@@ -88,14 +92,6 @@
 
           <li class="{{$root.menuItemClass_findData}}"><a href="#/findData" ng-click="navigate_findData()">Find Data</a></li>
 
-          <!--<li class="dropdown">-->
-            <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Settings <span class="caret"></span></a>-->
-            <!--<ul class="dropdown-menu">-->
-              <!--<li><a href="#">Sample Type</a></li>-->
-            <!--</ul>-->
-          <!--</li>-->
-
-          <!--<li><a href="#help">Help</a></li>-->
         </ul>
       </div><!--/.nav-collapse -->
     </div>
@@ -103,14 +99,19 @@
 
 </div>
 
-<img src="/img/progressAnimation.gif" ng-show="$root.showProgressAnimation" />
+<!--progress indicator-->
+<div class="working"
+     ng-show="($root.numberOfBlockingProcesses > 0)"
+     style="position: fixed; z-index: inherit; margin: auto; opacity: 0.5; background: url('/data-repository-app/img/progressAnimation.gif') no-repeat 50% 50% transparent; width: 100%; height: 60%;" >
+</div>
+
 
 <div class="container theme-showcase" role="main">
-
   <!--area where pages display-->
   <div ng-view>
-  </div>
 
   </div>
+</div>
+
 </body>
 </html>

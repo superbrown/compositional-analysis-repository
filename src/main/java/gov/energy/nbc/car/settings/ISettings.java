@@ -19,7 +19,7 @@ public interface ISettings {
 
     void setMongoDbPort(String MONGO_DB_PORT);
 
-    void setRootDirectoryForUploadedDataFiles(String rootDirectoryForDataFiles);
+    void setRootDirectoryForUploadedDataFiles(String rootDirectoryForUploadedDataFiles);
 
     String[] getDefaultSetOfDataCategories();
 

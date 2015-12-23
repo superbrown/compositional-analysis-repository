@@ -4,8 +4,9 @@ import gov.energy.nbc.car.app.DataRepositoryApplication;
 import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.IRowBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
-import gov.energy.nbc.car.dao.dto.FileAsRawBytes;
+import gov.energy.nbc.car.utilities.FileAsRawBytes;
 import gov.energy.nbc.car.model.IDatasetDocument;
+import gov.energy.nbc.car.utilities.Utilities;
 import gov.energy.nbc.car.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nbc.car.utilities.fileReader.IDatasetReader_AllFileTypes;
 import gov.energy.nbc.car.utilities.fileReader.exception.InvalidValueFoundInHeader;
@@ -19,14 +20,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static gov.energy.nbc.car.utilities.HTTPResponseUtility.*;
 
@@ -34,18 +35,20 @@ import static gov.energy.nbc.car.utilities.HTTPResponseUtility.*;
 @RestController
 public class Endpoints_Datasets {
 
-    private static final int ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
+    private static final int MS_IN_A_DAY = 24 * 60 * 60 * 1000;
     protected Logger log = Logger.getLogger(getClass());
+
+    protected static final IDatasetReader_AllFileTypes GENERAL_FILE_READER = new DatasetReader_AllFileTypes();
 
     @Autowired
     protected DataRepositoryApplication dataRepositoryApplication;
-
 
     @RequestMapping(
             value="/api/addDataset",
             method = RequestMethod.POST,
             produces = "application/json")
     public ResponseEntity addDataset(
+            HttpServletRequest request,
             @RequestParam(value = "dataCategory", required = false) String dataCategory,
             @RequestParam(value = "submissionDate", required = false) @DateTimeFormat(iso= DateTimeFormat.ISO.DATE) Date submissionDate,
             @RequestParam(value = "submitter", required = false) String submitter,
@@ -53,7 +56,6 @@ public class Endpoints_Datasets {
             @RequestParam(value = "chargeNumber", required = false) String chargeNumber,
             @RequestParam(value = "comments", required = false) String comments,
             @RequestParam(value = "dataFile", required = false) MultipartFile dataFile,
-            @RequestParam(value = "attachments", required = false) List<MultipartFile> attachments,
             @RequestParam(value = "nameOfSheetContainingData", required = false) String nameOfSheetContainingData) {
 
         if (StringUtils.isBlank(dataCategory)) { return create_BAD_REQUEST_missingRequiredParam_response("dataCategory");}
@@ -61,23 +63,19 @@ public class Endpoints_Datasets {
         if (dataFile == null) { return create_BAD_REQUEST_missingRequiredParam_response("dataFile");}
         if (isAnExcelFile(dataFile)) { if (StringUtils.isBlank(nameOfSheetContainingData)) { return create_BAD_REQUEST_missingRequiredParam_response("nameOfSheetContainingData");} }
 
+        // This is a work-around due on not being able to figure out how to get Spring to inject a list of multipart
+        // files.
+        List<MultipartFile> attachments = extractAttachments((MultipartHttpServletRequest) request);
+
         // It appears there might be a bug in the Spring code, as the date is always unmarshalled to be a day behind
         // what the caller sent it.
-        submissionDate.setTime(submissionDate.getTime() + ONE_DAY_IN_MS);
+        submissionDate.setTime(submissionDate.getTime() + MS_IN_A_DAY);
 
-                String objectId = null;
+        String objectId = null;
         try {
-            List<FileAsRawBytes> attachmentFilesAsRawBytes = new ArrayList<>();
-            for (MultipartFile attachment : attachments) {
+            List<FileAsRawBytes> attachmentFilesAsRawBytes = Utilities.toFilesAsRawBytes(attachments);
 
-                // DESIGN NOTE: I don't know why this is necessary, but for some reason
-                //              attachment attributes sometimes are empty.
-                if (StringUtils.isNotBlank(attachment.getOriginalFilename())) {
-                    attachmentFilesAsRawBytes.add(toFileAsRawBytes(attachment));
-                }
-            }
-
-            FileAsRawBytes dataFileAsRawBytes = toFileAsRawBytes(dataFile);
+            FileAsRawBytes dataFileAsRawBytes = Utilities.toFileAsRawBytes(dataFile);
 
             objectId = getDatasetBO().addDataset(
                     dataCategory,
@@ -204,21 +202,40 @@ public class Endpoints_Datasets {
     }
 
 
+    private List<MultipartFile> extractAttachments(MultipartHttpServletRequest request) {
+
+        // This is counting on the attachments being sent in with names that fit the following patter:
+        //   attachment[0];
+        //   attachment[1];
+        //   attachment[2];
+        //
+        // The index values don't actually matter. What matters is that the name start with "attachment[".
+
+        Map<String, MultipartFile> multipartFileMap = request.getFileMap();
+
+        List<MultipartFile> attachments = new ArrayList<>();
+        for (String key : multipartFileMap.keySet()) {
+
+            if (key.startsWith("attachments[")) {
+                MultipartFile attachment = multipartFileMap.get(key);
+                attachments.add(attachment);
+            }
+        }
+
+        return attachments;
+    }
+
+
+
     protected IDatasetBO getDatasetBO() {
+
         return dataRepositoryApplication.getBusinessObjects().getDatasetBO();
     }
 
     protected IRowBO getRowBO() {
+
         return dataRepositoryApplication.getBusinessObjects().getRowBO();
     }
-
-    protected FileAsRawBytes toFileAsRawBytes(MultipartFile dataFile)
-            throws IOException {
-
-        return new FileAsRawBytes(dataFile.getOriginalFilename(), dataFile.getBytes());
-    }
-
-    protected static final IDatasetReader_AllFileTypes GENERAL_FILE_READER = new DatasetReader_AllFileTypes();
 
     protected boolean isAnExcelFile(MultipartFile dataFile) {
 

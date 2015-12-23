@@ -55,8 +55,6 @@ drApp.config(
 drApp.run(
     function ($rootScope) {
 
-        $rootScope.showProgressAnimation = false;
-
         $rootScope.knownDataCategories = [];
         $rootScope.knownColumnNames = [];
         $rootScope.knownDataTypes = [];
@@ -71,13 +69,18 @@ drApp.run(
         $rootScope.comments = '';
         $rootScope.dataFile = '';
         $rootScope.nameOfSheetContainingData = '';
-        $rootScope.attachments = '';
+        $rootScope.attachments = [];
+
+        $rootScope.alertMessage_success = "";
+        $rootScope.alertMessage_failure = "";
 
         $rootScope.searchCriteria = [];
         $rootScope.searchResults = [];
 
         $rootScope.menuItemClass_uploadData = '';
         $rootScope.menuItemClass_findData = '';
+
+        $rootScope.numberOfBlockingProcesses = 0;
     });
 
 drApp.controller('rootPageController',
@@ -106,7 +109,6 @@ drApp.controller('rootPageController',
                 var expireDate = new Date();
                 expireDate.setDate(expireDate.getDate() + 365);
                 $cookies.put('submitter', $rootScope.submitter, {'expires': expireDate});
-                drServices.populateKnownColumnNames($scope, $http);
             });
 
             $rootScope.$watch('$root.dataFile', function() {
@@ -295,15 +297,15 @@ drApp.service('drServices', function() {
 
     self.populateKnownDataCategories = function (scope, http) {
 
-//        scope.$root.showProgressAnimation = true;
+        scope.$root.numberOfBlockingProcesses++;
 
-        http.get('/api/dataCategory/names/all')
+        http.get('/data-repository-app/api/dataCategory/names/all')
             .success(function (result) {
-//                scope.$root.showProgressAnimation = false;
+                scope.$root.numberOfBlockingProcesses--;
                 scope.$root.knownDataCategories = result;
             })
             .error(function (data, status) {
-//                scope.$root.showProgressAnimation = false;
+                scope.$root.numberOfBlockingProcesses--;
                 console.log(status + ': ' + data);
             });
     }
@@ -314,15 +316,15 @@ drApp.service('drServices', function() {
 
         scope.$root.knownColumnNames = [];
 
-//        scope.$root.showProgressAnimation = true;
+        scope.$root.numberOfBlockingProcesses++;
 
-        http.get('/api/dataCategory/columnNames?dataCategoryName=' + scope.dataCategory)
+        http.get('/data-repository-app/api/dataCategory/columnNames?dataCategoryName=' + scope.$root.dataCategory)
             .success(function (result) {
-//                scope.$root.showProgressAnimation = false;
+                scope.$root.numberOfBlockingProcesses--;
                 scope.$root.knownColumnNames = result;
             })
             .error(function (data, status) {
-//                scope.$root.showProgressAnimation = false;
+                scope.$root.numberOfBlockingProcesses--;
                 console.log(status + ': ' + data);
             });
     }
@@ -345,10 +347,10 @@ drApp.service('drServices', function() {
         var formData = new FormData();
         formData.append('dataFile', dataFile);
 
-//        scope.$root.showProgressAnimation = true;
+        scope.$root.numberOfBlockingProcesses++;
 
         http.post(
-            '/api/getNamesOfSheetsWithinExcelWorkbook',
+            '/data-repository-app/api/getNamesOfSheetsWithinExcelWorkbook',
             formData,
             {
                 transformRequest: angular.identity,
@@ -356,18 +358,22 @@ drApp.service('drServices', function() {
             }
         )
             .success(function (result) {
-//                scope.$root.showProgressAnimation = false;
+                scope.$root.numberOfBlockingProcesses--;
                 scope.$root.knownNamesOfSheetsWithinSelectedWorkbook = result;
             }
         )
             .error(function (data, status) {
-//                scope.$root.showProgressAnimation = false;
+                scope.$root.numberOfBlockingProcesses--;
                 alert("A failure occurred (status: " + status + " data: " + data);
             }
         );
     }
 
     self.uploadData = function (scope, http) {
+
+        // Explanation of this approach:
+        // https://uncorkedstudios.com/blog/multipartformdata-file-upload-with-angularjs
+        // http://shazwazza.com/post/uploading-files-and-json-data-in-the-same-request-with-angular-js/
 
         var formData = new FormData();
         var $root = scope.$root;
@@ -380,12 +386,16 @@ drApp.service('drServices', function() {
         formData.append('comments', $root.comments);
         formData.append('nameOfSheetContainingData', $root.nameOfSheetContainingData);
         formData.append('dataFile', $root.dataFile);
-        formData.append('attachments', $root.attachments);
 
-//        scope.$root.showProgressAnimation = true;
+        for (var i = 0; i < $root.attachments.length; i++) {
+            var attachment = $root.attachments[i];
+            formData.append('attachments[' + i + ']', attachment);
+        }
+
+        scope.$root.numberOfBlockingProcesses++;
 
         http.post(
-            '/api/addDataset',
+            '/data-repository-app/api/addDataset',
             formData,
             {
                 transformRequest: angular.identity,
@@ -393,29 +403,30 @@ drApp.service('drServices', function() {
             }
         )
             .success(function (result) {
-//                scope.$root.showProgressAnimation = false;
-                alert("File successfully uploaded.")
+                scope.$root.numberOfBlockingProcesses--;
+                scope.$root.alertMessage_success = "File successfully uploaded.";
                 self.populateKnownColumnNames(scope, http);
             }
         )
             .error(function (data, status) {
-//                scope.$root.showProgressAnimation = false;
-                alert("A failure occurred (status: " + status + " data: " + data);
+                scope.$root.numberOfBlockingProcesses--;
+                scope.$root.alertMessage_failure =
+                    "A failure occurred (status: " + status + " data: " + data + ")";
             }
         );
     }
 
     self.populateKnownDataTypes = function (scope, http) {
 
-//        scope.$root.showProgressAnimation = true;
+        scope.$root.numberOfBlockingProcesses++;
 
-        http.get('api/dataTypes/all')
+        http.get('/data-repository-app/api/dataTypes/all')
             .success(function (result) {
-//                scope.$root.showProgressAnimation = false;
+                scope.$root.numberOfBlockingProcesses--;
                 scope.$root.knownDataTypes = result;
             })
             .error(function (data, status) {
-//                scope.$root.showProgressAnimation = false;
+                scope.$root.numberOfBlockingProcesses--;
                 alert("A failure occurred (status: " + status + " data: " + data);
             });
     }
@@ -426,15 +437,15 @@ drApp.service('drServices', function() {
 
         if (dataTypeId === '' || dataTypeId === undefined) return;
 
-//        scope.$root.showProgressAnimation = true;
+        scope.$root.numberOfBlockingProcesses++;
 
-        http.get('api/dataType/comparisonOperators?dataType=' + dataTypeId)
+        http.get('/data-repository-app/api/dataType/comparisonOperators?dataType=' + dataTypeId)
             .success(function (result) {
-//                scope.$root.showProgressAnimation = false;
+                scope.$root.numberOfBlockingProcesses--;
                 criterion.knownComparisonOperators = result;
             })
             .error(function (data, status) {
-//                scope.$root.showProgressAnimation = false;
+                scope.$root.numberOfBlockingProcesses--;
                 alert("A failure occurred (status: " + status + " data: " + data);
             });
     }
@@ -453,26 +464,25 @@ drApp.service('drServices', function() {
 
         var req = {
             method: 'POST',
-            url: '/api/rows/flat',
+            url: '/data-repository-app/api/rows/flat',
             headers: {
                 'Content-Type': undefined
             },
             data: searchCriteriaAsJson
         }
 
-        scope.$root.showProgressAnimation = true;
+        scope.$root.numberOfBlockingProcesses++;
 
         http(req)
             .success(function (result) {
-                scope.$root.showProgressAnimation = false;
+                scope.$root.numberOfBlockingProcesses--;
                 scope.$root.searchComplete = true;
                 scope.$root.searchResults = result;
             })
             .error(function (data, status) {
-                scope.$root.showProgressAnimation = false;
+                scope.$root.numberOfBlockingProcesses--;
                 scope.$root.searchComplete = true;
                 alert("A failure occurred (status: " + status + " data: " + data);
             });
     }
 })
-

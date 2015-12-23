@@ -107,13 +107,13 @@ public class Metadata extends AbstractDocument implements IMetadata {
             uploadedFile = new StoredFile((Document) o);
         }
 
-        List<Document> attachmentObjects = (List<Document>) document.get(ATTR_KEY__ATTACHMENTS);
+        List<BasicDBObject> attachmentObjects = (List<BasicDBObject>) document.get(ATTR_KEY__ATTACHMENTS);
 
         List<IStoredFile> attachments = new ArrayList();
 
         if (attachmentObjects != null) {
 
-            for (Document attachmentObject : attachmentObjects) {
+            for (BasicDBObject attachmentObject : attachmentObjects) {
 
                 attachments.add(new StoredFile(attachmentObject));
             }

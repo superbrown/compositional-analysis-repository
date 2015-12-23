@@ -3,14 +3,12 @@ package gov.energy.nbc.car.settings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 
 @Configuration
 @Component
-@ComponentScan(basePackages = { "gov.energy.nbc.car.*" })
 @AutoConfigureBefore
 public class Settings implements ISettings {
 
@@ -25,14 +23,15 @@ public class Settings implements ISettings {
     @Value("${mongoDb.databaseName}")
     protected String mongoDatabaseName;
 
-    @Value("${rootDirectoryForDataFiles}")
+    @Value("${app.rootDirectoryForUploadedDataFiles}")
     protected String rootDirectoryForUploadedDataFiles;
 
-    @Value("${defaultSetOfDataCategories}")
+    @Value("${app.defaultSetOfDataCategories}")
     private String[] defaultSetOfDataCategories;
 
-    @Value("${performanceLoggingEnabled}")
+    @Value("${app.performanceLoggingEnabled}")
     private boolean performanceLoggingEnabled;
+
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
@@ -49,7 +48,7 @@ public class Settings implements ISettings {
 //        mongoDbHost = "localhost";
 //        mongoDbPort = "27017";
 //        mongoDatabaseName = "data-repository-app";
-//        rootDirectoryForDataFiles = "C:/data/data-repository-app/uploadedFiles";
+//        rootDirectoryForUploadedDataFiles = "C:/data/data-repository-app/uploadedFiles";
 //        defaultSetOfDataCategories = new String[] {};
     }
 
