@@ -8,7 +8,9 @@ import gov.energy.nbc.car.utilities.fileReader.exception.InvalidValueFoundInHead
 import gov.energy.nbc.car.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.bson.types.ObjectId;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -53,4 +55,6 @@ public interface IDatasetBO {
     IDatasetDAO getDatasetDAO();
 
     File getUploadedFile(String datasetId);
+
+    ByteArrayInputStream packageAttachmentsInAZipFile(String datasetId) throws IOException;
 }

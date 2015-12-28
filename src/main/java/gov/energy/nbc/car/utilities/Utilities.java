@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -175,7 +176,7 @@ public class Utilities {
         List<FileAsRawBytes> attachmentFilesAsRawBytes = new ArrayList<>();
         for (MultipartFile attachment : files) {
 
-            // DESIGN NOTE: I don't know why this is necessary, but for some reason
+            // DESIGN NOTE: I don't know why this check is necessary, but for some reason
             //              attachment attributes sometimes are empty.
             if (StringUtils.isNotBlank(attachment.getOriginalFilename())) {
                 attachmentFilesAsRawBytes.add(toFileAsRawBytes(attachment));
@@ -189,5 +190,10 @@ public class Utilities {
             throws IOException {
 
         return new FileAsRawBytes(dataFile.getOriginalFilename(), dataFile.getBytes());
+    }
+
+    public static byte[] toBytes(File file) throws IOException {
+
+        return Files.readAllBytes(file.toPath());
     }
 }

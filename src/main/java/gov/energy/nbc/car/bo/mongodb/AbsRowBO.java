@@ -20,6 +20,7 @@ import gov.energy.nbc.car.restEndpoint.DataType;
 import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
 import gov.energy.nbc.car.utilities.Utilities;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -197,6 +198,7 @@ public abstract class AbsRowBO implements IRowBO {
 
             Document metadata = (Document) document.get(RowDocument.ATTR_KEY__METADATA);
             Document data = (Document) document.get(RowDocument.ATTR_KEY__DATA);
+            String datasetId = getObjectId(document, RowDocument.ATTR_KEY__DATASET_ID);
 
             // link for downloading the file
             // DESIGN NOTE: I know, this is the wrong architectural layer. I'm in a time crunch right now.
@@ -205,22 +207,28 @@ public abstract class AbsRowBO implements IRowBO {
             String originalFileName = (String) uploadedFile.get(StoredFile.ATTR_KEY__ORIGINAL_FILE_NAME);
             Integer rowNumber = (Integer) data.get(Row.ATTR_KEY__ROW_NUMBER);
 
+            Object nameOfSheetContainingData = metadata.get(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA);
+            if (StringUtils.isBlank((String)nameOfSheetContainingData)) {
+                nameOfSheetContainingData = "N/A";
+            }
+
             if (purpose == Purpose.FOR_FILE_DOWNLOAD) {
 
                 row.put(ATTR_ORIGINAL_FILE_NAME, originalFileName);
-                row.put(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA, metadata.get(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA));
+                row.put(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA, nameOfSheetContainingData);
                 row.put(ATTR_ORIGINAL_FILE_ROW_NUMBER, rowNumber);
                 row.put(Metadata.ATTR_KEY__DATA_CATEGORY, metadata.get(Metadata.ATTR_KEY__DATA_CATEGORY));
             }
             else if (purpose == Purpose.FOR_SCREEN_DIAPLAYED_SEARCH_RESULTS) {
 
-                String datasetId = getObjectId(document, RowDocument.ATTR_KEY__DATASET_ID);
                 row.put("Source",
                         "<a href='" + ServletContainerConfig.CONTEXT_PATH +
-                                "/api/dataset/" + datasetId + "/" + "uploadedFile' " +
+                                "/api/dataset/" + datasetId + "/uploadedFile' " +
                                 "target='_blank'>" +
                                 originalFileName + "</a> (row " + rowNumber + ")");
-                row.put(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA, metadata.get(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA));
+
+                row.put(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA,
+                        nameOfSheetContainingData);
             }
 
             row.put(Metadata.ATTR_KEY__SUBMISSION_DATE, toString((Date) metadata.get(Metadata.ATTR_KEY__SUBMISSION_DATE)));
@@ -263,13 +271,42 @@ public abstract class AbsRowBO implements IRowBO {
                         row.put(name, value);
                     }
                 }
+            }
 
+            if (purpose == Purpose.FOR_SCREEN_DIAPLAYED_SEARCH_RESULTS) {
+
+                List attachments = (List) metadata.get(Metadata.ATTR_KEY__ATTACHMENTS);
+                String originalFileNames = toOriginalFileNames(attachments);
+
+                if (StringUtils.isNotBlank(originalFileName)) {
+                    row.put("Attachments",
+                            "<a href='" + ServletContainerConfig.CONTEXT_PATH +
+                                    "/api/dataset/" + datasetId + "/attachments' " +
+                                    "target='_blank'>" +
+                                    originalFileNames + "</a>");
+                }
+                else {
+                    row.put("Attachments",
+                            "(none)");
+                }
             }
 
             rowsFlat.add(row);
         }
 
         return rowsFlat;
+    }
+
+    private String toOriginalFileNames(List attachments) {
+
+        String originalFileNames = "";
+        for (Object attachment : attachments) {
+            Document document = (Document) attachment;
+            Object originalFilename = document.get(StoredFile.ATTR_KEY__ORIGINAL_FILE_NAME);
+            originalFileNames += "<br>" + originalFilename;
+        }
+        originalFileNames = originalFileNames.replaceFirst("<br>", "");
+        return originalFileNames;
     }
 
     private String getObjectId(Document document, String attributeName) {

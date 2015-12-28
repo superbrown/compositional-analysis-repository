@@ -23,10 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 
 import static gov.energy.nbc.car.utilities.HTTPResponseUtility.*;
@@ -147,17 +144,37 @@ public class Endpoints_Datasets {
 
         IDatasetBO datasetBO = getDatasetBO();
 
-        IDatasetDocument originallydatasetDocument = datasetBO.getDatasetDAO().getDataset(datasetId);
-        String originalFileName = originallydatasetDocument.getMetadata().getUploadedFile().getOriginalFileName();
-
         File uploadedFile = datasetBO.getUploadedFile(datasetId);
         InputStream fileInputStream = new FileInputStream(uploadedFile.getAbsolutePath());
         InputStreamResource inputStreamResource = new InputStreamResource(fileInputStream);
+
+        IDatasetDocument datasetDocument = datasetBO.getDatasetDAO().getDataset(datasetId);
+        String originalFileName = datasetDocument.getMetadata().getUploadedFile().getOriginalFileName();
 
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
                 .header("content-disposition", "attachment; filename=" + originalFileName)
+                .body(inputStreamResource);
+    }
+
+    @RequestMapping(
+            value="/api/dataset/{datasetId}/attachments",
+            produces="application/zip",
+            method = RequestMethod.GET)
+    public  ResponseEntity<InputStreamResource> downloadAttachments(
+            @PathVariable(value = "datasetId") String datasetId) throws IOException {
+
+        IDatasetBO datasetBO = getDatasetBO();
+
+        InputStream attachmentsInAZipFile = datasetBO.packageAttachmentsInAZipFile(datasetId);
+        InputStreamResource inputStreamResource = new InputStreamResource(attachmentsInAZipFile);
+        String zipFilename = "Attachments for dataset " + datasetId + ".zip";
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.parseMediaType("application/zip"))
+                .header("content-disposition", "attachment; filename=" + zipFilename)
                 .body(inputStreamResource);
     }
 
