@@ -114,7 +114,7 @@
 
   <div class="table-responsive" ng-hide="$root.searchResults.length < 1">
 
-    <table class="table" style="border-left: 2px black; border-right: 2px black; border-collapse: collapse;">
+    <table class="table">
 
       <thead>
       <tr>
@@ -124,7 +124,7 @@
       </tr>
       </thead>
 
-      <tbody>
+      <tbody  style="border-left: 2px black; border-right: 2px black; height: 200px">
       <tr ng-repeat="searchResultRow in $root.searchResults">
         <td ng-repeat="(key, value) in searchResultRow" ng-bind-html="value" style="padding-top: 0px; padding-bottom: 0px; height: 100%">
           {{value}}
