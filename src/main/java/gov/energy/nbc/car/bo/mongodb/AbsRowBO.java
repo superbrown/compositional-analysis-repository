@@ -208,7 +208,7 @@ public abstract class AbsRowBO implements IRowBO {
             Integer rowNumber = (Integer) data.get(Row.ATTR_KEY__ROW_NUMBER);
 
             Object nameOfSheetContainingData = metadata.get(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA);
-            if (StringUtils.isBlank((String)nameOfSheetContainingData)) {
+            if (StringUtils.isBlank((String) nameOfSheetContainingData)) {
                 nameOfSheetContainingData = "N/A";
             }
 
@@ -278,7 +278,7 @@ public abstract class AbsRowBO implements IRowBO {
                 List attachments = (List) metadata.get(Metadata.ATTR_KEY__ATTACHMENTS);
                 String originalFileNames = toOriginalFileNames(attachments);
 
-                if (StringUtils.isNotBlank(originalFileName)) {
+                if (StringUtils.isNotBlank(originalFileNames)) {
                     row.put("Attachments",
                             "<a href='" + ServletContainerConfig.CONTEXT_PATH +
                                     "/api/dataset/" + datasetId + "/attachments' " +
