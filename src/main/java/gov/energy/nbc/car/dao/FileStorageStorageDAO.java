@@ -5,6 +5,7 @@ import gov.energy.nbc.car.utilities.FileAsRawBytes;
 import gov.energy.nbc.car.dao.dto.StoredFile;
 import gov.energy.nbc.car.dao.exception.CouldNoCreateDirectory;
 import gov.energy.nbc.car.dao.exception.UnableToDeleteFile;
+import gov.energy.nbc.car.utilities.Utilities;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -68,27 +69,21 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
     public void moveFilesToRemovedFilesLocation(String filePath)
             throws IOException {
 
+        String rootDirectoryForUploadedDataFiles = getRootDirectoryForUploadedDataFiles();
         String rootDirectoryForRemovedFiles = getRootDirectoryForRemovedFiles();
 
-        seeToItThatTheDirectoryExists(rootDirectoryForRemovedFiles);
+        String relativePath = extractPathToContainingDirectory(filePath);
 
-        String pathToContainingDirectory =
-                getRootDirectoryForUploadedDataFiles() +
-                extractPathToContainingDirectory(filePath);
+        String sourcePath = rootDirectoryForUploadedDataFiles + relativePath;
+        String destinationPath = rootDirectoryForRemovedFiles + relativePath;
 
-        Files.copy(
-                Paths.get(pathToContainingDirectory),
-                Paths.get(rootDirectoryForRemovedFiles));
+        seeToItThatTheDirectoryExists(extractPathToContainingDirectory(destinationPath));
 
-        Files.delete(Paths.get(pathToContainingDirectory));
-
-//        Files.move(
-//                Paths.get(pathToContainingDirectory),
-//                Paths.get(rootDirectoryForRemovedFiles),
-//                StandardCopyOption.ATOMIC_MOVE);
+        Utilities.moveFolder(sourcePath, destinationPath);
     }
 
     private String extractPathToContainingDirectory(String filePath) {
+
         return filePath.substring(0, filePath.lastIndexOf("/"));
     }
 

@@ -23,7 +23,7 @@ public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDat
 
 
     @Override
-    public RowCollection extractDataFromFile(File file, String nameOfWorksheetContainingTheData, int maxNumberOfValuesPerRow)
+    public RowCollection extractDataFromFile(File file, String nameOfSubdocumentContainingDataIfApplicable, int maxNumberOfValuesPerRow)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
         RowCollection rowCollection = null;
@@ -31,7 +31,7 @@ public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDat
         try {
             if (excelWorkbookReader.canReadFile(file)) {
 
-                rowCollection = extractDataFromDataset(file, nameOfWorksheetContainingTheData);
+                rowCollection = extractDataFromDataset(file, nameOfSubdocumentContainingDataIfApplicable);
             }
             else if (csvFileReader.canReadFile(file)) {
 
@@ -51,11 +51,11 @@ public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDat
     }
 
     @Override
-    public RowCollection extractDataFromDataset(File file, String nameOfWorksheetContainingTheData)
+    public RowCollection extractDataFromDataset(File file, String nameOfSubdocumentContainingDataIfApplicable)
             throws UnsupportedFileExtension, IOException, InvalidValueFoundInHeader {
 
         RowCollection dataUpload =
-                excelWorkbookReader.extractDataFromFile(file, nameOfWorksheetContainingTheData);
+                excelWorkbookReader.extractDataFromFile(file, nameOfSubdocumentContainingDataIfApplicable);
 
         return dataUpload;
     }

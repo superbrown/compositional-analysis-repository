@@ -40,7 +40,7 @@ public class ExcelWorkbookReaderTest {
     }
 
     /**
-     * Method: extractDataFromDataset(File file, String nameOfWorksheetContainingTheData)
+     * Method: extractDataFromDataset(File file, String nameOfSubdocumentContainingDataIfApplicable)
      */
     @Test
     public void testExtractDataFromDataset_xls() throws Exception {

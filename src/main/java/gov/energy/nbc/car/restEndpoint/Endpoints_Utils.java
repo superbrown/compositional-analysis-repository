@@ -28,17 +28,17 @@ public class Endpoints_Utils {
 
     @RequestMapping(value="/api/getNamesOfSheetsWithinExcelWorkbook", method = RequestMethod.POST)
     public ResponseEntity addDataset(
-            @RequestParam(value = "dataFile", required = true) MultipartFile dataFile)
+            @RequestParam(value = "sourceDocument", required = true) MultipartFile sourceDocument)
             throws IOException {
 
-        if (dataFile == null) { return create_BAD_REQUEST_missingRequiredParam_response("dataFile");}
+        if (sourceDocument == null) { return create_BAD_REQUEST_missingRequiredParam_response("sourceDocument");}
 
-        InputStream inputStream = dataFile.getInputStream();
+        InputStream inputStream = sourceDocument.getInputStream();
 
         List<String> namesOfSheetsWithinExcelWorkbook = null;
         try {
             namesOfSheetsWithinExcelWorkbook = DatasetReader_ExcelWorkbook.getNamesOfSheetsWithinWorkbook(
-                    dataFile.getOriginalFilename(),
+                    sourceDocument.getOriginalFilename(),
                     inputStream);
         }
         catch (UnsupportedFileExtension e) {

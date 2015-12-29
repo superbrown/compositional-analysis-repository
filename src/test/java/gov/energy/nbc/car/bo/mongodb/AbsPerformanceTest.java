@@ -54,7 +54,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
     public void testPerformance() {
 
         try {
-            StoredFile dataFile = new StoredFile("46RowsAndOver3000Columns.csv", "/46RowsAndOver3000Columns.csv");
+            StoredFile sourceDocument = new StoredFile("46RowsAndOver3000Columns.csv", "/46RowsAndOver3000Columns.csv");
 
             if (SUSPEND_DATA_SEEDING == true) {
 
@@ -68,7 +68,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
                 for (int i = 0; i < 1; i++) {
 
                     numberOfDatasetsSeeded += increment;
-                    seedData(dataFile, increment);
+                    seedData(sourceDocument, increment);
                     performQueries_homeGrownWay(numberOfDatasetsSeeded);
                 }
             }
@@ -138,7 +138,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
         assertTrue(numberOfResults > 0);
     }
 
-    protected void seedData(StoredFile dataFile, int number) throws UnsupportedFileExtension, InvalidValueFoundInHeader {
+    protected void seedData(StoredFile sourceDocument, int number) throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "Seeding " + number + " additional datasets for test.");
 
@@ -153,7 +153,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
                     "project name",
                     "charge number",
                     "comments",
-                    dataFile,
+                    sourceDocument,
                     "",
                     null);
         }

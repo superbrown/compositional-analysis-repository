@@ -26,8 +26,8 @@ public class Metadata extends AbstractDocument implements IMetadata {
             String chargeNumber,
             String projectName,
             String comments,
-            IStoredFile uploadedFile,
-            String nameOfSheetContainingData,
+            IStoredFile sourceDocument,
+            String nameOfSubdocumentContainingDataIfApplicable,
             List<IStoredFile> attachments) {
 
         super();
@@ -38,8 +38,8 @@ public class Metadata extends AbstractDocument implements IMetadata {
                 chargeNumber,
                 projectName,
                 comments,
-                uploadedFile,
-                nameOfSheetContainingData,
+                sourceDocument,
+                nameOfSubdocumentContainingDataIfApplicable,
                 attachments);
     }
 
@@ -57,8 +57,8 @@ public class Metadata extends AbstractDocument implements IMetadata {
                       String chargeNumber,
                       String projectName,
                       String comments,
-                      IStoredFile uploadedFile,
-                      String nameOfSheetContainingData,
+                      IStoredFile sourceDocument,
+                      String nameOfSubdocumentContainingDataIfApplicable,
                       List<IStoredFile> attachments) {
 
         put(ATTR_KEY__DATA_CATEGORY, dataCategory);
@@ -67,9 +67,9 @@ public class Metadata extends AbstractDocument implements IMetadata {
         put(ATTR_KEY__CHARGE_NUMBER, chargeNumber);
         put(ATTR_KEY__PROJECT_NAME, projectName);
         put(ATTR_KEY__COMMENTS, comments);
-        put(ATTR_KEY__UPLOADED_FILE, uploadedFile);
+        put(ATTR_KEY__SOURCE_DOCUMENT, sourceDocument);
         put(ATTR_KEY__ATTACHMENTS, attachments);
-        put(ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA, nameOfSheetContainingData);
+        put(ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA, nameOfSubdocumentContainingDataIfApplicable);
 
         verifyRequiredFieldsAreSet();
     }
@@ -95,16 +95,16 @@ public class Metadata extends AbstractDocument implements IMetadata {
         String chargeNumber = (String) document.get(ATTR_KEY__CHARGE_NUMBER);
         String projectName = (String) document.get(ATTR_KEY__PROJECT_NAME);
         String comments = (String) document.get(ATTR_KEY__COMMENTS);
-        String nameOfSheetContainingData = (String) document.get(ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA);
+        String nameOfSubdocumentContainingDataIfApplicable = (String) document.get(ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA);
 
-        IStoredFile uploadedFile = null;
-        Object o = document.get(ATTR_KEY__UPLOADED_FILE);
+        IStoredFile sourceDocument = null;
+        Object o = document.get(ATTR_KEY__SOURCE_DOCUMENT);
         // It's not clear to me why this is not always the same type of object
         if (o instanceof BasicDBObject) {
-            uploadedFile = new StoredFile((BasicDBObject) o);
+            sourceDocument = new StoredFile((BasicDBObject) o);
         }
         else if (o instanceof Document) {
-            uploadedFile = new StoredFile((Document) o);
+            sourceDocument = new StoredFile((Document) o);
         }
 
         List<BasicDBObject> attachmentObjects = (List<BasicDBObject>) document.get(ATTR_KEY__ATTACHMENTS);
@@ -125,14 +125,14 @@ public class Metadata extends AbstractDocument implements IMetadata {
              chargeNumber,
              projectName,
              comments,
-             uploadedFile,
-             nameOfSheetContainingData,
+             sourceDocument,
+             nameOfSubdocumentContainingDataIfApplicable,
              attachments);
     }
 
     private void verifyRequiredFieldsAreSet() {
         verify(StringUtils.isNotBlank((String)this.get(ATTR_KEY__DATA_CATEGORY)), "dataCategory is blank");
-        verify(this.get(ATTR_KEY__UPLOADED_FILE) != null, "datasetPath is blank");
+        verify(this.get(ATTR_KEY__SOURCE_DOCUMENT) != null, "datasetPath is blank");
     }
 
     private void verify(boolean condition, String errorMessage) {
@@ -150,11 +150,11 @@ public class Metadata extends AbstractDocument implements IMetadata {
     @Override
     public String getProjectName() { return (String) get(ATTR_KEY__PROJECT_NAME); }
     @Override
-    public String getNameOfSheetContainingData() { return (String) get(ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA); }
+    public String getNameOfSubdocumentContainingData() { return (String) get(ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA); }
     @Override
     public String getComments() { return (String) get(ATTR_KEY__COMMENTS); }
     @Override
-    public IStoredFile getUploadedFile() { return (IStoredFile) get(ATTR_KEY__UPLOADED_FILE); }
+    public IStoredFile getSourceDocument() { return (IStoredFile) get(ATTR_KEY__SOURCE_DOCUMENT); }
     @Override
     public List<IStoredFile> getAttachments() { return (List<IStoredFile>) get(ATTR_KEY__ATTACHMENTS); }
 
@@ -172,9 +172,9 @@ public class Metadata extends AbstractDocument implements IMetadata {
     @Override
     public String setComments(String value) { return (String)  put(ATTR_KEY__COMMENTS, value); }
     @Override
-    public String setNameOfSheetContainingData(String value) { return (String)  put(ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA, value); }
+    public String setNameOfSubdocumentContainingData(String value) { return (String)  put(ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA, value); }
     @Override
-    public IStoredFile setUploadedFile(IStoredFile value) { return (IStoredFile)  put(ATTR_KEY__UPLOADED_FILE, value); }
+    public IStoredFile setSourceDocument(IStoredFile value) { return (IStoredFile)  put(ATTR_KEY__SOURCE_DOCUMENT, value); }
     @Override
     public List<IStoredFile> setAttachments(List<IStoredFile> value) { return (List<IStoredFile>)  put(ATTR_KEY__ATTACHMENTS, value); }
 
@@ -187,7 +187,7 @@ public class Metadata extends AbstractDocument implements IMetadata {
                 ATTR_KEY__PROJECT_NAME.equals(name) ||
                 ATTR_KEY__SUBMISSION_DATE.equals(name) ||
                 ATTR_KEY__SUBMITTER.equals(name) ||
-                ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA.equals(name) ||
-                ATTR_KEY__UPLOADED_FILE.equals(name);
+                ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA.equals(name) ||
+                ATTR_KEY__SOURCE_DOCUMENT.equals(name);
     }
 }

@@ -11,6 +11,10 @@ function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
+function isUnset(object) {
+    return (object === undefined || object === '');
+}
+
 // A N G U L A R   s t u f f
 
 var drApp = angular.module('drApp',
@@ -67,12 +71,13 @@ drApp.run(
         $rootScope.projectName = '';
         $rootScope.chargeNumber = '';
         $rootScope.comments = '';
-        $rootScope.dataFile = '';
-        $rootScope.nameOfSheetContainingData = '';
+        $rootScope.sourceDocument = '';
+        $rootScope.nameOfSubdocumentContainingDataIfApplicable = '';
         $rootScope.attachments = [];
 
-        $rootScope.alertMessage_success = "";
-        $rootScope.alertMessage_failure = "";
+        $rootScope.alertMessage_success = '';
+        $rootScope.alertMessage_missingUserInput = '';
+        $rootScope.alertMessage_failure = '';
 
         $rootScope.searchCriteria = [];
         $rootScope.searchResults = [];
@@ -111,7 +116,7 @@ drApp.controller('rootPageController',
                 $cookies.put('submitter', $rootScope.submitter, {'expires': expireDate});
             });
 
-            $rootScope.$watch('$root.dataFile', function() {
+            $rootScope.$watch('$root.sourceDocument', function() {
                 drServices.populateNamesOfSheetsWithinExcelWorkbook($scope, $http);
             });
 
@@ -145,8 +150,8 @@ drApp.controller('uploadController',
                 drServices.uploadData($scope, $http);
             }
 
-            $scope.handleDataFileSelection = function(event, dataFile) {
-                $rootScope.dataFile = dataFile[0];
+            $scope.handleDataFileSelection = function(event, sourceDocument) {
+                $rootScope.sourceDocument = sourceDocument[0];
                 drServices.populateNamesOfSheetsWithinExcelWorkbook($scope, $http);
             }
 
@@ -333,19 +338,19 @@ drApp.service('drServices', function() {
 
         scope.$root.knownNamesOfSheetsWithinSelectedWorkbook = [];
 
-        var dataFile = scope.$root.dataFile;
+        var sourceDocument = scope.$root.sourceDocument;
 
-        if (dataFile === '') {
+        if (sourceDocument === '') {
             return;
         }
 
-        if (hasExcelWorkbookFileSuffix(dataFile.name) == false) {
+        if (hasExcelWorkbookFileSuffix(sourceDocument.name) == false) {
             // This is fine. They probably selected a CSV file.
             return;
         }
 
         var formData = new FormData();
-        formData.append('dataFile', dataFile);
+        formData.append('sourceDocument', sourceDocument);
 
         scope.$root.numberOfBlockingProcesses++;
 
@@ -378,14 +383,29 @@ drApp.service('drServices', function() {
         var formData = new FormData();
         var $root = scope.$root;
 
+        $root.alertMessage_missingUserInput = '';
+
+        // validation
+        if (isUnset($root.dataCategory)) {
+            $root.alertMessage_missingUserInput = 'Please select a Data Category.'; return; }
+        if (isUnset($root.submissionDate)) {
+            $root.alertMessage_missingUserInput = 'Please enter a Submission Date.'; return; }
+        if (isUnset($root.submitter)) {
+            $root.alertMessage_missingUserInput = 'Please enter a Submitter.'; return; }
+        if (isUnset($root.sourceDocument)) {
+            $root.alertMessage_missingUserInput = 'Please select a Source Document.'; return; }
+        if (hasExcelWorkbookFileSuffix($root.sourceDocument.name) &&
+            isUnset($root.nameOfSubdocumentContainingDataIfApplicable)) {
+            $root.alertMessage_missingUserInput = 'Please select the name of the sheet within the Excel workbook that contains the data to be ingested.'; return; }
+
         formData.append('dataCategory', $root.dataCategory);
         formData.append('submissionDate', $root.submissionDate.toJSON());
         formData.append('submitter', $root.submitter);
         formData.append('projectName', $root.projectName);
         formData.append('chargeNumber', $root.chargeNumber);
         formData.append('comments', $root.comments);
-        formData.append('nameOfSheetContainingData', $root.nameOfSheetContainingData);
-        formData.append('dataFile', $root.dataFile);
+        formData.append('sourceDocument', $root.sourceDocument);
+        formData.append('nameOfSubdocumentContainingDataIfApplicable', $root.nameOfSubdocumentContainingDataIfApplicable);
 
         for (var i = 0; i < $root.attachments.length; i++) {
             var attachment = $root.attachments[i];
@@ -410,8 +430,7 @@ drApp.service('drServices', function() {
         )
             .error(function (data, status) {
                 scope.$root.numberOfBlockingProcesses--;
-                scope.$root.alertMessage_failure =
-                    "A failure occurred (status: " + status + " data: " + data + ")";
+                scope.$root.alertMessage_failure = "A failure occurred on the server.";
             }
         );
     }

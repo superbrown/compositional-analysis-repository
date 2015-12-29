@@ -36,7 +36,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
     }
 
     @Override
-    public RowCollection extractDataFromFile(File file, String nameOfWorksheetContainingTheData)
+    public RowCollection extractDataFromFile(File file, String nameOfSubdocumentContainingDataIfApplicable)
             throws IOException, InvalidValueFoundInHeader, UnsupportedFileExtension {
 
         InputStream fileInputStream = null;
@@ -45,7 +45,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
             fileInputStream = new FileInputStream(file);
 
             Workbook workbook = createWorkbookObject(fileInputStream, file.getName());
-            Sheet sheet = workbook.getSheet(nameOfWorksheetContainingTheData);
+            Sheet sheet = workbook.getSheet(nameOfSubdocumentContainingDataIfApplicable);
 
             List<String> columnNames = determineColumnNames(sheet);
             int numberOfColumnNames = columnNames.size();

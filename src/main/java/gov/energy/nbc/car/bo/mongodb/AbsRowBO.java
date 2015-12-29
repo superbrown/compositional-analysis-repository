@@ -202,33 +202,33 @@ public abstract class AbsRowBO implements IRowBO {
 
             // link for downloading the file
             // DESIGN NOTE: I know, this is the wrong architectural layer. I'm in a time crunch right now.
-            Document uploadedFile = (Document) metadata.get(Metadata.ATTR_KEY__UPLOADED_FILE);
+            Document sourceDocument = (Document) metadata.get(Metadata.ATTR_KEY__SOURCE_DOCUMENT);
 
-            String originalFileName = (String) uploadedFile.get(StoredFile.ATTR_KEY__ORIGINAL_FILE_NAME);
+            String originalFileName = (String) sourceDocument.get(StoredFile.ATTR_KEY__ORIGINAL_FILE_NAME);
             Integer rowNumber = (Integer) data.get(Row.ATTR_KEY__ROW_NUMBER);
 
-            Object nameOfSheetContainingData = metadata.get(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA);
-            if (StringUtils.isBlank((String) nameOfSheetContainingData)) {
-                nameOfSheetContainingData = "N/A";
+            Object nameOfSubdocumentContainingDataIfApplicable = metadata.get(Metadata.ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA);
+            if (StringUtils.isBlank((String) nameOfSubdocumentContainingDataIfApplicable)) {
+                nameOfSubdocumentContainingDataIfApplicable = "N/A";
             }
 
             if (purpose == Purpose.FOR_FILE_DOWNLOAD) {
 
                 row.put(ATTR_ORIGINAL_FILE_NAME, originalFileName);
-                row.put(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA, nameOfSheetContainingData);
+                row.put(Metadata.ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA, nameOfSubdocumentContainingDataIfApplicable);
                 row.put(ATTR_ORIGINAL_FILE_ROW_NUMBER, rowNumber);
                 row.put(Metadata.ATTR_KEY__DATA_CATEGORY, metadata.get(Metadata.ATTR_KEY__DATA_CATEGORY));
             }
             else if (purpose == Purpose.FOR_SCREEN_DIAPLAYED_SEARCH_RESULTS) {
 
-                row.put("Source",
+                row.put("Source Document",
                         "<a href='" + ServletContainerConfig.CONTEXT_PATH +
-                                "/api/dataset/" + datasetId + "/uploadedFile' " +
+                                "/api/dataset/" + datasetId + "/sourceDocument' " +
                                 "target='_blank'>" +
                                 originalFileName + "</a> (row " + rowNumber + ")");
 
-                row.put(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA,
-                        nameOfSheetContainingData);
+                row.put(Metadata.ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA,
+                        nameOfSubdocumentContainingDataIfApplicable);
             }
 
             row.put(Metadata.ATTR_KEY__SUBMISSION_DATE, toString((Date) metadata.get(Metadata.ATTR_KEY__SUBMISSION_DATE)));
@@ -329,7 +329,7 @@ public abstract class AbsRowBO implements IRowBO {
         METADATA_COLUMNS_TO_RETURN.add(ATTR_SOURCE_UUID);
         METADATA_COLUMNS_TO_RETURN.add(ATTR_ROW_UUID);
         METADATA_COLUMNS_TO_RETURN.add(ATTR_ORIGINAL_FILE_NAME);
-        METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__NAME_OF_SHEET_CONTAINING_DATA);
+        METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA);
         METADATA_COLUMNS_TO_RETURN.add(ATTR_ORIGINAL_FILE_ROW_NUMBER);
         METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__DATA_CATEGORY);
         METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__SUBMISSION_DATE);

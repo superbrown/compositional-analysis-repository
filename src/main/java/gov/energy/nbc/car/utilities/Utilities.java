@@ -1,5 +1,6 @@
 package gov.energy.nbc.car.utilities;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -186,14 +187,81 @@ public class Utilities {
         return attachmentFilesAsRawBytes;
     }
 
-    public static FileAsRawBytes toFileAsRawBytes(MultipartFile dataFile)
+    public static FileAsRawBytes toFileAsRawBytes(MultipartFile sourceDocument)
             throws IOException {
 
-        return new FileAsRawBytes(dataFile.getOriginalFilename(), dataFile.getBytes());
+        return new FileAsRawBytes(sourceDocument.getOriginalFilename(), sourceDocument.getBytes());
     }
 
     public static byte[] toBytes(File file) throws IOException {
 
         return Files.readAllBytes(file.toPath());
+    }
+
+    public static void copyFolder(String sourcePath, String destinationPath)
+            throws IOException {
+
+        File source = new File(sourcePath);
+        File destination = new File(destinationPath);
+
+        if (source.isDirectory()) {
+
+            //if directory not exists, create it
+            if (!destination.exists()) {
+                destination.mkdir();
+            }
+
+            //list all the directory contents
+            String files[] = source.list();
+
+            for (String file : files) {
+                //recursive copy
+                copyFolder(source + "/" + file, destination + "/" + file);
+            }
+
+        } else
+        {
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                //if file, then copy it
+                //Use bytes stream to support all file types
+                in = new FileInputStream(source);
+                out = new FileOutputStream(destination);
+
+                byte[] buffer = new byte[1024];
+
+                int length;
+                //copy the file content in bytes
+                while ((length = in.read(buffer)) > 0) {
+                    out.write(buffer, 0, length);
+                }
+            }
+            finally {
+                try {
+                    if (in != null) {
+                        in.close();
+                    }
+                }
+                catch (IOException e) {
+                    log.warn(e);
+                }
+                finally {
+
+                    try {
+                        if (out != null) {
+                            out.close();
+                        }
+                    } catch (IOException e) {
+                        log.warn(e);
+                    }
+                }
+            }
+        }
+    }
+
+    public static void moveFolder(String sourcePath, String destinationPath) throws IOException {
+
+        FileUtils.moveDirectory(new File(sourcePath), new File(destinationPath));
     }
 }

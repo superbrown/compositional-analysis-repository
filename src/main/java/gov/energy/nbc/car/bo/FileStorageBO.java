@@ -25,19 +25,6 @@ public class FileStorageBO implements IPhysicalFileBO {
         generalFileReader = new DatasetReader_AllFileTypes();
     }
 
-//    @Override
-//    public StoredFile saveFile(MultipartFile dataFile) {
-//
-//        StoredFile theDataFileThatWasStored = null;
-//        try {
-//            theDataFileThatWasStored = getDataFileDAO().saveFile(dataFile);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        return theDataFileThatWasStored;
-//    }
-
     @Override
     public StoredFile saveFile(Date timestamp, String subdirectory, FileAsRawBytes file) {
 

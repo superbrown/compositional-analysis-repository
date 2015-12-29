@@ -44,7 +44,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
 
         super.before();
 
-        StoredFile dataFile = new StoredFile("SpreadsheetWithDifferentTypesOfValues.xlsx", "/SpreadsheetWithDifferentTypesOfValues.xlsx");
+        StoredFile sourceDocument = new StoredFile("SpreadsheetWithDifferentTypesOfValues.xlsx", "/SpreadsheetWithDifferentTypesOfValues.xlsx");
 
         try {
             ObjectId objectId = getBusinessObjects().getDatasetBO().addDataset(
@@ -54,7 +54,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
                     "project name",
                     "charge number",
                     "comments",
-                    dataFile,
+                    sourceDocument,
                     "only spreadheet in workbook",
                     null);
         } catch (UnsupportedFileExtension e) {

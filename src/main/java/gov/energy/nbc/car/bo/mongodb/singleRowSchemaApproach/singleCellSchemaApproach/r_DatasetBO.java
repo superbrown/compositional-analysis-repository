@@ -59,13 +59,13 @@ public class r_DatasetBO extends AbsDatasetBO {
             String projectName,
             String chargeNumber,
             String comments,
-            gov.energy.nbc.car.dao.dto.StoredFile dataFile,
-            String nameOfWorksheetContainingTheData,
+            gov.energy.nbc.car.dao.dto.StoredFile sourceDocument,
+            String nameOfSubdocumentContainingDataIfApplicable,
             List<gov.energy.nbc.car.dao.dto.StoredFile> attachmentFiles)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
-        File storedFile = getPhysicalFile(dataFile.storageLocation);
-        RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfWorksheetContainingTheData, -1);
+        File storedFile = getPhysicalFile(sourceDocument.storageLocation);
+        RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, -1);
         IRowCollection rowCollection = new gov.energy.nbc.car.model.mongodb.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
         List<IStoredFile> attachments = new ArrayList();
@@ -82,8 +82,8 @@ public class r_DatasetBO extends AbsDatasetBO {
                 chargeNumber,
                 projectName,
                 comments,
-                new StoredFile(dataFile.originalFileName, dataFile.storageLocation),
-                nameOfWorksheetContainingTheData,
+                new StoredFile(sourceDocument.originalFileName, sourceDocument.storageLocation),
+                nameOfSubdocumentContainingDataIfApplicable,
                 attachments);
 
         ObjectId objectId = getDatasetDAO().add(datasetDocument, rowCollection);
@@ -99,13 +99,13 @@ public class r_DatasetBO extends AbsDatasetBO {
             String projectName,
             String chargeNumber,
             String comments,
-            gov.energy.nbc.car.dao.dto.StoredFile dataFile,
-            String nameOfWorksheetContainingTheData,
+            gov.energy.nbc.car.dao.dto.StoredFile sourceDocument,
+            String nameOfSubdocumentContainingDataIfApplicable,
             List<gov.energy.nbc.car.dao.dto.StoredFile> attachmentFiles)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
-        File storedFile = getPhysicalFile(dataFile.storageLocation);
-        RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfWorksheetContainingTheData, maxNumberOfValuesPerRow);
+        File storedFile = getPhysicalFile(sourceDocument.storageLocation);
+        RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, maxNumberOfValuesPerRow);
         IRowCollection rowCollection = new gov.energy.nbc.car.model.mongodb.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
         List<IStoredFile> attachments = new ArrayList();
@@ -120,8 +120,8 @@ public class r_DatasetBO extends AbsDatasetBO {
                 chargeNumber,
                 projectName,
                 comments,
-                new StoredFile(dataFile.originalFileName, dataFile.storageLocation),
-                nameOfWorksheetContainingTheData,
+                new StoredFile(sourceDocument.originalFileName, sourceDocument.storageLocation),
+                nameOfSubdocumentContainingDataIfApplicable,
                 attachments);
 
         ObjectId objectId = getDatasetDAO().add(datasetDocument, rowCollection);
@@ -156,7 +156,7 @@ public class r_DatasetBO extends AbsDatasetBO {
         IDatasetDAO datasetDAO = getDatasetDAO();
         IDatasetDocument datasetDocument = datasetDAO.getDataset(datasetId);
 
-        String storageLocation = datasetDocument.getMetadata().getUploadedFile().getStorageLocation();
+        String storageLocation = datasetDocument.getMetadata().getSourceDocument().getStorageLocation();
         try {
             physicalFileBO.deletFile(storageLocation);
         }
@@ -186,14 +186,14 @@ public class r_DatasetBO extends AbsDatasetBO {
             String projectName,
             String chargeNumber,
             String comments,
-            FileAsRawBytes dataFile,
-            String nameOfSheetContainingData,
+            FileAsRawBytes sourceDocument,
+            String nameOfSubdocumentContainingDataIfApplicable,
             List<FileAsRawBytes> attachmentFiles)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
         Date timestamp = new Date();
 
-        gov.energy.nbc.car.dao.dto.StoredFile theDataFileThatWasStored = physicalFileBO.saveFile(timestamp, "", dataFile);
+        gov.energy.nbc.car.dao.dto.StoredFile theDataFileThatWasStored = physicalFileBO.saveFile(timestamp, "", sourceDocument);
 
         List<gov.energy.nbc.car.dao.dto.StoredFile> theAttachmentsThatWereStored = new ArrayList();
 
@@ -209,7 +209,7 @@ public class r_DatasetBO extends AbsDatasetBO {
                 chargeNumber,
                 comments,
                 theDataFileThatWasStored,
-                nameOfSheetContainingData,
+                nameOfSubdocumentContainingDataIfApplicable,
                 theAttachmentsThatWereStored);
 
         return JSON.serialize(objectId);
@@ -217,13 +217,13 @@ public class r_DatasetBO extends AbsDatasetBO {
 
     public String addDataset(String metadataJson,
                              File file,
-                             String nameOfWorksheetContainingTheData)
+                             String nameOfSubdocumentContainingDataIfApplicable)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader {
 
         IDatasetDAO datasetDAO = getDatasetDAO();
 
         try {
-            RowCollection dataUpload = generalFileReader.extractDataFromDataset(file, nameOfWorksheetContainingTheData);
+            RowCollection dataUpload = generalFileReader.extractDataFromDataset(file, nameOfSubdocumentContainingDataIfApplicable);
             IRowCollection rowCollection = new gov.energy.nbc.car.model.mongodb.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
             IMetadata metadata = new Metadata(metadataJson);

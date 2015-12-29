@@ -9,7 +9,7 @@
     <a href="/data-repository-app/#/uploadData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_success = ''">&times;</a>
   </div>
   <div class="alert alert-danger" ng-show="alertMessage_failure != ''">
-    <strong>Success!</strong> {{$root.alertMessage_failure}}
+    <strong>ERROR:</strong> {{$root.alertMessage_failure}}
     <a href="/data-repository-app/#/uploadData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_failure = ''">&times;</a>
   </div>
 
@@ -17,22 +17,21 @@
     <legend>Metadata</legend>
 
     <div style="margin-bottom: 2px">
-      <label for="dataCategory">Data Category*</label>
+      <label for="dataCategory">Data Category</label>
       <select name="dataCategory" id="dataCategory" ng-model="$root.dataCategory">
         <option ng-repeat="option in $root.knownDataCategories" value="{{option}}">{{option}}</option>
       </select>
     </div>
 
     <div style="margin-bottom: 2px">
-      <label>Submission Date*</label>
+      <label>Submission Date</label>
       <input ng-model="$root.submissionDate" ui-date type="text"/>
       <br/>
     </div>
 
     <div style="margin-bottom: 2px">
-      <label for="submitter">Submitter*</label>
+      <label for="submitter">Submitter</label>
       <input ng-model="$root.submitter" required id="submitter" name="submitter" type="text" style="width: 300px;"/>
-      <!--<span class="alert" ng-class="{'alert-warning':submitter.length > 5}" >Sumitter is required!</span>-->
     </div>
 
     <div style="margin-bottom: 2px">
@@ -55,14 +54,14 @@
 
   <div>
 
-    <legend>Data File</legend>
+    <legend>Source Document</legend>
 
     <div>
-      <label for="dataFile">(Excel or CSV file)</label>
+      <label for="sourceDocument">(Excel or CSV file)</label>
       <input type="file"
-             id="dataFile"
-             name="dataFile"
-             ng-model="$root.dataFile"
+             id="sourceDocument"
+             name="sourceDocument"
+             ng-model="$root.sourceDocument"
              accept=".xls,.xlsx,.xlsm,.csv"
              required
              file-change="handleDataFileSelection($event, files)"
@@ -71,13 +70,13 @@
 
     <div ng-show="knownNamesOfSheetsWithinSelectedWorkbook.length > 0" style="margin-top: 2px">
       <div>
-        <label style="width: auto;" for="nameOfSheetContainingData">
-          Select the name of the sheet within the workbook containing the data to be ingested*
+        <label style="width: auto;" for="nameOfSubdocumentContainingDataIfApplicable">
+          Select the name of the sheet within the Excel workbook that contains the data to be ingested.
         </label>
       </div>
       <div>
         <label></label>
-        <select name="nameOfSheetContainingData" id="nameOfSheetContainingData" ng-model="$root.nameOfSheetContainingData">
+        <select name="nameOfSubdocumentContainingDataIfApplicable" id="nameOfSubdocumentContainingDataIfApplicable" ng-model="$root.nameOfSubdocumentContainingDataIfApplicable">
           <option ng-repeat="sheetName in $root.knownNamesOfSheetsWithinSelectedWorkbook" value="{{sheetName}}">
             {{sheetName}}
           </option>
@@ -102,6 +101,11 @@
            multiple="multiple" />
     </span>
 
+  </div>
+
+  <div class="alert alert-warning" ng-show="alertMessage_missingUserInput != ''" style="margin-top: 10px;">
+    {{$root.alertMessage_missingUserInput}}
+    <a href="/data-repository-app/#/uploadData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_missingUserInput = ''">&times;</a>
   </div>
 
   <!--Upload button-->
