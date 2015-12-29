@@ -2,7 +2,7 @@ package gov.energy.nbc.car.dao;
 
 import gov.energy.nbc.car.utilities.FileAsRawBytes;
 import gov.energy.nbc.car.dao.dto.StoredFile;
-import gov.energy.nbc.car.dao.exception.CouldNoCreateDirectory;
+import gov.energy.nbc.car.dao.exception.CouldNotCreateDirectory;
 import gov.energy.nbc.car.dao.exception.UnableToDeleteFile;
 
 import java.io.File;
@@ -12,7 +12,7 @@ import java.util.Date;
 public interface IFileStorageDAO {
 
     StoredFile saveFile(Date timestamp, String subdirectory, FileAsRawBytes file)
-                    throws CouldNoCreateDirectory, IOException;
+                    throws CouldNotCreateDirectory, IOException;
 
     void deletFile(String file)
                             throws UnableToDeleteFile;

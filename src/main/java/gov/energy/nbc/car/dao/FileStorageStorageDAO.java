@@ -3,7 +3,7 @@ package gov.energy.nbc.car.dao;
 import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.utilities.FileAsRawBytes;
 import gov.energy.nbc.car.dao.dto.StoredFile;
-import gov.energy.nbc.car.dao.exception.CouldNoCreateDirectory;
+import gov.energy.nbc.car.dao.exception.CouldNotCreateDirectory;
 import gov.energy.nbc.car.dao.exception.UnableToDeleteFile;
 import gov.energy.nbc.car.utilities.Utilities;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +28,7 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
 
     @Override
     public StoredFile saveFile(Date timestamp, String subdirectory, FileAsRawBytes file)
-            throws CouldNoCreateDirectory, IOException {
+            throws CouldNotCreateDirectory, IOException {
 
         String fileName = file.fileName;
 
@@ -44,7 +44,7 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
         String fullyQualifiedFileLocation = rootDirectoryForUploadedDataFiles + relativeFileLocation;
 
         if (seeToItThatTheDirectoryExists(fullyQualifiedFileLocation) == false) {
-            throw new CouldNoCreateDirectory();
+            throw new CouldNotCreateDirectory(fullyQualifiedFileLocation);
         }
 
         File savedFile = saveTo(file.bytes, fullyQualifiedFileLocation + "/" + fileName);
