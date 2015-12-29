@@ -18,6 +18,7 @@ public class HTTPResponseUtility {
     }
 
     public static ResponseEntity create_NOT_FOUND_response() {
+        // FIXME: This seems screwy because it may look to callers like they reached an invalid UIR.
         return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 

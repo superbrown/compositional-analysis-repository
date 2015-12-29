@@ -89,6 +89,11 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
     @Override
     public Document getOne(Bson filter) {
         Document document = DAOUtilities.getOne(getCollection(), filter);
+
+        if (document == null) {
+            return null;
+        }
+
         return createDocumentOfTypeDAOHandles(document);
     }
 

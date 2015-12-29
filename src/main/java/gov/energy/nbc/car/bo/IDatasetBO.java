@@ -1,6 +1,7 @@
 package gov.energy.nbc.car.bo;
 
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
+import gov.energy.nbc.car.bo.exception.UnknownDataset;
 import gov.energy.nbc.car.dao.IDatasetDAO;
 import gov.energy.nbc.car.utilities.FileAsRawBytes;
 import gov.energy.nbc.car.dao.dto.StoredFile;
@@ -24,8 +25,8 @@ public interface IDatasetBO {
             String projectName,
             String chargeNumber,
             String comments,
-            StoredFile dataFile,
-            String nameOfWorksheetContainingTheData,
+            StoredFile sourceDocument,
+            String nameOfSubdocumentContainingDataIfApplicable,
             List<StoredFile> attachmentFiles)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader;
 
@@ -33,7 +34,7 @@ public interface IDatasetBO {
 
     String getAllDatasets();
 
-    long removeDataset(String datasetId) throws DeletionFailure;
+    long removeDataset(String datasetId) throws DeletionFailure, UnknownDataset;
 
     String addDataset(
             String dataCategory,
@@ -42,19 +43,19 @@ public interface IDatasetBO {
             String projectName,
             String chargeNumber,
             String comments,
-            FileAsRawBytes dataFile,
-            String nameOfSheetContainingData,
+            FileAsRawBytes sourceDocument,
+            String nameOfSubdocumentContainingDataIfApplicable,
             List<FileAsRawBytes> attachmentFiles)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader;
 
     String addDataset(String metadataJson,
                       File file,
-                      String nameOfWorksheetContainingTheData)
+                      String nameOfSubdocumentContainingDataIfApplicable)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader;
 
     IDatasetDAO getDatasetDAO();
 
-    File getUploadedFile(String datasetId);
+    File getSourceDocument(String datasetId);
 
     ByteArrayInputStream packageAttachmentsInAZipFile(String datasetId) throws IOException;
 }

@@ -4,6 +4,7 @@ import gov.energy.nbc.car.app.DataRepositoryApplication;
 import gov.energy.nbc.car.bo.IDatasetBO;
 import gov.energy.nbc.car.bo.IRowBO;
 import gov.energy.nbc.car.bo.exception.DeletionFailure;
+import gov.energy.nbc.car.bo.exception.UnknownDataset;
 import gov.energy.nbc.car.utilities.FileAsRawBytes;
 import gov.energy.nbc.car.model.IDatasetDocument;
 import gov.energy.nbc.car.utilities.Utilities;
@@ -52,13 +53,13 @@ public class Endpoints_Datasets {
             @RequestParam(value = "projectName", required = false) String projectName,
             @RequestParam(value = "chargeNumber", required = false) String chargeNumber,
             @RequestParam(value = "comments", required = false) String comments,
-            @RequestParam(value = "dataFile", required = false) MultipartFile dataFile,
-            @RequestParam(value = "nameOfSheetContainingData", required = false) String nameOfSheetContainingData) {
+            @RequestParam(value = "sourceDocument", required = false) MultipartFile sourceDocument,
+            @RequestParam(value = "nameOfSubdocumentContainingDataIfApplicable", required = false) String nameOfSubdocumentContainingDataIfApplicable) {
 
         if (StringUtils.isBlank(dataCategory)) { return create_BAD_REQUEST_missingRequiredParam_response("dataCategory");}
         if (submissionDate == null) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
-        if (dataFile == null) { return create_BAD_REQUEST_missingRequiredParam_response("dataFile");}
-        if (isAnExcelFile(dataFile)) { if (StringUtils.isBlank(nameOfSheetContainingData)) { return create_BAD_REQUEST_missingRequiredParam_response("nameOfSheetContainingData");} }
+        if (sourceDocument == null) { return create_BAD_REQUEST_missingRequiredParam_response("sourceDocument");}
+        if (isAnExcelFile(sourceDocument)) { if (StringUtils.isBlank(nameOfSubdocumentContainingDataIfApplicable)) { return create_BAD_REQUEST_missingRequiredParam_response("nameOfSubdocumentContainingDataIfApplicable");} }
 
         // This is a work-around due on not being able to figure out how to get Spring to inject a list of multipart
         // files.
@@ -72,7 +73,7 @@ public class Endpoints_Datasets {
         try {
             List<FileAsRawBytes> attachmentFilesAsRawBytes = Utilities.toFilesAsRawBytes(attachments);
 
-            FileAsRawBytes dataFileAsRawBytes = Utilities.toFileAsRawBytes(dataFile);
+            FileAsRawBytes dataFileAsRawBytes = Utilities.toFileAsRawBytes(sourceDocument);
 
             objectId = getDatasetBO().addDataset(
                     dataCategory,
@@ -82,7 +83,7 @@ public class Endpoints_Datasets {
                     chargeNumber,
                     comments,
                     dataFileAsRawBytes,
-                    nameOfSheetContainingData,
+                    nameOfSubdocumentContainingDataIfApplicable,
                     attachmentFilesAsRawBytes);
         }
         catch (UnsupportedFileExtension e) {
@@ -137,19 +138,19 @@ public class Endpoints_Datasets {
     }
 
     @RequestMapping(
-            value="/api/dataset/{datasetId}/uploadedFile",
+            value="/api/dataset/{datasetId}/sourceDocument",
             method = RequestMethod.GET)
     public  ResponseEntity<InputStreamResource> downloadDataset(
             @PathVariable(value = "datasetId") String datasetId) throws IOException {
 
         IDatasetBO datasetBO = getDatasetBO();
 
-        File uploadedFile = datasetBO.getUploadedFile(datasetId);
-        InputStream fileInputStream = new FileInputStream(uploadedFile.getAbsolutePath());
+        File sourceDocument = datasetBO.getSourceDocument(datasetId);
+        InputStream fileInputStream = new FileInputStream(sourceDocument.getAbsolutePath());
         InputStreamResource inputStreamResource = new InputStreamResource(fileInputStream);
 
         IDatasetDocument datasetDocument = datasetBO.getDatasetDAO().getDataset(datasetId);
-        String originalFileName = datasetDocument.getMetadata().getUploadedFile().getOriginalFileName();
+        String originalFileName = datasetDocument.getMetadata().getSourceDocument().getOriginalFileName();
 
         return ResponseEntity
                 .ok()
@@ -204,7 +205,13 @@ public class Endpoints_Datasets {
         long numberOfObjectsDeleted = 0;
         try {
             IDatasetBO datasetBO = getDatasetBO();
-            numberOfObjectsDeleted = datasetBO.removeDataset(datasetId);
+
+            try {
+                numberOfObjectsDeleted = datasetBO.removeDataset(datasetId);
+            }
+            catch (UnknownDataset unknownDataset) {
+                return create_NOT_FOUND_response();
+            }
         }
         catch (DeletionFailure deletionFailure) {
             log.error(deletionFailure);
@@ -254,8 +261,8 @@ public class Endpoints_Datasets {
         return dataRepositoryApplication.getBusinessObjects().getRowBO();
     }
 
-    protected boolean isAnExcelFile(MultipartFile dataFile) {
+    protected boolean isAnExcelFile(MultipartFile sourceDocument) {
 
-        return GENERAL_FILE_READER.isAnExcelFile(dataFile.getOriginalFilename());
+        return GENERAL_FILE_READER.isAnExcelFile(sourceDocument.getOriginalFilename());
     }
 }

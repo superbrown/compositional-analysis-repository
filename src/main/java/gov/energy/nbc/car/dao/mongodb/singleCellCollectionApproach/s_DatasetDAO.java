@@ -34,8 +34,8 @@ public class s_DatasetDAO extends AbsDAO implements IDatasetDAO
 
     public IDatasetDocument getDataset(String id) {
 
-        DatasetDocument metadata = (DatasetDocument) getOneWithId(id);
-        return metadata;
+        DatasetDocument datasetDocument = (DatasetDocument) getOneWithId(id);
+        return datasetDocument;
     }
 
     public ObjectId add(IDatasetDocument datasetDocument, IRowCollection data) {

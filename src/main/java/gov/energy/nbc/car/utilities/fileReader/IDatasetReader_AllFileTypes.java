@@ -9,11 +9,14 @@ import java.io.IOException;
 
 public interface IDatasetReader_AllFileTypes extends IDatasetReader {
 
-    RowCollection extractDataFromFile(File file, String nameOfWorksheetContainingTheData, int maxNumberOfValuesPerRow)
+    RowCollection extractDataFromFile(File file,
+                                      String nameOfSubdocumentContainingDataIfApplicable,
+                                      int maxNumberOfValuesPerRow)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader;
 
-    RowCollection extractDataFromDataset(File file, String nameOfWorksheetContainingTheData)
-                    throws UnsupportedFileExtension, IOException, InvalidValueFoundInHeader;
+    RowCollection extractDataFromDataset(File file,
+                                         String nameOfSubdocumentContainingDataIfApplicable)
+            throws UnsupportedFileExtension, IOException, InvalidValueFoundInHeader;
 
     boolean isAnExcelFile(String filename);
 

@@ -5,7 +5,7 @@
 <div class="page-content">
 
   <div>
-    <label for="dataCategory">Data Category*</label>
+    <label for="dataCategory">Data Category</label>
     <select name="dataCategory" id="dataCategory" ng-model="$root.dataCategory">
       <option ng-repeat="dataCategory in $root.knownDataCategories" value="{{dataCategory}}">{{dataCategory}}</option>
     </select>
@@ -75,8 +75,8 @@
 
         <!--Plus and Minus signs-->
         <span style="margin-left: 4px">
-          <span class="glyphicon glyphicon-plus" aria-hidden="true" ng-click="createANewCriterion(criterion)" ng-show="criterion == $root.searchCriteria[$root.searchCriteria.length - 1]"></span>
-          <span class="glyphicon glyphicon-minus" aria-hidden="true" ng-click="criterion.removeMe()" ng-show="$root.searchCriteria.length > 1"></span>
+          <span class="glyphicon glyphicon-plus" style="cursor: hand; cursor: pointer;" aria-hidden="true" ng-click="createANewCriterion(criterion)" ng-show="criterion == $root.searchCriteria[$root.searchCriteria.length - 1]"></span>
+          <span class="glyphicon glyphicon-minus"  style="cursor: hand; cursor: pointer;" aria-hidden="true" ng-click="criterion.removeMe()" ng-show="$root.searchCriteria.length > 1"></span>
         </span>
 
     </div>
@@ -112,7 +112,7 @@
 
   <!-- Results Table -->
 
-  <div class="table-responsive" ng-hide="$root.searchResults.length < 1">
+  <div class="table-responsive" ng-hide="$root.searchResults.length < 1" style="height:400px; overflow: auto;">
 
     <table class="table">
 
