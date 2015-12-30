@@ -38,17 +38,12 @@
   <script src="/data-repository-app/bower_components/angular-messages/angular-messages.min.js"></script>
   <script src="/data-repository-app/bower_components/angular-resource/angular-resource.min.js"></script>
   <script src="/data-repository-app/bower_components/angular-route/angular-route.min.js"></script>
-  <script src="/data-repository-app/bower_components/angular-ui-grid/ui-grid.min.js"></script>
-  <link href="/data-repository-app/bower_components/angular-ui-grid/ui-grid.css" rel="stylesheet" />
 
   <!--AngularJS, date (for date widgets)-->
   <script src="/data-repository-app/bower_components/angular-ui-date/src/date.js"></script>
   <link href="/data-repository-app/bower_components/jquery-ui/themes/smoothness/jquery-ui.css" rel="stylesheet" />
   <!--Cookie support-->
   <script src="/data-repository-app/bower_components/angular-cookies/angular-cookies.min.js"></script>
-
-  <!--Necessary for round progress indicator-->
-  <script src="/data-repository-app/bower_components/angular-svg-round-progressbar/roundProgress.min.js"></script>
 
   <!--Necessary for being able to display a link returned by a REST call (as we have one within the
   search resutls)-->
@@ -87,9 +82,9 @@
 
         <ul class="nav navbar-nav">
 
-          <li class="{{$root.menuItemClass_uploadData}}"><a href="#/uploadData" ng-click="navigate_uploadData()">Upload Data</a></li>
+          <li class="{{$root.menuItemClass_uploadData}}"><a href="#/uploadData" ng-click="handleUploadDataMenuItemClick()">Upload Data</a></li>
 
-          <li class="{{$root.menuItemClass_findData}}"><a href="#/findData" ng-click="navigate_findData()">Find Data</a></li>
+          <li class="{{$root.menuItemClass_findData}}"><a href="#/findData" ng-click="handleFindDataMenuItemClick()">Find Data</a></li>
 
         </ul>
       </div><!--/.nav-collapse -->

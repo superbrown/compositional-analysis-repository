@@ -31,14 +31,9 @@ var drApp = angular.module('drApp',
         'ngMessages',
         'ngResource',
         'ngRoute',
-        'ui.grid',
-        'ui.grid.resizeColumns',
-        'ui.grid.autoResize',
-        'ui.grid.moveColumns',
         'ui.date',
-        'ngSanitize',
+        'ngSanitize', // needed to allow links to be rendered that have been received from a REST service
         'ngCookies',
-        'angular-svg-round-progress',
     ]);
 
 drApp.config(
@@ -102,25 +97,25 @@ drApp.run(
         '$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', '$cookies', 'drServices',
         function($scope, $rootScope, $http, $log, $filter, $resource, $location, $cookies, drServices) {
 
-            $scope.navigate_uploadData = function () {
+            $scope.handleUploadDataMenuItemClick = function () {
                 $rootScope.menuItemClass_uploadData = '';
                 $rootScope.menuItemClass_findData = '';
             }
 
-            $scope.navigate_findData = function () {
+            $scope.handleFindDataMenuItemClick = function () {
                 $rootScope.menuItemClass_uploadData = '';
                 $rootScope.menuItemClass_findData = '';
             }
 
             $rootScope.$watch('$root.dataCategory', function() {
-                var expireDate = createDateThatIsOneYearFromNow();
-                $cookies.put('dataCategory', $rootScope.dataCategory, {'expires': expireDate});
+                var cookieExpirationDate = createDateThatIsOneYearFromNow();
+                $cookies.put('dataCategory', $rootScope.dataCategory, {'expires': cookieExpirationDate});
                 drServices.populateKnownColumnNames($scope, $http);
             });
 
             $rootScope.$watch('$root.submitter', function() {
-                var expireDate = createDateThatIsOneYearFromNow();
-                $cookies.put('submitter', $rootScope.submitter, {'expires': expireDate});
+                var cookieExpirationDate = createDateThatIsOneYearFromNow();
+                $cookies.put('submitter', $rootScope.submitter, {'expires': cookieExpirationDate});
             });
 
             $rootScope.$watch('$root.sourceDocument', function() {
