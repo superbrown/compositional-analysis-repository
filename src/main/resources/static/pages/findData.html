@@ -20,16 +20,14 @@
     <div ng-repeat="criterion in $root.searchCriteria" style="margin-top: 4px">
 
       <!--Column Name-->
-      <select name="columnName" id="columnName" ng-model="criterion.columnName">
-        <option ng-repeat="knownColumnName in $root.knownColumnNames" value="{{knownColumnName}}">
-          {{knownColumnName}}
-        </option>
-      </select>
+
+      <select ng-model="criterion.columnName"
+              ng-options="knownColumnName as knownColumnName for knownColumnName in knownColumnNames" />
 
         <span ng-hide="criterion.columnName === ''">
 
           <!--Date Type-->
-          <select name="dataTypeId" id="dataTypeId" ng-model="criterion.dataTypeId">
+          <select ng-model="criterion.dataTypeId">
             <option ng-repeat="knownDataType in $root.knownDataTypes" value="{{knownDataType.id}}">
               {{knownDataType.label}}
             </option>
@@ -38,7 +36,7 @@
           <span ng-hide="criterion.dataTypeId === ''">
 
             <!--Comparison Operator-->
-            <select name="comparisonOperatorId" id="comparisonOperatorId" ng-model="criterion.comparisonOperatorId">
+            <select ng-model="criterion.comparisonOperatorId">
               <option ng-repeat="knownComparisonOperator in criterion.knownComparisonOperators" value="{{knownComparisonOperator.id}}">
                 {{knownComparisonOperator.label}}
               </option>
