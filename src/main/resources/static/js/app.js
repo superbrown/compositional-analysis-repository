@@ -462,7 +462,7 @@ drApp.service('drServices', function() {
 
         var dataTypeId = criterion.dataTypeId;
 
-        if (dataTypeId === '' || dataTypeId === undefined) return;
+        if (isUnset(dataTypeId)) return;
 
         scope.$root.numberOfBlockingProcesses++;
 

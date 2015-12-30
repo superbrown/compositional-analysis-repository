@@ -63,21 +63,6 @@ thead {
     background-image: linear-gradient(to bottom, rgba(12, 129, 0, 0.79) 0px, #003503 100%);
 }
 
-/*the basics, and works for FF*/
-#progressAnimation{
-    margin:0px 0px 0px 0px;
-    position:fixed;
-    height: 100%;
-    z-index:9999;
-    padding-top:200px;
-    padding-left:50px;
-    width:100%;
-    clear:none;
-    background:url(../img/transbg.png);
-    /*background-color:#666666;
-    border:1px solid #000000;*/
-}
-
 .theme-dropdown .dropdown-menu {
     position: static;
     display: block;
@@ -90,4 +75,21 @@ thead {
 
 .theme-showcase .navbar .container {
     width: auto;
+}
+
+#progressAnimation {
+    display: inline-block;
+    height: 100%;
+    background-color: black;
+    opacity: 0.3;
+    background-image: url('/data-repository-app/img/progressAnimation.gif');
+    background-repeat: no-repeat;
+    background-position: center center;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: fixed;
+    text-align: center;
+    vertical-align: middle;
 }

@@ -6,7 +6,7 @@
 	<groupId>gov.energy.nbc.dataset</groupId>
 	<artifactId>data-repository-app</artifactId>
 	<version>0.0.1</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>data-repository-app</name>
 	<description>Data Repository</description>
