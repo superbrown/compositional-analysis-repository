@@ -54,10 +54,6 @@
   search resutls)-->
   <script src="/data-repository-app/bower_components/angular-sanitize/angular-sanitize.min.js"></script>
 
-  <!--<script src="http://ui-grid.info/docs/grunt-scripts/csv.js"></script>-->
-  <!--<script src="http://ui-grid.info/docs/grunt-scripts/pdfmake.js"></script>-->
-  <!--<script src="http://ui-grid.info/docs/grunt-scripts/vfs_fonts.js"></script>-->
-
   <!-- Our Stuff -->
   <link href="/data-repository-app/css/app.css" rel="stylesheet" />
   <script src="/data-repository-app/js/app.js"></script>
@@ -66,9 +62,12 @@
 
 <body role="document">
 
+<!--progress indicator-->
+<div id="progressAnimation" ng-show="$root.numberOfBlockingProcesses > 0"></div>
+
 <!-- F i x e d   n a v b a r  -->
 
-<div ng-controller="rootPageController" ng-disabled="($root.numberOfBlockingProcesses > 0)">
+<div ng-controller="rootPageController">
 
   <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
@@ -98,13 +97,6 @@
   </nav>
 
 </div>
-
-<!--progress indicator-->
-<div class="working"
-     ng-show="($root.numberOfBlockingProcesses > 0)"
-     style="position: fixed; z-index: inherit; margin: auto; opacity: 0.5; background: url('/data-repository-app/img/progressAnimation.gif') no-repeat 50% 50% transparent; width: 100%; height: 60%;" >
-</div>
-
 
 <div class="container theme-showcase" role="main">
   <!--area where pages display-->

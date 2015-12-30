@@ -1,4 +1,6 @@
 
+// U t i l i t i e s
+
 function hasExcelWorkbookFileSuffix(fileName) {
 
     return (
@@ -14,6 +16,13 @@ function endsWith(str, suffix) {
 function isUnset(object) {
     return (object === undefined || object === '');
 }
+
+function createDateThatIsOneYearFromNow() {
+    var expireDate = new Date();
+    expireDate.setDate(expireDate.getDate() + 365);
+    return expireDate;
+}
+
 
 // A N G U L A R   s t u f f
 
@@ -88,7 +97,7 @@ drApp.run(
         $rootScope.numberOfBlockingProcesses = 0;
     });
 
-drApp.controller('rootPageController',
+    drApp.controller('rootPageController',
     [
         '$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', '$cookies', 'drServices',
         function($scope, $rootScope, $http, $log, $filter, $resource, $location, $cookies, drServices) {
@@ -104,15 +113,13 @@ drApp.controller('rootPageController',
             }
 
             $rootScope.$watch('$root.dataCategory', function() {
-                var expireDate = new Date();
-                expireDate.setDate(expireDate.getDate() + 365);
+                var expireDate = createDateThatIsOneYearFromNow();
                 $cookies.put('dataCategory', $rootScope.dataCategory, {'expires': expireDate});
                 drServices.populateKnownColumnNames($scope, $http);
             });
 
             $rootScope.$watch('$root.submitter', function() {
-                var expireDate = new Date();
-                expireDate.setDate(expireDate.getDate() + 365);
+                var expireDate = createDateThatIsOneYearFromNow();
                 $cookies.put('submitter', $rootScope.submitter, {'expires': expireDate});
             });
 
@@ -258,7 +265,7 @@ drApp.service('drServices', function() {
 
         var criteriaPackagedForRestCall = [];
 
-        // make sure we're limiting outselves to the data category in question
+        // make sure we're limiting ourselves to the data category in question
 
         criteriaPackagedForRestCall.push(
             {
@@ -311,7 +318,8 @@ drApp.service('drServices', function() {
             })
             .error(function (data, status) {
                 scope.$root.numberOfBlockingProcesses--;
-                console.log(status + ': ' + data);
+                postError(scope.$root, data);
+
             });
     }
 
@@ -330,7 +338,7 @@ drApp.service('drServices', function() {
             })
             .error(function (data, status) {
                 scope.$root.numberOfBlockingProcesses--;
-                console.log(status + ': ' + data);
+                postError(scope.$root, data);
             });
     }
 
@@ -369,7 +377,7 @@ drApp.service('drServices', function() {
         )
             .error(function (data, status) {
                 scope.$root.numberOfBlockingProcesses--;
-                alert("A failure occurred (status: " + status + " data: " + data);
+                postError(scope.$root, data);
             }
         );
     }
@@ -430,7 +438,7 @@ drApp.service('drServices', function() {
         )
             .error(function (data, status) {
                 scope.$root.numberOfBlockingProcesses--;
-                scope.$root.alertMessage_failure = "A failure occurred on the server.";
+                postError(scope.$root, data);
             }
         );
     }
@@ -446,7 +454,7 @@ drApp.service('drServices', function() {
             })
             .error(function (data, status) {
                 scope.$root.numberOfBlockingProcesses--;
-                alert("A failure occurred (status: " + status + " data: " + data);
+                postError(scope.$root, data);
             });
     }
 
@@ -454,7 +462,7 @@ drApp.service('drServices', function() {
 
         var dataTypeId = criterion.dataTypeId;
 
-        if (dataTypeId === '' || dataTypeId === undefined) return;
+        if (isUnset(dataTypeId)) return;
 
         scope.$root.numberOfBlockingProcesses++;
 
@@ -465,7 +473,7 @@ drApp.service('drServices', function() {
             })
             .error(function (data, status) {
                 scope.$root.numberOfBlockingProcesses--;
-                alert("A failure occurred (status: " + status + " data: " + data);
+                postError(scope.$root, data);
             });
     }
 
@@ -501,7 +509,13 @@ drApp.service('drServices', function() {
             .error(function (data, status) {
                 scope.$root.numberOfBlockingProcesses--;
                 scope.$root.searchComplete = true;
-                alert("A failure occurred (status: " + status + " data: " + data);
+                postError(scope.$root, data);
             });
     }
+
+    function postError(root, data) {
+        root.alertMessage_failure = "A failure occurred on the server.";
+        console.error(data);
+    }
+
 })

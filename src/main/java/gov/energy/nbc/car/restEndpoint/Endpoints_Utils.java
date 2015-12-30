@@ -31,7 +31,9 @@ public class Endpoints_Utils {
             @RequestParam(value = "sourceDocument", required = true) MultipartFile sourceDocument)
             throws IOException {
 
-        if (sourceDocument == null) { return create_BAD_REQUEST_missingRequiredParam_response("sourceDocument");}
+        if (sourceDocument == null) {
+            return create_BAD_REQUEST_missingRequiredParam_response("sourceDocument");
+        }
 
         InputStream inputStream = sourceDocument.getInputStream();
 
