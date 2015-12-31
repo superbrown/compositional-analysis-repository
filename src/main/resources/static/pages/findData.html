@@ -110,23 +110,19 @@
 
   <!-- Results Table -->
 
-  <div class="table-responsive" ng-hide="$root.searchResults.length < 1" style="height:400px; overflow: auto;">
+  <div class="table-responsive" ng-hide="$root.searchResults.length < 1" style="max-height:400px; overflow: auto;">
 
-    <table class="table">
+    <table class="table" style="margin-bottom: 2px;">
 
       <thead>
       <tr>
-        <td ng-repeat="(key, value) in $root.searchResults[0]" style="padding-top: 4px; padding-bottom: 1px; height: 100%">
-          {{key}}
-        </td>
+        <td ng-repeat="(key, value) in $root.searchResults[0]" style="padding-bottom: 1px; height: 100%">{{key}}</td>
       </tr>
       </thead>
 
-      <tbody  style="border-left: 2px black; border-right: 2px black; height: 200px">
+      <tbody>
       <tr ng-repeat="searchResultRow in $root.searchResults">
-        <td ng-repeat="(key, value) in searchResultRow" ng-bind-html="value" style="padding-top: 0px; padding-bottom: 0px; height: 100%">
-          {{value}}
-        </td>
+        <td ng-repeat="(key, value) in searchResultRow" ng-bind-html="value" style="padding-top: 0px; padding-bottom: 0px;">{{value}}</td>
       </tr>
       </tbody>
 
