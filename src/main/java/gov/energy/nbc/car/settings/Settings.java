@@ -9,7 +9,10 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 
 @Configuration
-@PropertySource(value = { "classpath:data-repository-app.properties" })
+@PropertySource(value = {
+        "classpath:data-repository-app__defaults.properties",
+        "classpath:data-repository-app__envSpecificOverrides.properties"
+})
 @Component
 @AutoConfigureBefore
 public class Settings implements ISettings {

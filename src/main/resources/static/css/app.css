@@ -72,6 +72,14 @@ thead {
     width: auto;
 }
 
+.container {
+    padding-right: 0px;
+    padding-left: 0px;
+    margin-right: 15px;
+    margin-left: 15px;
+    width: auto;
+}
+
 #progressAnimation {
     display: inline-block;
     height: 100%;
