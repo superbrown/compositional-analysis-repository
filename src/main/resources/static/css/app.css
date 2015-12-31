@@ -5,7 +5,7 @@ html, body, input, select, textarea {
 
 body {
     padding-top: 70px;
-    padding-bottom: 30px;
+    padding-bottom: 10px;
     font-size: 12px;
 }
 
@@ -34,11 +34,6 @@ td {
     white-space: nowrap
 }
 
-table {
-    border-left: 2px black;
-    border-right: 2px black;
-}
-
 thead {
     font-weight: bold;
     border-top: 2px black;
@@ -52,7 +47,7 @@ thead {
 }
 
 .page-content {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .navbar-brand {
