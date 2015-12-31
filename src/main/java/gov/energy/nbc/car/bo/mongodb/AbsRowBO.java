@@ -194,14 +194,16 @@ public abstract class AbsRowBO implements IRowBO {
             Document row = new Document();
 
             row.put(ATTR_SOURCE_UUID, getObjectId(document, RowDocument.ATTR_KEY__DATASET_ID));
-            row.put(ATTR_ROW_UUID, getObjectId(document, RowDocument.ATTR_KEY__ID));
+
+            if (purpose == Purpose.FOR_FILE_DOWNLOAD) {
+                // including in case someone might find it helpful to have
+                row.put(ATTR_ROW_UUID, getObjectId(document, RowDocument.ATTR_KEY__ID));
+            }
 
             Document metadata = (Document) document.get(RowDocument.ATTR_KEY__METADATA);
             Document data = (Document) document.get(RowDocument.ATTR_KEY__DATA);
             String datasetId = getObjectId(document, RowDocument.ATTR_KEY__DATASET_ID);
 
-            // link for downloading the file
-            // DESIGN NOTE: I know, this is the wrong architectural layer. I'm in a time crunch right now.
             Document sourceDocument = (Document) metadata.get(Metadata.ATTR_KEY__SOURCE_DOCUMENT);
 
             String originalFileName = (String) sourceDocument.get(StoredFile.ATTR_KEY__ORIGINAL_FILE_NAME);
@@ -221,6 +223,8 @@ public abstract class AbsRowBO implements IRowBO {
             }
             else if (purpose == Purpose.FOR_SCREEN_DIAPLAYED_SEARCH_RESULTS) {
 
+                // link for downloading the file
+                // DESIGN NOTE: I know, this is the wrong architectural layer. I'm in a time crunch right now.
                 row.put("Source Document",
                         "<a href='" + ServletContainerConfig.CONTEXT_PATH +
                                 "/api/dataset/" + datasetId + "/sourceDocument' " +
