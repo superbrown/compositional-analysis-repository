@@ -114,10 +114,6 @@ public abstract class AbsDatasetBO implements IDatasetBO {
             }
         }
 
-//        byte[] bytesInFile = Utilities.toBytes(file);
-//        zipOutputStream.write(bytesInFile);
-
         zipOutputStream.closeEntry();
     }
-
 }

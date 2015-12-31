@@ -8,6 +8,11 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 
+
+// See this for information regarding the approach taken for the properties files:
+//
+// https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/annotation/PropertySource.html
+
 @Configuration
 @PropertySource(value = {
         "classpath:data-repository-app__defaults.properties",
