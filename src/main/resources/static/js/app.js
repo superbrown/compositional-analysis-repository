@@ -110,6 +110,8 @@ drApp.run(
             $rootScope.$watch('$root.dataCategory', function() {
                 var cookieExpirationDate = createDateThatIsOneYearFromNow();
                 $cookies.put('dataCategory', $rootScope.dataCategory, {'expires': cookieExpirationDate});
+                $rootScope.searchResults = [];
+                $rootScope.searchComplete = false;
                 drServices.populateKnownColumnNames($scope, $http);
             });
 

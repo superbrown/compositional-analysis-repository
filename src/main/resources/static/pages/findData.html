@@ -108,9 +108,18 @@
 
   </div>
 
+  <div class="alert alert-success" ng-show="alertMessage_success != ''">
+    <strong>Success!</strong> {{$root.alertMessage_success}}
+    <a href="/data-repository-app/#/findData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_success = ''">&times;</a>
+  </div>
+  <div class="alert alert-danger" ng-show="alertMessage_failure != ''">
+    <strong>ERROR:</strong> {{$root.alertMessage_failure}}
+    <a href="/data-repository-app/#/findData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_failure = ''">&times;</a>
+  </div>
+
   <!-- Results Table -->
 
-  <div class="table-responsive" ng-hide="$root.searchResults.length < 1" style="max-height:400px; overflow: auto;">
+  <div class="table-responsive" ng-hide="$root.searchResults.length < 1" style="max-height:450px; overflow: auto;">
 
     <table class="table" style="margin-bottom: 2px;">
 

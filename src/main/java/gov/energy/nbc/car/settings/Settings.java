@@ -4,10 +4,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 
 @Configuration
+@PropertySource(value = {
+        "classpath:data-repository-app__defaults.properties",
+        "classpath:data-repository-app__envSpecificOverrides.properties"
+})
 @Component
 @AutoConfigureBefore
 public class Settings implements ISettings {
