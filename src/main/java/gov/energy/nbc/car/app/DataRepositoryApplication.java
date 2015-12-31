@@ -8,6 +8,7 @@ import gov.energy.nbc.car.bo.mongodb.singleCellSchemaApproach.s_BusinessObjects;
 import gov.energy.nbc.car.settings.ISettings;
 import gov.energy.nbc.car.utilities.PerformanceLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +17,7 @@ import java.util.List;
 
 @Component
 @EnableAutoConfiguration
-public class DataRepositoryApplication {
+public class DataRepositoryApplication extends SpringApplication {
 
     @Autowired
     private ISettings settings;
