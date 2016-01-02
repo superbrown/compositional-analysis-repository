@@ -1,11 +1,11 @@
-package gov.energy.nbc.car.model.mongodb.document;
+package gov.energy.nrel.dataRepositoryApp.model.mongodb.document;
 
-import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
-import gov.energy.nbc.car.model.mongodb.AbstractDocument;
-import gov.energy.nbc.car.model.IDatasetDocument;
-import gov.energy.nbc.car.model.IMetadata;
-import gov.energy.nbc.car.model.IStoredFile;
-import gov.energy.nbc.car.model.mongodb.common.Metadata;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
+import gov.energy.nrel.dataRepositoryApp.model.mongodb.AbstractDocument;
+import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.IMetadata;
+import gov.energy.nrel.dataRepositoryApp.model.IStoredFile;
+import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Metadata;
 import org.bson.Document;
 
 import java.util.Date;

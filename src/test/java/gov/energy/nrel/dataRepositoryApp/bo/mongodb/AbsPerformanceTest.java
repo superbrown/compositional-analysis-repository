@@ -1,17 +1,17 @@
-package gov.energy.nbc.car.bo.mongodb;
+package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 
 import com.mongodb.BasicDBList;
-import gov.energy.nbc.car.ResultsMode;
-import gov.energy.nbc.car.bo.IDatasetBO;
-import gov.energy.nbc.car.bo.IRowBO;
-import gov.energy.nbc.car.dao.dto.SearchCriterion;
-import gov.energy.nbc.car.dao.dto.StoredFile;
-import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
-import gov.energy.nbc.car.dao.mongodb.MongoFieldNameEncoder;
-import gov.energy.nbc.car.dao.mongodb.TestUsingTestData;
-import gov.energy.nbc.car.utilities.PerformanceLogger;
-import gov.energy.nbc.car.utilities.fileReader.exception.InvalidValueFoundInHeader;
-import gov.energy.nbc.car.utilities.fileReader.exception.UnsupportedFileExtension;
+import gov.energy.nrel.dataRepositoryApp.ResultsMode;
+import gov.energy.nrel.dataRepositoryApp.bo.IDatasetBO;
+import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
+import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
+import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.MongoFieldNameEncoder;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.TestUsingTestData;
+import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.InvalidValueFoundInHeader;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.junit.*;
@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static gov.energy.nbc.car.dao.dto.ComparisonOperator.CONTAINS;
-import static gov.energy.nbc.car.dao.dto.ComparisonOperator.EQUALS;
+import static gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator.CONTAINS;
+import static gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator.EQUALS;
 import static org.junit.Assert.assertTrue;
 
 

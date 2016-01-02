@@ -1,12 +1,12 @@
-package gov.energy.nbc.car.app;
+package gov.energy.nrel.dataRepositoryApp.app;
 
 
 import com.mongodb.MongoTimeoutException;
-import gov.energy.nbc.car.bo.IBusinessObjects;
-import gov.energy.nbc.car.bo.IDataCategoryBO;
-import gov.energy.nbc.car.bo.mongodb.singleCellSchemaApproach.s_BusinessObjects;
-import gov.energy.nbc.car.settings.ISettings;
-import gov.energy.nbc.car.utilities.PerformanceLogger;
+import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
+import gov.energy.nrel.dataRepositoryApp.bo.IDataCategoryBO;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach.s_BusinessObjects;
+import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
+import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -14,6 +14,11 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+
+/**
+ * The Data Repository Application was originally designed and coded by Mike Brown (mike.public@superbrown.com)
+ * October through December 2015 while on contract at NREL.  Feel free to reach out to him for any assistance.
+ */
 
 @Component
 @EnableAutoConfiguration

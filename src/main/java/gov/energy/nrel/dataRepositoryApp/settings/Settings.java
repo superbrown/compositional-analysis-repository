@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.settings;
+package gov.energy.nrel.dataRepositoryApp.settings;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;

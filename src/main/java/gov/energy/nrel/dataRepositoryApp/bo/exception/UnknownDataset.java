@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.bo.exception;
+package gov.energy.nrel.dataRepositoryApp.bo.exception;
 
 public class UnknownDataset extends Exception{
 

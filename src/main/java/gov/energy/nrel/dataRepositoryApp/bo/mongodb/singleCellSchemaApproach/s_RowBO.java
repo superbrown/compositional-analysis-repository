@@ -1,8 +1,8 @@
-package gov.energy.nbc.car.bo.mongodb.singleCellSchemaApproach;
+package gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach;
 
-import gov.energy.nbc.car.settings.ISettings;
-import gov.energy.nbc.car.bo.mongodb.AbsRowBO;
-import gov.energy.nbc.car.dao.mongodb.singleCellCollectionApproach.s_RowDAO;
+import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsRowBO;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellCollectionApproach.s_RowDAO;
 import org.apache.log4j.Logger;
 
 public class s_RowBO extends AbsRowBO {

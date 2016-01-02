@@ -1,15 +1,15 @@
-package gov.energy.nbc.car.dao.mongodb.abandonedApproaches.everthingInTheRowCollectionApproach;
+package gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everthingInTheRowCollectionApproach;
 
 
 import com.mongodb.client.result.DeleteResult;
-import gov.energy.nbc.car.dao.ICellDAO;
-import gov.energy.nbc.car.dao.dto.IDeleteResults;
-import gov.energy.nbc.car.dao.mongodb.AbsDAO;
-import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
-import gov.energy.nbc.car.model.IRow;
-import gov.energy.nbc.car.model.mongodb.document.CellDocument;
-import gov.energy.nbc.car.settings.ISettings;
-import gov.energy.nbc.car.settings.Settings;
+import gov.energy.nrel.dataRepositoryApp.dao.ICellDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.dto.DeleteResults;
+import gov.energy.nrel.dataRepositoryApp.model.IRow;
+import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.CellDocument;
+import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
+import gov.energy.nrel.dataRepositoryApp.settings.Settings;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 

@@ -1,9 +1,9 @@
-package gov.energy.nbc.car.dao.mongodb.singleCellCollectionApproach;
+package gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellCollectionApproach;
 
-import gov.energy.nbc.car.app.DataRepositoryApplication;
-import gov.energy.nbc.car.bo.mongodb.singleCellSchemaApproach.s_BusinessObjects;
-import gov.energy.nbc.car.dao.mongodb.AbsDatasetDAOTest;
-import gov.energy.nbc.car.settings.Settings;
+import gov.energy.nrel.dataRepositoryApp.app.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach.s_BusinessObjects;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsDatasetDAOTest;
+import gov.energy.nrel.dataRepositoryApp.settings.Settings;
 
 public class s_DatasetDAOTest extends AbsDatasetDAOTest{
 

@@ -1,10 +1,10 @@
-package gov.energy.nbc.car.bo.mongodb.singleCellSchemaApproach;
+package gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach;
 
-import gov.energy.nbc.car.bo.mongodb.DataTypeBO;
-import gov.energy.nbc.car.settings.ISettings;
-import gov.energy.nbc.car.bo.AbsBusinessObjects;
-import gov.energy.nbc.car.bo.FileStorageBO;
-import gov.energy.nbc.car.bo.mongodb.DataCategoryBO;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.DataTypeBO;
+import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
+import gov.energy.nrel.dataRepositoryApp.bo.AbsBusinessObjects;
+import gov.energy.nrel.dataRepositoryApp.bo.FileStorageBO;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.DataCategoryBO;
 
 public class s_BusinessObjects extends AbsBusinessObjects {
 

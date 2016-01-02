@@ -1,19 +1,19 @@
-package gov.energy.nbc.car.bo.mongodb.singleCellSchemaApproach;
+package gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach;
 
 import com.mongodb.client.MongoDatabase;
-import gov.energy.nbc.car.bo.mongodb.TestData;
-import gov.energy.nbc.car.dao.IDatasetDAO;
-import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
-import gov.energy.nbc.car.dao.mongodb.IMongodbDAO;
-import gov.energy.nbc.car.dao.mongodb.abandonedApproaches.everthingInTheRowCollectionApproach.r_DatasetDAO;
-import gov.energy.nbc.car.settings.ISettings;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.TestData;
+import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.IMongodbDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everthingInTheRowCollectionApproach.r_DatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class r_TestDataBO implements gov.energy.nbc.car.bo.ITestDataBO {
+public class r_TestDataBO implements gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO {
 
     private final ISettings settings;
     public IDatasetDAO datasetDAO;

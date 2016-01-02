@@ -1,9 +1,9 @@
-package gov.energy.nbc.car.restEndpoint;
+package gov.energy.nrel.dataRepositoryApp.restEndpoint;
 
 import com.mongodb.util.JSON;
-import gov.energy.nbc.car.app.DataRepositoryApplication;
-import gov.energy.nbc.car.utilities.fileReader.DatasetReader_ExcelWorkbook;
-import gov.energy.nbc.car.utilities.fileReader.exception.UnsupportedFileExtension;
+import gov.energy.nrel.dataRepositoryApp.app.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_ExcelWorkbook;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import static gov.energy.nbc.car.utilities.HTTPResponseUtility.*;
+import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.*;
 
 
 @RestController

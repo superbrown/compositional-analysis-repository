@@ -1,8 +1,8 @@
-package gov.energy.nbc.car.bo.mongodb.singleCellSchemaApproach;
+package gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach;
 
-import gov.energy.nbc.car.app.DataRepositoryApplication;
-import gov.energy.nbc.car.bo.mongodb.AbsPerformanceTest;
-import gov.energy.nbc.car.settings.Settings;
+import gov.energy.nrel.dataRepositoryApp.app.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsPerformanceTest;
+import gov.energy.nrel.dataRepositoryApp.settings.Settings;
 
 
 public class s_PerformanceTest extends AbsPerformanceTest

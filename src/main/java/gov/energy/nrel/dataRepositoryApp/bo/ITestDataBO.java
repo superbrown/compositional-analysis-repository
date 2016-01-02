@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.bo;
+package gov.energy.nrel.dataRepositoryApp.bo;
 
 
 public interface ITestDataBO {

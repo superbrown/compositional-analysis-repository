@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.dao.dto;
+package gov.energy.nrel.dataRepositoryApp.dao.dto;
 
 
 public class StoredFile {

@@ -1,13 +1,13 @@
-package gov.energy.nbc.car.bo;
+package gov.energy.nrel.dataRepositoryApp.bo;
 
-import gov.energy.nbc.car.dao.IFileStorageDAO;
-import gov.energy.nbc.car.dao.FileStorageStorageDAO;
-import gov.energy.nbc.car.utilities.FileAsRawBytes;
-import gov.energy.nbc.car.dao.dto.StoredFile;
-import gov.energy.nbc.car.dao.exception.UnableToDeleteFile;
-import gov.energy.nbc.car.settings.ISettings;
-import gov.energy.nbc.car.utilities.fileReader.DatasetReader_AllFileTypes;
-import gov.energy.nbc.car.utilities.fileReader.IDatasetReader_AllFileTypes;
+import gov.energy.nrel.dataRepositoryApp.dao.IFileStorageDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.FileStorageStorageDAO;
+import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
+import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.UnableToDeleteFile;
+import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
 
 import java.io.File;
 import java.io.IOException;

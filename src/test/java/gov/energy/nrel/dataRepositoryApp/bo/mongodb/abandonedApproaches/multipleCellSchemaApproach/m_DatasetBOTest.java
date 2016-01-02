@@ -1,8 +1,8 @@
-package gov.energy.nbc.car.bo.mongodb.abandonedApproaches.multipleCellSchemaApproach;
+package gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.multipleCellSchemaApproach;
 
-import gov.energy.nbc.car.app.DataRepositoryApplication;
-import gov.energy.nbc.car.bo.mongodb.AbsDatasetBOTest;
-import gov.energy.nbc.car.settings.Settings;
+import gov.energy.nrel.dataRepositoryApp.app.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBOTest;
+import gov.energy.nrel.dataRepositoryApp.settings.Settings;
 
 
 public class m_DatasetBOTest extends AbsDatasetBOTest

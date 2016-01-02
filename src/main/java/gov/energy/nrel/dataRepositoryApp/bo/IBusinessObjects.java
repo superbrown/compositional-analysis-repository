@@ -1,6 +1,6 @@
-package gov.energy.nbc.car.bo;
+package gov.energy.nrel.dataRepositoryApp.bo;
 
-import gov.energy.nbc.car.settings.ISettings;
+import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 
 
 public interface IBusinessObjects {

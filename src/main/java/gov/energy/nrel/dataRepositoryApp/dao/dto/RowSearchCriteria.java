@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.dao.dto;
+package gov.energy.nrel.dataRepositoryApp.dao.dto;
 
 import java.util.ArrayList;
 import java.util.List;

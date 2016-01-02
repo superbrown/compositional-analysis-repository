@@ -1,7 +1,7 @@
-package gov.energy.nbc.car.dao.mongodb.dto;
+package gov.energy.nrel.dataRepositoryApp.dao.mongodb.dto;
 
 import com.mongodb.client.result.DeleteResult;
-import gov.energy.nbc.car.dao.dto.IDeleteResults;
+import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 
 import java.util.ArrayList;
 import java.util.List;

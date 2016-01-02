@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.dao.mongodb;
+package gov.energy.nrel.dataRepositoryApp.dao.mongodb;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
@@ -7,12 +7,12 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import gov.energy.nbc.car.settings.ISettings;
-import gov.energy.nbc.car.bo.exception.DeletionFailure;
-import gov.energy.nbc.car.dao.IDAO;
-import gov.energy.nbc.car.dao.dto.IDeleteResults;
-import gov.energy.nbc.car.dao.mongodb.dto.DeleteResults;
-import gov.energy.nbc.car.model.mongodb.AbstractDocument;
+import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
+import gov.energy.nrel.dataRepositoryApp.dao.IDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.dto.DeleteResults;
+import gov.energy.nrel.dataRepositoryApp.model.mongodb.AbstractDocument;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;

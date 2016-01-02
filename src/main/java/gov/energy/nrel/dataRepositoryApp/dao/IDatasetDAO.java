@@ -1,7 +1,7 @@
-package gov.energy.nbc.car.dao;
+package gov.energy.nrel.dataRepositoryApp.dao;
 
-import gov.energy.nbc.car.model.IDatasetDocument;
-import gov.energy.nbc.car.model.IRowCollection;
+import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.IRowCollection;
 import org.bson.types.ObjectId;
 
 public interface IDatasetDAO extends IDAO {

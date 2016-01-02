@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.dao.exception;
+package gov.energy.nrel.dataRepositoryApp.dao.exception;
 
 public class CouldNotCreateDirectory extends Exception {
 

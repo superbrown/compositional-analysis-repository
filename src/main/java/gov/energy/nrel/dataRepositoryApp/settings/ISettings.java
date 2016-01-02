@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.settings;
+package gov.energy.nrel.dataRepositoryApp.settings;
 
 
 public interface ISettings {

@@ -1,8 +1,8 @@
-package gov.energy.nbc.car.dao;
+package gov.energy.nrel.dataRepositoryApp.dao;
 
-import gov.energy.nbc.car.bo.exception.DeletionFailure;
-import gov.energy.nbc.car.dao.dto.IDeleteResults;
-import gov.energy.nbc.car.settings.ISettings;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
+import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
+import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;

@@ -1,11 +1,11 @@
-//package gov.energy.nbc.car.restEndpoint.mongodb;
+//package gov.energy.nrel.dataRepositoryApp.restEndpoint.mongodb;
 //
-//import gov.energy.nbc.car.Application;
-//import gov.energy.nbc.car.CARApplication;
-//import gov.energy.nbc.car.Settings;
-//import gov.energy.nbc.car.Settings_forUnitTestPurposes;
-//import gov.energy.nbc.car.bo.mongodb.multipleCellSchemaApproach.m_BusinessObjects;
-//import gov.energy.nbc.car.dao.mongodb.TestUsingTestData;
+//import gov.energy.nrel.dataRepositoryApp.Application;
+//import gov.energy.nrel.dataRepositoryApp.CARApplication;
+//import gov.energy.nrel.dataRepositoryApp.Settings;
+//import gov.energy.nrel.dataRepositoryApp.Settings_forUnitTestPurposes;
+//import gov.energy.nrel.dataRepositoryApp.bo.mongodb.multipleCellSchemaApproach.m_BusinessObjects;
+//import gov.energy.nrel.dataRepositoryApp.dao.mongodb.TestUsingTestData;
 //import org.junit.*;
 //import org.junit.runner.RunWith;
 //import org.springframework.beans.factory.annotation.Autowired;

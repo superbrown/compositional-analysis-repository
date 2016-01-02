@@ -1,13 +1,13 @@
-package gov.energy.nbc.car.bo.mongodb;
+package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 
-import gov.energy.nbc.car.bo.IDatasetBO;
-import gov.energy.nbc.car.bo.IPhysicalFileBO;
-import gov.energy.nbc.car.bo.FileStorageBO;
-import gov.energy.nbc.car.dao.IDatasetDAO;
-import gov.energy.nbc.car.dao.mongodb.singleCellCollectionApproach.s_DatasetDAO;
-import gov.energy.nbc.car.model.IDatasetDocument;
-import gov.energy.nbc.car.model.IStoredFile;
-import gov.energy.nbc.car.settings.ISettings;
+import gov.energy.nrel.dataRepositoryApp.bo.IDatasetBO;
+import gov.energy.nrel.dataRepositoryApp.bo.IPhysicalFileBO;
+import gov.energy.nrel.dataRepositoryApp.bo.FileStorageBO;
+import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellCollectionApproach.s_DatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.IStoredFile;
+import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import org.apache.log4j.Logger;
 
 import java.io.*;

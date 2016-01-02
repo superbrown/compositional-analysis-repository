@@ -1,9 +1,9 @@
-package gov.energy.nbc.car.dao.mongodb.abandonedApproaches.multipleCellCollectionsApproach;
+package gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.multipleCellCollectionsApproach;
 
-import gov.energy.nbc.car.app.DataRepositoryApplication;
-import gov.energy.nbc.car.bo.mongodb.abandonedApproaches.multipleCellSchemaApproach.m_BusinessObjects;
-import gov.energy.nbc.car.dao.mongodb.AbsRowDAOTest;
-import gov.energy.nbc.car.settings.Settings;
+import gov.energy.nrel.dataRepositoryApp.app.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.multipleCellSchemaApproach.m_BusinessObjects;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsRowDAOTest;
+import gov.energy.nrel.dataRepositoryApp.settings.Settings;
 
 public class m_RowDAOTest extends AbsRowDAOTest {
 

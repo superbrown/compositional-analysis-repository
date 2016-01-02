@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.restEndpoint;
+package gov.energy.nrel.dataRepositoryApp.restEndpoint;
 
 public enum DataType {
     STRING,

@@ -1,7 +1,7 @@
-package gov.energy.nbc.car.bo;
+package gov.energy.nrel.dataRepositoryApp.bo;
 
-import gov.energy.nbc.car.bo.exception.DeletionFailure;
-import gov.energy.nbc.car.dao.IDataCategoryDAO;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
+import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
 
 public interface IDataCategoryBO {
 

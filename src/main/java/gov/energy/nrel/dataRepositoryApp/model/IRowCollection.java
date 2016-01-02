@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.model;
+package gov.energy.nrel.dataRepositoryApp.model;
 
 import java.util.ArrayList;
 import java.util.Set;

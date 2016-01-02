@@ -1,12 +1,12 @@
-package gov.energy.nbc.car.dao.mongodb;
+package gov.energy.nrel.dataRepositoryApp.dao.mongodb;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
-import gov.energy.nbc.car.model.IMetadata;
-import gov.energy.nbc.car.settings.ISettings;
-import gov.energy.nbc.car.dao.IDataCategoryDAO;
-import gov.energy.nbc.car.model.IDataCategoryDocument;
-import gov.energy.nbc.car.model.mongodb.document.DataCategoryDocument;
+import gov.energy.nrel.dataRepositoryApp.model.IMetadata;
+import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
+import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
+import gov.energy.nrel.dataRepositoryApp.model.IDataCategoryDocument;
+import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.DataCategoryDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;

@@ -1,12 +1,12 @@
-package gov.energy.nbc.car.dao.mongodb;
+package gov.energy.nrel.dataRepositoryApp.dao.mongodb;
 
-import gov.energy.nbc.car.bo.ITestDataBO;
-import gov.energy.nbc.car.bo.mongodb.TestData;
-import gov.energy.nbc.car.dao.IDataCategoryDAO;
-import gov.energy.nbc.car.dao.IDatasetDAO;
-import gov.energy.nbc.car.model.IDataCategoryDocument;
-import gov.energy.nbc.car.model.IDatasetDocument;
-import gov.energy.nbc.car.model.mongodb.common.Row;
+import gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.TestData;
+import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.model.IDataCategoryDocument;
+import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
 import org.bson.Document;
 import org.junit.*;
 

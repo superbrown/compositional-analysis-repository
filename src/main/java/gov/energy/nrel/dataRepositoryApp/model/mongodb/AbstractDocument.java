@@ -1,8 +1,8 @@
-package gov.energy.nbc.car.model.mongodb;
+package gov.energy.nrel.dataRepositoryApp.model.mongodb;
 
 import com.mongodb.BasicDBObject;
-import gov.energy.nbc.car.dao.mongodb.DAOUtilities;
-import gov.energy.nbc.car.model.IThingWithAnId;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
+import gov.energy.nrel.dataRepositoryApp.model.IThingWithAnId;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.bson.Document;

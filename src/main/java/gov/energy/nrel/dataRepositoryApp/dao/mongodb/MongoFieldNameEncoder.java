@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.dao.mongodb;
+package gov.energy.nrel.dataRepositoryApp.dao.mongodb;
 
 public class MongoFieldNameEncoder {
 

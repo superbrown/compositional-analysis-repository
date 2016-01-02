@@ -1,4 +1,4 @@
-package gov.energy.nbc.car.utilities;
+package gov.energy.nrel.dataRepositoryApp.utilities;
 
 public class FileAsRawBytes {
 

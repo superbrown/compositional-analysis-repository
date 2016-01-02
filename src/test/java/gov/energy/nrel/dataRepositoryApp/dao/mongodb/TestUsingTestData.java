@@ -1,9 +1,9 @@
-package gov.energy.nbc.car.dao.mongodb;
+package gov.energy.nrel.dataRepositoryApp.dao.mongodb;
 
-import gov.energy.nbc.car.app.DataRepositoryApplication;
-import gov.energy.nbc.car.bo.IBusinessObjects;
-import gov.energy.nbc.car.bo.ITestDataBO;
-import gov.energy.nbc.car.settings.Settings;
+import gov.energy.nrel.dataRepositoryApp.app.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
+import gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO;
+import gov.energy.nrel.dataRepositoryApp.settings.Settings;
 
 public abstract class TestUsingTestData {
 

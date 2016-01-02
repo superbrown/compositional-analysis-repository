@@ -1,4 +1,4 @@
-package gov.energy.nbc.car;
+package gov.energy.nrel.dataRepositoryApp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

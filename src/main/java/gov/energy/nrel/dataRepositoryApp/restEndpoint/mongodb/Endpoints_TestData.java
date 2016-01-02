@@ -1,8 +1,8 @@
-package gov.energy.nbc.car.restEndpoint.mongodb;
+package gov.energy.nrel.dataRepositoryApp.restEndpoint.mongodb;
 
-import gov.energy.nbc.car.app.DataRepositoryApplication;
-import gov.energy.nbc.car.bo.ITestDataBO;
-//import gov.energy.nbc.car.app.TestMode;
+import gov.energy.nrel.dataRepositoryApp.app.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO;
+//import gov.energy.nrel.dataRepositoryApp.app.TestMode;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import static gov.energy.nbc.car.utilities.HTTPResponseUtility.create_SUCCESS_response;
+import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.create_SUCCESS_response;
 
 
 @RestController
