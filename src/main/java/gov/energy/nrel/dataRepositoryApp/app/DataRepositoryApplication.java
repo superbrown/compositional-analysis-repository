@@ -1,6 +1,5 @@
 package gov.energy.nrel.dataRepositoryApp.app;
 
-
 import com.mongodb.MongoTimeoutException;
 import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
 import gov.energy.nrel.dataRepositoryApp.bo.IDataCategoryBO;
@@ -17,7 +16,8 @@ import java.util.List;
 
 /**
  * The Data Repository Application was originally designed and coded by Mike Brown (mike.public@superbrown.com)
- * October through December 2015 while on contract at NREL.  Feel free to reach out to him for any assistance.
+ * October through December 2015 while on contract at NREL.  Feel free to reach out to him for any assistance.  (Include
+ * "Data Repository Application" in the subject line.)
  */
 
 @Component
