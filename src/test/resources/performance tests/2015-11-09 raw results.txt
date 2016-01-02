@@ -30,7 +30,7 @@
 -------------------------------------------------------
  T E S T S
 -------------------------------------------------------
-Running gov.energy.nrel.dataRepositoryApp.businessObject.multipleCellSchemaApproach.m_DatasetBOTest
+Running gov.energy.nbc.car.businessObject.multipleCellSchemaApproach.m_DatasetBOTest
 2015-11-09 09:44:22 INFO  s_CellDAO:82 - Row Indexes
 2015-11-09 09:44:22 INFO  s_CellDAO:85 - { "v" : 1, "key" : { "_id" : 1 }, "name" : "_id_", "ns" : "car.cell" }
 2015-11-09 09:44:22 INFO  s_CellDAO:85 - { "v" : 1, "key" : { "rowId" : 1 }, "name" : "rowId_1", "ns" : "car.cell" }
@@ -1455,8 +1455,8 @@ Running gov.energy.nrel.dataRepositoryApp.businessObject.multipleCellSchemaAppro
 2015-11-09 09:56:24 INFO  m_RowDAO:245 - [RESULTS] results.size() = 1110, row.count() = 1389
 2015-11-09 09:56:24 INFO  m_DatasetBOTest:49 - [END]   [performQueries_homeGrownWay()] rowBO.getRows(RowSearchCriteria{metadataSearchCriteria=[], dataSearchCriteria=[SearchCriterion{name='FEEDSTOCK', value=corn stover}]}), duration: 363 miliseconds (0 seconds) 
 ### results.size(): 1110
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 739.738 sec - in gov.energy.nrel.dataRepositoryApp.businessObject.multipleCellSchemaApproach.m_DatasetBOTest
-Running gov.energy.nrel.dataRepositoryApp.businessObject.singleCellSchemaApproach.s_DatasetBOTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 739.738 sec - in gov.energy.nbc.car.businessObject.multipleCellSchemaApproach.m_DatasetBOTest
+Running gov.energy.nbc.car.businessObject.singleCellSchemaApproach.s_DatasetBOTest
 2015-11-09 09:56:45 INFO  s_DatasetBOTest:49 - [END]   Seeding 1 additional datasets for test., duration: 2705 miliseconds (2 seconds) 
 2015-11-09 09:56:45 INFO  s_DatasetBOTest:146 - =============================== 1 ===============================
 2015-11-09 09:56:45 INFO  s_RowDAO:49 - [END]   [getCountOfRowsThatMatch()] cellDAO.getCollection().count(com.mongodb.client.model.Filters$AndFilter@2f217633), duration: 76 miliseconds (0 seconds) 
@@ -2867,12 +2867,12 @@ Running gov.energy.nrel.dataRepositoryApp.businessObject.singleCellSchemaApproac
 2015-11-09 10:11:37 INFO  s_RowDAO:236 - [RESULTS] results.size() = 1110, row.count() = 1389, cell.count() = 5814008
 2015-11-09 10:11:37 INFO  s_DatasetBOTest:49 - [END]   [performQueries_homeGrownWay()] rowBO.getRows(RowSearchCriteria{metadataSearchCriteria=[], dataSearchCriteria=[SearchCriterion{name='FEEDSTOCK', value=corn stover}]}), duration: 4282 miliseconds (4 seconds) 
 ### results.size(): 1110
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 898.144 sec - in gov.energy.nrel.dataRepositoryApp.businessObject.singleCellSchemaApproach.s_DatasetBOTest
-Running gov.energy.nrel.dataRepositoryApp.businessObject.TestModeTest
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 sec - in gov.energy.nrel.dataRepositoryApp.businessObject.TestModeTest
-Running gov.energy.nrel.dataRepositoryApp.dao.mongodb.multipleCellSchemaApproach.m_DatasetDAOTest
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.451 sec - in gov.energy.nrel.dataRepositoryApp.dao.mongodb.multipleCellSchemaApproach.m_DatasetDAOTest
-Running gov.energy.nrel.dataRepositoryApp.dao.mongodb.multipleCellSchemaApproach.m_RowDAOTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 898.144 sec - in gov.energy.nbc.car.businessObject.singleCellSchemaApproach.s_DatasetBOTest
+Running gov.energy.nbc.car.businessObject.TestModeTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 sec - in gov.energy.nbc.car.businessObject.TestModeTest
+Running gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach.m_DatasetDAOTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.451 sec - in gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach.m_DatasetDAOTest
+Running gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach.m_RowDAOTest
 2015-11-09 10:11:50 INFO  m_RowDAO:49 - [END]   [getCountOfRowsThatMatch()] cellDAO.getCollection().count(com.mongodb.client.model.Filters$SimpleEncodingFilter@41294f8), duration: 0 miliseconds (0 seconds) 
 2015-11-09 10:11:50 INFO  m_RowDAO:49 - [END]   [getCountOfRowsThatMatch()] cellDAO.getCollection().count(com.mongodb.client.model.Filters$SimpleEncodingFilter@225129c), duration: 0 miliseconds (0 seconds) 
 2015-11-09 10:11:50 INFO  m_RowDAO:49 - [END]   [getCountOfRowsThatMatch()] cellDAO.getCollection().count(com.mongodb.client.model.Filters$SimpleEncodingFilter@20435c40), duration: 0 miliseconds (0 seconds) 
@@ -2881,10 +2881,10 @@ Running gov.energy.nrel.dataRepositoryApp.dao.mongodb.multipleCellSchemaApproach
 2015-11-09 10:11:50 INFO  m_RowDAO:49 - [END]   [rowMatchesTheCriterion()] cellDAO.getOne(com.mongodb.client.model.Filters$AndFilter@479ceda0), duration: 0 miliseconds (0 seconds) 
 2015-11-09 10:11:50 INFO  m_RowDAO:49 - [END]   [rowMatchesTheCriterion()] cellDAO.getOne(com.mongodb.client.model.Filters$AndFilter@6d07a63d), duration: 0 miliseconds (0 seconds) 
 2015-11-09 10:11:50 INFO  m_RowDAO:245 - [RESULTS] results.size() = 1, row.count() = 9
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.713 sec - in gov.energy.nrel.dataRepositoryApp.dao.mongodb.multipleCellSchemaApproach.m_RowDAOTest
-Running gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellSchemaApproach.s_DatasetDAOTest
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.941 sec - in gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellSchemaApproach.s_DatasetDAOTest
-Running gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellSchemaApproach.s_RowDAOTest
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.713 sec - in gov.energy.nbc.car.dao.mongodb.multipleCellSchemaApproach.m_RowDAOTest
+Running gov.energy.nbc.car.dao.mongodb.singleCellSchemaApproach.s_DatasetDAOTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.941 sec - in gov.energy.nbc.car.dao.mongodb.singleCellSchemaApproach.s_DatasetDAOTest
+Running gov.energy.nbc.car.dao.mongodb.singleCellSchemaApproach.s_RowDAOTest
 2015-11-09 10:12:04 INFO  s_RowDAO:49 - [END]   [getCountOfRowsThatMatch()] cellDAO.getCollection().count(com.mongodb.client.model.Filters$AndFilter@571c5681), duration: 0 miliseconds (0 seconds) 
 2015-11-09 10:12:04 INFO  s_RowDAO:49 - [END]   [getCountOfRowsThatMatch()] cellDAO.getCollection().count(com.mongodb.client.model.Filters$AndFilter@488d1cd7), duration: 1 miliseconds (0 seconds) 
 2015-11-09 10:12:04 INFO  s_RowDAO:49 - [END]   [getCountOfRowsThatMatch()] cellDAO.getCollection().count(com.mongodb.client.model.Filters$AndFilter@68dc098b), duration: 0 miliseconds (0 seconds) 
@@ -2893,12 +2893,12 @@ Running gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellSchemaApproach.s
 2015-11-09 10:12:04 INFO  s_RowDAO:49 - [END]   [rowMatchesTheCriterion()] cellDAO.getOne(com.mongodb.client.model.Filters$AndFilter@d278d2b), duration: 1 miliseconds (0 seconds) 
 2015-11-09 10:12:04 INFO  s_RowDAO:49 - [END]   [rowMatchesTheCriterion()] cellDAO.getOne(com.mongodb.client.model.Filters$AndFilter@2d6c53fc), duration: 0 miliseconds (0 seconds) 
 2015-11-09 10:12:04 INFO  s_RowDAO:236 - [RESULTS] results.size() = 1, row.count() = 9, cell.count() = 68
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.084 sec - in gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellSchemaApproach.s_RowDAOTest
-Running gov.energy.nrel.dataRepositoryApp.fileReader.CSVFileReaderTest
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 sec - in gov.energy.nrel.dataRepositoryApp.fileReader.CSVFileReaderTest
-Running gov.energy.nrel.dataRepositoryApp.fileReader.ExcelWorkbookReaderTest
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.713 sec - in gov.energy.nrel.dataRepositoryApp.fileReader.ExcelWorkbookReaderTest
-Running gov.energy.nrel.dataRepositoryApp.restService.EndpointsDatasetsTest
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.084 sec - in gov.energy.nbc.car.dao.mongodb.singleCellSchemaApproach.s_RowDAOTest
+Running gov.energy.nbc.car.fileReader.CSVFileReaderTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 sec - in gov.energy.nbc.car.fileReader.CSVFileReaderTest
+Running gov.energy.nbc.car.fileReader.ExcelWorkbookReaderTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.713 sec - in gov.energy.nbc.car.fileReader.ExcelWorkbookReaderTest
+Running gov.energy.nbc.car.restService.EndpointsDatasetsTest
 2015-11-09 10:12:11 INFO  WebTestContextBootstrapper:256 - Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener]
 2015-11-09 10:12:11 INFO  WebTestContextBootstrapper:204 - Could not instantiate TestExecutionListener [org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener]. Specify custom listener classes or make the default listener classes (and their required dependencies) available. Offending class: [org/springframework/transaction/interceptor/TransactionAttribute]
 2015-11-09 10:12:11 INFO  WebTestContextBootstrapper:204 - Could not instantiate TestExecutionListener [org.springframework.test.context.transaction.TransactionalTestExecutionListener]. Specify custom listener classes or make the default listener classes (and their required dependencies) available. Offending class: [org/springframework/transaction/interceptor/TransactionAttributeSource]
@@ -3026,8 +3026,8 @@ java.lang.NoClassDefFoundError: org/apache/logging/log4j/util/StringBuilders
 	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:200)
 	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:153)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
-Tests run: 2, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.48 sec <<< FAILURE! - in gov.energy.nrel.dataRepositoryApp.restService.EndpointsDatasetsTest
-contextLoads(gov.energy.nrel.dataRepositoryApp.restService.EndpointsDatasetsTest)  Time elapsed: 0.004 sec  <<< ERROR!
+Tests run: 2, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.48 sec <<< FAILURE! - in gov.energy.nbc.car.restService.EndpointsDatasetsTest
+contextLoads(gov.energy.nbc.car.restService.EndpointsDatasetsTest)  Time elapsed: 0.004 sec  <<< ERROR!
 java.lang.NoClassDefFoundError: org/apache/logging/log4j/util/StringBuilders
 	at org.apache.logging.log4j.core.config.plugins.visitors.PluginAttributeVisitor.visit(PluginAttributeVisitor.java:47)
 	at org.apache.logging.log4j.core.config.plugins.util.PluginBuilder.generateParameters(PluginBuilder.java:245)
@@ -3143,7 +3143,7 @@ Caused by: java.lang.ClassNotFoundException: org.apache.logging.log4j.util.Strin
 	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:153)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
 
-testSeedTestData(gov.energy.nrel.dataRepositoryApp.restService.EndpointsDatasetsTest)  Time elapsed: 0 sec  <<< ERROR!
+testSeedTestData(gov.energy.nbc.car.restService.EndpointsDatasetsTest)  Time elapsed: 0 sec  <<< ERROR!
 java.lang.NoClassDefFoundError: org/apache/logging/log4j/util/StringBuilders
 	at org.apache.logging.log4j.core.config.plugins.visitors.PluginAttributeVisitor.visit(PluginAttributeVisitor.java:47)
 	at org.apache.logging.log4j.core.config.plugins.util.PluginBuilder.generateParameters(PluginBuilder.java:245)
@@ -3200,10 +3200,10 @@ java.lang.NoClassDefFoundError: org/apache/logging/log4j/util/StringBuilders
 	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:153)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
 
-Running gov.energy.nrel.dataRepositoryApp.SettingsTest
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec - in gov.energy.nrel.dataRepositoryApp.SettingsTest
-Running gov.energy.nrel.dataRepositoryApp.utilities.UtilitiesTest
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec - in gov.energy.nrel.dataRepositoryApp.utilities.UtilitiesTest
+Running gov.energy.nbc.car.SettingsTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec - in gov.energy.nbc.car.SettingsTest
+Running gov.energy.nbc.car.utilities.UtilitiesTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec - in gov.energy.nbc.car.utilities.UtilitiesTest
 
 Results :
 
