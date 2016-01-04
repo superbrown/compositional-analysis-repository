@@ -11,6 +11,8 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -155,12 +157,7 @@ public class Utilities {
 
     public static void sortAlphaNumerically(List<String> elements) {
 
-        PerformanceLogger performanceLogger =
-                new PerformanceLogger(log, "Sorting a set with " + elements.size() + ".");
-
         Collections.sort(elements, ALPHANUMERIC_COMPARATOR);
-
-        performanceLogger.done();
     }
 
     public static SortedSet<String> toSortedSet(Set<String> elements) {
@@ -263,5 +260,17 @@ public class Utilities {
     public static void moveFolder(String sourcePath, String destinationPath) throws IOException {
 
         FileUtils.moveDirectory(new File(sourcePath), new File(destinationPath));
+    }
+
+    public static byte[] fileToBytes(String path) throws IOException {
+
+        Path path1 = Paths.get(path);
+        return Files.readAllBytes(path1);
+    }
+
+    public static String toString(Date timestamp, String formatString) {
+
+        SimpleDateFormat formatter = new SimpleDateFormat(formatString);
+        return formatter.format(timestamp);
     }
 }

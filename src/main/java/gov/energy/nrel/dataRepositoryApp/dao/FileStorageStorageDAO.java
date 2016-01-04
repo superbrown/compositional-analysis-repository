@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class FileStorageStorageDAO implements IFileStorageDAO {
@@ -121,8 +120,7 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
 
     protected static String constructRelativeFileLocation(Date timestamp) {
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/yyyy-MM-dd_aaa-hh-mm-ss_SSS-Z");
-        return formatter.format(timestamp);
+        return Utilities.toString(timestamp, "yyyy/MM/yyyy-MM-dd_aaa-hh-mm-ss_SSS-Z");
     }
 
     protected static boolean seeToItThatTheDirectoryExists(String uploadPath) {
