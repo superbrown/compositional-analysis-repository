@@ -1,6 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.dao;
 
-import gov.energy.nrel.dataRepositoryApp.ResultsMode;
+import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
 import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;

@@ -1,7 +1,7 @@
 package gov.energy.nrel.dataRepositoryApp.restEndpoint;
 
 import com.mongodb.util.JSON;
-import gov.energy.nrel.dataRepositoryApp.app.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_ExcelWorkbook;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;

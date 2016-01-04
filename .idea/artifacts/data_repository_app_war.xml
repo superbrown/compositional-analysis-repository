@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="data-repository-app:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="data-repository-app.war">
+      <element id="artifact" artifact-name="data-repository-app:war exploded" />
+    </root>
+  </artifact>
+</component>

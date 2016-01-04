@@ -14,7 +14,6 @@ import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllF
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
 import org.apache.log4j.Logger;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import java.util.*;
 

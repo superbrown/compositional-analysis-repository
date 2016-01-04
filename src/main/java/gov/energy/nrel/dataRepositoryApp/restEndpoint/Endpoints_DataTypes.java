@@ -1,6 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.restEndpoint;
 
-import gov.energy.nrel.dataRepositoryApp.app.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IDataTypeBO;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

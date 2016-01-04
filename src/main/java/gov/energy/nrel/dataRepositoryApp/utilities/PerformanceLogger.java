@@ -34,7 +34,6 @@ public class PerformanceLogger {
 
         this.label = label;
 
-//        System.out.println("[BEGIN] " + label);
         startTime = new Date().getTime();
 
     }

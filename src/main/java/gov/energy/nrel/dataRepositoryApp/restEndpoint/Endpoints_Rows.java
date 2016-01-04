@@ -1,7 +1,7 @@
 package gov.energy.nrel.dataRepositoryApp.restEndpoint;
 
-import gov.energy.nrel.dataRepositoryApp.ResultsMode;
-import gov.energy.nrel.dataRepositoryApp.app.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
+import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import org.apache.log4j.Logger;

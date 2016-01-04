@@ -9,7 +9,7 @@
 	<packaging>war</packaging>
 
 	<name>data-repository-app</name>
-	<description>Data Repository</description>
+	<description>Data Repository Application</description>
 
 	<!--Determines versions of things that Srping boot will pull-->
 	<parent>
