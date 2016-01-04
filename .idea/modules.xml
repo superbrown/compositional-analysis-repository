@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/data-repository-app.iml" filepath="$PROJECT_DIR$/.idea/data-repository-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/legacyDataIngest/legacyDataIngest.iml" filepath="$PROJECT_DIR$/legacyDataIngest/legacyDataIngest.iml" />
     </modules>
   </component>
 </project>

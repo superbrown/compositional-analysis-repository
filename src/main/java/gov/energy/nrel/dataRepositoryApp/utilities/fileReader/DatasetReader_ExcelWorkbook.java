@@ -4,13 +4,13 @@ import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.InvalidValueFoundInHeader;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
 import java.io.InputStream;
@@ -68,10 +68,13 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
         }
     }
 
-    protected List<List> extractData(Sheet sheet, int numberOfColumnHeadings) {
+    protected List<List> extractData(Sheet sheet, int numberOfColumnNames) {
 
         List<List> dataUpload = new ArrayList();
         Iterator<org.apache.poi.ss.usermodel.Row> rowIterator = sheet.rowIterator();
+
+        // This is to be interpreted as the row containing the column names.
+        iteratToTheFirstRowWithAValueInItsFirstCell(rowIterator);
 
         boolean isFirstRow = true;
         while (rowIterator.hasNext()) {
@@ -83,7 +86,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
                 continue;
             }
 
-            List<Object> rowData = extractData(row, numberOfColumnHeadings);
+            List<Object> rowData = extractData(row, numberOfColumnNames);
 
             List<Object> allDataInRowExceptTheFirstColumnThatContainsTheRowNumber =
                     rowData.subList(1, rowData.size());
@@ -135,7 +138,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
         return rowData;
     }
 
-    protected static Workbook createWorkbookObject(InputStream fileInputStream, String filePath)
+    public static Workbook createWorkbookObject(InputStream fileInputStream, String filePath)
             throws IOException, UnsupportedFileExtension {
 
         if (filePath.toLowerCase().endsWith(".xls")) {
@@ -176,10 +179,14 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
     protected List<String> determineColumnNames(Sheet sheet)
             throws InvalidValueFoundInHeader {
 
-        org.apache.poi.ss.usermodel.Row firstRow = sheet.iterator().next();
-        Iterator<Cell> cellIterator = firstRow.cellIterator();
+        Iterator<org.apache.poi.ss.usermodel.Row> rowIterator = sheet.rowIterator();
 
-        List<String> headings = new ArrayList();
+        // This is to be interpreted as the row containing the column names.
+        org.apache.poi.ss.usermodel.Row firstRowWithAValueInItsFirstCell =
+                iteratToTheFirstRowWithAValueInItsFirstCell(rowIterator);
+        Iterator<Cell> cellIterator = firstRowWithAValueInItsFirstCell.cellIterator();
+
+        List<String> colunmNames = new ArrayList();
 
         boolean lastColumnEncountered = false;
         int columnNumber = 1;
@@ -191,11 +198,11 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
             switch (cellType) {
 
                 case Cell.CELL_TYPE_STRING:
-                    headings.add(cell.getStringCellValue());
+                    colunmNames.add(cell.getStringCellValue());
                     break;
 
                 case Cell.CELL_TYPE_NUMERIC:
-                    headings.add(String.valueOf(cell.getNumericCellValue()));
+                    colunmNames.add(String.valueOf(cell.getNumericCellValue()));
                     break;
 
                 case Cell.CELL_TYPE_BLANK:
@@ -215,7 +222,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
             columnNumber++;
         }
 
-        return headings;
+        return colunmNames;
     }
 
     public static List<String> getNamesOfSheetsWithinWorkbook(String fileName, InputStream inputStream)
@@ -237,6 +244,18 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
 
             if (inputStream != null) {
                 inputStream.close();
+            }
+        }
+    }
+
+    public static org.apache.poi.ss.usermodel.Row iteratToTheFirstRowWithAValueInItsFirstCell(
+            Iterator<org.apache.poi.ss.usermodel.Row> rowIterator) {
+
+        while (true) {
+            org.apache.poi.ss.usermodel.Row row = rowIterator.next();
+            Cell firstCell = row.getCell(0);
+            if (StringUtils.isNotEmpty(firstCell.getStringCellValue())) {
+                return row;
             }
         }
     }

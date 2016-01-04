@@ -23,10 +23,12 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="data-repository-app" />
+        <module name="legacyDataIngest" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="data-repository-app" target="1.7" />
+      <module name="legacyDataIngest" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>
