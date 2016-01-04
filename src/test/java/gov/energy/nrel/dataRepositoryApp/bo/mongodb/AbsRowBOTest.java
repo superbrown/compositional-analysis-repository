@@ -2,7 +2,7 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.util.JSON;
-import gov.energy.nrel.dataRepositoryApp.ResultsMode;
+import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;

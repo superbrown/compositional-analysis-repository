@@ -52,13 +52,13 @@ public class DataCategoryDAO extends AbsDAO implements IDataCategoryDAO {
                 new BasicDBObject(),
                 new BasicDBObject().append(DataCategoryDocument.ATTR_KEY__NAME, 1));
 
-        List<String> names = new ArrayList<>();
+        List<String> categoryNames = new ArrayList<>();
         for (Document document : documents) {
 
-            names.add((String) document.get(DataCategoryDocument.ATTR_KEY__NAME));
+            categoryNames.add((String) document.get(DataCategoryDocument.ATTR_KEY__NAME));
         }
 
-        return names;
+        return categoryNames;
     }
 
     @Override

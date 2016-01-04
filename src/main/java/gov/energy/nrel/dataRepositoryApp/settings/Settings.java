@@ -9,9 +9,10 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 
 
-// See this for information regarding the approach taken for the properties files:
-//
-// https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/annotation/PropertySource.html
+// The idea behind the settings is to have the app look for them in two files, one that contains defaults,
+// (data-repository-app__defaults.properties), and one that overrides them,
+// (data-repository-app__envSpecificOverrides.properties).  The idea is that the defaults will come bundled in the
+// war, while the overrides will be placed somewhere on the server's classpath (for example, Tomcat's lib directory).
 
 @Configuration
 @PropertySource(value = {
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Component;
 @AutoConfigureBefore
 public class Settings implements ISettings {
 
-    // DESIGN NOTE: These are all values in the application.properties file.
+    // DESIGN NOTE: These are all values in the application's properties file.
 
     @Value("${mongoDb.host}")
     protected String mongoDbHost;
@@ -54,12 +55,6 @@ public class Settings implements ISettings {
     }
 
     protected void init() {
-
-//        mongoDbHost = "localhost";
-//        mongoDbPort = "27017";
-//        mongoDatabaseName = "data-repository-app";
-//        rootDirectoryForUploadedDataFiles = "C:/data/data-repository-app/uploadedFiles";
-//        defaultSetOfDataCategories = new String[] {};
     }
 
     @Override

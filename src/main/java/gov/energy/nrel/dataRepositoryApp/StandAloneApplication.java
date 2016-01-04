@@ -8,12 +8,17 @@ import org.springframework.context.annotation.Configuration;
 import javax.servlet.annotation.MultipartConfig;
 import java.util.Arrays;
 
+// THIS CLASS IS ONLY PERTINENT IF THE APP IS BUILT AS A SPRING BOOT EXECUTABLE.
+
 @SpringBootApplication
 @Configuration
 @MultipartConfig(location="/tmp", fileSizeThreshold=1024*1024, maxFileSize=1024*1024*50, maxRequestSize=1024*1024*5*50)
 public class StandAloneApplication {
 
     public static void main(String[] args) {
+
+        // This code is all here for the creation of a stand-alone Spring Boot application, and since I ended up
+        // packaging the app as a war instead, I quit working with this code.
 
         SpringApplication.run(StandAloneApplication.class, args);
 

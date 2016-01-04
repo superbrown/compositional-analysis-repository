@@ -1,6 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.dao.mongodb;
 
-import gov.energy.nrel.dataRepositoryApp.ResultsMode;
+import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.TestData;
 import gov.energy.nrel.dataRepositoryApp.dao.IRowDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;

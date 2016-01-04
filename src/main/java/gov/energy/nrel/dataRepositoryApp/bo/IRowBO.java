@@ -1,11 +1,9 @@
 package gov.energy.nrel.dataRepositoryApp.bo;
 
-import gov.energy.nrel.dataRepositoryApp.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.dao.IRowDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
 import java.util.List;
 
 

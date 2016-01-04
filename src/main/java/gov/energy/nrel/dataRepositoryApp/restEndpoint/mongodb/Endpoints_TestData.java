@@ -1,6 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.restEndpoint.mongodb;
 
-import gov.energy.nrel.dataRepositoryApp.app.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO;
 //import gov.energy.nrel.dataRepositoryApp.app.TestMode;
 import org.apache.log4j.Logger;
