@@ -76,15 +76,9 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
         // This is to be interpreted as the row containing the column names.
         iteratToTheFirstRowWithAValueInItsFirstCell(rowIterator);
 
-        boolean isFirstRow = true;
         while (rowIterator.hasNext()) {
 
             org.apache.poi.ss.usermodel.Row row = rowIterator.next();
-
-            if (isFirstRow) {
-                isFirstRow = false;
-                continue;
-            }
 
             List<Object> rowData = extractData(row, numberOfColumnNames);
 
