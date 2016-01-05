@@ -100,11 +100,15 @@ drApp.run(
             $scope.handleUploadDataMenuItemClick = function () {
                 $rootScope.menuItemClass_uploadData = '';
                 $rootScope.menuItemClass_findData = '';
+                $rootScope.alertMessage_success = '';
+                $rootScope.alertMessage_failure = '';
             }
 
             $scope.handleFindDataMenuItemClick = function () {
                 $rootScope.menuItemClass_uploadData = '';
                 $rootScope.menuItemClass_findData = '';
+                $rootScope.alertMessage_success = '';
+                $rootScope.alertMessage_failure = '';
             }
 
             $rootScope.$watch('$root.dataCategory', function() {
