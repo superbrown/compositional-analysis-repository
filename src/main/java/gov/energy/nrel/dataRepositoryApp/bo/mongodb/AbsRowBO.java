@@ -106,6 +106,11 @@ public abstract class AbsRowBO implements IRowBO {
                 throw new RuntimeException("Unrecognized data type: " + dataType);
             }
 
+            SearchCriterion searchCriterion = new SearchCriterion(name, value, comparisonOperator);
+            if (searchCriterion.containsEverthingNeededToDefineASearchFilter() == false) {
+                continue;
+            }
+
             if (value instanceof Date && comparisonOperator == ComparisonOperator.EQUALS) {
 
                 List<SearchCriterion> searchCriteria =
@@ -113,9 +118,12 @@ public abstract class AbsRowBO implements IRowBO {
                 rowSearchCriteria.addAll(searchCriteria);
             }
             else {
-                SearchCriterion searchCriterion = new SearchCriterion(name, value, comparisonOperator);
                 rowSearchCriteria.add(searchCriterion);
             }
+        }
+
+        if (rowSearchCriteria.size() == 0) {
+            return new ArrayList<>();
         }
 
         return getRowDAO().query(rowSearchCriteria, resultsMode);

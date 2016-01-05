@@ -1,6 +1,8 @@
 package gov.energy.nrel.dataRepositoryApp.dao.dto;
 
 
+import org.apache.commons.lang3.StringUtils;
+
 public class SearchCriterion {
 
     private String name;
@@ -41,5 +43,22 @@ public class SearchCriterion {
                 ", value=" + value +
                 ", comparisonOperator=" + comparisonOperator +
                 '}';
+    }
+
+    public boolean containsEverthingNeededToDefineASearchFilter() {
+
+        if (comparisonOperator == null) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(name)) {
+            return false;
+        }
+
+        if (value == null) {
+            return false;
+        }
+
+        return true;
     }
 }
