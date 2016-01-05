@@ -5,14 +5,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
-import javax.servlet.annotation.MultipartConfig;
 import java.util.Arrays;
 
 // THIS CLASS IS ONLY PERTINENT IF THE APP IS BUILT AS A SPRING BOOT EXECUTABLE.
 
 @SpringBootApplication
 @Configuration
-@MultipartConfig(location="/tmp", fileSizeThreshold=1024*1024, maxFileSize=1024*1024*50, maxRequestSize=1024*1024*5*50)
+//@MultipartConfig(location="/tmp", fileSizeThreshold=1024*1024, maxFileSize=1024*1024*50, maxRequestSize=1024*1024*5*50)
 public class StandAloneApplication {
 
     public static void main(String[] args) {
