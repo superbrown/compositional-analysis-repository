@@ -4,9 +4,9 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
-import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.ServletContainerConfig;
 import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
+import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.dao.IRowDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
@@ -22,10 +22,8 @@ import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.xssf.usermodel.*;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -324,7 +322,7 @@ public abstract class AbsRowBO implements IRowBO {
 
         BasicDBList basicDBList = flatten(documents, Purpose.FOR_FILE_DOWNLOAD);
 
-        XSSFWorkbook workbook = toExcelWorkbook(basicDBList);
+        XSSFWorkbook workbook = toExcelWorkbook(basicDBList, query);
         return workbook;
     }
 
@@ -343,7 +341,7 @@ public abstract class AbsRowBO implements IRowBO {
         METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__COMMENTS);
     }
 
-    private XSSFWorkbook toExcelWorkbook(BasicDBList documents) {
+    private XSSFWorkbook toExcelWorkbook(BasicDBList documents, String query) {
 
         List<String> allKeys = new ArrayList(extractAllKeys(documents));
 
@@ -366,22 +364,28 @@ public abstract class AbsRowBO implements IRowBO {
         // create heading row
         short rowIndex = 0;
 
-        XSSFRow row = worksheet.createRow(rowIndex);
+        // inital blank row
+        worksheet.createRow(rowIndex++);
+        worksheet.createRow(rowIndex++);
+
+        XSSFRow row = worksheet.createRow(rowIndex++);
 
         int columnIndex = 0;
+
+        XSSFCellStyle italicBoldStyle = getItalicBoldStyle(workbook);
 
         for (String columnName : allKeys) {
             XSSFCell cell = row.createCell(columnIndex);
             cell.setCellValue(columnName);
+            cell.setCellStyle(italicBoldStyle);
             columnIndex++;
         }
 
         for (Object object : documents) {
 
-            rowIndex++;
             Document document = (Document) object;
 
-            row = worksheet.createRow(rowIndex);
+            row = worksheet.createRow(rowIndex++);
 
             columnIndex = 0;
             for (String columnName : allKeys) {
@@ -398,7 +402,100 @@ public abstract class AbsRowBO implements IRowBO {
                 columnIndex++;
             }
         }
+
+        for (columnIndex = 0; columnIndex < allKeys.size(); columnIndex++) {
+            worksheet.autoSizeColumn(columnIndex);
+        }
+
+        String humanReadableFilterString = toHumanReadableFilterString(query);
+
+        putQueryInCell(worksheet, humanReadableFilterString, 1, 0);
+
+        // freeze the first row
+        worksheet.createFreezePane(0, 3);
+
+        setAsActiveCell(worksheet, 3, 0);
+
         return workbook;
+    }
+
+    private void setAsActiveCell(XSSFSheet worksheet, int rowNumber, int collumnNumber) {
+
+        XSSFRow firstDataRow = worksheet.getRow(rowNumber);
+        firstDataRow.getCell(collumnNumber).setAsActiveCell();
+    }
+
+    private String toHumanReadableFilterString(String query) {
+
+        BasicDBList basicDBList = (BasicDBList) JSON.parse(query);
+
+        Object[] basicDBObjects = basicDBList.toArray();
+
+        String humanReadableFilterString = "";
+        for (Object o : basicDBObjects) {
+
+            BasicDBObject basicDBObject = (BasicDBObject) o;
+
+            Object name = basicDBObject.get("name");
+            Object comparisonOperator = basicDBObject.get("comparisonOperator");
+            Object dataType = basicDBObject.get("dataType");
+            Object value = basicDBObject.get("value");
+
+            if (dataType.equals("DATE")) {
+                value = ((String)value).substring(0, 10);
+            }
+            else if (dataType.equals("STRING")) {
+                value = "\"" + value + "\"";
+            }
+            else if (dataType.equals("NUMBER")) {
+                // leave as is
+            }
+            else if (dataType.equals("BOOLEAN")) {
+                // leave as is
+            }
+
+            humanReadableFilterString += "(\"" + name + "\" " + comparisonOperator + " " + dataType + "(" + value + ")) and ";
+        }
+
+        // remove trailing "and"
+        if (humanReadableFilterString.length() > 0) {
+            humanReadableFilterString =
+                    humanReadableFilterString.substring(
+                            0, humanReadableFilterString.length() - (" and ".length()));
+        }
+
+        return humanReadableFilterString;
+    }
+
+    private void putQueryInCell(XSSFSheet worksheet, String string, int rowNumber, int columnNumber) {
+
+        XSSFRow firstRow = worksheet.getRow(rowNumber);
+        XSSFCell firstCell = firstRow.createCell(columnNumber);
+        firstCell.setCellValue("Filter: " + string);
+        firstCell.setCellStyle(getBlueStyle(worksheet.getWorkbook()));
+    }
+
+    private XSSFCellStyle getItalicBoldStyle(XSSFWorkbook workbook) {
+
+        XSSFFont boldFont= workbook.createFont();
+        boldFont.setBold(true);
+        boldFont.setItalic(true);
+
+        XSSFCellStyle style = workbook.createCellStyle();
+        style.setFont(boldFont);
+
+        return style;
+    }
+
+    private XSSFCellStyle getBlueStyle(XSSFWorkbook workbook) {
+
+        XSSFFont boldFont= workbook.createFont();
+        boldFont.setColor(IndexedColors.BLUE.getIndex());
+
+        XSSFCellStyle style = workbook.createCellStyle();
+        style.setFont(boldFont);
+
+        return style;
     }
 
     private void setCellValue(XSSFCell cell, Object value) {
@@ -413,6 +510,9 @@ public abstract class AbsRowBO implements IRowBO {
         }
         else if (value instanceof Boolean) {
             cell.setCellValue((Boolean) value);
+        }
+        else if (value == null) {
+            // nothing to set
         }
         else {
             throw new RuntimeException("Encountered unrecognized value: " + value);
