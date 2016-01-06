@@ -273,4 +273,13 @@ public class Utilities {
         SimpleDateFormat formatter = new SimpleDateFormat(formatString);
         return formatter.format(timestamp);
     }
+
+    public static boolean hasAnExcelFileExtension(String fileName) {
+
+        fileName = fileName.toLowerCase();
+
+        return (fileName.endsWith(".xls") ||
+                fileName.endsWith(".xlsx") ||
+                fileName.endsWith(".xlsm"));
+    }
 }

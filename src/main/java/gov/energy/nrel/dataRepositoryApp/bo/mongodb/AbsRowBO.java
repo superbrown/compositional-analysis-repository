@@ -107,7 +107,7 @@ public abstract class AbsRowBO implements IRowBO {
             }
 
             SearchCriterion searchCriterion = new SearchCriterion(name, value, comparisonOperator);
-            if (searchCriterion.containsEverthingNeededToDefineASearchFilter() == false) {
+            if (searchCriterion.containsEverythingNeededToDefineASearchFilter() == false) {
                 continue;
             }
 
@@ -215,8 +215,10 @@ public abstract class AbsRowBO implements IRowBO {
             String originalFileName = (String) sourceDocument.get(StoredFile.ATTR_KEY__ORIGINAL_FILE_NAME);
             Integer rowNumber = (Integer) data.get(Row.ATTR_KEY__ROW_NUMBER);
 
-            Object nameOfSubdocumentContainingDataIfApplicable = metadata.get(Metadata.ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA);
-            if (StringUtils.isBlank((String) nameOfSubdocumentContainingDataIfApplicable)) {
+            String nameOfSubdocumentContainingDataIfApplicable = (String)metadata.get(Metadata.ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA);
+            boolean thereIsASubdocument = StringUtils.isNotBlank(nameOfSubdocumentContainingDataIfApplicable);
+
+            if (thereIsASubdocument == false) {
                 nameOfSubdocumentContainingDataIfApplicable = "N/A";
             }
 
@@ -229,16 +231,26 @@ public abstract class AbsRowBO implements IRowBO {
             }
             else if (purpose == Purpose.FOR_SCREEN_DIAPLAYED_SEARCH_RESULTS) {
 
+                String rowNumberString = " (row " + rowNumber + ")";
+
                 // link for downloading the file
                 // DESIGN NOTE: I know, this is the wrong architectural layer. I'm in a time crunch right now.
-                row.put("Source Document",
-                        "<a href='" + ServletContainerConfig.CONTEXT_PATH +
-                                "/api/dataset/" + datasetId + "/sourceDocument' " +
-                                "target='_blank'>" +
-                                originalFileName + "</a> (row " + rowNumber + ")");
+                String sourceDocumentLink = "<a href='" + ServletContainerConfig.CONTEXT_PATH +
+                        "/api/dataset/" + datasetId + "/sourceDocument' " +
+                        "target='_blank'>" +
+                        originalFileName + "</a>";
 
-                row.put(Metadata.ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA,
-                        nameOfSubdocumentContainingDataIfApplicable);
+                if (thereIsASubdocument == false) {
+                    sourceDocumentLink += rowNumberString;
+                }
+
+                row.put("Source Document", sourceDocumentLink);
+
+                if (thereIsASubdocument) {
+                    nameOfSubdocumentContainingDataIfApplicable += rowNumberString;
+                }
+
+                row.put(Metadata.ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA, nameOfSubdocumentContainingDataIfApplicable);
             }
 
             row.put(Metadata.ATTR_KEY__SUBMISSION_DATE, toString((Date) metadata.get(Metadata.ATTR_KEY__SUBMISSION_DATE)));

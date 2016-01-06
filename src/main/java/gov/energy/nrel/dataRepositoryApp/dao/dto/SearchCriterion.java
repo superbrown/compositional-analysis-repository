@@ -45,7 +45,7 @@ public class SearchCriterion {
                 '}';
     }
 
-    public boolean containsEverthingNeededToDefineASearchFilter() {
+    public boolean containsEverythingNeededToDefineASearchFilter() {
 
         if (comparisonOperator == null) {
             return false;

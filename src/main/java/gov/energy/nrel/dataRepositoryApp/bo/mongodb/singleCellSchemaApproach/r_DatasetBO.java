@@ -9,7 +9,7 @@ import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnableToDeleteFile;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
-import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everthingInTheRowCollectionApproach.r_DatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everythingInTheRowCollectionApproach.r_DatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.model.IMetadata;
 import gov.energy.nrel.dataRepositoryApp.model.IRowCollection;

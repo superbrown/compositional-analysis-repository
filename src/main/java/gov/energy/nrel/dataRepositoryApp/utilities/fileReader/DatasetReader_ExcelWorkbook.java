@@ -1,6 +1,7 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
+import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.InvalidValueFoundInHeader;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
@@ -31,8 +32,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
     @Override
     public boolean canReadFileWithExtension(String fileName) {
 
-        fileName = fileName.toLowerCase();
-        return (fileName.endsWith(".xls") || fileName.endsWith(".xlsx") || fileName.endsWith(".xlsm")) == true;
+        return Utilities.hasAnExcelFileExtension(fileName);
     }
 
     @Override

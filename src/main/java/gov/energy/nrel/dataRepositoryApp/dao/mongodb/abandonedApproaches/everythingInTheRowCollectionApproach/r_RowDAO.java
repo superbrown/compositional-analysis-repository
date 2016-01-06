@@ -1,4 +1,4 @@
-package gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everthingInTheRowCollectionApproach;
+package gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everythingInTheRowCollectionApproach;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.ListIndexesIterable;
