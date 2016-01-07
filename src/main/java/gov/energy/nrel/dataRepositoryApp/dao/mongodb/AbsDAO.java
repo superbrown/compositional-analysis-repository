@@ -172,7 +172,7 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
     public static Document createIdFilter(ObjectId objectId) {
 
         Document idFilter = new Document().
-                append(AbstractDocument.ATTR_KEY__ID, objectId);
+                append(AbstractDocument.MONGO_KEY__ID, objectId);
         return idFilter;
     }
 

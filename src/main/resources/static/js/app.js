@@ -102,6 +102,7 @@ drApp.run(
                 $rootScope.menuItemClass_findData = '';
                 $rootScope.alertMessage_success = '';
                 $rootScope.alertMessage_failure = '';
+                $rootScope.alertMessage_missingUserInput = '';
             }
 
             $scope.handleFindDataMenuItemClick = function () {
@@ -109,6 +110,7 @@ drApp.run(
                 $rootScope.menuItemClass_findData = '';
                 $rootScope.alertMessage_success = '';
                 $rootScope.alertMessage_failure = '';
+                $rootScope.alertMessage_missingUserInput = '';
             }
 
             $rootScope.$watch('$root.dataCategory', function() {
@@ -155,6 +157,7 @@ drApp.controller('uploadController',
             $rootScope.menuItemClass_uploadData = 'active';
 
             $scope.uploadData = function ()  {
+                $rootScope.alertMessage_missingUserInput = '';
                 drServices.uploadData($scope, $http);
             }
 
@@ -216,6 +219,7 @@ drApp.controller('findDataController',
 
             $scope.handleSearchSubmission = function()
             {
+                $rootScope.alertMessage_missingUserInput = '';
                 drServices.findData($scope, $http);
             }
 
@@ -280,19 +284,28 @@ drApp.service('drServices', function() {
         for (i = 0; i < searchCriteria.length; i++) {
 
             var criterion = searchCriteria[i];
+
+            if (isUnset(criterion.columnName)) continue;
+            if (isUnset(criterion.dataTypeId)) continue;
+            if (isUnset(criterion.comparisonOperatorId)) continue;
+
             var value;
 
             var dataTypeId = criterion.dataTypeId;
             if (dataTypeId == 'STRING') {
+                if (isUnset(criterion.value_asString)) continue;
                 value = criterion.value_asString;
             }
             else if (dataTypeId == 'NUMBER') {
+                if (isUnset(criterion.value_asNumber)) continue;
                 value = criterion.value_asNumber;
             }
             else if (dataTypeId == 'DATE') {
+                if (isUnset(criterion.value_asDate)) continue;
                 value = criterion.value_asDate.toJSON();
             }
             else if (dataTypeId == 'BOOLEAN') {
+                if (isUnset(criterion.value_asBoolean)) continue;
                 value = criterion.value_asBoolean;
             }
 
@@ -305,6 +318,7 @@ drApp.service('drServices', function() {
                 }
             );
         }
+
         return criteriaPackagedForRestCall;
     }
 
@@ -332,7 +346,7 @@ drApp.service('drServices', function() {
 
         scope.$root.numberOfBlockingProcesses++;
 
-        http.get('/data-repository-app/api/dataCategory/columnNames?dataCategoryName=' + scope.$root.dataCategory)
+        http.get('/data-repository-app/api/dataCategory/searchableColumnNames?dataCategoryName=' + scope.$root.dataCategory)
             .success(function (result) {
                 scope.$root.numberOfBlockingProcesses--;
                 scope.$root.knownColumnNames = result;
@@ -349,7 +363,7 @@ drApp.service('drServices', function() {
 
         var sourceDocument = scope.$root.sourceDocument;
 
-        if (sourceDocument === '') {
+        if (isUnset(sourceDocument)) {
             return;
         }
 
@@ -392,7 +406,7 @@ drApp.service('drServices', function() {
         var formData = new FormData();
         var $root = scope.$root;
 
-        $root.alertMessage_missingUserInput = '';
+        scope.$root.alertMessage_missingUserInput = '';
 
         // validation
         if (isUnset($root.dataCategory)) {
@@ -480,13 +494,19 @@ drApp.service('drServices', function() {
 
     self.findData = function (scope, http) {
 
-        scope.$root.searchComplete = false;
-        scope.$root.searchResults = [];
-
         var searchCriteria = scope.$root.searchCriteria;
         var dataCategory = scope.$root.dataCategory;
 
         var searchCriteriaAsJson = self.toSearchCriteriaAsJson(dataCategory, searchCriteria);
+
+        if (searchCriteriaAsJson.length === 1) {
+            scope.$root.alertMessage_missingUserInput =
+                "Can't perform search because none of the search criteria are complete.";
+            return;
+        }
+
+        scope.$root.searchComplete = false;
+        scope.$root.searchResults = [];
 
         scope.$root.searchCriteriaAsJson = searchCriteriaAsJson;
 
@@ -518,5 +538,4 @@ drApp.service('drServices', function() {
         root.alertMessage_failure = "A failure occurred on the server.";
         console.error(data);
     }
-
 })

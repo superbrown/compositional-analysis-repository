@@ -11,8 +11,8 @@ import java.util.Set;
 
 public class DataCategoryDocument extends AbstractDocument implements IDataCategoryDocument {
 
-    public static final String ATTR_KEY__NAME = "name";
-    public static final String ATTR_KEY__COLUMN_NAMES = "columnNames";
+    public static final String MONGO_KEY__NAME = "name";
+    public static final String MONGO_KEY__COLUMN_NAMES = "columnNames";
 
     public DataCategoryDocument() {
         super();
@@ -36,9 +36,9 @@ public class DataCategoryDocument extends AbstractDocument implements IDataCateg
 
         initObjectId(document);
 
-        String dataCategory = (String) document.get(ATTR_KEY__NAME);
+        String dataCategory = (String) document.get(MONGO_KEY__NAME);
 
-        List columnNames = (List) document.get(ATTR_KEY__COLUMN_NAMES);;
+        List columnNames = (List) document.get(MONGO_KEY__COLUMN_NAMES);;
 
         Set<String> columnNameSet = new HashSet<>();
         for (Object colomnName : columnNames) {
@@ -56,23 +56,23 @@ public class DataCategoryDocument extends AbstractDocument implements IDataCateg
 
     @Override
     public void setName(String dataCategory) {
-        put(ATTR_KEY__NAME, dataCategory);
+        put(MONGO_KEY__NAME, dataCategory);
     }
 
     @Override
     public String getName() {
-        return (String) get(ATTR_KEY__NAME);
+        return (String) get(MONGO_KEY__NAME);
     }
 
     @Override
     public void setColumnNames(Set<String> columnNames) {
-        put(ATTR_KEY__COLUMN_NAMES, columnNames);
+        put(MONGO_KEY__COLUMN_NAMES, columnNames);
     }
 
     @Override
     public Set<String> getColumnNames() {
 
-        Set columnNames = (Set) get(ATTR_KEY__COLUMN_NAMES);
+        Set columnNames = (Set) get(MONGO_KEY__COLUMN_NAMES);
         return DAOUtilities.toDocumentsWithClientSideFieldNames(columnNames);
     }
 }

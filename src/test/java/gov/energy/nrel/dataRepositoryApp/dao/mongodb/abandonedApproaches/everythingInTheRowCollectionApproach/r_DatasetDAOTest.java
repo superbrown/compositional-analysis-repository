@@ -1,4 +1,4 @@
-package gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everthingInTheRowCollectionApproach;
+package gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everythingInTheRowCollectionApproach;
 
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach.r_BusinessObjects;

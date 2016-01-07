@@ -59,7 +59,7 @@ public class m_CellDAO extends AbsDAO implements ICellDAO {
         DeleteResults allDeleteResults = new DeleteResults();
 
         Document rowIdFilter = new Document().
-                append(CellDocument.ATTR_KEY__ROW_ID, rowId);
+                append(CellDocument.MONGO_KEY__ROW_ID, rowId);
 
         DeleteResult deleteResult = getCollection().deleteMany(rowIdFilter);
 
@@ -73,11 +73,11 @@ public class m_CellDAO extends AbsDAO implements ICellDAO {
 
         MongoCollection<Document> cellCollection = getCollection();
 
-        cellCollection.createIndex(new BasicDBObject(CellDocument.ATTR_KEY__VALUE, 1));
+        cellCollection.createIndex(new BasicDBObject(CellDocument.MONGO_KEY__VALUE, 1));
 
         BasicDBObject compoundIndex = new BasicDBObject();
-        compoundIndex.put(CellDocument.ATTR_KEY__ROW_ID, 1);
-        compoundIndex.put(CellDocument.ATTR_KEY__VALUE, 1);
+        compoundIndex.put(CellDocument.MONGO_KEY__ROW_ID, 1);
+        compoundIndex.put(CellDocument.MONGO_KEY__VALUE, 1);
         cellCollection.createIndex(compoundIndex);
     }
 }

@@ -8,7 +8,7 @@ import org.bson.types.ObjectId;
 
 public abstract class AbstractBasicDBObject extends Document {
 
-    public static final String ATTR_KEY__ID = "_id";
+    public static final String MONGO_KEY__ID = "_id";
 
     public AbstractBasicDBObject() {
 
@@ -40,16 +40,16 @@ public abstract class AbstractBasicDBObject extends Document {
 
     protected void initializeId(Document parsedJson) {
 
-        ObjectId objectId = parsedJson.getObjectId(ATTR_KEY__ID);
+        ObjectId objectId = parsedJson.getObjectId(MONGO_KEY__ID);
 
         if (objectId != null) {
-            put(ATTR_KEY__ID, objectId);
+            put(MONGO_KEY__ID, objectId);
         }
     }
 
     public ObjectId getObjectId() {
 
-        return getObjectId(ATTR_KEY__ID);
+        return getObjectId(MONGO_KEY__ID);
     }
 
 

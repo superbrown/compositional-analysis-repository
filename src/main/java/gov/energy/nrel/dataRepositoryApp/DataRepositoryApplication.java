@@ -99,7 +99,8 @@ public class DataRepositoryApplication extends SpringApplication {
     }
 
 
-    protected static void assureCategoriesAreInTheDatabase(IBusinessObjects businessObjects, String[] dataCategoryNames) {
+    protected static void assureCategoriesAreInTheDatabase(
+            IBusinessObjects businessObjects, String[] dataCategoryNames) {
 
         IDataCategoryBO dataCategoryBO = businessObjects.getDataCategoryBO();
 

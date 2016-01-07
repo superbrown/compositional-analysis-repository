@@ -15,6 +15,16 @@ import java.util.List;
 
 public class Metadata extends AbstractDocument implements IMetadata {
 
+    public static final String MONGO_KEY__DATA_CATEGORY = " Data Category";
+    public static final String MONGO_KEY__SUBMISSION_DATE = " Submission Date";
+    public static final String MONGO_KEY__SUBMITTER = " Submitter";
+    public static final String MONGO_KEY__CHARGE_NUMBER = " Charge Number";
+    public static final String MONGO_KEY__PROJECT_NAME = " Project Name";
+    public static final String MONGO_KEY__COMMENTS = " Comments";
+    public static final String MONGO_KEY__SOURCE_DOCUMENT = " Source Document";
+    public static final String MONGO_KEY__SUB_DOCUMENT_NAME = " Sub-Document";
+    public static final String MONGO_KEY__ATTACHMENTS = " Attachments";
+
     public Metadata() {
         super();
     }
@@ -61,15 +71,15 @@ public class Metadata extends AbstractDocument implements IMetadata {
                       String nameOfSubdocumentContainingDataIfApplicable,
                       List<IStoredFile> attachments) {
 
-        put(ATTR_KEY__DATA_CATEGORY, dataCategory);
-        put(ATTR_KEY__SUBMISSION_DATE, submissionDate);
-        put(ATTR_KEY__SUBMITTER, submitter);
-        put(ATTR_KEY__CHARGE_NUMBER, chargeNumber);
-        put(ATTR_KEY__PROJECT_NAME, projectName);
-        put(ATTR_KEY__COMMENTS, comments);
-        put(ATTR_KEY__SOURCE_DOCUMENT, sourceDocument);
-        put(ATTR_KEY__ATTACHMENTS, attachments);
-        put(ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA, nameOfSubdocumentContainingDataIfApplicable);
+        put(MONGO_KEY__DATA_CATEGORY, dataCategory);
+        put(MONGO_KEY__SUBMISSION_DATE, submissionDate);
+        put(MONGO_KEY__SUBMITTER, submitter);
+        put(MONGO_KEY__CHARGE_NUMBER, chargeNumber);
+        put(MONGO_KEY__PROJECT_NAME, projectName);
+        put(MONGO_KEY__COMMENTS, comments);
+        put(MONGO_KEY__SOURCE_DOCUMENT, sourceDocument);
+        put(MONGO_KEY__ATTACHMENTS, attachments);
+        put(MONGO_KEY__SUB_DOCUMENT_NAME, nameOfSubdocumentContainingDataIfApplicable);
 
         verifyRequiredFieldsAreSet();
     }
@@ -89,16 +99,16 @@ public class Metadata extends AbstractDocument implements IMetadata {
 
         initObjectId(document);
 
-        String dataCategory = (String) document.get(ATTR_KEY__DATA_CATEGORY);
-        Date submissionDate = (Date) document.get(ATTR_KEY__SUBMISSION_DATE);
-        String submitter = (String) document.get(ATTR_KEY__SUBMITTER);
-        String chargeNumber = (String) document.get(ATTR_KEY__CHARGE_NUMBER);
-        String projectName = (String) document.get(ATTR_KEY__PROJECT_NAME);
-        String comments = (String) document.get(ATTR_KEY__COMMENTS);
-        String nameOfSubdocumentContainingDataIfApplicable = (String) document.get(ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA);
+        String dataCategory = (String) document.get(MONGO_KEY__DATA_CATEGORY);
+        Date submissionDate = (Date) document.get(MONGO_KEY__SUBMISSION_DATE);
+        String submitter = (String) document.get(MONGO_KEY__SUBMITTER);
+        String chargeNumber = (String) document.get(MONGO_KEY__CHARGE_NUMBER);
+        String projectName = (String) document.get(MONGO_KEY__PROJECT_NAME);
+        String comments = (String) document.get(MONGO_KEY__COMMENTS);
+        String nameOfSubdocumentContainingDataIfApplicable = (String) document.get(MONGO_KEY__SUB_DOCUMENT_NAME);
 
         IStoredFile sourceDocument = null;
-        Object o = document.get(ATTR_KEY__SOURCE_DOCUMENT);
+        Object o = document.get(MONGO_KEY__SOURCE_DOCUMENT);
         // It's not clear to me why this is not always the same type of object
         if (o instanceof BasicDBObject) {
             sourceDocument = new StoredFile((BasicDBObject) o);
@@ -107,7 +117,7 @@ public class Metadata extends AbstractDocument implements IMetadata {
             sourceDocument = new StoredFile((Document) o);
         }
 
-        List<BasicDBObject> attachmentObjects = (List<BasicDBObject>) document.get(ATTR_KEY__ATTACHMENTS);
+        List<BasicDBObject> attachmentObjects = (List<BasicDBObject>) document.get(MONGO_KEY__ATTACHMENTS);
 
         List<IStoredFile> attachments = new ArrayList();
 
@@ -131,8 +141,8 @@ public class Metadata extends AbstractDocument implements IMetadata {
     }
 
     private void verifyRequiredFieldsAreSet() {
-        verify(StringUtils.isNotBlank((String)this.get(ATTR_KEY__DATA_CATEGORY)), "dataCategory is blank");
-        verify(this.get(ATTR_KEY__SOURCE_DOCUMENT) != null, "datasetPath is blank");
+        verify(StringUtils.isNotBlank((String)this.get(MONGO_KEY__DATA_CATEGORY)), "dataCategory is blank");
+        verify(this.get(MONGO_KEY__SOURCE_DOCUMENT) != null, "datasetPath is blank");
     }
 
     private void verify(boolean condition, String errorMessage) {
@@ -140,54 +150,54 @@ public class Metadata extends AbstractDocument implements IMetadata {
     }
 
     @Override
-    public String getDataCategory() { return (String) get(ATTR_KEY__DATA_CATEGORY); }
+    public String getDataCategory() { return (String) get(MONGO_KEY__DATA_CATEGORY); }
     @Override
-    public Date getSubmissionDate() { return (Date) get(ATTR_KEY__SUBMISSION_DATE); }
+    public Date getSubmissionDate() { return (Date) get(MONGO_KEY__SUBMISSION_DATE); }
     @Override
-    public String getSubmitter() { return (String) get(ATTR_KEY__SUBMITTER); }
+    public String getSubmitter() { return (String) get(MONGO_KEY__SUBMITTER); }
     @Override
-    public String getChargeNumber() { return (String) get(ATTR_KEY__CHARGE_NUMBER); }
+    public String getChargeNumber() { return (String) get(MONGO_KEY__CHARGE_NUMBER); }
     @Override
-    public String getProjectName() { return (String) get(ATTR_KEY__PROJECT_NAME); }
+    public String getProjectName() { return (String) get(MONGO_KEY__PROJECT_NAME); }
     @Override
-    public String getNameOfSubdocumentContainingData() { return (String) get(ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA); }
+    public String getSubdocumentName() { return (String) get(MONGO_KEY__SUB_DOCUMENT_NAME); }
     @Override
-    public String getComments() { return (String) get(ATTR_KEY__COMMENTS); }
+    public String getComments() { return (String) get(MONGO_KEY__COMMENTS); }
     @Override
-    public IStoredFile getSourceDocument() { return (IStoredFile) get(ATTR_KEY__SOURCE_DOCUMENT); }
+    public IStoredFile getSourceDocument() { return (IStoredFile) get(MONGO_KEY__SOURCE_DOCUMENT); }
     @Override
-    public List<IStoredFile> getAttachments() { return (List<IStoredFile>) get(ATTR_KEY__ATTACHMENTS); }
+    public List<IStoredFile> getAttachments() { return (List<IStoredFile>) get(MONGO_KEY__ATTACHMENTS); }
 
 
     @Override
-    public String setDataCategory(String value) { return (String)  put(ATTR_KEY__DATA_CATEGORY, value); }
+    public String setDataCategory(String value) { return (String)  put(MONGO_KEY__DATA_CATEGORY, value); }
     @Override
-    public Date setSubmissionDate(Date value) { return (Date)  put(ATTR_KEY__SUBMISSION_DATE, value); }
+    public Date setSubmissionDate(Date value) { return (Date)  put(MONGO_KEY__SUBMISSION_DATE, value); }
     @Override
-    public String setSubmitter(String value) { return (String)  put(ATTR_KEY__SUBMITTER, value); }
+    public String setSubmitter(String value) { return (String)  put(MONGO_KEY__SUBMITTER, value); }
     @Override
-    public String setChargeNumber(String value) { return (String)  put(ATTR_KEY__CHARGE_NUMBER, value); }
+    public String setChargeNumber(String value) { return (String)  put(MONGO_KEY__CHARGE_NUMBER, value); }
     @Override
-    public String setProjectName(String value) { return (String)  put(ATTR_KEY__PROJECT_NAME, value); }
+    public String setProjectName(String value) { return (String)  put(MONGO_KEY__PROJECT_NAME, value); }
     @Override
-    public String setComments(String value) { return (String)  put(ATTR_KEY__COMMENTS, value); }
+    public String setComments(String value) { return (String)  put(MONGO_KEY__COMMENTS, value); }
     @Override
-    public String setNameOfSubdocumentContainingData(String value) { return (String)  put(ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA, value); }
+    public String setNameOfSubdocumentContainingData(String value) { return (String)  put(MONGO_KEY__SUB_DOCUMENT_NAME, value); }
     @Override
-    public IStoredFile setSourceDocument(IStoredFile value) { return (IStoredFile)  put(ATTR_KEY__SOURCE_DOCUMENT, value); }
+    public IStoredFile setSourceDocument(IStoredFile value) { return (IStoredFile)  put(MONGO_KEY__SOURCE_DOCUMENT, value); }
     @Override
-    public List<IStoredFile> setAttachments(List<IStoredFile> value) { return (List<IStoredFile>)  put(ATTR_KEY__ATTACHMENTS, value); }
+    public List<IStoredFile> setAttachments(List<IStoredFile> value) { return (List<IStoredFile>)  put(MONGO_KEY__ATTACHMENTS, value); }
 
     public static boolean isAMetadataFieldName(String name) {
 
-        return ATTR_KEY__DATA_CATEGORY.equals(name) ||
-                ATTR_KEY__ATTACHMENTS.equals(name) ||
-                ATTR_KEY__CHARGE_NUMBER.equals(name) ||
-                ATTR_KEY__COMMENTS.equals(name) ||
-                ATTR_KEY__PROJECT_NAME.equals(name) ||
-                ATTR_KEY__SUBMISSION_DATE.equals(name) ||
-                ATTR_KEY__SUBMITTER.equals(name) ||
-                ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA.equals(name) ||
-                ATTR_KEY__SOURCE_DOCUMENT.equals(name);
+        return MONGO_KEY__DATA_CATEGORY.equals(name) ||
+                MONGO_KEY__ATTACHMENTS.equals(name) ||
+                MONGO_KEY__CHARGE_NUMBER.equals(name) ||
+                MONGO_KEY__COMMENTS.equals(name) ||
+                MONGO_KEY__PROJECT_NAME.equals(name) ||
+                MONGO_KEY__SUBMISSION_DATE.equals(name) ||
+                MONGO_KEY__SUBMITTER.equals(name) ||
+                MONGO_KEY__SUB_DOCUMENT_NAME.equals(name) ||
+                MONGO_KEY__SOURCE_DOCUMENT.equals(name);
     }
 }

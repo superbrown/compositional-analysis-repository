@@ -1,9 +1,9 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
+import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.InvalidValueFoundInHeader;
-import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +39,7 @@ public class CSVFileReaderTest {
             RowCollection rowCollection = csvFileReader.extractDataFromFile(file, -1);
 
             assertTrue(rowCollection.columnNames.size() == 8);
-            assertTrue(rowCollection.columnNames.get(0).equals(Row.ATTR_KEY__ROW_NUMBER));
+            assertTrue(rowCollection.columnNames.get(0).equals(Row.MONGO_KEY__ROW_NUMBER));
             assertTrue(rowCollection.columnNames.get(1).equals("Column 1"));
             assertTrue(rowCollection.columnNames.get(2).equals("1.5"));
             assertTrue(rowCollection.columnNames.get(3).equals("Column 2"));
@@ -114,7 +114,7 @@ public class CSVFileReaderTest {
             RowCollection rowCollection = csvFileReader.extractDataFromFile(file, -1);
 
             assertTrue(rowCollection.columnNames.size() == 6);
-            assertTrue(rowCollection.columnNames.get(0).equals(Row.ATTR_KEY__ROW_NUMBER));
+            assertTrue(rowCollection.columnNames.get(0).equals(Row.MONGO_KEY__ROW_NUMBER));
             assertTrue(rowCollection.columnNames.get(1).equals("Column 1"));
             assertTrue(rowCollection.columnNames.get(2).equals("Column 2"));
             assertTrue(rowCollection.columnNames.get(3).equals("Column 3"));
@@ -175,7 +175,7 @@ public class CSVFileReaderTest {
             RowCollection rowCollection = csvFileReader.extractDataFromFile(file, -1);
 
             assertTrue(rowCollection.columnNames.size() == 7);
-            assertTrue(rowCollection.columnNames.get(0).equals(Row.ATTR_KEY__ROW_NUMBER));
+            assertTrue(rowCollection.columnNames.get(0).equals(Row.MONGO_KEY__ROW_NUMBER));
             assertTrue(rowCollection.columnNames.get(1).equals("Column 1"));
             assertTrue(rowCollection.columnNames.get(2).equals("Column 2"));
             assertTrue(rowCollection.columnNames.get(3).equals("Column 3"));

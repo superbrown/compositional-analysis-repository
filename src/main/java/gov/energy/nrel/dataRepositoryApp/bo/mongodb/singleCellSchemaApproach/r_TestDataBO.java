@@ -5,7 +5,7 @@ import gov.energy.nrel.dataRepositoryApp.bo.mongodb.TestData;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.IMongodbDAO;
-import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everthingInTheRowCollectionApproach.r_DatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everythingInTheRowCollectionApproach.r_DatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import org.bson.Document;
 import org.bson.types.ObjectId;

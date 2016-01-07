@@ -1,18 +1,21 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
+import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.InvalidValueFoundInHeader;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -31,8 +34,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
     @Override
     public boolean canReadFileWithExtension(String fileName) {
 
-        fileName = fileName.toLowerCase();
-        return (fileName.endsWith(".xls") || fileName.endsWith(".xlsx") || fileName.endsWith(".xlsm")) == true;
+        return Utilities.hasAnExcelFileExtension(fileName);
     }
 
     @Override
@@ -55,7 +57,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
             // DESIGN NOTE: When the data was extracted, the the row number was added as the first data element so users
             //              will be able to trace the data back to the original source document.  So we need to add a
             //              name for that column.
-            columnNames.add(0, Row.ATTR_KEY__ROW_NUMBER);
+            columnNames.add(0, Row.MONGO_KEY__ROW_NUMBER);
 
             RowCollection spreasheetData = new RowCollection(columnNames, data);
             return spreasheetData;

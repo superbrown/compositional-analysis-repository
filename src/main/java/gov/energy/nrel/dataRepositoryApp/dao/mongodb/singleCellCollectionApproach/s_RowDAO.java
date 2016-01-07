@@ -7,6 +7,7 @@ import com.mongodb.client.result.DeleteResult;
 import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.dao.ICellDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IRowDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsDAO;
@@ -71,7 +72,7 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
 
             rowIds.add(rowId);
 
-            cellDAO.add(rowId, metadata, row);
+            cellDAO.add(datasetId, datasetDocument, rowId, row);
         }
 
         return rowIds;
@@ -82,15 +83,15 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
         DeleteResults allDeleteResults = new DeleteResults();
 
         Document datasetIdFilter = new Document().
-                append(RowDocument.ATTR_KEY__DATASET_ID, datasetId);
+                append(RowDocument.MONGO_KEY__DATASET_ID, datasetId);
 
-        Bson projection = fields(include(RowDocument.ATTR_KEY__ID));
+        Bson projection = fields(include(RowDocument.MONGO_KEY__ID));
 
         List<Document> rowsAssociatedWithDataset = this.query(datasetIdFilter, projection);
 
         for (Document document : rowsAssociatedWithDataset) {
 
-            ObjectId rowId = (ObjectId) document.get(RowDocument.ATTR_KEY__ID);
+            ObjectId rowId = (ObjectId) document.get(RowDocument.MONGO_KEY__ID);
 
             // delete all cells associated with the row
             allDeleteResults.addAll(cellDAO.deleteCellsAssociatedWithRow(rowId));
@@ -226,16 +227,16 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
             List<String> attributesToInclude = new ArrayList<>();
 
             // mandatory
-            attributesToInclude.add(RowDocument.ATTR_KEY__ID);
-            attributesToInclude.add(RowDocument.ATTR_KEY__DATASET_ID);
-            attributesToInclude.add(RowDocument.ATTR_KEY__METADATA);
+            attributesToInclude.add(RowDocument.MONGO_KEY__ID);
+            attributesToInclude.add(RowDocument.MONGO_KEY__DATASET_ID);
+            attributesToInclude.add(RowDocument.MONGO_KEY__METADATA);
             attributesToInclude.add(
-                    RowDocument.ATTR_KEY__DATA + "." +
-                            MongoFieldNameEncoder.toMongoSafeFieldName(Row.ATTR_KEY__ROW_NUMBER));
+                    RowDocument.MONGO_KEY__DATA + "." +
+                            MongoFieldNameEncoder.toMongoSafeFieldName(Row.MONGO_KEY__ROW_NUMBER));
 
             for (String columnIncludedInQuery : dataColumnNamesToIncludedInQueryResults) {
                 attributesToInclude.add(
-                        RowDocument.ATTR_KEY__DATA + "." +
+                        RowDocument.MONGO_KEY__DATA + "." +
                                 MongoFieldNameEncoder.toMongoSafeFieldName(columnIncludedInQuery));
             }
 
@@ -248,18 +249,18 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "getting rows for the matching IDs");
 
-        Bson query = in(RowDocument.ATTR_KEY__ID, rowIds);
+        Bson query = in(RowDocument.MONGO_KEY__ID, rowIds);
 
         List<Document> results = get(query, projection);
 
         for (Document result : results) {
 
-            Document data = (Document) result.get(RowDocument.ATTR_KEY__DATA);
+            Document data = (Document) result.get(RowDocument.MONGO_KEY__DATA);
             if (data == null) {
-                result.put(RowDocument.ATTR_KEY__DATA, new Document());
+                result.put(RowDocument.MONGO_KEY__DATA, new Document());
             }
             else {
-                result.put(RowDocument.ATTR_KEY__DATA, DAOUtilities.toDocumentWithClientSideFieldNames(data));
+                result.put(RowDocument.MONGO_KEY__DATA, DAOUtilities.toDocumentWithClientSideFieldNames(data));
             }
         }
 
@@ -275,19 +276,19 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
         // CAUTION: Do NOT change the order of these, as these reflect an index set within the
         //          database.  If you do, you'll have to change the index as well.
         Bson query = and(
-                in(CellDocument.ATTR_KEY__ROW_ID, rowIds),
+                in(CellDocument.MONGO_KEY__ROW_ID, rowIds),
 
                 DAOUtilities.toCriterion(
-                        CellDocument.ATTR_KEY__COLUMN_NAME,
+                        CellDocument.MONGO_KEY__COLUMN_NAME,
                         searchCriterion.getName(),
-                        searchCriterion.getComparisonOperator()),
+                        ComparisonOperator.EQUALS),
 
                 DAOUtilities.toCriterion(
-                        CellDocument.ATTR_KEY__VALUE,
+                        CellDocument.MONGO_KEY__VALUE,
                         searchCriterion.getValue(),
                         searchCriterion.getComparisonOperator()));
 
-        Bson projection = fields(include(CellDocument.ATTR_KEY__ROW_ID));
+        Bson projection = fields(include(CellDocument.MONGO_KEY__ROW_ID));
 
         PerformanceLogger performanceLogger = new PerformanceLogger(
                 log,
@@ -311,11 +312,11 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
         Bson query = and(
 
                 eq(
-                        CellDocument.ATTR_KEY__COLUMN_NAME,
+                        CellDocument.MONGO_KEY__COLUMN_NAME,
                         toMongoSafeFieldName(searchCriterion.getName())),
 
                 DAOUtilities.toCriterion(
-                        CellDocument.ATTR_KEY__VALUE,
+                        CellDocument.MONGO_KEY__VALUE,
                         searchCriterion.getValue(),
                         searchCriterion.getComparisonOperator()));
 
@@ -333,10 +334,10 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
 
     public Set<ObjectId> getIdsOfRowsThatMatch(SearchCriterion searchCriterion) {
 
-        Bson rowIdCriterion = eq(CellDocument.ATTR_KEY__COLUMN_NAME, toMongoSafeFieldName(searchCriterion.getName()));
+        Bson rowIdCriterion = eq(CellDocument.MONGO_KEY__COLUMN_NAME, toMongoSafeFieldName(searchCriterion.getName()));
 
         Bson valueCriterion = DAOUtilities.toCriterion(
-                CellDocument.ATTR_KEY__VALUE,
+                CellDocument.MONGO_KEY__VALUE,
                 searchCriterion.getValue(),
                 searchCriterion.getComparisonOperator());
 
@@ -344,7 +345,7 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
         //          database.  If you do, you'll have to change the index as well.
         Bson query = and(rowIdCriterion, valueCriterion);
 
-        Bson projection = fields(include(CellDocument.ATTR_KEY__ROW_ID));
+        Bson projection = fields(include(CellDocument.MONGO_KEY__ROW_ID));
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "[getIdsOfRowsThatMatch()] cellDAO.get(" + DAOUtilities.toJSON(query) + ")");
 
@@ -364,20 +365,20 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
         Bson query = and(
 
                 eq(
-                        CellDocument.ATTR_KEY__ROW_ID,
+                        CellDocument.MONGO_KEY__ROW_ID,
                         rowId),
 
                 eq(
-                        CellDocument.ATTR_KEY__COLUMN_NAME,
+                        CellDocument.MONGO_KEY__COLUMN_NAME,
                         toMongoSafeFieldName(searchCriterion.getName())),
 
                 DAOUtilities.toCriterion(
-                        CellDocument.ATTR_KEY__VALUE,
+                        CellDocument.MONGO_KEY__VALUE,
                         searchCriterion.getValue(),
                         searchCriterion.getComparisonOperator()));
 
         Bson projection = fields(include(
-                CellDocument.ATTR_KEY__ROW_ID));
+                CellDocument.MONGO_KEY__ROW_ID));
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "[rowMatchesTheCriterion()] cellDAO.getOne(" + DAOUtilities.toJSON(query) + ")");
         Document document = cellDAO.getOne(query, projection);
@@ -392,7 +393,7 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
 
         for (Document document : documents) {
 
-            objectIds.add((ObjectId) document.get(CellDocument.ATTR_KEY__ROW_ID));
+            objectIds.add((ObjectId) document.get(CellDocument.MONGO_KEY__ROW_ID));
         }
 
         return objectIds;
@@ -411,7 +412,7 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
 
     protected void makeSureTableColumnsIRelyUponAreIndexed() {
 
-        getCollection().createIndex(new Document().append(RowDocument.ATTR_KEY__ID, 1));
+        getCollection().createIndex(new Document().append(RowDocument.MONGO_KEY__ID, 1));
 
         if (HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED == false) {
 
@@ -422,14 +423,14 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
             MongoCollection<Document> cellCollection = cellDAO.getCollection();
 
             BasicDBObject compoundIndex = new BasicDBObject();
-            compoundIndex.put(CellDocument.ATTR_KEY__COLUMN_NAME, 1);
-            compoundIndex.put(CellDocument.ATTR_KEY__VALUE, 1);
+            compoundIndex.put(CellDocument.MONGO_KEY__COLUMN_NAME, 1);
+            compoundIndex.put(CellDocument.MONGO_KEY__VALUE, 1);
             cellCollection.createIndex(compoundIndex);
 
             compoundIndex = new BasicDBObject();
-            compoundIndex.put(CellDocument.ATTR_KEY__ROW_ID, 1);
-            compoundIndex.put(CellDocument.ATTR_KEY__COLUMN_NAME, 1);
-            compoundIndex.put(CellDocument.ATTR_KEY__VALUE, 1);
+            compoundIndex.put(CellDocument.MONGO_KEY__ROW_ID, 1);
+            compoundIndex.put(CellDocument.MONGO_KEY__COLUMN_NAME, 1);
+            compoundIndex.put(CellDocument.MONGO_KEY__VALUE, 1);
             cellCollection.createIndex(compoundIndex);
 
             if (log.isInfoEnabled()) {

@@ -59,7 +59,7 @@ public abstract class AbsDatasetBOTest extends TestUsingTestData
 //        String dataset_1_json = getDatasetBO().getDataset(TestMode.TEST_MODE, dataset_1_id);
 //
 //        Dataset dataset_1 = new Dataset(dataset_1_json);
-//        dataset_1.remove(AbstractDocument.ATTR_KEY__ID);
+//        dataset_1.remove(AbstractDocument.MONGO_KEY__ID);
 //        dataset_1_json = dataset_1.toJson();
 //        String newObjectId = getDatasetBO().addDataset(TestMode.TEST_MODE, dataset_1_json);
 //
@@ -71,7 +71,7 @@ public abstract class AbsDatasetBOTest extends TestUsingTestData
 //        String newDataset_json = getDatasetBO().getDataset(TestMode.TEST_MODE, newObjectId);
 //
 //        Dataset newDataset = new Dataset(newDataset_json);
-//        newDataset.remove(AbstractDocument.ATTR_KEY__ID);
+//        newDataset.remove(AbstractDocument.MONGO_KEY__ID);
 //        // they should be the same
 //        assertTrue(newDataset.equals(dataset_1));
 //    }

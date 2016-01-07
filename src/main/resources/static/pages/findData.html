@@ -93,6 +93,16 @@
 
   </div>
 
+  <!-- alert messages -->
+  <div class="alert alert-danger" ng-show="alertMessage_failure != ''">
+    <strong>ERROR:</strong> {{$root.alertMessage_failure}}
+    <a href="/data-repository-app/#/findData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_failure = ''">&times;</a>
+  </div>
+  <div class="alert alert-warning" ng-show="alertMessage_missingUserInput != ''" style="margin-top: 10px;">
+    {{$root.alertMessage_missingUserInput}}
+    <a href="/data-repository-app/#/findData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_missingUserInput = ''">&times;</a>
+  </div>
+
   <!-- Number of results header -->
 
   <div style="padding: 2px; border-bottom: 2px black; margin-top: 15px; background-color: #EEEEEE" ng-hide="$root.searchComplete === false" style="margin-top: 20px">
@@ -106,15 +116,6 @@
       </span>
     </div>
 
-  </div>
-
-  <div class="alert alert-success" ng-show="alertMessage_success != ''">
-    <strong>Success!</strong> {{$root.alertMessage_success}}
-    <a href="/data-repository-app/#/findData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_success = ''">&times;</a>
-  </div>
-  <div class="alert alert-danger" ng-show="alertMessage_failure != ''">
-    <strong>ERROR:</strong> {{$root.alertMessage_failure}}
-    <a href="/data-repository-app/#/findData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_failure = ''">&times;</a>
   </div>
 
   <!-- Results Table -->
