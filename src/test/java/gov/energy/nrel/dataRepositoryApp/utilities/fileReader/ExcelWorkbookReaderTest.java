@@ -1,10 +1,10 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
+import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.InvalidValueFoundInHeader;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
-import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -83,7 +83,7 @@ public class ExcelWorkbookReaderTest {
         RowCollection rowCollection = excelWorkbookReader.extractDataFromFile(file, "Sheet Containing Data");
 
         assertTrue(rowCollection.columnNames.size() == 8);
-        assertTrue(rowCollection.columnNames.get(0).equals(Row.ATTR_KEY__ROW_NUMBER));
+        assertTrue(rowCollection.columnNames.get(0).equals(Row.MONGO_KEY__ROW_NUMBER));
         assertTrue(rowCollection.columnNames.get(1).equals("Column 1"));
         assertTrue(rowCollection.columnNames.get(2).equals("1.5"));
         assertTrue(rowCollection.columnNames.get(3).equals("Column 2"));

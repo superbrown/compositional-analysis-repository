@@ -6,16 +6,6 @@ import java.util.List;
 
 public interface IMetadata {
 
-    String ATTR_KEY__DATA_CATEGORY = " Data Category";
-    String ATTR_KEY__SUBMISSION_DATE = " Submission Date";
-    String ATTR_KEY__SUBMITTER = " Submitter";
-    String ATTR_KEY__CHARGE_NUMBER = " Charge Number";
-    String ATTR_KEY__PROJECT_NAME = " Project Name";
-    String ATTR_KEY__COMMENTS = " Comments";
-    String ATTR_KEY__SOURCE_DOCUMENT = " Source Document";
-    String ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA = "Sub-Document Containing Data";
-    String ATTR_KEY__ATTACHMENTS = " Attachments";
-
     String getDataCategory();
 
     Date getSubmissionDate();
@@ -26,11 +16,14 @@ public interface IMetadata {
 
     String getProjectName();
 
-    String getNameOfSubdocumentContainingData();
-
     String getComments();
 
     IStoredFile getSourceDocument();
+
+    /**
+     * This is the sub-document containing the data.  For instance, an Excel workbook contains sheets.
+     */
+    String getSubdocumentName();
 
     List<IStoredFile> getAttachments();
 

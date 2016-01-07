@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class Row extends AbstractDocument implements IRow {
 
-    public static final String ATTR_KEY__ROW_NUMBER = " Original Document Row Number";
+    public static final String MONGO_KEY__ROW_NUMBER = " Row";
 
     public Row() {
         super();
@@ -33,7 +33,7 @@ public class Row extends AbstractDocument implements IRow {
 
     public Row(List<String> columnNames, int rowIndex, List rowValues) {
 
-        put(MongoFieldNameEncoder.toMongoSafeFieldName(ATTR_KEY__ROW_NUMBER), rowIndex);
+        put(MongoFieldNameEncoder.toMongoSafeFieldName(MONGO_KEY__ROW_NUMBER), rowIndex);
 
         for (int columnIndex = 0; columnIndex < columnNames.size(); columnIndex++) {
 
@@ -43,18 +43,6 @@ public class Row extends AbstractDocument implements IRow {
             put(MongoFieldNameEncoder.toMongoSafeFieldName(columnName), columnValue);
         }
     }
-
-//    public void init(String json) {
-//
-//        BasicDBObject parseredJson = (BasicDBObject) DAOUtilities.parse(json);
-//
-//        for (String key : parseredJson.keySet()) {
-//
-//            String decodedColumnName = MongoFieldNameEncoder.toClientSideFieldName(key);
-//            Object columnValue = parseredJson.get(key);
-//            put(decodedColumnName, columnValue);
-//        }
-//    }
 
     @Override
     public Set<String> getColumnNames() {

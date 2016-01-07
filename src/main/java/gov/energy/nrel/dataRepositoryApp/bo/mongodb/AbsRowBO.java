@@ -11,6 +11,7 @@ import gov.energy.nrel.dataRepositoryApp.dao.IRowDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
+import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.model.IRowDocument;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Metadata;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
@@ -22,8 +23,7 @@ import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -32,12 +32,7 @@ import java.util.*;
 
 public abstract class AbsRowBO implements IRowBO {
 
-    private static final String ATTR_SOURCE_UUID = " Source UUID";
-    private static final String ATTR_ROW_UUID = " Row UUID";
     protected Logger log = Logger.getLogger(getClass());
-
-    private static final String ATTR_ORIGINAL_FILE_NAME = " Original File Name";
-    private static final String ATTR_ORIGINAL_FILE_ROW_NUMBER = " Original File Row Number";
 
     protected IRowDAO rowDAO;
 
@@ -199,23 +194,31 @@ public abstract class AbsRowBO implements IRowBO {
 
             Document row = new Document();
 
-            row.put(ATTR_SOURCE_UUID, getObjectId(document, RowDocument.ATTR_KEY__DATASET_ID));
+            Document metadata = (Document) document.get(RowDocument.MONGO_KEY__METADATA);
+
+            row.put(Metadata.MONGO_KEY__SUBMISSION_DATE, toString((Date) metadata.get(Metadata.MONGO_KEY__SUBMISSION_DATE)));
+            row.put(Metadata.MONGO_KEY__SUBMISSION_DATE, toString((Date) metadata.get(Metadata.MONGO_KEY__SUBMISSION_DATE)));
+            row.put(Metadata.MONGO_KEY__SUBMITTER, metadata.get(Metadata.MONGO_KEY__SUBMITTER));
+            row.put(Metadata.MONGO_KEY__PROJECT_NAME, metadata.get(Metadata.MONGO_KEY__PROJECT_NAME));
+            row.put(Metadata.MONGO_KEY__CHARGE_NUMBER, metadata.get(Metadata.MONGO_KEY__CHARGE_NUMBER));
+            row.put(Metadata.MONGO_KEY__COMMENTS, metadata.get(Metadata.MONGO_KEY__COMMENTS));
+
+            row.put(IDatasetDocument.DISPLAY_FIELD__SOURCE_UUID, getObjectId(document, RowDocument.MONGO_KEY__DATASET_ID));
 
             if (purpose == Purpose.FOR_FILE_DOWNLOAD) {
                 // including in case someone might find it helpful to have
-                row.put(ATTR_ROW_UUID, getObjectId(document, RowDocument.ATTR_KEY__ID));
+                row.put(IRowDocument.DISPLAY_FIELD__ROW_UUID, getObjectId(document, RowDocument.MONGO_KEY__ID));
             }
 
-            Document metadata = (Document) document.get(RowDocument.ATTR_KEY__METADATA);
-            Document data = (Document) document.get(RowDocument.ATTR_KEY__DATA);
-            String datasetId = getObjectId(document, RowDocument.ATTR_KEY__DATASET_ID);
+            Document data = (Document) document.get(RowDocument.MONGO_KEY__DATA);
+            String datasetId = getObjectId(document, RowDocument.MONGO_KEY__DATASET_ID);
 
-            Document sourceDocument = (Document) metadata.get(Metadata.ATTR_KEY__SOURCE_DOCUMENT);
+            Document sourceDocument = (Document) metadata.get(Metadata.MONGO_KEY__SOURCE_DOCUMENT);
 
-            String originalFileName = (String) sourceDocument.get(StoredFile.ATTR_KEY__ORIGINAL_FILE_NAME);
-            Integer rowNumber = (Integer) data.get(Row.ATTR_KEY__ROW_NUMBER);
+            String originalFileName = (String) sourceDocument.get(StoredFile.MONGO_KEY__ORIGINAL_FILE_NAME);
+            Integer rowNumber = (Integer) data.get(Row.MONGO_KEY__ROW_NUMBER);
 
-            String nameOfSubdocumentContainingDataIfApplicable = (String)metadata.get(Metadata.ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA);
+            String nameOfSubdocumentContainingDataIfApplicable = (String)metadata.get(Metadata.MONGO_KEY__SUB_DOCUMENT_NAME);
             boolean thereIsASubdocument = StringUtils.isNotBlank(nameOfSubdocumentContainingDataIfApplicable);
 
             if (thereIsASubdocument == false) {
@@ -224,40 +227,25 @@ public abstract class AbsRowBO implements IRowBO {
 
             if (purpose == Purpose.FOR_FILE_DOWNLOAD) {
 
-                row.put(ATTR_ORIGINAL_FILE_NAME, originalFileName);
-                row.put(Metadata.ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA, nameOfSubdocumentContainingDataIfApplicable);
-                row.put(ATTR_ORIGINAL_FILE_ROW_NUMBER, rowNumber);
-                row.put(Metadata.ATTR_KEY__DATA_CATEGORY, metadata.get(Metadata.ATTR_KEY__DATA_CATEGORY));
+                row.put(Metadata.MONGO_KEY__SOURCE_DOCUMENT, originalFileName);
+                row.put(Metadata.MONGO_KEY__SUB_DOCUMENT_NAME, nameOfSubdocumentContainingDataIfApplicable);
+                row.put(Row.MONGO_KEY__ROW_NUMBER, rowNumber);
+                row.put(Metadata.MONGO_KEY__DATA_CATEGORY, metadata.get(Metadata.MONGO_KEY__DATA_CATEGORY));
             }
             else if (purpose == Purpose.FOR_SCREEN_DIAPLAYED_SEARCH_RESULTS) {
 
-                String rowNumberString = " (row " + rowNumber + ")";
-
                 // link for downloading the file
                 // DESIGN NOTE: I know, this is the wrong architectural layer. I'm in a time crunch right now.
-                String sourceDocumentLink = "<a href='" + ServletContainerConfig.CONTEXT_PATH +
+
+                row.put(Metadata.MONGO_KEY__SOURCE_DOCUMENT,
+                        "<a href='" + ServletContainerConfig.CONTEXT_PATH +
                         "/api/dataset/" + datasetId + "/sourceDocument' " +
                         "target='_blank'>" +
-                        originalFileName + "</a>";
+                        originalFileName + "</a>");
 
-                if (thereIsASubdocument == false) {
-                    sourceDocumentLink += rowNumberString;
-                }
-
-                row.put("Source Document", sourceDocumentLink);
-
-                if (thereIsASubdocument) {
-                    nameOfSubdocumentContainingDataIfApplicable += rowNumberString;
-                }
-
-                row.put(Metadata.ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA, nameOfSubdocumentContainingDataIfApplicable);
+                row.put(Metadata.MONGO_KEY__SUB_DOCUMENT_NAME, nameOfSubdocumentContainingDataIfApplicable);
+                row.put(Row.MONGO_KEY__ROW_NUMBER, rowNumber);
             }
-
-            row.put(Metadata.ATTR_KEY__SUBMISSION_DATE, toString((Date) metadata.get(Metadata.ATTR_KEY__SUBMISSION_DATE)));
-            row.put(Metadata.ATTR_KEY__SUBMITTER, metadata.get(Metadata.ATTR_KEY__SUBMITTER));
-            row.put(Metadata.ATTR_KEY__PROJECT_NAME, metadata.get(Metadata.ATTR_KEY__PROJECT_NAME));
-            row.put(Metadata.ATTR_KEY__CHARGE_NUMBER, metadata.get(Metadata.ATTR_KEY__CHARGE_NUMBER));
-            row.put(Metadata.ATTR_KEY__COMMENTS, metadata.get(Metadata.ATTR_KEY__COMMENTS));
 
             Set<String> columnNames = data.keySet();
             columnNames = Utilities.toSortedSet(columnNames);
@@ -269,7 +257,7 @@ public abstract class AbsRowBO implements IRowBO {
                 if (value == null) {
 
                 }
-                else if (Row.ATTR_KEY__ROW_NUMBER.equals(name)) {
+                else if (Row.MONGO_KEY__ROW_NUMBER.equals(name)) {
                     // we already grabbed this above
                 }
                 else {
@@ -297,7 +285,7 @@ public abstract class AbsRowBO implements IRowBO {
 
             if (purpose == Purpose.FOR_SCREEN_DIAPLAYED_SEARCH_RESULTS) {
 
-                List attachments = (List) metadata.get(Metadata.ATTR_KEY__ATTACHMENTS);
+                List attachments = (List) metadata.get(Metadata.MONGO_KEY__ATTACHMENTS);
                 String originalFileNames = toOriginalFileNames(attachments);
 
                 if (StringUtils.isNotBlank(originalFileNames)) {
@@ -324,7 +312,7 @@ public abstract class AbsRowBO implements IRowBO {
         String originalFileNames = "";
         for (Object attachment : attachments) {
             Document document = (Document) attachment;
-            Object originalFilename = document.get(StoredFile.ATTR_KEY__ORIGINAL_FILE_NAME);
+            Object originalFilename = document.get(StoredFile.MONGO_KEY__ORIGINAL_FILE_NAME);
             originalFileNames += "<br>" + originalFilename;
         }
         originalFileNames = originalFileNames.replaceFirst("<br>", "");
@@ -342,214 +330,11 @@ public abstract class AbsRowBO implements IRowBO {
 
         BasicDBList basicDBList = flatten(documents, Purpose.FOR_FILE_DOWNLOAD);
 
-        XSSFWorkbook workbook = toExcelWorkbook(basicDBList, query);
+        XSSFWorkbook workbook = SearchResultsFileWriter_ExcelWorkbook.toExcelWorkbook(basicDBList, query);
         return workbook;
     }
 
-    private static final List<String> METADATA_COLUMNS_TO_RETURN = new ArrayList();
-    static {
-        METADATA_COLUMNS_TO_RETURN.add(ATTR_SOURCE_UUID);
-        METADATA_COLUMNS_TO_RETURN.add(ATTR_ROW_UUID);
-        METADATA_COLUMNS_TO_RETURN.add(ATTR_ORIGINAL_FILE_NAME);
-        METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__SUB_DOCUMENT_CONTAINING_DATA);
-        METADATA_COLUMNS_TO_RETURN.add(ATTR_ORIGINAL_FILE_ROW_NUMBER);
-        METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__DATA_CATEGORY);
-        METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__SUBMISSION_DATE);
-        METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__SUBMITTER);
-        METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__PROJECT_NAME);
-        METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__CHARGE_NUMBER);
-        METADATA_COLUMNS_TO_RETURN.add(Metadata.ATTR_KEY__COMMENTS);
-    }
-
-    private XSSFWorkbook toExcelWorkbook(BasicDBList documents, String query) {
-
-        List<String> allKeys = new ArrayList(extractAllKeys(documents));
-
-        // We are removing these because we want to add them in a specific order before all the
-        // other columns.  In other words, we don't want them alphabetized with the others.
-        allKeys.removeAll(METADATA_COLUMNS_TO_RETURN);
-
-        Utilities.sortAlphaNumerically(allKeys);
-
-        // Add them back to the beginning of the list.
-        allKeys.addAll(0, METADATA_COLUMNS_TO_RETURN);
-
-        // Sample code:
-        // http://www.avajava.com/tutorials/lessons/how-do-i-write-to-an-excel-file-using-poi.html
-
-        XSSFWorkbook workbook = new XSSFWorkbook();
-
-        XSSFSheet worksheet = workbook.createSheet("sheet");
-
-        // create heading row
-        short rowIndex = 0;
-
-        // inital blank row
-        worksheet.createRow(rowIndex++);
-        worksheet.createRow(rowIndex++);
-
-        XSSFRow row = worksheet.createRow(rowIndex++);
-
-        int columnIndex = 0;
-
-        XSSFCellStyle italicBoldStyle = getItalicBoldStyle(workbook);
-
-        for (String columnName : allKeys) {
-            XSSFCell cell = row.createCell(columnIndex);
-            cell.setCellValue(columnName);
-            cell.setCellStyle(italicBoldStyle);
-            columnIndex++;
-        }
-
-        for (Object object : documents) {
-
-            Document document = (Document) object;
-
-            row = worksheet.createRow(rowIndex++);
-
-            columnIndex = 0;
-            for (String columnName : allKeys) {
-
-                XSSFCell cell = row.createCell(columnIndex);
-
-                if (document.containsKey(columnName)) {
-                    setCellValue(cell, document.get(columnName));
-                }
-                else {
-                    // don't set cell's value
-                }
-
-                columnIndex++;
-            }
-        }
-
-        for (columnIndex = 0; columnIndex < allKeys.size(); columnIndex++) {
-            worksheet.autoSizeColumn(columnIndex);
-        }
-
-        String humanReadableFilterString = toHumanReadableFilterString(query);
-
-        putQueryInCell(worksheet, humanReadableFilterString, 1, 0);
-
-        // freeze the first row
-        worksheet.createFreezePane(0, 3);
-
-        setAsActiveCell(worksheet, 3, 0);
-
-        return workbook;
-    }
-
-    private void setAsActiveCell(XSSFSheet worksheet, int rowNumber, int collumnNumber) {
-
-        XSSFRow firstDataRow = worksheet.getRow(rowNumber);
-        firstDataRow.getCell(collumnNumber).setAsActiveCell();
-    }
-
-    private String toHumanReadableFilterString(String query) {
-
-        BasicDBList basicDBList = (BasicDBList) JSON.parse(query);
-
-        Object[] basicDBObjects = basicDBList.toArray();
-
-        String humanReadableFilterString = "";
-        for (Object o : basicDBObjects) {
-
-            BasicDBObject basicDBObject = (BasicDBObject) o;
-
-            Object name = basicDBObject.get("name");
-            Object comparisonOperator = basicDBObject.get("comparisonOperator");
-            Object dataType = basicDBObject.get("dataType");
-            Object value = basicDBObject.get("value");
-
-            if (dataType.equals("DATE")) {
-                value = ((String)value).substring(0, 10);
-            }
-            else if (dataType.equals("STRING")) {
-                value = "\"" + value + "\"";
-            }
-            else if (dataType.equals("NUMBER")) {
-                // leave as is
-            }
-            else if (dataType.equals("BOOLEAN")) {
-                // leave as is
-            }
-
-            humanReadableFilterString += "(\"" + name + "\" " + comparisonOperator + " " + dataType + "(" + value + ")) and ";
-        }
-
-        // remove trailing "and"
-        if (humanReadableFilterString.length() > 0) {
-            humanReadableFilterString =
-                    humanReadableFilterString.substring(
-                            0, humanReadableFilterString.length() - (" and ".length()));
-        }
-
-        return humanReadableFilterString;
-    }
-
-    private void putQueryInCell(XSSFSheet worksheet, String string, int rowNumber, int columnNumber) {
-
-        XSSFRow firstRow = worksheet.getRow(rowNumber);
-        XSSFCell firstCell = firstRow.createCell(columnNumber);
-        firstCell.setCellValue("Filter: " + string);
-        firstCell.setCellStyle(getBlueStyle(worksheet.getWorkbook()));
-    }
-
-    private XSSFCellStyle getItalicBoldStyle(XSSFWorkbook workbook) {
-
-        XSSFFont boldFont= workbook.createFont();
-        boldFont.setBold(true);
-        boldFont.setItalic(true);
-
-        XSSFCellStyle style = workbook.createCellStyle();
-        style.setFont(boldFont);
-
-        return style;
-    }
-
-    private XSSFCellStyle getBlueStyle(XSSFWorkbook workbook) {
-
-        XSSFFont boldFont= workbook.createFont();
-        boldFont.setColor(IndexedColors.BLUE.getIndex());
-
-        XSSFCellStyle style = workbook.createCellStyle();
-        style.setFont(boldFont);
-
-        return style;
-    }
-
-    private void setCellValue(XSSFCell cell, Object value) {
-        if (value instanceof Number) {
-            cell.setCellValue(((Number) value).doubleValue());
-        }
-        else if (value instanceof String) {
-            cell.setCellValue((String) value);
-        }
-        else if (value instanceof Date) {
-            cell.setCellValue((Date) value);
-        }
-        else if (value instanceof Boolean) {
-            cell.setCellValue((Boolean) value);
-        }
-        else if (value == null) {
-            // nothing to set
-        }
-        else {
-            throw new RuntimeException("Encountered unrecognized value: " + value);
-        }
-    }
-
-    private Set<String> extractAllKeys(BasicDBList documents) {
-
-        Set<String> allUniqueKeys = new HashSet<>();
-        for (Object document : documents) {
-            allUniqueKeys.addAll(((Document)document).keySet());
-        }
-
-        return allUniqueKeys;
-    }
-
-//    @Override
+    //    @Override
 //    public String getRows(RowSearchCriteria rowSearchCriteria, String projection) {
 //
 //        List<Document> rowDocuments = getRowDAO(testMode).query(rowSearchCriteria);
@@ -595,7 +380,7 @@ public abstract class AbsRowBO implements IRowBO {
     public String getRowsAssociatedWithDataset(String datasetId) {
 
         Document idFilter = new Document().append(
-                RowDocument.ATTR_KEY__DATASET_ID, new ObjectId(datasetId));
+                RowDocument.MONGO_KEY__DATASET_ID, new ObjectId(datasetId));
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "getRows(testMode).query(" + idFilter.toJson() + ")");
         List<Document> rowDocuments = getRowDAO().get(idFilter, null);

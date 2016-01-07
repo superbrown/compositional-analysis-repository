@@ -46,7 +46,7 @@ public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetR
         // DESIGN NOTE: When the data was extracted, the the row number was added as the first data element so users
         //              will be able to trace the data back to the original source document.  So we need to add a
         //              name for that column.
-        columnNames.add(0, Row.ATTR_KEY__ROW_NUMBER);
+        columnNames.add(0, Row.MONGO_KEY__ROW_NUMBER);
 
 
         RowCollection rowCollection = new RowCollection(columnNames, data);

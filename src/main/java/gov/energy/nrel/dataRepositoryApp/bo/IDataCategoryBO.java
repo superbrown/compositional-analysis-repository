@@ -15,7 +15,7 @@ public interface IDataCategoryBO {
 
     void deleteDataCategory(String dataCategoryId) throws DeletionFailure;
 
-    String getColumnNamesForDataCategoryName(String dataCategoryName);
+    String getSearchableColumnNamesForDataCategoryName(String dataCategoryName);
 
     void addDataCategory(String categoryName);
 

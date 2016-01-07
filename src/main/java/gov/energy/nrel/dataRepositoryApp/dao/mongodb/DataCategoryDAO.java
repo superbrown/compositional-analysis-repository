@@ -50,12 +50,12 @@ public class DataCategoryDAO extends AbsDAO implements IDataCategoryDAO {
         List<Document> documents = DAOUtilities.get(
                 getCollection(),
                 new BasicDBObject(),
-                new BasicDBObject().append(DataCategoryDocument.ATTR_KEY__NAME, 1));
+                new BasicDBObject().append(DataCategoryDocument.MONGO_KEY__NAME, 1));
 
         List<String> categoryNames = new ArrayList<>();
         for (Document document : documents) {
 
-            categoryNames.add((String) document.get(DataCategoryDocument.ATTR_KEY__NAME));
+            categoryNames.add((String) document.get(DataCategoryDocument.MONGO_KEY__NAME));
         }
 
         return categoryNames;
@@ -64,7 +64,7 @@ public class DataCategoryDAO extends AbsDAO implements IDataCategoryDAO {
     @Override
     public IDataCategoryDocument getByName(Object name) {
 
-        Bson filter = eq(DataCategoryDocument.ATTR_KEY__NAME, name);
+        Bson filter = eq(DataCategoryDocument.MONGO_KEY__NAME, name);
 
         MongoCollection<Document> collection = getCollection();
         Document document = DAOUtilities.getOne(collection, filter, null);

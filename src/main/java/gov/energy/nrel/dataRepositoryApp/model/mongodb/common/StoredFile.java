@@ -7,8 +7,8 @@ import org.bson.Document;
 
 public class StoredFile extends AbstractDocument implements IStoredFile {
 
-    public static final String ATTR_KEY__ORIGINAL_FILE_NAME = " originalFileName";
-    public static final String ATTR_KEY__STORAGE_LOCATION = " storageLocation";
+    public static final String MONGO_KEY__ORIGINAL_FILE_NAME = " originalFileName";
+    public static final String MONGO_KEY__STORAGE_LOCATION = " storageLocation";
 
     public StoredFile(Document document) {
         super(document);
@@ -34,23 +34,23 @@ public class StoredFile extends AbstractDocument implements IStoredFile {
 
         initObjectId(document);
 
-        init((String)document.get(ATTR_KEY__ORIGINAL_FILE_NAME),
-             (String)document.get(ATTR_KEY__STORAGE_LOCATION));
+        init((String)document.get(MONGO_KEY__ORIGINAL_FILE_NAME),
+             (String)document.get(MONGO_KEY__STORAGE_LOCATION));
     }
 
     public void init(String originalFileName, String storageLocation) {
 
-        put(ATTR_KEY__ORIGINAL_FILE_NAME, originalFileName);
-        put(ATTR_KEY__STORAGE_LOCATION, storageLocation);
+        put(MONGO_KEY__ORIGINAL_FILE_NAME, originalFileName);
+        put(MONGO_KEY__STORAGE_LOCATION, storageLocation);
     }
 
     @Override
     public String getOriginalFileName() {
-        return (String) get(ATTR_KEY__ORIGINAL_FILE_NAME);
+        return (String) get(MONGO_KEY__ORIGINAL_FILE_NAME);
     }
 
     @Override
     public String getStorageLocation() {
-        return (String) get(ATTR_KEY__STORAGE_LOCATION);
+        return (String) get(MONGO_KEY__STORAGE_LOCATION);
     }
 }

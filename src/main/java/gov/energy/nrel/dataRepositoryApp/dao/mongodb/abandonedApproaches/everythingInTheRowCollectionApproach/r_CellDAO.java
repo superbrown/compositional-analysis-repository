@@ -52,7 +52,7 @@ public class r_CellDAO extends AbsDAO implements ICellDAO {
         DeleteResults allDeleteResults = new DeleteResults();
 
         Document rowIdFilter = new Document().
-                append(CellDocument.ATTR_KEY__ROW_ID, rowId);
+                append(CellDocument.MONGO_KEY__ROW_ID, rowId);
 
         DeleteResult deleteResult = getCollection().deleteMany(rowIdFilter);
 

@@ -87,7 +87,7 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
 
         Set<String> columnNames = dataCategoryDocument.getColumnNames();
         assertTrue(columnNames.size() == 8);
-        assertTrue(columnNames.contains(Row.ATTR_KEY__ROW_NUMBER));
+        assertTrue(columnNames.contains(Row.MONGO_KEY__ROW_NUMBER));
         assertTrue(columnNames.contains("Some Column Name"));
         assertTrue(columnNames.contains("Boolean Values Column Name"));
         assertTrue(columnNames.contains("String Values Column Name"));
@@ -103,7 +103,7 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
 
         columnNames = dataCategoryDocument.getColumnNames();
         assertTrue(columnNames.size() == 10);
-        assertTrue(columnNames.contains(Row.ATTR_KEY__ROW_NUMBER));
+        assertTrue(columnNames.contains(Row.MONGO_KEY__ROW_NUMBER));
         assertTrue(columnNames.contains("Some Column Name"));
         assertTrue(columnNames.contains("String Values Column Name"));
         assertTrue(columnNames.contains("Date Values Column Name"));

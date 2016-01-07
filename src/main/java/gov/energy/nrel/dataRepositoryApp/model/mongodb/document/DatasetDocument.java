@@ -13,7 +13,7 @@ import java.util.List;
 
 public class DatasetDocument extends AbstractDocument implements IDatasetDocument {
 
-    public static final String ATTR_KEY__METADATA = "metadata";
+    public static final String MONGO_KEY__METADATA = "metadata";
 
     public DatasetDocument(String json) {
         super(json);
@@ -60,18 +60,18 @@ public class DatasetDocument extends AbstractDocument implements IDatasetDocumen
 
         initObjectId(document);
 
-        IMetadata metadata = new Metadata(DAOUtilities.serialize(document.get(ATTR_KEY__METADATA)));
+        IMetadata metadata = new Metadata(DAOUtilities.serialize(document.get(MONGO_KEY__METADATA)));
 
         init(metadata);
     }
 
     private void init(IMetadata metadata) {
 
-        put(ATTR_KEY__METADATA, metadata);
+        put(MONGO_KEY__METADATA, metadata);
     }
 
     @Override
     public Metadata getMetadata() {
-        return (Metadata) get(ATTR_KEY__METADATA);
+        return (Metadata) get(MONGO_KEY__METADATA);
     }
 }

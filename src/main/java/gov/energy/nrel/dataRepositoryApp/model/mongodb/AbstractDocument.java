@@ -10,7 +10,7 @@ import org.bson.types.ObjectId;
 
 public abstract class AbstractDocument extends Document implements IThingWithAnId {
 
-    public static final String ATTR_KEY__ID = "_id";
+    public static final String MONGO_KEY__ID = "_id";
 
     public AbstractDocument() {
 
@@ -45,16 +45,16 @@ public abstract class AbstractDocument extends Document implements IThingWithAnI
 
     protected void initObjectId(Document document) {
 
-        ObjectId objectId = document.getObjectId(ATTR_KEY__ID);
+        ObjectId objectId = document.getObjectId(MONGO_KEY__ID);
 
         if (objectId != null) {
-            put(ATTR_KEY__ID, objectId);
+            put(MONGO_KEY__ID, objectId);
         }
     }
 
     public ObjectId getObjectId() {
 
-        return getObjectId(ATTR_KEY__ID);
+        return getObjectId(MONGO_KEY__ID);
     }
 
     @Override

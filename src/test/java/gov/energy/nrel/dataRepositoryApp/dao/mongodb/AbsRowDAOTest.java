@@ -4,7 +4,7 @@ import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.TestData;
 import gov.energy.nrel.dataRepositoryApp.dao.IRowDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
-import gov.energy.nrel.dataRepositoryApp.model.IMetadata;
+import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Metadata;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.DatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.RowDocument;
 import org.bson.Document;
@@ -51,42 +51,42 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
     @Test
     public void testThatQueriesWorkAsExpectedOnColumnsWithHeterogenousDataTypes() {
 
-        Bson filter = eq(RowDocument.ATTR_KEY__DATA + "." +
+        Bson filter = eq(RowDocument.MONGO_KEY__DATA + "." +
                 MongoFieldNameEncoder.toMongoSafeFieldName(
                         "Varying Value Types Column Name"),
                 TestData.date_1);
         List<Document> results = rowDAO.get(filter);
         assertTrue(results.size() == 1);
 
-        filter = eq(RowDocument.ATTR_KEY__DATA + "." +
+        filter = eq(RowDocument.MONGO_KEY__DATA + "." +
                 MongoFieldNameEncoder.toMongoSafeFieldName(
                         "Varying Value Types Column Name"),
                 "1000");
         results = rowDAO.get(filter);
         assertTrue(results.size() == 1);
 
-        filter = eq(RowDocument.ATTR_KEY__DATA + "." +
+        filter = eq(RowDocument.MONGO_KEY__DATA + "." +
                 MongoFieldNameEncoder.toMongoSafeFieldName(
                         "Varying Value Types Column Name"),
                 1000);
         results = rowDAO.get(filter);
         assertTrue(results.size() == 1);
 
-        filter = eq(RowDocument.ATTR_KEY__DATA + "." +
+        filter = eq(RowDocument.MONGO_KEY__DATA + "." +
                 MongoFieldNameEncoder.toMongoSafeFieldName(
                         "Varying Value Types Column Name"),
                 1000.00);
         results = rowDAO.get(filter);
         assertTrue(results.size() == 1);
 
-        filter = eq(RowDocument.ATTR_KEY__DATA + "." +
+        filter = eq(RowDocument.MONGO_KEY__DATA + "." +
                 MongoFieldNameEncoder.toMongoSafeFieldName(
                         "Varying Value Types Column Name"),
                 1300.54);
         results = rowDAO.get(filter);
         assertTrue(results.size() == 1);
 
-        filter = eq(RowDocument.ATTR_KEY__DATA + "." +
+        filter = eq(RowDocument.MONGO_KEY__DATA + "." +
                 MongoFieldNameEncoder.toMongoSafeFieldName(
                         "Varying Value Types Column Name")
                 , "string value");
@@ -97,20 +97,20 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
     @Test
     public void testQueryForOneFilter_1() {
 
-        Document idFilter = new Document().append(RowDocument.ATTR_KEY__DATASET_ID, TestData.dataset_1_objectId);
+        Document idFilter = new Document().append(RowDocument.MONGO_KEY__DATASET_ID, TestData.dataset_1_objectId);
         List<Document> documents = rowDAO.get(idFilter);
         assertTrue(documents != null);
         assertTrue(documents.size() == 5);
 
         for (Document document : documents) {
-            assertTrue(document.get(RowDocument.ATTR_KEY__DATASET_ID).equals(TestData.dataset_1_objectId));
+            assertTrue(document.get(RowDocument.MONGO_KEY__DATASET_ID).equals(TestData.dataset_1_objectId));
         }
     }
 
     @Test
     public void testQueryForOneFilter_2() {
 
-        Bson filter = eq(RowDocument.ATTR_KEY__DATA + "." +
+        Bson filter = eq(RowDocument.MONGO_KEY__DATA + "." +
                 MongoFieldNameEncoder.toMongoSafeFieldName(
                         "String Values Column Name"),
                 "String 1");
@@ -122,14 +122,14 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
     public void testQueryForOneFilter_3() {
 
         Bson filter = and(
-                eq(DatasetDocument.ATTR_KEY__METADATA + "." + IMetadata.ATTR_KEY__DATA_CATEGORY, TestData.dataCategory),
-                eq(RowDocument.ATTR_KEY__DATA + "." +
+                eq(DatasetDocument.MONGO_KEY__METADATA + "." + Metadata.MONGO_KEY__DATA_CATEGORY, TestData.dataCategory),
+                eq(RowDocument.MONGO_KEY__DATA + "." +
                         MongoFieldNameEncoder.toMongoSafeFieldName(
                                 "Date Values Column Name"),
                         TestData.date_2)
         );
 
-        Document fieldsToInclude = new Document().append(DatasetDocument.ATTR_KEY__METADATA, 1);
+        Document fieldsToInclude = new Document().append(DatasetDocument.MONGO_KEY__METADATA, 1);
         List<Document> results = rowDAO.get(filter);
         assertTrue(results.size() == 2);
     }
@@ -159,12 +159,12 @@ public abstract class AbsRowDAOTest extends TestUsingTestData
         assertTrue(documents.size() == 1);
 
         Document document = documents.get(0);
-        Object data = document.get(RowDocument.ATTR_KEY__DATA);
+        Object data = document.get(RowDocument.MONGO_KEY__DATA);
 
         if (data instanceof Document) {
             Document dataDocument = (Document) data;
             assertTrue(dataDocument.keySet().size() == 4);
-            assertTrue(((Integer)dataDocument.get(" Original Document Row Number")) == 0);
+            assertTrue(((Integer)dataDocument.get(" Row")) == 0);
             assertTrue(((Integer)dataDocument.get("Some Column Name")) == 1);
             assertTrue(((Double)dataDocument.get("Float Values Column Name")) == 1.22);
             assertTrue(dataDocument.get("Additional Column Name 1").equals("a1"));

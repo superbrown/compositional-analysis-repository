@@ -67,7 +67,7 @@ public class r_DatasetDAO extends AbsDAO implements IDatasetDAO
         columnNamesFromTheDatabase.addAll(columnNames);
 
         Document dataToBeUpdated = new Document().
-                append(DataCategoryDocument.ATTR_KEY__COLUMN_NAMES, columnNamesFromTheDatabase);
+                append(DataCategoryDocument.MONGO_KEY__COLUMN_NAMES, columnNamesFromTheDatabase);
 
         dataCategoryDAO.updateOne(dataCategoryDocument.getId(), dataToBeUpdated);
     }
@@ -104,7 +104,7 @@ public class r_DatasetDAO extends AbsDAO implements IDatasetDAO
 
         if (HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED == false) {
 
-            getCollection().createIndex(new Document().append(DatasetDocument.ATTR_KEY__ID, 1));
+            getCollection().createIndex(new Document().append(DatasetDocument.MONGO_KEY__ID, 1));
         }
     }
 }

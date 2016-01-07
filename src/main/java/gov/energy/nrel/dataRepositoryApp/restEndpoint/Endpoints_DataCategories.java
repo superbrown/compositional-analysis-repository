@@ -54,14 +54,14 @@ public class Endpoints_DataCategories {
     }
 
     @RequestMapping(
-            value="/api/dataCategory/columnNames",
+            value="/api/dataCategory/searchableColumnNames",
             method = RequestMethod.GET,
             produces = "application/json")
-    public ResponseEntity getColumnNamesForDataCategoryName(
+    public ResponseEntity getSearchableColumnNames(
             @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName) {
 
-        String columnNamesForDataCategoryName = getDataCategoryBO().getColumnNamesForDataCategoryName(
-                dataCategoryName);
+        String columnNamesForDataCategoryName =
+                getDataCategoryBO().getSearchableColumnNamesForDataCategoryName(dataCategoryName);
 
         if (columnNamesForDataCategoryName == null) {
             return create_NOT_FOUND_response();
