@@ -4,6 +4,7 @@ import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IRowDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DataCategoryDAO;
 import gov.energy.nrel.dataRepositoryApp.model.IDataCategoryDocument;
@@ -85,7 +86,8 @@ public class s_DatasetDAO extends AbsDAO implements IDatasetDAO
     }
 
     @Override
-    public IDeleteResults delete(ObjectId objectId) {
+    public IDeleteResults delete(ObjectId objectId)
+            throws UnknownEntity {
 
         IDeleteResults deleteResults = super.delete(objectId);
 

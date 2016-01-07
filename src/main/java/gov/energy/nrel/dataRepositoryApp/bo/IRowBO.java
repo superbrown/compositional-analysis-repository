@@ -1,5 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.bo;
 
+import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownRow;
 import gov.energy.nrel.dataRepositoryApp.dao.IRowDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public interface IRowBO {
 
-    String getRow(String rowId);
+    String getRow(String rowId) throws UnknownRow;
 
     String getRows(String query, ResultsMode returnAllColumns);
 

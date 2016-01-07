@@ -96,7 +96,7 @@ public class Endpoints_Datasets {
         }
         catch (IOException e) {
             log.error(e);
-            return create_INTERNAL_SERVER_ERROR_response();
+            return create_INTERNAL_SERVER_ERROR_response(e.toString());
         }
 
         return create_SUCCESS_response(objectId);
@@ -108,14 +108,7 @@ public class Endpoints_Datasets {
             produces = "application/json")
     public ResponseEntity getAllDatasets() {
 
-        IDatasetBO datasetBO = getDatasetBO();
-
-        String datasets = datasetBO.getAllDatasets();
-
-        if (datasets == null) {
-            return create_NOT_FOUND_response();
-        }
-
+        String datasets = getDatasetBO().getAllDatasets();
         return create_SUCCESS_response(datasets);
     }
 
@@ -126,15 +119,14 @@ public class Endpoints_Datasets {
     public ResponseEntity getDataset(
             @PathVariable(value = "datasetId") String datasetId) {
 
-        IDatasetBO datasetBO = getDatasetBO();
-
-        String dataset = datasetBO.getDataset(datasetId);
-
-        if (dataset == null) {
-            return create_NOT_FOUND_response();
+        try {
+            String dataset = getDatasetBO().getDataset(datasetId);
+            return create_SUCCESS_response(dataset);
         }
-
-        return create_SUCCESS_response(dataset);
+        catch (UnknownDataset unknownDataset) {
+            return create_NOT_FOUND_response(
+                    "{message: 'Unknown dataset: " + datasetId + "'" + "}");
+        }
     }
 
     @RequestMapping(
@@ -187,11 +179,6 @@ public class Endpoints_Datasets {
             @PathVariable(value = "datasetId") String datasetId) {
 
         String rowsForDataset = getRowBO().getRowsAssociatedWithDataset(datasetId);
-
-        if (rowsForDataset == null) {
-            return create_NOT_FOUND_response();
-        }
-
         return create_SUCCESS_response(rowsForDataset);
     }
 
@@ -202,27 +189,16 @@ public class Endpoints_Datasets {
     public ResponseEntity deleteDataset(
             @PathVariable(value = "datasetId") String datasetId) {
 
-        long numberOfObjectsDeleted = 0;
         try {
-            IDatasetBO datasetBO = getDatasetBO();
-
-            try {
-                numberOfObjectsDeleted = datasetBO.removeDataset(datasetId);
-            }
-            catch (UnknownDataset unknownDataset) {
-                return create_NOT_FOUND_response();
-            }
+            getDatasetBO().removeDataset(datasetId);
+            return create_SUCCESS_response("{message: 'success'}");
+        } catch (UnknownDataset e) {
+            return create_NOT_FOUND_response("{message: 'unknown dataset, " + datasetId + "'}");
         }
-        catch (DeletionFailure deletionFailure) {
-            log.error(deletionFailure);
-            return create_INTERNAL_SERVER_ERROR_response();
+        catch (DeletionFailure e) {
+            log.error(e);
+            return create_INTERNAL_SERVER_ERROR_response(e.toString());
         }
-
-        if (numberOfObjectsDeleted == 0) {
-            return create_NOT_FOUND_response();
-        }
-
-        return create_SUCCESS_response("{ message: " + numberOfObjectsDeleted + " objects deleted. }");
     }
 
 

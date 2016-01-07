@@ -1,6 +1,7 @@
 package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 
 import com.mongodb.BasicDBObject;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.TestUsingTestData;
 import org.apache.log4j.Logger;
@@ -8,6 +9,7 @@ import org.bson.types.ObjectId;
 import org.junit.*;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 public abstract class AbsDatasetBOTest extends TestUsingTestData
@@ -38,16 +40,22 @@ public abstract class AbsDatasetBOTest extends TestUsingTestData
     @Test
     public void testGetById() {
 
-        String datasetId = TestData.dataset_1_objectId.toHexString();
-        String json = getBusinessObjects().getDatasetBO().getDataset(datasetId);
+        try {
+            String datasetId = TestData.dataset_1_objectId.toHexString();
+            String json = getBusinessObjects().getDatasetBO().getDataset(datasetId);
 
-        assertTrue(json != null);
+            assertTrue(json != null);
 
-        BasicDBObject parsedJson = (BasicDBObject) DAOUtilities.parse(json);
-        ObjectId objectId = (ObjectId) parsedJson.get("_id");
-        Object id = objectId.toHexString();
+            BasicDBObject parsedJson = (BasicDBObject) DAOUtilities.parse(json);
+            ObjectId objectId = (ObjectId) parsedJson.get("_id");
+            Object id = objectId.toHexString();
 
-        assertTrue(id.equals(TestData.dataset_1_objectId.toString()));
+            assertTrue(id.equals(TestData.dataset_1_objectId.toString()));
+        }
+        catch (UnknownDataset e) {
+            fail();
+            e.printStackTrace();
+        }
     }
 
 

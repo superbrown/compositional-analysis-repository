@@ -1,13 +1,15 @@
 package gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach;
 
 import com.mongodb.util.JSON;
-import gov.energy.nrel.dataRepositoryApp.bo.IPhysicalFileBO;
 import gov.energy.nrel.dataRepositoryApp.bo.FileStorageBO;
+import gov.energy.nrel.dataRepositoryApp.bo.IPhysicalFileBO;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
-import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
+import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnableToDeleteFile;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everythingInTheRowCollectionApproach.r_DatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
@@ -18,6 +20,7 @@ import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Metadata;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.StoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.DatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
+import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
@@ -151,7 +154,10 @@ public class r_DatasetBO extends AbsDatasetBO {
         return jsonOut;
     }
 
-    public long removeDataset(String datasetId) throws DeletionFailure {
+    public IDeleteResults removeDataset(String datasetId)
+            throws DeletionFailure, UnknownDataset {
+
+        // This implementation is weak in that it has no atomicity.
 
         IDatasetDAO datasetDAO = getDatasetDAO();
         IDatasetDocument datasetDocument = datasetDAO.getDataset(datasetId);
@@ -175,8 +181,13 @@ public class r_DatasetBO extends AbsDatasetBO {
             }
         }
 
-        datasetDAO.delete(datasetId);
-        return 0;
+        try {
+            return datasetDAO.delete(datasetId);
+        }
+        catch (UnknownEntity e) {
+            log.warn("This is odd, as we just retrieved the dataset " + datasetId + ".", e);
+            throw new UnknownDataset();
+        }
     }
 
     public String addDataset(

@@ -2,6 +2,7 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 
 import com.mongodb.BasicDBList;
 import gov.energy.nrel.dataRepositoryApp.bo.IDataTypeBO;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknowDataType;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.restEndpoint.DataType;
@@ -17,7 +18,7 @@ public class DataTypeBO implements IDataTypeBO {
 
 
     @Override
-    public String getInventoryOfComparisonOperators(DataType dataType) {
+    public String getInventoryOfComparisonOperators(DataType dataType) throws UnknowDataType {
 
         BasicDBList basicDBList = new BasicDBList();
 
@@ -43,6 +44,9 @@ public class DataTypeBO implements IDataTypeBO {
         else if (dataType == DataType.BOOLEAN) {
 
             basicDBList.add(toNameValuePairDocument(ComparisonOperator.EQUALS.toString(), "is"));
+        }
+        else {
+            throw new UnknowDataType();
         }
 
         return DAOUtilities.toJSON(basicDBList);

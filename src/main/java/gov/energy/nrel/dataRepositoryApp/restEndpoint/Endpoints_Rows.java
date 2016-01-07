@@ -3,6 +3,7 @@ package gov.energy.nrel.dataRepositoryApp.restEndpoint;
 import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownRow;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import org.apache.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -82,13 +83,15 @@ public class Endpoints_Rows {
     public ResponseEntity getRow(
             @PathVariable(value = "rowId") String rowId) {
 
-        String row = getRowBO().getRow(rowId);
-
-        if (row == null) {
-            return create_NOT_FOUND_response();
+        try {
+            String row = getRowBO().getRow(rowId);
+            return create_SUCCESS_response(row);
+        }
+        catch (UnknownRow unknownRow) {
+            return create_NOT_FOUND_response(
+                    "{message: 'Unknown row: " + rowId + "'" + "}");
         }
 
-        return create_SUCCESS_response(row);
     }
 
     protected IRowBO getRowBO() {

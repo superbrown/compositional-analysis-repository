@@ -7,12 +7,13 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
 import gov.energy.nrel.dataRepositoryApp.dao.IDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.dto.DeleteResults;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.AbstractDocument;
+import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -152,15 +153,22 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
     }
 
     @Override
-    public IDeleteResults delete(String id) throws DeletionFailure {
+    public IDeleteResults delete(String id)
+            throws DeletionFailure, UnknownEntity {
 
         return delete(new ObjectId(id));
     }
 
     @Override
-    public IDeleteResults delete(ObjectId objectId) {
+    public IDeleteResults delete(ObjectId objectId)
+            throws UnknownEntity {
 
         Document idFilter = createIdFilter(objectId);
+
+        Document document = getOne(idFilter);;
+        if (document == null) {
+            throw new UnknownEntity();
+        }
 
         DeleteResult deleteResult = getCollection().deleteOne(idFilter);
 

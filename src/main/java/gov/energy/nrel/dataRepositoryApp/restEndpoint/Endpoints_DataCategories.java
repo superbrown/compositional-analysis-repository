@@ -2,11 +2,14 @@ package gov.energy.nrel.dataRepositoryApp.restEndpoint;
 
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IDataCategoryBO;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.DataCategoryAlreadyExists;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataCatogory;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.create_INTERNAL_SERVER_ERROR_response;
 import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.create_NOT_FOUND_response;
 import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.create_SUCCESS_response;
 
@@ -26,14 +29,15 @@ public class Endpoints_DataCategories {
     public ResponseEntity getDataCategory(
             @PathVariable(value = "dataCategoryId") String dataCategoryId) {
 
-        String dataCategory = getDataCategoryBO().getDataCategory(
-                dataCategoryId);
-
-        if (dataCategory == null) {
-            return create_NOT_FOUND_response();
+        try {
+            String dataCategory = getDataCategoryBO().getDataCategory(dataCategoryId);
+            return create_SUCCESS_response(dataCategory);
         }
+        catch (UnknownDataCatogory unknownDataCatogory) {
 
-        return create_SUCCESS_response(dataCategory);
+            return create_NOT_FOUND_response(
+                    "{message: 'Unknown data category: " + dataCategoryId + "'" + "}");
+        }
     }
 
     @RequestMapping(
@@ -43,14 +47,14 @@ public class Endpoints_DataCategories {
     public ResponseEntity getDataCategoryByName(
             @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName) {
 
-        String dataCategory = getDataCategoryBO().getDataCategoryWithName(
-                dataCategoryName);
-
-        if (dataCategory == null) {
-            return create_NOT_FOUND_response();
+        try {
+            String dataCategory = getDataCategoryBO().getDataCategoryWithName(dataCategoryName);
+            return create_SUCCESS_response(dataCategory);
         }
-
-        return create_SUCCESS_response(dataCategory);
+        catch (UnknownDataCatogory e) {
+            return create_NOT_FOUND_response(
+                    "{message: 'Unknown data category: " + dataCategoryName + "'" + "}");
+        }
     }
 
     @RequestMapping(
@@ -60,14 +64,14 @@ public class Endpoints_DataCategories {
     public ResponseEntity getSearchableColumnNames(
             @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName) {
 
-        String columnNamesForDataCategoryName =
-                getDataCategoryBO().getSearchableColumnNamesForDataCategoryName(dataCategoryName);
+        try {
+            String columnNamesForDataCategoryName = getDataCategoryBO().getSearchableColumnNamesForDataCategoryName(dataCategoryName);
+            return create_SUCCESS_response(columnNamesForDataCategoryName);
 
-        if (columnNamesForDataCategoryName == null) {
-            return create_NOT_FOUND_response();
+        } catch (UnknownDataCatogory e) {
+            return create_NOT_FOUND_response(
+                    "{message: 'Unknown data category: " + dataCategoryName + "'" + "}");
         }
-
-        return create_SUCCESS_response(columnNamesForDataCategoryName);
     }
 
     @RequestMapping(
@@ -76,13 +80,7 @@ public class Endpoints_DataCategories {
             produces = "application/json")
     public ResponseEntity getAllDataCategoryNames() {
 
-        String dataCategoryNames = getDataCategoryBO().getAllDataCategoryNames(
-        );
-
-        if (dataCategoryNames == null) {
-            return create_NOT_FOUND_response();
-        }
-
+        String dataCategoryNames = getDataCategoryBO().getAllDataCategoryNames();
         return create_SUCCESS_response(dataCategoryNames);
     }
 
@@ -93,11 +91,6 @@ public class Endpoints_DataCategories {
     public ResponseEntity getDataCategoryByName() {
 
         String dataCategory = getDataCategoryBO().getAllDataCategories();
-
-        if (dataCategory == null) {
-            return create_NOT_FOUND_response();
-        }
-
         return create_SUCCESS_response(dataCategory);
     }
 
@@ -108,12 +101,20 @@ public class Endpoints_DataCategories {
     public ResponseEntity addDataCategory(
             @RequestParam(value = "dataCategoryName") String dataCategoryName) {
 
-        getDataCategoryBO().addDataCategory(dataCategoryName);
-        String dataCategory = getDataCategoryBO().getDataCategoryWithName(dataCategoryName);
-
-        return create_SUCCESS_response(dataCategory);
+        try {
+            getDataCategoryBO().addDataCategory(dataCategoryName);
+            String dataCategory = getDataCategoryBO().getDataCategoryWithName(dataCategoryName);
+            return create_SUCCESS_response(dataCategory);
+        }
+        catch (UnknownDataCatogory unknownDataCatogory) {
+            return create_INTERNAL_SERVER_ERROR_response(
+                    "{message: 'Added category, but then couldn't retreive it, so something must be amiss.'}");
+        }
+        catch (DataCategoryAlreadyExists dataCategoryAlreadyExists) {
+            return create_SUCCESS_response(
+                    "{message: 'Data category already exists'}");
+        }
     }
-
 
     protected IDataCategoryBO getDataCategoryBO() {
 

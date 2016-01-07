@@ -2,6 +2,7 @@ package gov.energy.nrel.dataRepositoryApp.dao;
 
 import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -32,9 +33,9 @@ public interface IDAO {
 
     List<Document> get(Bson filter, Bson projection);
 
-    IDeleteResults delete(String id) throws DeletionFailure;
+    IDeleteResults delete(String id) throws DeletionFailure, UnknownEntity;
 
-    IDeleteResults delete(ObjectId objectId);
+    IDeleteResults delete(ObjectId objectId) throws UnknownEntity;
 
     Iterable<Document> getAll();
 
