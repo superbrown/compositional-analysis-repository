@@ -3,8 +3,10 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.multipl
 import com.mongodb.util.JSON;
 import gov.energy.nrel.dataRepositoryApp.bo.FileStorageBO;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
@@ -112,7 +114,8 @@ public class m_DatasetBO extends AbsDatasetBO {
     }
 
     @Override
-    public long removeDataset(String datasetId) throws DeletionFailure {
+    public IDeleteResults removeDataset(String datasetId)
+            throws DeletionFailure, UnknownDataset {
 
         m_DatasetDAO datasetDAO = getDatasetDAO();
         IDatasetDocument datasetDocument = datasetDAO.getDataset(datasetId);
@@ -124,9 +127,14 @@ public class m_DatasetBO extends AbsDatasetBO {
             log.warn(e);
         }
 
-        IDeleteResults deleteResults = datasetDAO.delete(datasetId);
+        IDeleteResults deleteResults = null;
+        try {
+            deleteResults = datasetDAO.delete(datasetId);
+        } catch (UnknownEntity unknownEntity) {
+            unknownEntity.printStackTrace();
+        }
 
-        return deleteResults.getDeletedCount();
+        return deleteResults;
     }
 
     @Override

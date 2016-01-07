@@ -17,12 +17,11 @@ public class HTTPResponseUtility {
         return new ResponseEntity(body, HttpStatus.BAD_REQUEST);
     }
 
-    public static ResponseEntity create_NOT_FOUND_response() {
-        // FIXME: This seems screwy because it may look to callers like they reached an invalid UIR.
-        return new ResponseEntity(HttpStatus.NOT_FOUND);
+    public static ResponseEntity create_NOT_FOUND_response(String body) {
+        return new ResponseEntity(body, HttpStatus.NOT_FOUND);
     }
 
-    public static ResponseEntity create_INTERNAL_SERVER_ERROR_response() {
-        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+    public static ResponseEntity create_INTERNAL_SERVER_ERROR_response(String body) {
+        return new ResponseEntity(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

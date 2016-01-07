@@ -3,8 +3,9 @@ package gov.energy.nrel.dataRepositoryApp.bo;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
-import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
+import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
+import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.InvalidValueFoundInHeader;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.bson.types.ObjectId;
@@ -30,11 +31,11 @@ public interface IDatasetBO {
             List<StoredFile> attachmentFiles)
             throws UnsupportedFileExtension, InvalidValueFoundInHeader;
 
-    String getDataset(String datasetId);
+    String getDataset(String datasetId) throws UnknownDataset;
 
     String getAllDatasets();
 
-    long removeDataset(String datasetId) throws DeletionFailure, UnknownDataset;
+    IDeleteResults removeDataset(String datasetId) throws DeletionFailure, UnknownDataset;
 
     String addDataset(
             String dataCategory,

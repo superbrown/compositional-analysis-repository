@@ -6,7 +6,8 @@ import gov.energy.nrel.dataRepositoryApp.bo.IPhysicalFileBO;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
-import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
+import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.model.IMetadata;
@@ -16,6 +17,7 @@ import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Metadata;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.StoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.DatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
+import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
@@ -126,10 +128,14 @@ public class s_DatasetBO extends gov.energy.nrel.dataRepositoryApp.bo.mongodb.Ab
         return getPhysicalFileBO().getFileStorageDAO().getFile(storageLocation);
     }
 
-    public String getDataset(String datasetId) {
+    public String getDataset(String datasetId)
+            throws UnknownDataset {
 
         IDatasetDocument datasetDocument = getDatasetDAO().getDataset(datasetId);
-        if (datasetDocument == null) { return null; }
+
+        if (datasetDocument == null) {
+            throw new UnknownDataset();
+        }
 
         String jsonOut = DAOUtilities.serialize(datasetDocument);
         return jsonOut;
@@ -143,13 +149,14 @@ public class s_DatasetBO extends gov.energy.nrel.dataRepositoryApp.bo.mongodb.Ab
         return jsonOut;
     }
 
-    public long removeDataset(String datasetId) throws DeletionFailure, UnknownDataset {
+    public IDeleteResults removeDataset(String datasetId)
+            throws DeletionFailure, UnknownDataset {
 
         IDatasetDAO datasetDAO = getDatasetDAO();
         IDatasetDocument datasetDocument = datasetDAO.getDataset(datasetId);
 
         if (datasetDocument == null) {
-            throw new UnknownDataset(datasetId);
+            throw new UnknownDataset();
         }
 
         String storageLocation = datasetDocument.getMetadata().getSourceDocument().getStorageLocation();
@@ -161,8 +168,15 @@ public class s_DatasetBO extends gov.energy.nrel.dataRepositoryApp.bo.mongodb.Ab
             throw new RuntimeException(e);
         }
 
-        datasetDAO.delete(datasetId);
-        return 0;
+        try {
+            datasetDAO.delete(datasetId);
+        }
+        catch (UnknownEntity e) {
+            // this is odd
+            log.warn("This is odd.  We just attempted to delete dataset " + datasetId + " and it doesn't exists.  " +
+                    "However, we just retreived it a few lines earlier");
+        }
+        return null;
     }
 
     public String addDataset(

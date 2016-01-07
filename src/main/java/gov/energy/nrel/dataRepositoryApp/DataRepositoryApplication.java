@@ -3,6 +3,7 @@ package gov.energy.nrel.dataRepositoryApp;
 import com.mongodb.MongoTimeoutException;
 import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
 import gov.energy.nrel.dataRepositoryApp.bo.IDataCategoryBO;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.DataCategoryAlreadyExists;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach.s_BusinessObjects;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
@@ -12,7 +13,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
 
 /**
  * The Data Repository Application was originally designed and coded by Mike Brown (mike.public@superbrown.com)
@@ -104,25 +104,23 @@ public class DataRepositoryApplication extends SpringApplication {
 
         IDataCategoryBO dataCategoryBO = businessObjects.getDataCategoryBO();
 
-        List<String> existingDataCategoryNames = dataCategoryBO.getDataCategoryDAO().getAllNames();
-
         for (String dataCategoryName : dataCategoryNames) {
 
             assureDataCategoryIsInTheDatabase(
                     dataCategoryBO,
-                    existingDataCategoryNames,
                     dataCategoryName);
         }
     }
 
     protected static void assureDataCategoryIsInTheDatabase(
             IDataCategoryBO dataCategoryDAO,
-            List<String> dataCategoryNames,
             String categoryName) {
 
-        if (dataCategoryNames.contains(categoryName) == false) {
-
+        try {
             dataCategoryDAO.addDataCategory(categoryName);
+        }
+        catch (DataCategoryAlreadyExists e) {
+            // that's fine
         }
     }
 

@@ -7,6 +7,7 @@ import com.mongodb.util.JSON;
 import gov.energy.nrel.dataRepositoryApp.ServletContainerConfig;
 import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
 import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownRow;
 import gov.energy.nrel.dataRepositoryApp.dao.IRowDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
@@ -44,11 +45,14 @@ public abstract class AbsRowBO implements IRowBO {
     protected abstract void init(ISettings settings);
 
     @Override
-    public String getRow(String rowId) {
+    public String getRow(String rowId)
+            throws UnknownRow {
 
         IRowDocument rowDocument = getRowDAO().get(rowId);
 
-        if (rowDocument == null) { return null; }
+        if (rowDocument == null) {
+            throw new UnknownRow();
+        }
 
         String json = DAOUtilities.serialize(rowDocument);
         return json;

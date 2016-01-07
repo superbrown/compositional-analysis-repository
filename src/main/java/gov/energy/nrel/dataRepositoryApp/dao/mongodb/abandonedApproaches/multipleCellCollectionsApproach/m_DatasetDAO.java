@@ -1,5 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.multipleCellCollectionsApproach;
 
+import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
@@ -74,7 +75,8 @@ public class m_DatasetDAO extends AbsDAO implements IDatasetDAO {
     }
 
     @Override
-    public IDeleteResults delete(ObjectId objectId) {
+    public IDeleteResults delete(ObjectId objectId)
+            throws UnknownEntity {
 
         IDeleteResults deleteResults = rowDAO.deleteRowsAssociatedWithDataset(objectId);
 

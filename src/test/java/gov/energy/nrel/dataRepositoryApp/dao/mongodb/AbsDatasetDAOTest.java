@@ -4,6 +4,7 @@ import gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.TestData;
 import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.model.IDataCategoryDocument;
 import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 public abstract class AbsDatasetDAOTest extends TestUsingTestData
@@ -74,68 +76,74 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
     @Test
     public void testThatTheDataCategoriesAreBeingSetRight() {
 
-        IDataCategoryDAO dataCategoryDAO = datasetDAO.getDataCategoryDAO();
+        try {
+            IDataCategoryDAO dataCategoryDAO = datasetDAO.getDataCategoryDAO();
 
-        ITestDataBO testDataBO = getBusinessObjects().getTestDataBO();
-        if (SUSPEND_DATA_CLEANUP == false) {
-            testDataBO.removeTestData();
+            ITestDataBO testDataBO = getBusinessObjects().getTestDataBO();
+            if (SUSPEND_DATA_CLEANUP == false) {
+                testDataBO.removeTestData();
+            }
+            testDataBO.seedTestDataInTheDatabase_dataset_1();
+
+            IDataCategoryDocument dataCategoryDocument = dataCategoryDAO.getByName(TestData.ALGEA);
+            assertTrue(dataCategoryDocument.getName().equals(TestData.ALGEA));
+
+            Set<String> columnNames = dataCategoryDocument.getColumnNames();
+            assertTrue(columnNames.size() == 8);
+            assertTrue(columnNames.contains(Row.MONGO_KEY__ROW_NUMBER));
+            assertTrue(columnNames.contains("Some Column Name"));
+            assertTrue(columnNames.contains("Boolean Values Column Name"));
+            assertTrue(columnNames.contains("String Values Column Name"));
+            assertTrue(columnNames.contains("Date Values Column Name"));
+            assertTrue(columnNames.contains("Float Values Column Name"));
+            assertTrue(columnNames.contains("Integer Values Column Name"));
+            assertTrue(columnNames.contains("Varying Value Types Column Name"));
+
+            testDataBO.seedTestDataInTheDatabase_dataset_2();
+
+            dataCategoryDocument = dataCategoryDAO.getByName(TestData.ALGEA);
+            assertTrue(dataCategoryDocument.getName().equals(TestData.ALGEA));
+
+            columnNames = dataCategoryDocument.getColumnNames();
+            assertTrue(columnNames.size() == 10);
+            assertTrue(columnNames.contains(Row.MONGO_KEY__ROW_NUMBER));
+            assertTrue(columnNames.contains("Some Column Name"));
+            assertTrue(columnNames.contains("String Values Column Name"));
+            assertTrue(columnNames.contains("Date Values Column Name"));
+            assertTrue(columnNames.contains("Float Values Column Name"));
+            assertTrue(columnNames.contains("Integer Values Column Name"));
+            assertTrue(columnNames.contains("Varying Value Types Column Name"));
+            assertTrue(columnNames.contains("Varying Value Types Column Name"));
+            assertTrue(columnNames.contains("Varying Value Types Column Name"));
+            assertTrue(columnNames.contains("Additional Column Name 1"));
+            assertTrue(columnNames.contains("Additional new Column Name 2"));
+
+            // Check that delete works as we'd expect
+            assertTrue(datasetDAO.getCount() == 2);
+            assertTrue(datasetDAO.getRowDAO().getCount() == 9);
+            assertTrue(datasetDAO.getDataCategoryDAO().getCount() == 1);
+
+            datasetDAO.delete(TestData.dataset_1_objectId);
+
+            assertTrue(datasetDAO.getCount() == 1);
+            assertTrue(datasetDAO.getRowDAO().getCount() == 4);
+            assertTrue(datasetDAO.getDataCategoryDAO().getCount() == 1);
+
+            datasetDAO.delete(TestData.dataset_2_objectId);
+
+            assertTrue(datasetDAO.getCount() == 0);
+            assertTrue(datasetDAO.getRowDAO().getCount() == 0);
+            assertTrue(datasetDAO.getDataCategoryDAO().getCount() == 1);
+
+            dataCategoryDocument = dataCategoryDAO.getByName(TestData.ALGEA);
+            columnNames = dataCategoryDocument.getColumnNames();
+            // None of the data should hve gone away, as datasetDAO.removeAllDataFromCollection() should not
+            // cascade to the sample type colletion.
+            assertTrue(columnNames.size() == 10);
         }
-        testDataBO.seedTestDataInTheDatabase_dataset_1();
-
-        IDataCategoryDocument dataCategoryDocument = dataCategoryDAO.getByName(TestData.ALGEA);
-        assertTrue(dataCategoryDocument.getName().equals(TestData.ALGEA));
-
-        Set<String> columnNames = dataCategoryDocument.getColumnNames();
-        assertTrue(columnNames.size() == 8);
-        assertTrue(columnNames.contains(Row.MONGO_KEY__ROW_NUMBER));
-        assertTrue(columnNames.contains("Some Column Name"));
-        assertTrue(columnNames.contains("Boolean Values Column Name"));
-        assertTrue(columnNames.contains("String Values Column Name"));
-        assertTrue(columnNames.contains("Date Values Column Name"));
-        assertTrue(columnNames.contains("Float Values Column Name"));
-        assertTrue(columnNames.contains("Integer Values Column Name"));
-        assertTrue(columnNames.contains("Varying Value Types Column Name"));
-
-        testDataBO.seedTestDataInTheDatabase_dataset_2();
-
-        dataCategoryDocument = dataCategoryDAO.getByName(TestData.ALGEA);
-        assertTrue(dataCategoryDocument.getName().equals(TestData.ALGEA));
-
-        columnNames = dataCategoryDocument.getColumnNames();
-        assertTrue(columnNames.size() == 10);
-        assertTrue(columnNames.contains(Row.MONGO_KEY__ROW_NUMBER));
-        assertTrue(columnNames.contains("Some Column Name"));
-        assertTrue(columnNames.contains("String Values Column Name"));
-        assertTrue(columnNames.contains("Date Values Column Name"));
-        assertTrue(columnNames.contains("Float Values Column Name"));
-        assertTrue(columnNames.contains("Integer Values Column Name"));
-        assertTrue(columnNames.contains("Varying Value Types Column Name"));
-        assertTrue(columnNames.contains("Varying Value Types Column Name"));
-        assertTrue(columnNames.contains("Varying Value Types Column Name"));
-        assertTrue(columnNames.contains("Additional Column Name 1"));
-        assertTrue(columnNames.contains("Additional new Column Name 2"));
-
-        // Check that delete works as we'd expect
-        assertTrue(datasetDAO.getCount() == 2);
-        assertTrue(datasetDAO.getRowDAO().getCount() == 9);
-        assertTrue(datasetDAO.getDataCategoryDAO().getCount() == 1);
-
-        datasetDAO.delete(TestData.dataset_1_objectId);
-
-        assertTrue(datasetDAO.getCount() == 1);
-        assertTrue(datasetDAO.getRowDAO().getCount() == 4);
-        assertTrue(datasetDAO.getDataCategoryDAO().getCount() == 1);
-
-        datasetDAO.delete(TestData.dataset_2_objectId);
-
-        assertTrue(datasetDAO.getCount() == 0);
-        assertTrue(datasetDAO.getRowDAO().getCount() == 0);
-        assertTrue(datasetDAO.getDataCategoryDAO().getCount() == 1);
-
-        dataCategoryDocument = dataCategoryDAO.getByName(TestData.ALGEA);
-        columnNames = dataCategoryDocument.getColumnNames();
-        // None of the data should hve gone away, as datasetDAO.removeAllDataFromCollection() should not
-        // cascade to the sample type colletion.
-        assertTrue(columnNames.size() == 10);
+        catch (UnknownEntity e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 }

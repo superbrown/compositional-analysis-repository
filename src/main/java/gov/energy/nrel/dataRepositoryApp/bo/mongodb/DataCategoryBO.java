@@ -1,8 +1,11 @@
 package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 
 import gov.energy.nrel.dataRepositoryApp.bo.IDataCategoryBO;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.DataCategoryAlreadyExists;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataCatogory;
 import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DataCategoryDAO;
 import gov.energy.nrel.dataRepositoryApp.model.IDataCategoryDocument;
@@ -46,20 +49,26 @@ public class DataCategoryBO implements IDataCategoryBO {
     }
 
     @Override
-    public String getDataCategory(String dataCategoryId) {
+    public String getDataCategory(String dataCategoryId)
+            throws UnknownDataCatogory {
 
         IDataCategoryDocument dataCategoryDocument = getDataCategoryDocument(dataCategoryId);
-        if (dataCategoryDocument == null) { return null; }
+        if (dataCategoryDocument == null) {
+            throw new UnknownDataCatogory();
+        }
 
         String jsonOut = DAOUtilities.serialize(dataCategoryDocument);
         return jsonOut;
     }
 
     @Override
-    public String getDataCategoryWithName(String name) {
+    public String getDataCategoryWithName(String name)
+            throws UnknownDataCatogory {
 
         IDataCategoryDocument dataCategoryDocument = getDataCategoryDAO().getByName(name);
-        if (dataCategoryDocument == null) { return null; }
+        if (dataCategoryDocument == null) {
+            throw new UnknownDataCatogory();
+        }
 
         String jsonOut = DAOUtilities.serialize(dataCategoryDocument);
         return jsonOut;
@@ -89,9 +98,14 @@ public class DataCategoryBO implements IDataCategoryBO {
 
 
     @Override
-    public String getSearchableColumnNamesForDataCategoryName(String dataCategoryName) {
+    public String getSearchableColumnNamesForDataCategoryName(String dataCategoryName)
+            throws UnknownDataCatogory {
 
         IDataCategoryDocument dataCategoryDocument = getDataCategoryDAO().getByName(dataCategoryName);
+
+        if (dataCategoryDocument == null) {
+            throw new UnknownDataCatogory();
+        }
 
         Set<String> columnNamesInDataCategory = dataCategoryDocument.getColumnNames();
         columnNamesInDataCategory.remove(Metadata.MONGO_KEY__DATA_CATEGORY);
@@ -109,9 +123,15 @@ public class DataCategoryBO implements IDataCategoryBO {
     }
 
     @Override
-    public void deleteDataCategory(String dataCategoryId) throws DeletionFailure {
+    public void deleteDataCategory(String dataCategoryId)
+            throws DeletionFailure, UnknownDataCatogory {
 
-        getDataCategoryDAO().delete(dataCategoryId);
+        try {
+            getDataCategoryDAO().delete(dataCategoryId);
+        }
+        catch (UnknownEntity e) {
+            throw new UnknownDataCatogory(e);
+        }
     }
 
     protected IDataCategoryDocument getDataCategoryDocument(String dataCategoryId) {
@@ -121,13 +141,13 @@ public class DataCategoryBO implements IDataCategoryBO {
     }
 
     @Override
-    public void addDataCategory(String categoryName) {
+    public void addDataCategory(String categoryName)
+            throws DataCategoryAlreadyExists {
 
         IDataCategoryDocument dataCategoryDocument = getDataCategoryDAO().getByName(categoryName);
 
-        // if it already exists, don't do anything (we don't want duplicates)
         if (dataCategoryDocument != null) {
-            return;
+            throw new DataCategoryAlreadyExists();
         }
 
         dataCategoryDocument = new DataCategoryDocument();
