@@ -1,15 +1,15 @@
 package gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach;
 
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBOTest;
-import gov.energy.nrel.dataRepositoryApp.settings.Settings;
 
 
 public class s_DatasetBOTest extends AbsDatasetBOTest
 {
     @Override
-    protected DataRepositoryApplication createAppSingleton(Settings settings) {
+    protected IBusinessObjects createBusinessObjects(DataRepositoryApplication dataRepositoryApplication) {
 
-        return new DataRepositoryApplication(settings, new s_BusinessObjects(settings));
+        return new s_BusinessObjects(dataRepositoryApplication);
     }
 }

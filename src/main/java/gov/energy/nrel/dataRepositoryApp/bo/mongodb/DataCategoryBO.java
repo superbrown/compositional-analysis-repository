@@ -1,5 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 
+import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IDataCategoryBO;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.DataCategoryAlreadyExists;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
@@ -12,7 +13,6 @@ import gov.energy.nrel.dataRepositoryApp.model.IDataCategoryDocument;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Metadata;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.DataCategoryDocument;
-import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
@@ -21,7 +21,7 @@ import org.bson.Document;
 
 import java.util.*;
 
-public class DataCategoryBO implements IDataCategoryBO {
+public class DataCategoryBO extends AbsBO implements IDataCategoryBO {
 
     Logger log = Logger.getLogger(this.getClass());
 
@@ -41,10 +41,14 @@ public class DataCategoryBO implements IDataCategoryBO {
         DEFAULT_USER_SEARCHABLE_COLUMN_NAMES.add(Row.MONGO_KEY__ROW_NUMBER);
     }
 
-    public DataCategoryBO(ISettings settings) {
+    public DataCategoryBO(DataRepositoryApplication dataRepositoryApplication) {
+        super(dataRepositoryApplication);
+    }
 
-        dataCategoryDAO = new DataCategoryDAO(settings);
+    @Override
+    protected void init() {
 
+        dataCategoryDAO = new DataCategoryDAO(getSettings());
         generalFileReader = new DatasetReader_AllFileTypes();
     }
 

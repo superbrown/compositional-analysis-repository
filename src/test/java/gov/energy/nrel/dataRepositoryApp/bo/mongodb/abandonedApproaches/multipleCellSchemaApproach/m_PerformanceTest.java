@@ -1,16 +1,16 @@
 package gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.multipleCellSchemaApproach;
 
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsPerformanceTest;
-import gov.energy.nrel.dataRepositoryApp.settings.Settings;
 
 
 public class m_PerformanceTest extends AbsPerformanceTest
 {
     @Override
-    protected DataRepositoryApplication createAppSingleton(Settings settings) {
+    protected IBusinessObjects createBusinessObjects(DataRepositoryApplication dataRepositoryApplication) {
 
-        return new DataRepositoryApplication(settings, new m_BusinessObjects(settings));
+        return new m_BusinessObjects(dataRepositoryApplication);
     }
 
     @Override

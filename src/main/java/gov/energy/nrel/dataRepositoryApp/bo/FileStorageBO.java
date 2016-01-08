@@ -1,11 +1,13 @@
 package gov.energy.nrel.dataRepositoryApp.bo;
 
+import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsBO;
 import gov.energy.nrel.dataRepositoryApp.dao.IFileStorageDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.FileStorageStorageDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.CouldNotCreateDirectory;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnableToDeleteFile;
-import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
 
@@ -13,15 +15,20 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-public class FileStorageBO implements IPhysicalFileBO {
+public class FileStorageBO extends AbsBO implements IPhysicalFileBO {
 
     protected IFileStorageDAO fileStorageDAO;
 
     protected IDatasetReader_AllFileTypes generalFileReader;
 
-    public FileStorageBO(ISettings settings) {
+    public FileStorageBO(DataRepositoryApplication d) {
 
-        fileStorageDAO = new FileStorageStorageDAO(settings);
+        super(d);
+    }
+
+    @Override
+    protected void init() {
+        fileStorageDAO = new FileStorageStorageDAO(getSettings());
         generalFileReader = new DatasetReader_AllFileTypes();
     }
 
@@ -30,10 +37,20 @@ public class FileStorageBO implements IPhysicalFileBO {
 
         StoredFile theDataFileThatWasStored = null;
         try {
-            theDataFileThatWasStored = getFileStorageDAO().saveFile(timestamp, subdirectory, file);
+            theDataFileThatWasStored = storeFile(timestamp, subdirectory, file);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        return theDataFileThatWasStored;
+    }
+
+    @Override
+    public StoredFile storeFile(Date timestamp, String subdirectory, FileAsRawBytes file)
+            throws CouldNotCreateDirectory, IOException {
+
+        StoredFile theDataFileThatWasStored;
+        theDataFileThatWasStored = getFileStorageDAO().saveFile(timestamp, subdirectory, file);
 
         return theDataFileThatWasStored;
     }

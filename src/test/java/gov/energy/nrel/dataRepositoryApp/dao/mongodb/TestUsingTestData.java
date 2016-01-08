@@ -14,20 +14,6 @@ public abstract class TestUsingTestData {
 
     private DataRepositoryApplication dataRepositoryApplication;
 
-    protected abstract DataRepositoryApplication createAppSingleton(Settings settings);
-    {
-        Settings settings = new Settings();
-
-        settings.setMongoDbHost("localhost");
-        settings.setMongoDbPort("27017");
-        settings.setMongoDatabaseName("car_s");
-        settings.setRootDirectoryForUploadedDataFiles("target/test-classes");
-        settings.setDefaultSetOfDataCategories(DEFAULT_SET_OF_DATA_CATEGORIES);
-        settings.setPerformanceLoggingEnabled(false);
-
-        dataRepositoryApplication = createAppSingleton(settings);
-    }
-
     public TestUsingTestData() {
     }
 
@@ -35,10 +21,27 @@ public abstract class TestUsingTestData {
         return dataRepositoryApplication;
     }
 
+    protected abstract IBusinessObjects createBusinessObjects(DataRepositoryApplication dataRepositoryApplication);
+
     public static void beforeClass() {
     }
 
     public void before() {
+
+        Settings settings = new Settings();
+
+        settings.setMongoDbHost("localhost");
+        settings.setMongoDbPort("27017");
+        settings.setMongoDatabaseName("data-repository-app_UNIT_TESTING");
+        settings.setRootDirectoryForUploadedDataFiles("target/test-classes");
+        settings.setDefaultSetOfDataCategories(DEFAULT_SET_OF_DATA_CATEGORIES);
+        settings.setPerformanceLoggingEnabled(false);
+
+        DataRepositoryApplication dataRepositoryApplication = new DataRepositoryApplication(settings);
+        IBusinessObjects businessObjects = createBusinessObjects(dataRepositoryApplication);
+        dataRepositoryApplication.setBusinessObjects(businessObjects);
+
+        this.dataRepositoryApplication = dataRepositoryApplication;
 
         ITestDataBO testDataBO = getBusinessObjects().getTestDataBO();
 

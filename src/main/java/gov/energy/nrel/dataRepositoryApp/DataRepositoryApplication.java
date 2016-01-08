@@ -68,8 +68,8 @@ public class DataRepositoryApplication extends SpringApplication {
             // During development I experimented with a couple of different approaches to the DAO layer, and changing
             // what class was instantiated here determined which one would be used.
 
-            IBusinessObjects businessObjects = new s_BusinessObjects(settings);
-            setBusinsessObjects(businessObjects);
+            IBusinessObjects businessObjects = new s_BusinessObjects(this);
+            setBusinessObjects(businessObjects);
         }
         catch (MongoTimeoutException e) {
             // This is written like this so it stands out in the log.
@@ -86,7 +86,7 @@ public class DataRepositoryApplication extends SpringApplication {
         return settings;
     }
 
-    protected void setBusinsessObjects(IBusinessObjects businessObjects) {
+    public void setBusinessObjects(IBusinessObjects businessObjects) {
 
         this.businessObjects = businessObjects;
         String[] defaultSetOfDataCategories = businessObjects.getSettings().getDefaultSetOfDataCategories();
@@ -125,7 +125,7 @@ public class DataRepositoryApplication extends SpringApplication {
     }
 
     // This constructor is used by unit tests.
-    public DataRepositoryApplication(ISettings settings, IBusinessObjects businessObjects) {
+    public DataRepositoryApplication(ISettings settings) {
 
         this.settings = settings;
 
@@ -135,7 +135,5 @@ public class DataRepositoryApplication extends SpringApplication {
         else {
             PerformanceLogger.disable();
         }
-
-        setBusinsessObjects(businessObjects);
     }
 }

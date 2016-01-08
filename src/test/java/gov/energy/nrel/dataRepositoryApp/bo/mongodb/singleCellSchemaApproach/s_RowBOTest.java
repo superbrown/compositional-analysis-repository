@@ -1,15 +1,16 @@
 package gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach;
 
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsRowBOTest;
-import gov.energy.nrel.dataRepositoryApp.settings.Settings;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.multipleCellSchemaApproach.m_BusinessObjects;
 
 
 public class s_RowBOTest extends AbsRowBOTest
 {
     @Override
-    protected DataRepositoryApplication createAppSingleton(Settings settings) {
+    protected IBusinessObjects createBusinessObjects(DataRepositoryApplication dataRepositoryApplication) {
 
-        return new DataRepositoryApplication(settings, new s_BusinessObjects(settings));
+        return new s_BusinessObjects(dataRepositoryApplication);
     }
 }

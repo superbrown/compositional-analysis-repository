@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 
-public interface IDatasetBO {
+public interface IDatasetBO extends IBO {
 
     ObjectId addDataset(
             String dataCategory,

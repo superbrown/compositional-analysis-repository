@@ -4,6 +4,7 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
+import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.ServletContainerConfig;
 import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
 import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
@@ -19,7 +20,6 @@ import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.StoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.RowDocument;
 import gov.energy.nrel.dataRepositoryApp.restEndpoint.DataType;
-import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import org.apache.commons.lang3.StringUtils;
@@ -27,22 +27,23 @@ import org.apache.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public abstract class AbsRowBO implements IRowBO {
+public abstract class AbsRowBO extends AbsBO implements IRowBO {
 
     protected Logger log = Logger.getLogger(getClass());
 
+    @Autowired
+    protected DataRepositoryApplication dataRepositoryApplication;
+
     protected IRowDAO rowDAO;
 
-    public AbsRowBO(ISettings settings) {
-
-        init(settings);
+    public AbsRowBO(DataRepositoryApplication dataRepositoryApplication) {
+        super(dataRepositoryApplication);
     }
-
-    protected abstract void init(ISettings settings);
 
     @Override
     public String getRow(String rowId)

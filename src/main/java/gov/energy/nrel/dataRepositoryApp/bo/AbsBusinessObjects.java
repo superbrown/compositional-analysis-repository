@@ -1,32 +1,39 @@
 package gov.energy.nrel.dataRepositoryApp.bo;
 
+import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbsBusinessObjects implements IBusinessObjects {
 
-    @Autowired
-    protected ISettings settings;
+    private final DataRepositoryApplication dataRepositoryApplication;
 
-    protected IDataCategoryBO dataCategoryBO;
     protected IDatasetBO datasetBO;
     protected IRowBO rowBO;
-    protected IPhysicalFileBO physicalFileBO;
-    protected ITestDataBO testDataBO;
+
+    protected IDataCategoryBO dataCategoryBO;
     protected IDataTypeBO dataTypeBO;
 
+    protected IPhysicalFileBO physicalFileBO;
+    protected IUtilsBO utilsBO;
 
-    public AbsBusinessObjects(ISettings settings) {
+    protected ITestDataBO testDataBO;
 
-        this.settings = settings;
+    public AbsBusinessObjects(DataRepositoryApplication dataRepositoryApplication) {
+
+        this.dataRepositoryApplication = dataRepositoryApplication;
         init();
     }
 
     protected abstract void init();
 
     @Override
+    public DataRepositoryApplication getDataRepositoryApplication() {
+        return dataRepositoryApplication;
+    }
+
+    @Override
     public ISettings getSettings() {
-        return settings;
+        return dataRepositoryApplication.getSettings();
     }
 
     @Override
@@ -57,5 +64,15 @@ public abstract class AbsBusinessObjects implements IBusinessObjects {
     @Override
     public IDataTypeBO getDataTypeBO() {
         return dataTypeBO;
+    }
+
+    @Override
+    public IUtilsBO getUtilsBO() {
+        return utilsBO;
+    }
+
+    @Override
+    public void setUtilsBO(IUtilsBO utilsBO) {
+        this.utilsBO = utilsBO;
     }
 }

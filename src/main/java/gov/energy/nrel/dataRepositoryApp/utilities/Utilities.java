@@ -282,4 +282,20 @@ public class Utilities {
                 fileName.endsWith(".xlsx") ||
                 fileName.endsWith(".xlsm"));
     }
+
+    public static boolean assureTheDirectoryExists(String uploadPath) {
+
+        File uploadDir = new File(uploadPath);
+        if (!uploadDir.exists()) {
+            return uploadDir.mkdirs();
+        }
+
+        return true;
+    }
+
+    public static File saveFile(byte[] fileContent, String path) throws IOException {
+
+        Files.write(Paths.get(path), fileContent);
+        return new File(path);
+    }
 }
