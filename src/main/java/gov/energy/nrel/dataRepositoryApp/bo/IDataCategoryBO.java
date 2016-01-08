@@ -5,7 +5,7 @@ import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataCatogory;
 import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
 
-public interface IDataCategoryBO {
+public interface IDataCategoryBO extends IBO {
 
     String getDataCategory(String dataCategoryId) throws UnknownDataCatogory;
 

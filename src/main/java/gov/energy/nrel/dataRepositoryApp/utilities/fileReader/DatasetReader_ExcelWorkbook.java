@@ -60,12 +60,21 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
             columnNames.add(0, Row.MONGO_KEY__ROW_NUMBER);
 
             RowCollection spreasheetData = new RowCollection(columnNames, data);
+
             return spreasheetData;
         }
         finally {
 
-            if (fileInputStream != null) {
-                fileInputStream.close();
+            try {
+
+                if (fileInputStream != null) {
+                    fileInputStream.close();
+                }
+            }
+            finally {
+                // Garbage collect because we're having problems with the worksheet
+                // staying in memory, and it's often HUGE!
+                System.gc();
             }
         }
     }
@@ -137,17 +146,24 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
     public static Workbook createWorkbookObject(InputStream fileInputStream, String filePath)
             throws IOException, UnsupportedFileExtension {
 
-        if (filePath.toLowerCase().endsWith(".xls")) {
+        try {
+            if (filePath.toLowerCase().endsWith(".xls")) {
 
-            return new HSSFWorkbook(fileInputStream);
+                return new HSSFWorkbook(fileInputStream);
+            }
+            else if (filePath.toLowerCase().endsWith(".xlsx") ||
+                     filePath.toLowerCase().endsWith(".xlsm")) {
+
+                return new XSSFWorkbook(fileInputStream);
+            }
+
+            throw new UnsupportedFileExtension(filePath);
         }
-        else if (filePath.toLowerCase().endsWith(".xlsx") ||
-                 filePath.toLowerCase().endsWith(".xlsm")) {
-
-            return new XSSFWorkbook(fileInputStream);
+        finally {
+            if (fileInputStream != null) {
+                fileInputStream.close();
+            }
         }
-
-        throw new UnsupportedFileExtension(filePath);
     }
 
     protected int addBlankCellsIfSomeWereSkippedByPoi(List<Object> rowData, int columnIndex, int indexOfColumnCellIsIn) {
@@ -219,29 +235,6 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
         }
 
         return colunmNames;
-    }
-
-    public static List<String> getNamesOfSheetsWithinWorkbook(String fileName, InputStream inputStream)
-            throws IOException, UnsupportedFileExtension {
-
-        try {
-            Workbook workbook = createWorkbookObject(inputStream, fileName);
-
-            List<String> namesOfSheetsWithinWorkbook = new ArrayList<>();
-
-            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-                String sheetName = workbook.getSheetAt(i).getSheetName();
-                namesOfSheetsWithinWorkbook.add(sheetName);
-            }
-
-            return namesOfSheetsWithinWorkbook;
-        }
-        finally {
-
-            if (inputStream != null) {
-                inputStream.close();
-            }
-        }
     }
 
     public static org.apache.poi.ss.usermodel.Row iteratToTheFirstRowWithAValueInItsFirstCell(

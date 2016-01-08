@@ -1,6 +1,7 @@
 package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 
 import com.mongodb.BasicDBList;
+import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IDataTypeBO;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknowDataType;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator;
@@ -9,13 +10,17 @@ import gov.energy.nrel.dataRepositoryApp.restEndpoint.DataType;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 
-public class DataTypeBO implements IDataTypeBO {
+public class DataTypeBO extends AbsBO implements IDataTypeBO {
 
     protected Logger log = Logger.getLogger(getClass());
 
-    public DataTypeBO() {
+    public DataTypeBO(DataRepositoryApplication dataRepositoryApplication) {
+        super(dataRepositoryApplication);
     }
 
+    @Override
+    protected void init() {
+    }
 
     @Override
     public String getInventoryOfComparisonOperators(DataType dataType) throws UnknowDataType {

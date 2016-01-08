@@ -163,7 +163,6 @@ drApp.controller('uploadController',
 
             $scope.handleDataFileSelection = function(event, sourceDocument) {
                 $rootScope.sourceDocument = sourceDocument[0];
-                drServices.populateNamesOfSheetsWithinExcelWorkbook($scope, $http);
             }
 
             $scope.handleAttachmentFilesSelection = function($event, attachments) {
@@ -373,7 +372,7 @@ drApp.service('drServices', function() {
         }
 
         var formData = new FormData();
-        formData.append('sourceDocument', sourceDocument);
+        formData.append('workbook', sourceDocument);
 
         scope.$root.numberOfBlockingProcesses++;
 

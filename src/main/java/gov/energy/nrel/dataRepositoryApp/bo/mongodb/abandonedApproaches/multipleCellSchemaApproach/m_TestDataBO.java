@@ -1,8 +1,9 @@
 package gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.multipleCellSchemaApproach;
 
 import com.mongodb.client.MongoDatabase;
-import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
+import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsBO;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.TestData;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
@@ -14,16 +15,21 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.List;
 
-public class m_TestDataBO implements ITestDataBO {
+public class m_TestDataBO extends AbsBO implements ITestDataBO {
 
-    private final ISettings settings;
     public IDatasetDAO datasetDAO;
 
-    public m_TestDataBO(ISettings settings) {
+    public m_TestDataBO(DataRepositoryApplication dataRepositoryApplication) {
 
-        this.settings = settings;
-        datasetDAO = new m_DatasetDAO(settings);
+        super(dataRepositoryApplication);
     }
+
+    @Override
+    protected void init() {
+
+        datasetDAO = new m_DatasetDAO(getSettings());
+    }
+
 
     public String seedTestDataInTheDatabase_dataset_1_and_2() {
 
@@ -67,7 +73,7 @@ public class m_TestDataBO implements ITestDataBO {
 
     public void removeTestData() {
 
-        ((IMongodbDAO)datasetDAO).getMongoClient().dropDatabase(settings.getMongoDatabaseName());
+        ((IMongodbDAO)datasetDAO).getMongoClient().dropDatabase(getSettings().getMongoDatabaseName());
     }
 
     public void dropTheTestDatabase() {

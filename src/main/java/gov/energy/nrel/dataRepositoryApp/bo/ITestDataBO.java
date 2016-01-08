@@ -1,7 +1,7 @@
 package gov.energy.nrel.dataRepositoryApp.bo;
 
 
-public interface ITestDataBO {
+public interface ITestDataBO extends IBO {
 
     String seedTestDataInTheDatabase_dataset_1_and_2();
 

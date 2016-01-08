@@ -1,13 +1,10 @@
 package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 
+import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IDatasetBO;
-import gov.energy.nrel.dataRepositoryApp.bo.IPhysicalFileBO;
-import gov.energy.nrel.dataRepositoryApp.bo.FileStorageBO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
-import gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellCollectionApproach.s_DatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.model.IStoredFile;
-import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -15,28 +12,21 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public abstract class AbsDatasetBO implements IDatasetBO {
+public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
+
+    protected IDatasetDAO datasetDAO;
 
     Logger log = Logger.getLogger(this.getClass());
 
-    protected IDatasetDAO datasetDAO;
-    protected IPhysicalFileBO physicalFileBO;
-
-    public AbsDatasetBO(ISettings settings) {
-
-        physicalFileBO = new FileStorageBO(settings);
-        datasetDAO = new s_DatasetDAO(settings);
-    }
-
-    public IDatasetDAO getDatasetDAO() {
-        return datasetDAO;
+    public AbsDatasetBO(DataRepositoryApplication dataRepositoryApplication) {
+        super(dataRepositoryApplication);
     }
 
     public File getSourceDocument(String datasetId) {
 
         IDatasetDocument dataset = getDatasetDAO().getDataset(datasetId);
         String storageLocation = dataset.getMetadata().getSourceDocument().getStorageLocation();
-        File sourceDocument = physicalFileBO.getFile(storageLocation);
+        File sourceDocument = getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO().getFile(storageLocation);
         return sourceDocument;
     }
 
@@ -60,7 +50,7 @@ public abstract class AbsDatasetBO implements IDatasetBO {
                 for (IStoredFile attachment : attachments) {
 
                     String storageLocation = attachment.getStorageLocation();
-                    File attachmentFile = physicalFileBO.getFile(storageLocation);
+                    File attachmentFile = getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO().getFile(storageLocation);
 
                     addToZipFile(zipOutputStream, attachmentFile, attachment.getOriginalFileName());
                 }
@@ -115,5 +105,9 @@ public abstract class AbsDatasetBO implements IDatasetBO {
         }
 
         zipOutputStream.closeEntry();
+    }
+
+    public IDatasetDAO getDatasetDAO() {
+        return datasetDAO;
     }
 }

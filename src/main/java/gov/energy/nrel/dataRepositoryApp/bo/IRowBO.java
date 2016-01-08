@@ -8,7 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.List;
 
 
-public interface IRowBO {
+public interface IRowBO extends IBO {
 
     String getRow(String rowId) throws UnknownRow;
 

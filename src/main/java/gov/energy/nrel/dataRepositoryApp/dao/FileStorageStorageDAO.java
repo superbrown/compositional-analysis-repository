@@ -10,8 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Date;
 
 public class FileStorageStorageDAO implements IFileStorageDAO {
@@ -26,10 +24,10 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
     }
 
     @Override
-    public StoredFile saveFile(Date timestamp, String subdirectory, FileAsRawBytes file)
+    public StoredFile saveFile(Date timestamp, String subdirectory, FileAsRawBytes fileAsRawBytes)
             throws CouldNotCreateDirectory, IOException {
 
-        String fileName = file.fileName;
+        String fileName = fileAsRawBytes.fileName;
 
         String rootDirectoryForUploadedDataFiles = getRootDirectoryForUploadedDataFiles();
 
@@ -42,11 +40,11 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
 
         String fullyQualifiedFileLocation = rootDirectoryForUploadedDataFiles + relativeFileLocation;
 
-        if (seeToItThatTheDirectoryExists(fullyQualifiedFileLocation) == false) {
+        if (Utilities.assureTheDirectoryExists(fullyQualifiedFileLocation) == false) {
             throw new CouldNotCreateDirectory(fullyQualifiedFileLocation);
         }
 
-        File savedFile = saveTo(file.bytes, fullyQualifiedFileLocation + "/" + fileName);
+        File savedFile = Utilities.saveFile(fileAsRawBytes.bytes, fullyQualifiedFileLocation + "/" + fileName);
 
         StoredFile storedFile = new StoredFile(fileName, relativeFileLocation + "/" + fileName);
 
@@ -76,7 +74,7 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
         String sourcePath = rootDirectoryForUploadedDataFiles + relativePath;
         String destinationPath = rootDirectoryForRemovedFiles + relativePath;
 
-        seeToItThatTheDirectoryExists(extractPathToContainingDirectory(destinationPath));
+        Utilities.assureTheDirectoryExists(extractPathToContainingDirectory(destinationPath));
 
         Utilities.moveFolder(sourcePath, destinationPath);
     }
@@ -104,12 +102,6 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
         return getRootDirectoryForUploadedDataFiles() + NAME_OF_DIRECTORY_FOR_REMOVED_FILES + "/";
     }
 
-    protected File saveTo(byte[] fileContent, String newFilePath) throws IOException {
-
-        Files.write(Paths.get(newFilePath), fileContent);
-        return new File(newFilePath);
-    }
-
     protected String seeToItThatItEndsWithAFileSeparator(String path) {
 
         if (path.endsWith(File.separator) == false) {
@@ -123,13 +115,4 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
         return Utilities.toString(timestamp, "yyyy/MM/yyyy-MM-dd_aaa-hh-mm-ss_SSS-Z");
     }
 
-    protected static boolean seeToItThatTheDirectoryExists(String uploadPath) {
-
-        File uploadDir = new File(uploadPath);
-        if (!uploadDir.exists()) {
-            return uploadDir.mkdirs();
-        }
-
-        return true;
-    }
 }
