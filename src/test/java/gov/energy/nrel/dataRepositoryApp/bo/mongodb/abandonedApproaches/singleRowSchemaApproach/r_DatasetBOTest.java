@@ -3,7 +3,6 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.singleR
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBOTest;
-import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach.r_BusinessObjects;
 
 
 public class r_DatasetBOTest extends AbsDatasetBOTest

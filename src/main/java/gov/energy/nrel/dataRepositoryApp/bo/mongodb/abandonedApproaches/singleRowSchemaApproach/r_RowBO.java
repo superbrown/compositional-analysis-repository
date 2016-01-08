@@ -1,4 +1,4 @@
-package gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach;
+package gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.singleRowSchemaApproach;
 
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsRowBO;
