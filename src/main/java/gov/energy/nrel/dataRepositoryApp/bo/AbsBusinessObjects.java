@@ -13,7 +13,7 @@ public abstract class AbsBusinessObjects implements IBusinessObjects {
     protected IDataCategoryBO dataCategoryBO;
     protected IDataTypeBO dataTypeBO;
 
-    protected IPhysicalFileBO physicalFileBO;
+    protected IFileStorageBO fileStorageBO;
     protected IUtilsBO utilsBO;
 
     protected ITestDataBO testDataBO;
@@ -47,8 +47,8 @@ public abstract class AbsBusinessObjects implements IBusinessObjects {
     }
 
     @Override
-    public IPhysicalFileBO getPhysicalFileBO() {
-        return physicalFileBO;
+    public IFileStorageBO getFileSotrageBO() {
+        return fileStorageBO;
     }
 
     @Override

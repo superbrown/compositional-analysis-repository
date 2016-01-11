@@ -6,6 +6,8 @@ import gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsBO;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.TestData;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.CompletelyFailedToPersistDataset;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.IMongodbDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.multipleCellCollectionsApproach.m_DatasetDAO;
@@ -31,7 +33,8 @@ public class m_TestDataBO extends AbsBO implements ITestDataBO {
     }
 
 
-    public String seedTestDataInTheDatabase_dataset_1_and_2() {
+    public String seedTestDataInTheDatabase_dataset_1_and_2()
+            throws CompletelyFailedToPersistDataset, PartiallyFailedToPersistDataset {
 
         TestData.dataset_1_objectId = datasetDAO.add(TestData.dataset_1, TestData.rowCollection_1);
         TestData.dataset_2_objectId = datasetDAO.add(TestData.dataset_2, TestData.rowCollection_2);
@@ -46,7 +49,8 @@ public class m_TestDataBO extends AbsBO implements ITestDataBO {
         return DAOUtilities.serialize(document);
     }
 
-    public String seedTestDataInTheDatabase_dataset_1() {
+    public String seedTestDataInTheDatabase_dataset_1()
+            throws PartiallyFailedToPersistDataset, CompletelyFailedToPersistDataset {
 
         TestData.dataset_1_objectId = datasetDAO.add(TestData.dataset_1, TestData.rowCollection_1);
 
@@ -59,7 +63,8 @@ public class m_TestDataBO extends AbsBO implements ITestDataBO {
         return DAOUtilities.serialize(document);
     }
 
-    public String seedTestDataInTheDatabase_dataset_2() {
+    public String seedTestDataInTheDatabase_dataset_2()
+            throws PartiallyFailedToPersistDataset, CompletelyFailedToPersistDataset {
 
         TestData.dataset_2_objectId = datasetDAO.add(TestData.dataset_2, TestData.rowCollection_2);
 

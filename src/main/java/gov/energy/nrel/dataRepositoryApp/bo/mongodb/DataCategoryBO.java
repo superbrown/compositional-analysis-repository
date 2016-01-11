@@ -3,16 +3,16 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IDataCategoryBO;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.DataCategoryAlreadyExists;
-import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.ArchiveFailure;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataCatogory;
 import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DataCategoryDAO;
-import gov.energy.nrel.dataRepositoryApp.model.IDataCategoryDocument;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Metadata;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.DataCategoryDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDataCategoryDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DataCategoryDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
@@ -23,7 +23,7 @@ import java.util.*;
 
 public class DataCategoryBO extends AbsBO implements IDataCategoryBO {
 
-    Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(DataCategoryBO.class);
 
     protected DataCategoryDAO dataCategoryDAO;
 
@@ -128,7 +128,7 @@ public class DataCategoryBO extends AbsBO implements IDataCategoryBO {
 
     @Override
     public void deleteDataCategory(String dataCategoryId)
-            throws DeletionFailure, UnknownDataCatogory {
+            throws ArchiveFailure, UnknownDataCatogory {
 
         try {
             getDataCategoryDAO().delete(dataCategoryId);

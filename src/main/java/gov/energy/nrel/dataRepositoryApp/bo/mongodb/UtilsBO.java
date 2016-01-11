@@ -1,6 +1,7 @@
 package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.bo.IFileStorageBO;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_ExcelWorkbook;
@@ -17,7 +18,7 @@ import java.util.UUID;
 
 public class UtilsBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.bo.IUtilsBO {
 
-    Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(UtilsBO.class);
 
     protected DatasetReader_ExcelWorkbook datasetReader_excelWorkbook;
     private String tempDirectoryPath;
@@ -60,16 +61,11 @@ public class UtilsBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.
         finally {
 
             try {
-                (new File(tempFilePath)).delete();
-                (new File(tempFileDirectoryPath)).delete();
+                IFileStorageBO fileSotrageBO = getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO();
+                fileSotrageBO.deleteFolder(tempFileDirectoryPath);
             }
             catch (Exception e) {
-                log.warn(e);
-            }
-            finally {
-                // Garbage collect because we're having problems with the worksheet
-                // staying in memory, and it's often HUGE!
-                System.gc();
+                log.warn(e, e);
             }
         }
     }

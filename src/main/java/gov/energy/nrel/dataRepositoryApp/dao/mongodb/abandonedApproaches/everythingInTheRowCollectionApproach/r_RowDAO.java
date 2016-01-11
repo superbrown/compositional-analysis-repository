@@ -14,10 +14,13 @@ import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.IMongodbDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.MongoFieldNameEncoder;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.dto.DeleteResults;
-import gov.energy.nrel.dataRepositoryApp.model.*;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.CellDocument;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.RowDocument;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.RowDocument_usingListStructure;
+import gov.energy.nrel.dataRepositoryApp.model.common.IMetadata;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRow;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
+import gov.energy.nrel.dataRepositoryApp.model.document.*;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.CellDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.RowDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.RowDocument_usingListStructure;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
@@ -37,14 +40,18 @@ public class r_RowDAO extends AbsDAO implements IRowDAO {
 
     protected r_CellDAO cellDAO;
 
-    protected Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(r_RowDAO.class);
 
     public r_RowDAO(ISettings settings) {
 
         super(COLLECTION_NAME, settings);
+    }
 
+    @Override
+    public void init(String collectionName, ISettings settings) {
+
+        super.init(collectionName, settings);
         cellDAO = new r_CellDAO(settings);
-        makeSureTableColumnsIRelyUponAreIndexed();
     }
 
     public IRowDocument get(String id) {
@@ -363,13 +370,14 @@ public class r_RowDAO extends AbsDAO implements IRowDAO {
 
     private static boolean HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = false;
 
+    @Override
     protected void makeSureTableColumnsIRelyUponAreIndexed() {
 
         if (HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED == false) {
 
             getCollection().createIndex(new Document().append(RowDocument.MONGO_KEY__ID, 1));
 
-            // DESIGN NOTE: Even though these indexes are on the cell collectoin, they are being set here because this
+            // DESIGN NOTE: Even though these indexes are on the cell collection, they are being set here because this
             //              is where the code exists that relies upon them. I figured if they were here, they would less
             //              likely get removed by someone who didn't realize they were used somewhere.
 

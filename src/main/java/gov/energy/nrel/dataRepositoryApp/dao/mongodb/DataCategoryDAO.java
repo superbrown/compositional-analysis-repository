@@ -2,19 +2,16 @@ package gov.energy.nrel.dataRepositoryApp.dao.mongodb;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
-import gov.energy.nrel.dataRepositoryApp.model.IMetadata;
-import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
-import gov.energy.nrel.dataRepositoryApp.model.IDataCategoryDocument;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.DataCategoryDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDataCategoryDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DataCategoryDocument;
+import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -78,5 +75,17 @@ public class DataCategoryDAO extends AbsDAO implements IDataCategoryDAO {
         DataCategoryDocument dataCategoryDocument = new DataCategoryDocument(json);
 
         return dataCategoryDocument;
+    }
+
+    private static boolean HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = false;
+
+    @Override
+    protected void makeSureTableColumnsIRelyUponAreIndexed() {
+
+        if (HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED == false) {
+
+            getCollection().createIndex(new Document().append(DataCategoryDocument.MONGO_KEY__NAME, 1));
+            HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = true;
+        }
     }
 }

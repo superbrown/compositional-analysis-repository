@@ -7,12 +7,11 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
 import gov.energy.nrel.dataRepositoryApp.dao.IDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.dto.DeleteResults;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.AbstractDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.AbstractDocument;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import org.apache.log4j.Logger;
 import org.bson.Document;
@@ -32,7 +31,7 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
     private String collectionName;
 
     protected ISettings settings;
-    protected Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(AbsDAO.class);
 
     static {
 
@@ -41,6 +40,7 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
     public AbsDAO(String collectionName, ISettings settings) {
 
         init(collectionName, settings);
+        makeSureTableColumnsIRelyUponAreIndexed();
     }
 
     @Override
@@ -154,9 +154,10 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
 
     @Override
     public IDeleteResults delete(String id)
-            throws DeletionFailure, UnknownEntity {
+            throws UnknownEntity {
 
-        return delete(new ObjectId(id));
+        ObjectId objectId = new ObjectId(id);
+        return delete(objectId);
     }
 
     @Override
@@ -242,4 +243,6 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
     public ISettings getSettings() {
         return settings;
     }
+
+    protected abstract void makeSureTableColumnsIRelyUponAreIndexed();
 }

@@ -241,7 +241,7 @@ public class Utilities {
                     }
                 }
                 catch (IOException e) {
-                    log.warn(e);
+                    log.warn(e, e);
                 }
                 finally {
 
@@ -250,7 +250,7 @@ public class Utilities {
                             out.close();
                         }
                     } catch (IOException e) {
-                        log.warn(e);
+                        log.warn(e, e);
                     }
                 }
             }
@@ -260,6 +260,12 @@ public class Utilities {
     public static void moveFolder(String sourcePath, String destinationPath) throws IOException {
 
         FileUtils.moveDirectory(new File(sourcePath), new File(destinationPath));
+    }
+
+
+    public static void deleteFolder(String sourcePath) throws IOException {
+
+        FileUtils.deleteDirectory(new File(sourcePath));
     }
 
     public static byte[] fileToBytes(String path) throws IOException {

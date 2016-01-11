@@ -6,8 +6,8 @@ import gov.energy.nrel.dataRepositoryApp.dao.ICellDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.dto.DeleteResults;
-import gov.energy.nrel.dataRepositoryApp.model.IRow;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.CellDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRow;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.CellDocument;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.settings.Settings;
 import org.bson.Document;
@@ -64,5 +64,10 @@ public class r_CellDAO extends AbsDAO implements ICellDAO {
     @Override
     protected Document createDocumentOfTypeDAOHandles(Document document) {
         return new CellDocument(document);
+    }
+
+    @Override
+    protected void makeSureTableColumnsIRelyUponAreIndexed() {
+
     }
 }

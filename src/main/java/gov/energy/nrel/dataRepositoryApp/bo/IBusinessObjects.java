@@ -14,7 +14,7 @@ public interface IBusinessObjects {
 
     IDatasetBO getDatasetBO();
 
-    IPhysicalFileBO getPhysicalFileBO();
+    IFileStorageBO getFileSotrageBO();
 
     IRowBO getRowBO();
 

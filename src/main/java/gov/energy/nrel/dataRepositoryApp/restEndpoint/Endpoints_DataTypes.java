@@ -18,7 +18,7 @@ import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.cr
 @RestController
 public class Endpoints_DataTypes {
 
-    protected Logger log = Logger.getLogger(getClass());
+    protected static Logger log = Logger.getLogger(Endpoints_DataTypes.class);
 
     @Autowired
     protected DataRepositoryApplication dataRepositoryApplication;

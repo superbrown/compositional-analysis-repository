@@ -1,5 +1,5 @@
 package gov.energy.nrel.dataRepositoryApp.bo.exception;
 
 
-public class UnknowDataType extends Throwable {
+public class UnknowDataType extends Exception {
 }

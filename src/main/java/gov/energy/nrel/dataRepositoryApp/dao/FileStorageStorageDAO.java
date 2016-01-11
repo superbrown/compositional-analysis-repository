@@ -79,6 +79,16 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
         Utilities.moveFolder(sourcePath, destinationPath);
     }
 
+    @Override
+    public void deleteFolder(String relativePath)
+            throws IOException {
+
+        String rootDirectoryForUploadedDataFiles = getRootDirectoryForUploadedDataFiles();
+        String sourcePath = rootDirectoryForUploadedDataFiles + relativePath;
+
+        Utilities.deleteFolder(sourcePath);
+    }
+
     private String extractPathToContainingDirectory(String filePath) {
 
         return filePath.substring(0, filePath.lastIndexOf("/"));

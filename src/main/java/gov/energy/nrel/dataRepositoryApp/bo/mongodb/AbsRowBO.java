@@ -13,12 +13,12 @@ import gov.energy.nrel.dataRepositoryApp.dao.IRowDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
-import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
-import gov.energy.nrel.dataRepositoryApp.model.IRowDocument;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Metadata;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.StoredFile;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.RowDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IRowDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.StoredFile;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.RowDocument;
 import gov.energy.nrel.dataRepositoryApp.restEndpoint.DataType;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
@@ -34,7 +34,7 @@ import java.util.*;
 
 public abstract class AbsRowBO extends AbsBO implements IRowBO {
 
-    protected Logger log = Logger.getLogger(getClass());
+    protected static Logger log = Logger.getLogger(AbsRowBO.class);
 
     @Autowired
     protected DataRepositoryApplication dataRepositoryApplication;

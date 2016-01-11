@@ -9,10 +9,14 @@ import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.MongoFieldNameEncoder;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.dto.DeleteResults;
-import gov.energy.nrel.dataRepositoryApp.model.*;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Metadata;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.CellDocument;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.RowDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.IMetadata;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRow;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.CellDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IRowDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.RowDocument;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
@@ -31,12 +35,17 @@ public class m_RowDAO extends AbsDAO implements IRowDAO {
 
     public static final String COLLECTION_NAME = "row";
 
-    protected Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(m_RowDAO.class);
     private Map<String, m_CellDAO> cellDAOs;
 
     public m_RowDAO(ISettings settings) {
 
         super(COLLECTION_NAME, settings);
+    }
+
+    @Override
+    public void init(String collectionName, ISettings settings) {
+        super.init(collectionName, settings);
         cellDAOs = new HashMap<>();
     }
 
@@ -378,6 +387,13 @@ public class m_RowDAO extends AbsDAO implements IRowDAO {
             searchCriterion.setName(toMongoSafeFieldName(searchCriterion.getName()));
         }
     }
+
+    @Override
+    protected void makeSureTableColumnsIRelyUponAreIndexed() {
+
+    }
+
+
 
     private class CriterionAndItsNumberOfMatches implements Comparable {
 

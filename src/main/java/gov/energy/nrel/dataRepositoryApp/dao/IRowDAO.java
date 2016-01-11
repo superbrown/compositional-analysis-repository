@@ -3,9 +3,9 @@ package gov.energy.nrel.dataRepositoryApp.dao;
 import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
-import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
-import gov.energy.nrel.dataRepositoryApp.model.IRowCollection;
-import gov.energy.nrel.dataRepositoryApp.model.IRowDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
+import gov.energy.nrel.dataRepositoryApp.model.document.IRowDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 

@@ -31,10 +31,12 @@ public class CodeForIngestingLegacyData {
 //        String appBaseURL = "http://localhost:8080/data-repository-app";
 //        String pathToDataFileDirectories = "C:/projects/legacyDataToBeIngested/WOLFRUM";
 //        String metadataFilePath = "C:/projects/legacyDataToBeIngested/WOLFRUM/code/Book1.xlsx";
+//        String dataCategory = "Biomass";
 
         String appBaseURL = args[0];
         String pathToDirectoryContainingDataFiles = args[1];
         String pathToSpreadsheetContainingMetadata = args[2];
+        String dataCategory = args[3];
 
         try {
 
@@ -49,8 +51,7 @@ public class CodeForIngestingLegacyData {
 
                     MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 
-                    // FIXME
-                    builder.addTextBody("dataCategory", "NIR");
+                    builder.addTextBody("dataCategory", dataCategory);
 
                     builder.addTextBody("submitter", datasetMetadata.submitter);
 

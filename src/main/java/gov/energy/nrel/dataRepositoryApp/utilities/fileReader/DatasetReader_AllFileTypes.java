@@ -1,7 +1,7 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.InvalidValueFoundInHeader;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
 
@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDatasetReader_AllFileTypes {
 
-    Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(DatasetReader_AllFileTypes.class);
 
     public IDatasetReader_ExcelWorkbook excelWorkbookReader;
     public IDatasetReader_CSVFile csvFileReader;
@@ -24,7 +24,7 @@ public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDat
 
     @Override
     public RowCollection extractDataFromFile(File file, String nameOfSubdocumentContainingDataIfApplicable, int maxNumberOfValuesPerRow)
-            throws UnsupportedFileExtension, InvalidValueFoundInHeader {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName {
 
         RowCollection rowCollection = null;
 
@@ -43,7 +43,7 @@ public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDat
         }
         catch (IOException e) {
             // FIXME: Log
-            log.error(e);
+            log.error(e, e);
             throw new RuntimeException(e);
         }
 
@@ -52,7 +52,7 @@ public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDat
 
     @Override
     public RowCollection extractDataFromDataset(File file, String nameOfSubdocumentContainingDataIfApplicable)
-            throws UnsupportedFileExtension, IOException, InvalidValueFoundInHeader {
+            throws UnsupportedFileExtension, IOException, FileContainsInvalidColumnName {
 
         RowCollection dataUpload =
                 excelWorkbookReader.extractDataFromFile(file, nameOfSubdocumentContainingDataIfApplicable);
@@ -61,7 +61,7 @@ public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDat
     }
 
     public RowCollection extractDataFromCSVFile(File file, int maxNumberOfValuesPerRow)
-            throws UnsupportedFileExtension, IOException, InvalidValueFoundInHeader {
+            throws UnsupportedFileExtension, IOException, FileContainsInvalidColumnName {
 
         RowCollection dataUpload = csvFileReader.extractDataFromFile(file, maxNumberOfValuesPerRow);
 

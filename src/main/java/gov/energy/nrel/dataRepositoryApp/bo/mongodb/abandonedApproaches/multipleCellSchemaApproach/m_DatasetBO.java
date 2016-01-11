@@ -2,42 +2,32 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.multipl
 
 import com.mongodb.util.JSON;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
-import gov.energy.nrel.dataRepositoryApp.bo.IPhysicalFileBO;
-import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
-import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
+import gov.energy.nrel.dataRepositoryApp.bo.IFileStorageBO;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBO;
-import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
-import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
-import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.multipleCellCollectionsApproach.m_DatasetDAO;
-import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
-import gov.energy.nrel.dataRepositoryApp.model.IMetadata;
-import gov.energy.nrel.dataRepositoryApp.model.IRowCollection;
-import gov.energy.nrel.dataRepositoryApp.model.IStoredFile;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Metadata;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.StoredFile;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.DatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
+import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.StoredFile;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
-import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.InvalidValueFoundInHeader;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
-import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class m_DatasetBO extends AbsDatasetBO {
 
-    Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(m_DatasetBO.class);
 
     protected IDatasetReader_AllFileTypes generalFileReader;
 
@@ -63,11 +53,11 @@ public class m_DatasetBO extends AbsDatasetBO {
             gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile> attachmentFiles)
-            throws UnsupportedFileExtension, InvalidValueFoundInHeader {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName {
 
-        File storedFile = getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO().getFile(sourceDocument.storageLocation);
+        File storedFile = getPhysicalFile(sourceDocument.storageLocation);
         RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, -1);
-        IRowCollection rowCollection = new gov.energy.nrel.dataRepositoryApp.model.mongodb.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
+        IRowCollection rowCollection = new gov.energy.nrel.dataRepositoryApp.model.common.mongodb.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
         List<IStoredFile> attachments = new ArrayList();
         if (attachmentFiles != null) {
@@ -103,39 +93,6 @@ public class m_DatasetBO extends AbsDatasetBO {
     }
 
     @Override
-    public String getAllDatasets() {
-
-        Iterable<Document> datasets = getDatasetDAO().getAll();
-
-        String jsonOut = DAOUtilities.serialize(datasets);
-        return jsonOut;
-    }
-
-    @Override
-    public IDeleteResults removeDataset(String datasetId)
-            throws DeletionFailure, UnknownDataset {
-
-        m_DatasetDAO datasetDAO = getDatasetDAO();
-        IDatasetDocument datasetDocument = datasetDAO.getDataset(datasetId);
-
-        String storageLocation = datasetDocument.getMetadata().getSourceDocument().getStorageLocation();
-        try {
-            getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO().moveFilesToRemovedFilesLocation(storageLocation);
-        } catch (IOException e) {
-            log.warn(e);
-        }
-
-        IDeleteResults deleteResults = null;
-        try {
-            deleteResults = datasetDAO.delete(datasetId);
-        } catch (UnknownEntity unknownEntity) {
-            unknownEntity.printStackTrace();
-        }
-
-        return deleteResults;
-    }
-
-    @Override
     public String addDataset(
             String dataCategory,
             Date submissionDate,
@@ -146,18 +103,18 @@ public class m_DatasetBO extends AbsDatasetBO {
             FileAsRawBytes sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<FileAsRawBytes> attachmentFiles)
-            throws UnsupportedFileExtension, InvalidValueFoundInHeader {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName {
 
         Date timestamp = new Date();
 
-        IPhysicalFileBO physicalFileBO = getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO();
+        IFileStorageBO fileSotrageBO = getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO();
 
-        gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile theDataFileThatWasStored = physicalFileBO.saveFile(timestamp, "", sourceDocument);
+        gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile theDataFileThatWasStored = fileSotrageBO.saveFile(timestamp, "", sourceDocument);
 
         List<gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile> theAttachmentsThatWereStored = new ArrayList();
 
         for (FileAsRawBytes attachmentFile : attachmentFiles) {
-            theAttachmentsThatWereStored.add(physicalFileBO.saveFile(timestamp, "attachments", attachmentFile));
+            theAttachmentsThatWereStored.add(fileSotrageBO.saveFile(timestamp, "attachments", attachmentFile));
         }
 
         ObjectId objectId = addDataset(
@@ -172,34 +129,6 @@ public class m_DatasetBO extends AbsDatasetBO {
                 theAttachmentsThatWereStored);
 
         return JSON.serialize(objectId);
-    }
-
-    @Override
-    public String addDataset(String metadataJson,
-                             File file,
-                             String nameOfSubdocumentContainingDataIfApplicable)
-            throws UnsupportedFileExtension, InvalidValueFoundInHeader {
-
-        IDatasetDAO datasetDAO = getDatasetDAO();
-
-        try {
-            RowCollection dataUpload = generalFileReader.extractDataFromDataset(file, nameOfSubdocumentContainingDataIfApplicable);
-            IRowCollection rowCollection = new gov.energy.nrel.dataRepositoryApp.model.mongodb.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
-
-            IMetadata metadata = new Metadata(metadataJson);
-
-            PerformanceLogger performanceLogger = new PerformanceLogger(log, "new Dataset()");
-            DatasetDocument datasetDocument = new DatasetDocument(metadata);
-            performanceLogger.done();
-
-            ObjectId objectId = datasetDAO.add(datasetDocument, rowCollection);
-
-            return objectId.toHexString();
-        }
-        catch (IOException e) {
-            log.error(e);
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

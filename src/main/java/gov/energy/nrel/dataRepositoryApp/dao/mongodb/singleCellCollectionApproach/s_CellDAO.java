@@ -7,12 +7,12 @@ import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.MongoFieldNameEncoder;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.dto.DeleteResults;
-import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
-import gov.energy.nrel.dataRepositoryApp.model.IMetadata;
-import gov.energy.nrel.dataRepositoryApp.model.IRow;
-import gov.energy.nrel.dataRepositoryApp.model.IRowDocument;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Metadata;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.CellDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.IMetadata;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRow;
+import gov.energy.nrel.dataRepositoryApp.model.document.IRowDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.CellDocument;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.settings.Settings;
 import org.bson.Document;
@@ -48,26 +48,27 @@ public class s_CellDAO extends AbsDAO implements ICellDAO {
             // org.bson.codecs.configuration.CodecConfigurationException: Can't find a codec for class
             // gov.energy.nbc.dataset.model.document.CellDocument.
 
+            // Note: these alread my "mongo safe" field names
             cellDocuments.add(new Document(new CellDocument(rowId, columnName, value)));
         }
 
         IMetadata metadata = datasetDocument.getMetadata();
 
-        cellDocuments.add(toMongoFieldNameEncodedDocument(rowId, Metadata.MONGO_KEY__DATA_CATEGORY, metadata.getDataCategory()));
-        cellDocuments.add(toMongoFieldNameEncodedDocument(rowId, IDatasetDocument.DISPLAY_FIELD__SOURCE_UUID, datasetId));
-        cellDocuments.add(toMongoFieldNameEncodedDocument(rowId, IRowDocument.DISPLAY_FIELD__ROW_UUID, rowId.toHexString()));
-        cellDocuments.add(toMongoFieldNameEncodedDocument(rowId, Metadata.MONGO_KEY__SOURCE_DOCUMENT, metadata.getSourceDocument().getOriginalFileName()));
-        cellDocuments.add(toMongoFieldNameEncodedDocument(rowId, Metadata.MONGO_KEY__SUB_DOCUMENT_NAME, metadata.getSubdocumentName()));
-        cellDocuments.add(toMongoFieldNameEncodedDocument(rowId, Metadata.MONGO_KEY__SUBMISSION_DATE, metadata.getSubmissionDate()));
-        cellDocuments.add(toMongoFieldNameEncodedDocument(rowId, Metadata.MONGO_KEY__SUBMITTER, metadata.getSubmitter()));
-        cellDocuments.add(toMongoFieldNameEncodedDocument(rowId, Metadata.MONGO_KEY__PROJECT_NAME, metadata.getProjectName()));
-        cellDocuments.add(toMongoFieldNameEncodedDocument(rowId, Metadata.MONGO_KEY__CHARGE_NUMBER, metadata.getChargeNumber()));
-        cellDocuments.add(toMongoFieldNameEncodedDocument(rowId, Metadata.MONGO_KEY__COMMENTS, metadata.getComments()));
+        cellDocuments.add(toCellDocumentWithMongoSafeFieldName(rowId, Metadata.MONGO_KEY__DATA_CATEGORY, metadata.getDataCategory()));
+        cellDocuments.add(toCellDocumentWithMongoSafeFieldName(rowId, IDatasetDocument.DISPLAY_FIELD__SOURCE_UUID, datasetId));
+        cellDocuments.add(toCellDocumentWithMongoSafeFieldName(rowId, IRowDocument.DISPLAY_FIELD__ROW_UUID, rowId.toHexString()));
+        cellDocuments.add(toCellDocumentWithMongoSafeFieldName(rowId, Metadata.MONGO_KEY__SOURCE_DOCUMENT, metadata.getSourceDocument().getOriginalFileName()));
+        cellDocuments.add(toCellDocumentWithMongoSafeFieldName(rowId, Metadata.MONGO_KEY__SUB_DOCUMENT_NAME, metadata.getSubdocumentName()));
+        cellDocuments.add(toCellDocumentWithMongoSafeFieldName(rowId, Metadata.MONGO_KEY__SUBMISSION_DATE, metadata.getSubmissionDate()));
+        cellDocuments.add(toCellDocumentWithMongoSafeFieldName(rowId, Metadata.MONGO_KEY__SUBMITTER, metadata.getSubmitter()));
+        cellDocuments.add(toCellDocumentWithMongoSafeFieldName(rowId, Metadata.MONGO_KEY__PROJECT_NAME, metadata.getProjectName()));
+        cellDocuments.add(toCellDocumentWithMongoSafeFieldName(rowId, Metadata.MONGO_KEY__CHARGE_NUMBER, metadata.getChargeNumber()));
+        cellDocuments.add(toCellDocumentWithMongoSafeFieldName(rowId, Metadata.MONGO_KEY__COMMENTS, metadata.getComments()));
 
         addMany(cellDocuments);
     }
 
-    protected Document toMongoFieldNameEncodedDocument(ObjectId rowId, String name, Object value) {
+    protected Document toCellDocumentWithMongoSafeFieldName(ObjectId rowId, String name, Object value) {
 
         return new Document(
                 new CellDocument(
@@ -95,4 +96,10 @@ public class s_CellDAO extends AbsDAO implements ICellDAO {
 
         return allDeleteResults;
     }
+
+    @Override
+    protected void makeSureTableColumnsIRelyUponAreIndexed() {
+
+    }
+
 }

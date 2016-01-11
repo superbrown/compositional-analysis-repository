@@ -1,6 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.dao;
 
-import gov.energy.nrel.dataRepositoryApp.model.IDataCategoryDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDataCategoryDocument;
 import org.bson.types.ObjectId;
 
 import java.util.List;

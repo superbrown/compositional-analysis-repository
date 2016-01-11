@@ -20,5 +20,8 @@ public interface IFileStorageDAO {
     void moveFilesToRemovedFilesLocation(String filePath)
             throws IOException;
 
+    void deleteFolder(String filePath)
+            throws IOException;
+
     File getFile(String storageLocation);
 }

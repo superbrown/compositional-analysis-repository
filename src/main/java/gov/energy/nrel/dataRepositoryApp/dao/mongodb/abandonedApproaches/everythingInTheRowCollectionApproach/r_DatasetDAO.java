@@ -7,11 +7,11 @@ import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DataCategoryDAO;
-import gov.energy.nrel.dataRepositoryApp.model.IDataCategoryDocument;
-import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
-import gov.energy.nrel.dataRepositoryApp.model.IRowCollection;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.DataCategoryDocument;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.DatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDataCategoryDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DataCategoryDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -27,10 +27,15 @@ public class r_DatasetDAO extends AbsDAO implements IDatasetDAO
     public r_DatasetDAO(ISettings settings) {
 
         super(COLLECTION_NAME, settings);
+    }
 
+    @Override
+    public void init(String collectionName, ISettings settings) {
+
+        super.init(collectionName, settings);
         rowDAO = new r_RowDAO(settings);
         dataCategoryDAO = new DataCategoryDAO(settings);
-        makeSureTableColumnsIRelyUponAreIndexed();
+
     }
 
     public IDatasetDocument getDataset(String id) {
@@ -102,11 +107,12 @@ public class r_DatasetDAO extends AbsDAO implements IDatasetDAO
 
     private static boolean HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = false;
 
+    @Override
     protected void makeSureTableColumnsIRelyUponAreIndexed() {
 
         if (HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED == false) {
 
-            getCollection().createIndex(new Document().append(DatasetDocument.MONGO_KEY__ID, 1));
+            HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = true;
         }
     }
 }

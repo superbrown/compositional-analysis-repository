@@ -1,12 +1,15 @@
 package gov.energy.nrel.dataRepositoryApp.bo;
 
-import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToDeleteFiles;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.InvalidValueFoundInHeader;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.bson.types.ObjectId;
 
@@ -29,13 +32,26 @@ public interface IDatasetBO extends IBO {
             StoredFile sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<StoredFile> attachmentFiles)
-            throws UnsupportedFileExtension, InvalidValueFoundInHeader;
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, PartiallyFailedToPersistDataset, FailedToSave, UnknownDataset;
 
     String getDataset(String datasetId) throws UnknownDataset;
 
+    IDeleteResults removeDatasetFromDatabaseAndDeleteItsFiles(ObjectId datasetId)
+            throws UnknownDataset, FailedToDeleteFiles;
+
+    IDeleteResults removeDatasetFromDatabaseAndDeleteItsFiles(String datasetId)
+            throws UnknownDataset, FailedToDeleteFiles;
+
+    void deleteFiles(IDatasetDocument datasetDocument) throws IOException, FailedToDeleteFiles;
+
     String getAllDatasets();
 
-    IDeleteResults removeDataset(String datasetId) throws DeletionFailure, UnknownDataset;
+    IDeleteResults removeDatasetFromDatabaseAndMoveItsFiles(String datasetId)
+            throws UnknownDataset, FailedToDeleteFiles;
+
+    void removeDatasetTransactionToken(ObjectId datasetObjectId);
+
+    List<ObjectId> getDatasetIdsForAllIncompleteDatasetUploadCleanups();
 
     String addDataset(
             String dataCategory,
@@ -47,12 +63,7 @@ public interface IDatasetBO extends IBO {
             FileAsRawBytes sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<FileAsRawBytes> attachmentFiles)
-            throws UnsupportedFileExtension, InvalidValueFoundInHeader;
-
-    String addDataset(String metadataJson,
-                      File file,
-                      String nameOfSubdocumentContainingDataIfApplicable)
-            throws UnsupportedFileExtension, InvalidValueFoundInHeader;
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave;
 
     IDatasetDAO getDatasetDAO();
 

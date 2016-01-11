@@ -1,9 +1,9 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.InvalidValueFoundInHeader;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -23,7 +23,7 @@ import java.util.List;
 
 public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDatasetReader_ExcelWorkbook {
 
-    protected Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(DatasetReader_ExcelWorkbook.class);
 
     @Override
     public boolean canReadFile(File file) {
@@ -39,7 +39,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
 
     @Override
     public RowCollection extractDataFromFile(File file, String nameOfSubdocumentContainingDataIfApplicable)
-            throws IOException, InvalidValueFoundInHeader, UnsupportedFileExtension {
+            throws IOException, FileContainsInvalidColumnName, UnsupportedFileExtension {
 
         InputStream fileInputStream = null;
 
@@ -189,7 +189,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
 
 
     protected List<String> determineColumnNames(Sheet sheet)
-            throws InvalidValueFoundInHeader {
+            throws FileContainsInvalidColumnName {
 
         Iterator<org.apache.poi.ss.usermodel.Row> rowIterator = sheet.rowIterator();
 
@@ -224,7 +224,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
                 case Cell.CELL_TYPE_BOOLEAN:
                 case Cell.CELL_TYPE_ERROR:
                 case Cell.CELL_TYPE_FORMULA:
-                    throw new InvalidValueFoundInHeader(columnNumber, cell.toString());
+                    throw new FileContainsInvalidColumnName(columnNumber, cell.toString());
             }
 
             if (lastColumnEncountered) {

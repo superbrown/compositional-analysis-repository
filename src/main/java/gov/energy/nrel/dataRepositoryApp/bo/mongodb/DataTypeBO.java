@@ -12,7 +12,7 @@ import org.bson.Document;
 
 public class DataTypeBO extends AbsBO implements IDataTypeBO {
 
-    protected Logger log = Logger.getLogger(getClass());
+    protected static Logger log = Logger.getLogger(DataTypeBO.class);
 
     public DataTypeBO(DataRepositoryApplication dataRepositoryApplication) {
         super(dataRepositoryApplication);

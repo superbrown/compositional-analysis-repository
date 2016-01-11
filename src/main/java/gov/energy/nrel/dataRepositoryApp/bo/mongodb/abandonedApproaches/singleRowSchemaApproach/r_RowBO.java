@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 
 public class r_RowBO extends AbsRowBO {
 
-    protected Logger log = Logger.getLogger(getClass());
+    protected static Logger log = Logger.getLogger(r_RowBO.class);
 
     public r_RowBO(DataRepositoryApplication dataRepositoryApplication) {
         super(dataRepositoryApplication);

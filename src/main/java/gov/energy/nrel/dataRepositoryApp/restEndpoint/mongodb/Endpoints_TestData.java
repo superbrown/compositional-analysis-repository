@@ -3,6 +3,8 @@ package gov.energy.nrel.dataRepositoryApp.restEndpoint.mongodb;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO;
 //import gov.energy.nrel.dataRepositoryApp.app.TestMode;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.CompletelyFailedToPersistDataset;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,19 +18,21 @@ import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.cr
 @RestController
 public class Endpoints_TestData {
 
-    protected Logger log = Logger.getLogger(getClass());
+    protected static Logger log = Logger.getLogger(Endpoints_TestData.class);
 
     @Autowired
     protected DataRepositoryApplication dataRepositoryApplication;
 
     @RequestMapping(value="/api/seedTestData", method = RequestMethod.GET)
-    public ResponseEntity seedTestData() {
+    public ResponseEntity seedTestData()
+            throws PartiallyFailedToPersistDataset, CompletelyFailedToPersistDataset {
 
         return create_SUCCESS_response(getTestDataBO().seedTestDataInTheDatabase_dataset_1_and_2());
     }
 
     @RequestMapping(value="/api/seedBigAmountsOfData", method = RequestMethod.GET)
-    public ResponseEntity seedBigAmountsOfData() {
+    public ResponseEntity seedBigAmountsOfData()
+            throws PartiallyFailedToPersistDataset, CompletelyFailedToPersistDataset {
 
         return create_SUCCESS_response(getTestDataBO().seedTestDataInTheDatabase_dataset_1_and_2());
     }
