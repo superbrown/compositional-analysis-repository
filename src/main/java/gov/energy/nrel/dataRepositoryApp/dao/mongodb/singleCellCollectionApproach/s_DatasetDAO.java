@@ -2,6 +2,7 @@ package gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellCollectionApproa
 
 import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.IDatasetTransactionTokenDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IRowDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.CompletelyFailedToPersistDataset;
@@ -9,10 +10,11 @@ import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistD
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DataCategoryDAO;
-import gov.energy.nrel.dataRepositoryApp.model.document.IDataCategoryDocument;
-import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DatasetTransactionTokenDAO;
 import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDataCategoryDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DataCategoryDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
@@ -27,14 +29,19 @@ public class s_DatasetDAO extends AbsDAO implements IDatasetDAO
     public static final String COLLECTION_NAME = "dataset";
     protected DataCategoryDAO dataCategoryDAO;
     protected IRowDAO rowDAO;
+    protected IDatasetTransactionTokenDAO datasetTransactionTokenDAO;
 
     public s_DatasetDAO(ISettings settings) {
 
         super(COLLECTION_NAME, settings);
+    }
 
+    @Override
+    public void init(String collectionName, ISettings settings) {
+        super.init(collectionName, settings);
         rowDAO = new s_RowDAO(settings);
         dataCategoryDAO = new DataCategoryDAO(settings);
-        makeSureTableColumnsIRelyUponAreIndexed();
+        datasetTransactionTokenDAO = new DatasetTransactionTokenDAO(getSettings());
     }
 
     public IDatasetDocument getDataset(String id) {
@@ -55,6 +62,11 @@ public class s_DatasetDAO extends AbsDAO implements IDatasetDAO
         }
 
         try {
+            // DESIGN NOTE: This token will be removed by the calling code.  I'm not certain this is the best design,
+            // but a constraint we have is that, if an exception is thrown, the calling code is responsible for cleaning
+            // up, and we don't want to remove the token until that's accomplished.
+            addInWorkTokenToDatabase(datasetObjectId);
+
             rowDAO.add(datasetObjectId, datasetDocument, data);
 
             String dataCategory = datasetDocument.getMetadata().getDataCategory();
@@ -70,6 +82,7 @@ public class s_DatasetDAO extends AbsDAO implements IDatasetDAO
             columnNamesToaAssociateToTheDataCategory.remove(Row.MONGO_KEY__ROW_NUMBER);
 
             associateColumnNamesToTheDataCategory(dataCategory, columnNamesToaAssociateToTheDataCategory);
+            removeInWorkTokenFromDatabase(datasetObjectId);
 
             return datasetObjectId;
         }
@@ -127,11 +140,24 @@ public class s_DatasetDAO extends AbsDAO implements IDatasetDAO
 
     private static boolean HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = false;
 
+    @Override
     protected void makeSureTableColumnsIRelyUponAreIndexed() {
 
         if (HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED == false) {
 
-            getCollection().createIndex(new Document().append(DatasetDocument.MONGO_KEY__ID, 1));
+            HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = true;
         }
+    }
+
+    private void removeInWorkTokenFromDatabase(ObjectId datasetObjectId) {
+        try {
+            datasetTransactionTokenDAO.removeToken(datasetObjectId);
+        } catch (UnknownEntity unknownEntity) {
+            log.error(unknownEntity);
+        }
+    }
+
+    private void addInWorkTokenToDatabase(ObjectId datasetObjectId) {
+        datasetTransactionTokenDAO.addToken(datasetObjectId);
     }
 }

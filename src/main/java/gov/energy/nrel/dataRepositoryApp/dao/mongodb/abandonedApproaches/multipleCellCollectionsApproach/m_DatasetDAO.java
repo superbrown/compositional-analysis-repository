@@ -26,10 +26,13 @@ public class m_DatasetDAO extends AbsDAO implements IDatasetDAO {
     public m_DatasetDAO(ISettings settings) {
 
         super(COLLECTION_NAME, settings);
+    }
 
+    @Override
+    public void init(String collectionName, ISettings settings) {
+        super.init(collectionName, settings);
         rowDAO = new m_RowDAO(settings);
         dataCategoryDAO = new DataCategoryDAO(settings);
-        makeSureTableColumnsIRelyUponAreIndexed();
     }
 
     @Override
@@ -107,11 +110,12 @@ public class m_DatasetDAO extends AbsDAO implements IDatasetDAO {
 
     private static boolean HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = false;
 
+    @Override
     protected void makeSureTableColumnsIRelyUponAreIndexed() {
 
         if (HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED == false) {
 
-            getCollection().createIndex(new Document().append(DatasetDocument.MONGO_KEY__ID, 1));
+            HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = true;
         }
     }
 }

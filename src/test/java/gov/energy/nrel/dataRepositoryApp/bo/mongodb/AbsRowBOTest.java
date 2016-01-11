@@ -30,7 +30,7 @@ import static org.junit.Assert.fail;
 
 public abstract class AbsRowBOTest extends TestUsingTestData
 {
-    Logger log = Logger.getLogger(getClass());
+    protected static Logger log = Logger.getLogger(AbsRowBOTest.class);
 
     @BeforeClass
     public static void beforeClass() {

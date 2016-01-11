@@ -23,7 +23,7 @@ import java.util.List;
 
 public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDatasetReader_ExcelWorkbook {
 
-    protected Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(DatasetReader_ExcelWorkbook.class);
 
     @Override
     public boolean canReadFile(File file) {

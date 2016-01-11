@@ -1,6 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.bo;
 
-import gov.energy.nrel.dataRepositoryApp.bo.exception.ArchiveFailure;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToDeleteFiles;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
@@ -37,23 +37,21 @@ public interface IDatasetBO extends IBO {
     String getDataset(String datasetId) throws UnknownDataset;
 
     IDeleteResults removeDatasetFromDatabaseAndDeleteItsFiles(ObjectId datasetId)
-            throws ArchiveFailure, UnknownDataset;
+            throws UnknownDataset, FailedToDeleteFiles;
 
     IDeleteResults removeDatasetFromDatabaseAndDeleteItsFiles(String datasetId)
-                    throws UnknownDataset;
+            throws UnknownDataset, FailedToDeleteFiles;
 
-    IDeleteResults removeDatasetFromTheDatabase(String datasetId)
-                            throws UnknownDataset;
-
-    void deleteFiles(IDatasetDocument datasetDocument);
+    void deleteFiles(IDatasetDocument datasetDocument) throws IOException, FailedToDeleteFiles;
 
     String getAllDatasets();
 
-    IDeleteResults removeDatasetFromDatabaseAndMoveItsFiles(ObjectId datasetId)
-            throws ArchiveFailure, UnknownDataset;
-
     IDeleteResults removeDatasetFromDatabaseAndMoveItsFiles(String datasetId)
-            throws UnknownDataset;
+            throws UnknownDataset, FailedToDeleteFiles;
+
+    void removeDatasetTransactionToken(ObjectId datasetObjectId);
+
+    List<ObjectId> getDatasetIdsForAllIncompleteDatasetUploadCleanups();
 
     String addDataset(
             String dataCategory,

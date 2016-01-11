@@ -17,7 +17,7 @@ import java.util.List;
 
 public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetReader, IDatasetReader_CSVFile {
 
-    private Logger log = Logger.getLogger(getClass());
+    protected static Logger log = Logger.getLogger(DatasetReader_CSVFile.class);
     
     @Override
     public boolean canReadFile(File file) {
@@ -146,7 +146,7 @@ public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetR
             }
         }
         catch (Exception e) {
-            log.error(e);
+            log.error(e, e);
             throw new RuntimeException(e);
         }
         finally {

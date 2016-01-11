@@ -35,12 +35,17 @@ public class m_RowDAO extends AbsDAO implements IRowDAO {
 
     public static final String COLLECTION_NAME = "row";
 
-    protected Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(m_RowDAO.class);
     private Map<String, m_CellDAO> cellDAOs;
 
     public m_RowDAO(ISettings settings) {
 
         super(COLLECTION_NAME, settings);
+    }
+
+    @Override
+    public void init(String collectionName, ISettings settings) {
+        super.init(collectionName, settings);
         cellDAOs = new HashMap<>();
     }
 
@@ -382,6 +387,13 @@ public class m_RowDAO extends AbsDAO implements IRowDAO {
             searchCriterion.setName(toMongoSafeFieldName(searchCriterion.getName()));
         }
     }
+
+    @Override
+    protected void makeSureTableColumnsIRelyUponAreIndexed() {
+
+    }
+
+
 
     private class CriterionAndItsNumberOfMatches implements Comparable {
 

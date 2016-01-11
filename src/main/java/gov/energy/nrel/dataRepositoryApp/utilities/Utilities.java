@@ -241,7 +241,7 @@ public class Utilities {
                     }
                 }
                 catch (IOException e) {
-                    log.warn(e);
+                    log.warn(e, e);
                 }
                 finally {
 
@@ -250,7 +250,7 @@ public class Utilities {
                             out.close();
                         }
                     } catch (IOException e) {
-                        log.warn(e);
+                        log.warn(e, e);
                     }
                 }
             }

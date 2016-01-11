@@ -42,14 +42,18 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
 
     protected s_CellDAO cellDAO;
 
-    protected Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(s_RowDAO.class);;
 
     public s_RowDAO(ISettings settings) {
 
         super(COLLECTION_NAME, settings);
+    }
 
+    @Override
+    public void init(String collectionName, ISettings settings) {
+
+        super.init(collectionName, settings);
         cellDAO = new s_CellDAO(settings);
-        makeSureTableColumnsIRelyUponAreIndexed();
     }
 
     public IRowDocument get(String id) {
@@ -414,6 +418,7 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
 
     private static boolean HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = false;
 
+    @Override
     protected void makeSureTableColumnsIRelyUponAreIndexed() {
 
         getCollection().createIndex(new Document().append(RowDocument.MONGO_KEY__ID, 1));

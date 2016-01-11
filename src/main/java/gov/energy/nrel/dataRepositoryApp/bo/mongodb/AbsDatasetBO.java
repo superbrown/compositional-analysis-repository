@@ -3,15 +3,16 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 import com.mongodb.util.JSON;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IDatasetBO;
-import gov.energy.nrel.dataRepositoryApp.bo.IPhysicalFileBO;
-import gov.energy.nrel.dataRepositoryApp.bo.exception.ArchiveFailure;
+import gov.energy.nrel.dataRepositoryApp.bo.IFileStorageBO;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToDeleteFiles;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.IDatasetTransactionTokenDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
-import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import org.apache.log4j.Logger;
 import org.bson.Document;
@@ -27,7 +28,8 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
 
     protected IDatasetDAO datasetDAO;
 
-    Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(AbsDatasetBO.class);
+    protected IDatasetTransactionTokenDAO datasetTransactionTokenDAO;
 
     public AbsDatasetBO(DataRepositoryApplication dataRepositoryApplication) {
         super(dataRepositoryApplication);
@@ -37,7 +39,7 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
 
         IDatasetDocument dataset = getDatasetDAO().getDataset(datasetId);
         String storageLocation = dataset.getMetadata().getSourceDocument().getStorageLocation();
-        File sourceDocument = getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO().getFile(storageLocation);
+        File sourceDocument = getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO().getFile(storageLocation);
         return sourceDocument;
     }
 
@@ -57,11 +59,12 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
                 zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
 
                 List<IStoredFile> attachments = dataset.getMetadata().getAttachments();
+                IFileStorageBO fileSotrageBO = getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO();
 
                 for (IStoredFile attachment : attachments) {
 
                     String storageLocation = attachment.getStorageLocation();
-                    File attachmentFile = getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO().getFile(storageLocation);
+                    File attachmentFile = fileSotrageBO.getFile(storageLocation);
 
                     addToZipFile(zipOutputStream, attachmentFile, attachment.getOriginalFileName());
                 }
@@ -75,7 +78,7 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
                     }
                 }
                 catch (IOException e) {
-                    log.warn(e);
+                    log.warn(e, e);
                 }
             }
 
@@ -94,7 +97,7 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
                 }
             }
             catch (IOException e) {
-                log.warn(e);
+                log.warn(e, e);
             }
         }
 
@@ -122,14 +125,8 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
         return datasetDAO;
     }
 
-    public IDeleteResults removeDatasetFromDatabaseAndMoveItsFiles(ObjectId datasetId)
-            throws ArchiveFailure, UnknownDataset {
-
-        return removeDatasetFromDatabaseAndMoveItsFiles(datasetId.toHexString());
-    }
-
     public IDeleteResults removeDatasetFromDatabaseAndMoveItsFiles(String datasetId)
-            throws UnknownDataset {
+            throws UnknownDataset, FailedToDeleteFiles {
 
         IDatasetDAO datasetDAO = getDatasetDAO();
         IDatasetDocument datasetDocument = datasetDAO.getDataset(datasetId);
@@ -138,7 +135,13 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
             throw new UnknownDataset();
         }
 
-        IDeleteResults results = removeDatasetFromTheDatabase(datasetId);
+        IDeleteResults results = null;
+        try {
+            results = datasetDAO.delete(datasetId);
+        }
+        catch (UnknownEntity e) {
+            throw new FailedToDeleteFiles(e);
+        }
 
         moveFilesToMovedFilesDirectory(datasetDocument);
 
@@ -147,14 +150,14 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
 
     @Override
     public IDeleteResults removeDatasetFromDatabaseAndDeleteItsFiles(ObjectId datasetId)
-            throws UnknownDataset {
+            throws UnknownDataset, FailedToDeleteFiles {
 
         return removeDatasetFromDatabaseAndDeleteItsFiles(datasetId.toHexString());
     }
 
     @Override
     public IDeleteResults removeDatasetFromDatabaseAndDeleteItsFiles(String datasetId)
-            throws UnknownDataset {
+            throws UnknownDataset, FailedToDeleteFiles {
 
         IDatasetDAO datasetDAO = getDatasetDAO();
         IDatasetDocument datasetDocument = datasetDAO.getDataset(datasetId);
@@ -163,40 +166,17 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
             throw new UnknownDataset();
         }
 
-        IDeleteResults results = removeDatasetFromTheDatabase(datasetId);
+        IDeleteResults results = null;
+        try {
+            results = datasetDAO.delete(datasetId);
+        }
+        catch (UnknownEntity e) {
+            throw new FailedToDeleteFiles(e);
+        }
 
         deleteFiles(datasetDocument);
 
         return results;
-    }
-
-    public IDeleteResults removeDatasetFromTheDatabase(ObjectId datasetId)
-            throws UnknownDataset {
-
-        return removeDatasetFromTheDatabase(datasetId.toHexString());
-    }
-
-    @Override
-    public IDeleteResults removeDatasetFromTheDatabase(String datasetId)
-            throws UnknownDataset {
-
-        IDatasetDAO datasetDAO = getDatasetDAO();
-        IDatasetDocument datasetDocument = datasetDAO.getDataset(datasetId);
-
-        if (datasetDocument == null) {
-            throw new UnknownDataset();
-        }
-
-        try {
-            return datasetDAO.delete(datasetId);
-        }
-        catch (UnknownEntity e) {
-            // this is odd
-            log.warn("This is odd.  We just attempted to delete dataset " + datasetId + " and it doesn't exists.  " +
-                    "However, we just retreived it a few lines earlier");
-        }
-
-        return null;
     }
 
     public void moveFilesToMovedFilesDirectory(IDatasetDocument datasetDocument) {
@@ -204,26 +184,25 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
         String storageLocation = datasetDocument.getMetadata().getSourceDocument().getStorageLocation();
 
         try {
-            IPhysicalFileBO physicalFileBO = getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO();
-            physicalFileBO.moveFilesToRemovedFilesLocation(storageLocation);
+            IFileStorageBO fileSotrageBO = getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO();
+            fileSotrageBO.moveFilesToRemovedFilesLocation(storageLocation);
         }
         catch (IOException e) {
-            log.warn(e);
+            log.warn(e, e);
         }
     }
 
     @Override
-    public void deleteFiles(IDatasetDocument datasetDocument) {
+    public void deleteFiles(IDatasetDocument datasetDocument) throws FailedToDeleteFiles {
 
         String storageLocation = datasetDocument.getMetadata().getSourceDocument().getStorageLocation();
         String path = storageLocation.substring(0, storageLocation.lastIndexOf("/"));
 
+        IFileStorageBO fileStorageBO = getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO();
         try {
-            IPhysicalFileBO physicalFileBO = getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO();
-            physicalFileBO.deleteFolder(path);
-        }
-        catch (IOException e) {
-            log.warn(e);
+            fileStorageBO.deleteFolder(path);
+        } catch (IOException e) {
+            throw new FailedToDeleteFiles(e);
         }
     }
 
@@ -234,8 +213,8 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
 
         FileAsRawBytes jsonAsRawBytes = new FileAsRawBytes("DATASET_METADATA.json", json);
 
-        IPhysicalFileBO physicalFileBO = getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO();
-        physicalFileBO.saveFile(timestamp, "", jsonAsRawBytes);
+        IFileStorageBO fileStorageBO = getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO();
+        fileStorageBO.saveFile(timestamp, "", jsonAsRawBytes);
     }
 
     public String getAllDatasets() {
@@ -261,6 +240,21 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
 
     protected File getPhysicalFile(String storageLocation) {
 
-        return getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO().getFile(storageLocation);
+        return getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO().getFile(storageLocation);
+    }
+
+    @Override
+    public void removeDatasetTransactionToken(ObjectId datasetObjectId) {
+        try {
+            datasetTransactionTokenDAO.removeToken(datasetObjectId);
+        }
+        catch (UnknownEntity unknownEntity) {
+            log.error(unknownEntity);
+        }
+    }
+
+    @Override
+    public List<ObjectId> getDatasetIdsForAllIncompleteDatasetUploadCleanups() {
+        return datasetTransactionTokenDAO.getDatasetIdsOfAllTokens();
     }
 }

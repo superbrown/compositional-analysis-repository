@@ -31,7 +31,7 @@ import static org.junit.Assert.fail;
 
 public abstract class AbsPerformanceTest extends TestUsingTestData
 {
-    Logger log = Logger.getLogger(getClass());
+    protected static Logger log = Logger.getLogger(AbsPerformanceTest.class);
 
     @BeforeClass
     public static void beforeClass() {

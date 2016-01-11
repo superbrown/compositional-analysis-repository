@@ -3,16 +3,22 @@ package gov.energy.nrel.dataRepositoryApp;
 import com.mongodb.MongoTimeoutException;
 import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
 import gov.energy.nrel.dataRepositoryApp.bo.IDataCategoryBO;
+import gov.energy.nrel.dataRepositoryApp.bo.IDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.DataCategoryAlreadyExists;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToDeleteFiles;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach.s_BusinessObjects;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
+import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 /**
  * The Data Repository Application was originally designed and coded by Mike Brown (mike.public@superbrown.com)
@@ -54,6 +60,8 @@ public class DataRepositoryApplication extends SpringApplication {
 
     protected IBusinessObjects businessObjects;
 
+    protected static Logger log = Logger.getLogger(DataRepositoryApplication.class);
+
     // Spring will call this constructor at app startup by virtue of this being annotated as a Component.
     public DataRepositoryApplication() {
     }
@@ -70,6 +78,11 @@ public class DataRepositoryApplication extends SpringApplication {
 
             IBusinessObjects businessObjects = new s_BusinessObjects(this);
             setBusinessObjects(businessObjects);
+
+            String[] defaultSetOfDataCategories = businessObjects.getSettings().getDefaultSetOfDataCategories();
+            assureCategoriesAreInTheDatabase(businessObjects, defaultSetOfDataCategories);
+
+            attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads(businessObjects);
         }
         catch (MongoTimeoutException e) {
             // This is written like this so it stands out in the log.
@@ -89,8 +102,6 @@ public class DataRepositoryApplication extends SpringApplication {
     public void setBusinessObjects(IBusinessObjects businessObjects) {
 
         this.businessObjects = businessObjects;
-        String[] defaultSetOfDataCategories = businessObjects.getSettings().getDefaultSetOfDataCategories();
-        assureCategoriesAreInTheDatabase(businessObjects, defaultSetOfDataCategories);
     }
 
     public IBusinessObjects getBusinessObjects() {
@@ -121,6 +132,28 @@ public class DataRepositoryApplication extends SpringApplication {
         }
         catch (DataCategoryAlreadyExists e) {
             // that's fine
+        }
+    }
+
+    protected void attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads(IBusinessObjects businessObjects) {
+
+        IDatasetBO datasetBO = businessObjects.getDatasetBO();
+        List<ObjectId> datasetIdsForAllIncompleteDatasetUploadCleanups = datasetBO.getDatasetIdsForAllIncompleteDatasetUploadCleanups();
+
+        for (ObjectId datasetId : datasetIdsForAllIncompleteDatasetUploadCleanups) {
+            try {
+                datasetBO.removeDatasetFromDatabaseAndDeleteItsFiles(datasetId);
+                datasetBO.removeDatasetTransactionToken(datasetId);
+            }
+            catch (UnknownDataset e) {
+                log.warn("Failed to remove dataset " + datasetId + " that was only partially added.", e);
+            }
+            catch (FailedToDeleteFiles e) {
+                log.warn("Failed to remove dataset " + datasetId + " that was only partially added.", e);
+            }
+            catch (Throwable e) {
+                log.warn("Failed to remove dataset " + datasetId + " that was only partially added.", e);
+            }
         }
     }
 

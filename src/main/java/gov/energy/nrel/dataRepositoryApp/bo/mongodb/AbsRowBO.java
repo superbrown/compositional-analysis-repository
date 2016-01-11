@@ -34,7 +34,7 @@ import java.util.*;
 
 public abstract class AbsRowBO extends AbsBO implements IRowBO {
 
-    protected Logger log = Logger.getLogger(getClass());
+    protected static Logger log = Logger.getLogger(AbsRowBO.class);
 
     @Autowired
     protected DataRepositoryApplication dataRepositoryApplication;

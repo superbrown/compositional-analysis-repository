@@ -14,7 +14,7 @@ import static org.junit.Assert.fail;
 
 public abstract class AbsDatasetBOTest extends TestUsingTestData
 {
-    Logger log = Logger.getLogger(getClass());
+    protected static Logger log = Logger.getLogger(AbsDatasetBOTest.class);
 
     @BeforeClass
     public static void beforeClass() {

@@ -31,7 +31,7 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
     private String collectionName;
 
     protected ISettings settings;
-    protected Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(AbsDAO.class);
 
     static {
 
@@ -40,6 +40,7 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
     public AbsDAO(String collectionName, ISettings settings) {
 
         init(collectionName, settings);
+        makeSureTableColumnsIRelyUponAreIndexed();
     }
 
     @Override
@@ -155,7 +156,8 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
     public IDeleteResults delete(String id)
             throws UnknownEntity {
 
-        return delete(new ObjectId(id));
+        ObjectId objectId = new ObjectId(id);
+        return delete(objectId);
     }
 
     @Override
@@ -241,4 +243,6 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
     public ISettings getSettings() {
         return settings;
     }
+
+    protected abstract void makeSureTableColumnsIRelyUponAreIndexed();
 }

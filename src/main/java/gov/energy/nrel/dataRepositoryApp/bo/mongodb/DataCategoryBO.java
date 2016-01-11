@@ -23,7 +23,7 @@ import java.util.*;
 
 public class DataCategoryBO extends AbsBO implements IDataCategoryBO {
 
-    Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(DataCategoryBO.class);
 
     protected DataCategoryDAO dataCategoryDAO;
 

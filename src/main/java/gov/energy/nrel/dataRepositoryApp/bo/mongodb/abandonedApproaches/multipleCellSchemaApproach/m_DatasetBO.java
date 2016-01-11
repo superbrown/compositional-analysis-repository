@@ -2,7 +2,7 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.multipl
 
 import com.mongodb.util.JSON;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
-import gov.energy.nrel.dataRepositoryApp.bo.IPhysicalFileBO;
+import gov.energy.nrel.dataRepositoryApp.bo.IFileStorageBO;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.multipleCellCollectionsApproach.m_DatasetDAO;
@@ -27,7 +27,7 @@ import java.util.List;
 
 public class m_DatasetBO extends AbsDatasetBO {
 
-    Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(m_DatasetBO.class);
 
     protected IDatasetReader_AllFileTypes generalFileReader;
 
@@ -107,14 +107,14 @@ public class m_DatasetBO extends AbsDatasetBO {
 
         Date timestamp = new Date();
 
-        IPhysicalFileBO physicalFileBO = getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO();
+        IFileStorageBO fileSotrageBO = getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO();
 
-        gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile theDataFileThatWasStored = physicalFileBO.saveFile(timestamp, "", sourceDocument);
+        gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile theDataFileThatWasStored = fileSotrageBO.saveFile(timestamp, "", sourceDocument);
 
         List<gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile> theAttachmentsThatWereStored = new ArrayList();
 
         for (FileAsRawBytes attachmentFile : attachmentFiles) {
-            theAttachmentsThatWereStored.add(physicalFileBO.saveFile(timestamp, "attachments", attachmentFile));
+            theAttachmentsThatWereStored.add(fileSotrageBO.saveFile(timestamp, "attachments", attachmentFile));
         }
 
         ObjectId objectId = addDataset(

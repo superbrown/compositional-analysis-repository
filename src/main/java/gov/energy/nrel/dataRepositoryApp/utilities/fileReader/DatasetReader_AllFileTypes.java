@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDatasetReader_AllFileTypes {
 
-    Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(DatasetReader_AllFileTypes.class);
 
     public IDatasetReader_ExcelWorkbook excelWorkbookReader;
     public IDatasetReader_CSVFile csvFileReader;
@@ -43,7 +43,7 @@ public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDat
         }
         catch (IOException e) {
             // FIXME: Log
-            log.error(e);
+            log.error(e, e);
             throw new RuntimeException(e);
         }
 

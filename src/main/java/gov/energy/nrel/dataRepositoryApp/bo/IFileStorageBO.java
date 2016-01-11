@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-public interface IPhysicalFileBO extends IBO {
+public interface IFileStorageBO extends IBO {
 
     StoredFile saveFile(Date timestamp, String subdirectory, FileAsRawBytes file);
 

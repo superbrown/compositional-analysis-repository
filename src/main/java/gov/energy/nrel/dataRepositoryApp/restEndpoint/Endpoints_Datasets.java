@@ -3,6 +3,7 @@ package gov.energy.nrel.dataRepositoryApp.restEndpoint;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToDeleteFiles;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
@@ -40,7 +41,7 @@ import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.*;
 public class Endpoints_Datasets {
 
     private static final int MS_IN_A_DAY = 24 * 60 * 60 * 1000;
-    protected Logger log = Logger.getLogger(getClass());
+    protected static Logger log = Logger.getLogger(Endpoints_Datasets.class);
 
     protected static final IDatasetReader_AllFileTypes GENERAL_FILE_READER = new DatasetReader_AllFileTypes();
 
@@ -93,18 +94,19 @@ public class Endpoints_Datasets {
                     attachmentFilesAsRawBytes);
         }
         catch (UnsupportedFileExtension e) {
-            log.info(e);
+            log.info(e, e);
             return create_BAD_REQUEST_response(e.toString());
         }
         catch (FileContainsInvalidColumnName e) {
-            log.info(e);
+            log.info(e, e);
             return create_BAD_REQUEST_response(e.toString());
         }
         catch (IOException e) {
-            log.error(e);
+            log.error(e, e);
             return create_INTERNAL_SERVER_ERROR_response(e.toString());
         }
         catch (FailedToSave e) {
+            log.error(e, e);
             return create_INTERNAL_SERVER_ERROR_response(e.toString());
         }
 
@@ -203,6 +205,8 @@ public class Endpoints_Datasets {
             return create_SUCCESS_response("{message: 'success'}");
         } catch (UnknownDataset e) {
             return create_NOT_FOUND_response("{message: 'unknown dataset, " + datasetId + "'}");
+        } catch (FailedToDeleteFiles e) {
+            return create_INTERNAL_SERVER_ERROR_response(e.toString());
         }
     }
 

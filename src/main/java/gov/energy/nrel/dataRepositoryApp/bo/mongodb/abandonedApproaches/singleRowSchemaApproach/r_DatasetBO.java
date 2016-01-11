@@ -2,7 +2,7 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.singleR
 
 import com.mongodb.util.JSON;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
-import gov.energy.nrel.dataRepositoryApp.bo.IPhysicalFileBO;
+import gov.energy.nrel.dataRepositoryApp.bo.IFileStorageBO;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
@@ -33,7 +33,7 @@ import java.util.List;
 
 public class r_DatasetBO extends AbsDatasetBO {
 
-    Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(r_DatasetBO.class);
 
     protected IDatasetReader_AllFileTypes generalFileReader;
 
@@ -164,10 +164,10 @@ public class r_DatasetBO extends AbsDatasetBO {
 
         String storageLocation = datasetDocument.getMetadata().getSourceDocument().getStorageLocation();
 
-        IPhysicalFileBO physicalFileBO = getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO();
+        IFileStorageBO fileStorageBO = getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO();
 
         try {
-            physicalFileBO.deleteFolder(storageLocation);
+            fileStorageBO.deleteFolder(storageLocation);
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }
@@ -176,7 +176,7 @@ public class r_DatasetBO extends AbsDatasetBO {
         for (IStoredFile attachment : attachments) {
             try {
 
-                physicalFileBO.deleteFolder(attachment.getStorageLocation());
+                fileStorageBO.deleteFolder(attachment.getStorageLocation());
             } catch (java.io.IOException e) {
                 e.printStackTrace();
             }
@@ -205,14 +205,14 @@ public class r_DatasetBO extends AbsDatasetBO {
 
         Date timestamp = new Date();
 
-        IPhysicalFileBO physicalFileBO = getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO();
+        IFileStorageBO fileStorageBO = getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO();
 
-        gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile theDataFileThatWasStored = physicalFileBO.saveFile(timestamp, "", sourceDocument);
+        gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile theDataFileThatWasStored = fileStorageBO.saveFile(timestamp, "", sourceDocument);
 
         List<gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile> theAttachmentsThatWereStored = new ArrayList();
 
         for (FileAsRawBytes attachmentFile : attachmentFiles) {
-            theAttachmentsThatWereStored.add(physicalFileBO.saveFile(timestamp, "attachments", attachmentFile));
+            theAttachmentsThatWereStored.add(fileStorageBO.saveFile(timestamp, "attachments", attachmentFile));
         }
 
         ObjectId objectId = null;
@@ -234,7 +234,7 @@ public class r_DatasetBO extends AbsDatasetBO {
             try {
                 String fileName = theDataFileThatWasStored.originalFileName;
                 String path = fileName.substring(0, fileName.lastIndexOf("/"));
-                physicalFileBO.deleteFolder(path);
+                fileStorageBO.deleteFolder(path);
             } catch (java.io.IOException e1) {
                 e1.printStackTrace();
             }

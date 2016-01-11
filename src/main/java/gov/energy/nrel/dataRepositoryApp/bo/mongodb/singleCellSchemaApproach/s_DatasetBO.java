@@ -3,11 +3,14 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach;
 import com.mongodb.util.JSON;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IDatasetBO;
-import gov.energy.nrel.dataRepositoryApp.bo.IPhysicalFileBO;
+import gov.energy.nrel.dataRepositoryApp.bo.IFileStorageBO;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToDeleteFiles;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.CompletelyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DatasetTransactionTokenDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellCollectionApproach.s_DatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
 import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
@@ -27,9 +30,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class s_DatasetBO extends gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBO implements IDatasetBO {
+public class s_DatasetBO extends AbsDatasetBO implements IDatasetBO {
 
-    Logger log = Logger.getLogger(this.getClass());
+    protected static Logger log = Logger.getLogger(s_DatasetBO.class);
 
     protected IDatasetReader_AllFileTypes generalFileReader;
 
@@ -42,6 +45,7 @@ public class s_DatasetBO extends gov.energy.nrel.dataRepositoryApp.bo.mongodb.Ab
 
         datasetDAO = new s_DatasetDAO(getSettings());
         generalFileReader = new DatasetReader_AllFileTypes();
+        datasetTransactionTokenDAO = new DatasetTransactionTokenDAO(getSettings());
     }
 
     public ObjectId addDataset(
@@ -56,18 +60,15 @@ public class s_DatasetBO extends gov.energy.nrel.dataRepositoryApp.bo.mongodb.Ab
             List<gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile> attachmentFiles)
             throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave {
 
-        // create "in work" token
         File storedFile = getPhysicalFile(sourceDocument.storageLocation);
         RowCollection dataUpload = null;
         try {
             dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, -1);
         }
         catch (UnsupportedFileExtension e) {
-            // remove "in work" token
             throw e;
         }
         catch (FileContainsInvalidColumnName e) {
-            // remove "in work" token
             throw e;
         }
         IRowCollection rowCollection = new gov.energy.nrel.dataRepositoryApp.model.common.mongodb.RowCollection(dataUpload.columnNames, dataUpload.rowData);
@@ -90,34 +91,53 @@ public class s_DatasetBO extends gov.energy.nrel.dataRepositoryApp.bo.mongodb.Ab
                 nameOfSubdocumentContainingDataIfApplicable,
                 attachments);
 
-        ObjectId objectId = null;
+        ObjectId datasetObjectId = null;
         try {
 
-            objectId = getDatasetDAO().add(datasetDocument, rowCollection);
+            datasetObjectId = getDatasetDAO().add(datasetDocument, rowCollection);
         }
         catch (PartiallyFailedToPersistDataset e) {
 
+            datasetObjectId = e.getDatasetObjectId();
+
             try {
-                removeDatasetFromDatabaseAndDeleteItsFiles(e.getDatasetObjectId());
-                // remove "in work" token
+                removeDatasetFromDatabaseAndDeleteItsFiles(datasetObjectId);
+                // This needs to be called here because the the calling code may not have been able to call it since an
+                // exception was thrown.
+                removeDatasetTransactionToken(datasetObjectId);
                 throw new FailedToSave(e);
             }
             catch (UnknownDataset e1) {
+
                 log.warn(e1);
-                deleteFiles(datasetDocument);
-                // remove "in work" token
+                try {
+                    deleteFiles(datasetDocument);
+                    removeDatasetTransactionToken(datasetObjectId);
+                }
+                catch (FailedToDeleteFiles e2) {
+                    log.warn(e1);
+                }
+
+                throw new FailedToSave(e);
+            }
+            catch (FailedToDeleteFiles e1) {
+                log.warn(e1);
                 throw new FailedToSave(e);
             }
         }
         catch (CompletelyFailedToPersistDataset e) {
 
-            deleteFiles(datasetDocument);
-            // remove "in work" token
+            try {
+                deleteFiles(datasetDocument);
+            }
+            catch (FailedToDeleteFiles e1) {
+                log.warn(e1);
+            }
+
             throw new FailedToSave(e);
         }
 
-        // remove "in work" token
-        return objectId;
+        return datasetObjectId;
     }
 
     public String addDataset(
@@ -134,15 +154,18 @@ public class s_DatasetBO extends gov.energy.nrel.dataRepositoryApp.bo.mongodb.Ab
 
         Date timestamp = new Date();
 
-        IPhysicalFileBO physicalFileBO = getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO();
+        IFileStorageBO fileStorageBO = getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO();
 
         gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile theDataFileThatWasStored =
-                physicalFileBO.saveFile(timestamp, "", sourceDocument);
+                fileStorageBO.saveFile(timestamp, "", sourceDocument);
 
         List<gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile> theAttachmentsThatWereStored = new ArrayList();
 
         for (FileAsRawBytes attachmentFile : attachmentFiles) {
-            theAttachmentsThatWereStored.add(physicalFileBO.saveFile(timestamp, "attachments", attachmentFile));
+
+            gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile attachments =
+                    fileStorageBO.saveFile(timestamp, "attachments", attachmentFile);
+            theAttachmentsThatWereStored.add(attachments);
         }
 
         ObjectId objectId = addDataset(
@@ -160,4 +183,6 @@ public class s_DatasetBO extends gov.energy.nrel.dataRepositoryApp.bo.mongodb.Ab
 
         return JSON.serialize(objectId);
     }
+
+
 }

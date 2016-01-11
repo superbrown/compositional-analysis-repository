@@ -14,13 +14,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-public class FileStorageBO extends AbsBO implements IPhysicalFileBO {
+public class FileStorageStorageBO extends AbsBO implements IFileStorageBO {
 
     protected IFileStorageDAO fileStorageDAO;
 
     protected IDatasetReader_AllFileTypes generalFileReader;
 
-    public FileStorageBO(DataRepositoryApplication d) {
+    public FileStorageStorageBO(DataRepositoryApplication d) {
 
         super(d);
     }
