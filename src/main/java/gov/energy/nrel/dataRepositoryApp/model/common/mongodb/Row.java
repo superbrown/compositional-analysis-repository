@@ -1,8 +1,7 @@
-package gov.energy.nrel.dataRepositoryApp.model.mongodb.common;
+package gov.energy.nrel.dataRepositoryApp.model.common.mongodb;
 
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.MongoFieldNameEncoder;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.AbstractDocument;
-import gov.energy.nrel.dataRepositoryApp.model.IRow;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRow;
 import org.bson.Document;
 
 import java.util.List;

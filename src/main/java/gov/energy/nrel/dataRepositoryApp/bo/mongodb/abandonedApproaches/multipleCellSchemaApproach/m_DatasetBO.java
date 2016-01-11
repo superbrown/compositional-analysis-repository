@@ -6,11 +6,11 @@ import gov.energy.nrel.dataRepositoryApp.bo.IPhysicalFileBO;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.multipleCellCollectionsApproach.m_DatasetDAO;
-import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
-import gov.energy.nrel.dataRepositoryApp.model.IRowCollection;
-import gov.energy.nrel.dataRepositoryApp.model.IStoredFile;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.StoredFile;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.DatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
+import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.StoredFile;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
@@ -57,7 +57,7 @@ public class m_DatasetBO extends AbsDatasetBO {
 
         File storedFile = getPhysicalFile(sourceDocument.storageLocation);
         RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, -1);
-        IRowCollection rowCollection = new gov.energy.nrel.dataRepositoryApp.model.mongodb.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
+        IRowCollection rowCollection = new gov.energy.nrel.dataRepositoryApp.model.common.mongodb.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
         List<IStoredFile> attachments = new ArrayList();
         if (attachmentFiles != null) {

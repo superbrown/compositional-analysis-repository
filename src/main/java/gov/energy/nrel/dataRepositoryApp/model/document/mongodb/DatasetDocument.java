@@ -1,11 +1,11 @@
-package gov.energy.nrel.dataRepositoryApp.model.mongodb.document;
+package gov.energy.nrel.dataRepositoryApp.model.document.mongodb;
 
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.AbstractDocument;
-import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
-import gov.energy.nrel.dataRepositoryApp.model.IMetadata;
-import gov.energy.nrel.dataRepositoryApp.model.IStoredFile;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Metadata;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.AbstractDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.IMetadata;
+import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import org.bson.Document;
 
 import java.util.Date;

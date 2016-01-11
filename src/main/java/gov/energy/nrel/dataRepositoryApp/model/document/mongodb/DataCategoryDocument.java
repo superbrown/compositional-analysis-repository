@@ -1,8 +1,8 @@
-package gov.energy.nrel.dataRepositoryApp.model.mongodb.document;
+package gov.energy.nrel.dataRepositoryApp.model.document.mongodb;
 
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.AbstractDocument;
-import gov.energy.nrel.dataRepositoryApp.model.IDataCategoryDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.AbstractDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDataCategoryDocument;
 import org.bson.Document;
 
 import java.util.HashSet;

@@ -1,4 +1,4 @@
-package gov.energy.nrel.dataRepositoryApp.model;
+package gov.energy.nrel.dataRepositoryApp.model.document;
 
 
 public interface IThingWithAnId {

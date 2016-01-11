@@ -1,4 +1,4 @@
-package gov.energy.nrel.dataRepositoryApp.model;
+package gov.energy.nrel.dataRepositoryApp.model.common;
 
 
 public interface IStoredFile {

@@ -7,7 +7,7 @@ import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
-import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;

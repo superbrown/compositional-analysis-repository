@@ -1,4 +1,6 @@
-package gov.energy.nrel.dataRepositoryApp.model;
+package gov.energy.nrel.dataRepositoryApp.model.document;
+
+import gov.energy.nrel.dataRepositoryApp.model.common.IMetadata;
 
 public interface IDatasetDocument extends IThingWithAnId {
 

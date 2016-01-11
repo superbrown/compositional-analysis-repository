@@ -1,8 +1,7 @@
-package gov.energy.nrel.dataRepositoryApp.model.mongodb.common;
+package gov.energy.nrel.dataRepositoryApp.model.common.mongodb;
 
 import com.mongodb.BasicDBObject;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.AbstractDocument;
-import gov.energy.nrel.dataRepositoryApp.model.IStoredFile;
+import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import org.bson.Document;
 
 public class StoredFile extends AbstractDocument implements IStoredFile {

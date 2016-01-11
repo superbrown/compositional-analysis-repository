@@ -7,11 +7,11 @@ import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DataCategoryDAO;
-import gov.energy.nrel.dataRepositoryApp.model.IDataCategoryDocument;
-import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
-import gov.energy.nrel.dataRepositoryApp.model.IRowCollection;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.DataCategoryDocument;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.DatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDataCategoryDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DataCategoryDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DatasetDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 

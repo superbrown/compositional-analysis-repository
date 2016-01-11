@@ -5,7 +5,7 @@ import gov.energy.nrel.dataRepositoryApp.bo.IDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
-import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;

@@ -7,9 +7,9 @@ import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.CompletelyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
-import gov.energy.nrel.dataRepositoryApp.model.IDataCategoryDocument;
-import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDataCategoryDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
 import org.bson.Document;
 import org.junit.*;
 

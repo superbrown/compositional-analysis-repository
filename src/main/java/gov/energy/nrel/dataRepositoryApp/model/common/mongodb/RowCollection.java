@@ -1,10 +1,10 @@
-package gov.energy.nrel.dataRepositoryApp.model.mongodb.common;
+package gov.energy.nrel.dataRepositoryApp.model.common.mongodb;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
-import gov.energy.nrel.dataRepositoryApp.model.IRow;
-import gov.energy.nrel.dataRepositoryApp.model.IRowCollection;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRow;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
 
 import java.util.ArrayList;
 import java.util.List;

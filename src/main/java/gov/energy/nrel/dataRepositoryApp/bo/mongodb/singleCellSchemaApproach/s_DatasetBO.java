@@ -9,10 +9,10 @@ import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.CompletelyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellCollectionApproach.s_DatasetDAO;
-import gov.energy.nrel.dataRepositoryApp.model.IRowCollection;
-import gov.energy.nrel.dataRepositoryApp.model.IStoredFile;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.StoredFile;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.DatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
+import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.StoredFile;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
@@ -70,7 +70,7 @@ public class s_DatasetBO extends gov.energy.nrel.dataRepositoryApp.bo.mongodb.Ab
             // remove "in work" token
             throw e;
         }
-        IRowCollection rowCollection = new gov.energy.nrel.dataRepositoryApp.model.mongodb.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
+        IRowCollection rowCollection = new gov.energy.nrel.dataRepositoryApp.model.common.mongodb.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
         List<IStoredFile> attachments = new ArrayList();
         if (attachmentFiles != null) {

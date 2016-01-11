@@ -1,6 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;

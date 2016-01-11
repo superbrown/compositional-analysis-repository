@@ -11,7 +11,7 @@ import gov.energy.nrel.dataRepositoryApp.dao.IDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.dto.DeleteResults;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.AbstractDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.AbstractDocument;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import org.apache.log4j.Logger;
 import org.bson.Document;

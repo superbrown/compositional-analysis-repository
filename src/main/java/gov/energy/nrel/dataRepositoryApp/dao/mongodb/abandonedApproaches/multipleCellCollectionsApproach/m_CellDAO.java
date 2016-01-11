@@ -9,8 +9,8 @@ import gov.energy.nrel.dataRepositoryApp.dao.ICellDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.dto.DeleteResults;
-import gov.energy.nrel.dataRepositoryApp.model.IRow;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.CellDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRow;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.CellDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 

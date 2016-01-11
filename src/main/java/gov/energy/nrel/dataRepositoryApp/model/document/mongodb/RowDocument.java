@@ -1,11 +1,11 @@
-package gov.energy.nrel.dataRepositoryApp.model.mongodb.document;
+package gov.energy.nrel.dataRepositoryApp.model.document.mongodb;
 
-import gov.energy.nrel.dataRepositoryApp.model.IMetadata;
-import gov.energy.nrel.dataRepositoryApp.model.IRow;
-import gov.energy.nrel.dataRepositoryApp.model.IRowDocument;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.AbstractDocument;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Metadata;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
+import gov.energy.nrel.dataRepositoryApp.model.common.IMetadata;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRow;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.AbstractDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
+import gov.energy.nrel.dataRepositoryApp.model.document.IRowDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 

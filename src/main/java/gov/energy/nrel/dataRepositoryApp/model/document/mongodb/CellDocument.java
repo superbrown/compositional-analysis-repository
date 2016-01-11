@@ -1,6 +1,6 @@
-package gov.energy.nrel.dataRepositoryApp.model.mongodb.document;
+package gov.energy.nrel.dataRepositoryApp.model.document.mongodb;
 
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.AbstractDocument;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.AbstractDocument;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 

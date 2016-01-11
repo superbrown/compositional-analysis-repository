@@ -1,4 +1,6 @@
-package gov.energy.nrel.dataRepositoryApp.model;
+package gov.energy.nrel.dataRepositoryApp.model.common;
+
+import gov.energy.nrel.dataRepositoryApp.model.document.IThingWithAnId;
 
 import java.util.Set;
 
