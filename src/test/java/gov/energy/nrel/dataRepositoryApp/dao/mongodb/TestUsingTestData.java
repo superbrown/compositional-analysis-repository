@@ -3,6 +3,8 @@ package gov.energy.nrel.dataRepositoryApp.dao.mongodb;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
 import gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.CompletelyFailedToPersistDataset;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.settings.Settings;
 
 public abstract class TestUsingTestData {
@@ -51,7 +53,13 @@ public abstract class TestUsingTestData {
         }
 
         if (SUSPEND_DATA_SEEDING == false) {
-            testDataBO.seedTestDataInTheDatabase_dataset_1_and_2();
+            try {
+                testDataBO.seedTestDataInTheDatabase_dataset_1_and_2();
+            } catch (PartiallyFailedToPersistDataset e) {
+                throw new RuntimeException(e);
+            } catch (CompletelyFailedToPersistDataset e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

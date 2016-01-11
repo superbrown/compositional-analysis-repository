@@ -3,7 +3,7 @@ package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.InvalidValueFoundInHeader;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -100,7 +100,7 @@ public class CSVFileReaderTest {
             assertTrue(row_5.get(6).equals("five"));
             assertTrue(row_5.get(7) == null);
         }
-        catch (InvalidValueFoundInHeader e) {
+        catch (FileContainsInvalidColumnName e) {
             fail();
         }
     }
@@ -161,7 +161,7 @@ public class CSVFileReaderTest {
             assertTrue(row_5.get(4) == null);
             assertTrue(row_5.get(5).equals("five"));
         }
-        catch (InvalidValueFoundInHeader e) {
+        catch (FileContainsInvalidColumnName e) {
             fail();
         }
     }
@@ -230,7 +230,7 @@ public class CSVFileReaderTest {
             assertTrue(row_5.get(5).equals("five"));
             assertTrue(row_5.get(6) == null);
         }
-        catch (InvalidValueFoundInHeader e) {
+        catch (FileContainsInvalidColumnName e) {
             fail();
         }
     }

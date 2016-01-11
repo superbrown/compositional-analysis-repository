@@ -3,7 +3,7 @@ package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 import au.com.bytecode.opencsv.CSVReader;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Row;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.InvalidValueFoundInHeader;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -34,7 +34,7 @@ public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetR
 
     @Override
     public RowCollection extractDataFromFile(File file, int maxNumberOfValuesPerRow)
-            throws IOException, InvalidValueFoundInHeader, UnsupportedFileExtension {
+            throws IOException, FileContainsInvalidColumnName, UnsupportedFileExtension {
 
         List<List> lines = parse(file, maxNumberOfValuesPerRow);
 
@@ -54,7 +54,7 @@ public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetR
     }
 
     protected List<String> determineColumnNames(List<List> lines)
-            throws InvalidValueFoundInHeader {
+            throws FileContainsInvalidColumnName {
 
         List<Object> firstRow = lines.get(0);
 
@@ -71,7 +71,7 @@ public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetR
             if (((columnName instanceof String) == false) &&
                 ((columnName instanceof Number) == false)) {
 
-                throw new InvalidValueFoundInHeader(columnNumber, columnName);
+                throw new FileContainsInvalidColumnName(columnNumber, columnName);
             }
 
             if ((columnName instanceof String) &&

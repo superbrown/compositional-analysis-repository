@@ -3,7 +3,7 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IDataCategoryBO;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.DataCategoryAlreadyExists;
-import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.ArchiveFailure;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataCatogory;
 import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
@@ -128,7 +128,7 @@ public class DataCategoryBO extends AbsBO implements IDataCategoryBO {
 
     @Override
     public void deleteDataCategory(String dataCategoryId)
-            throws DeletionFailure, UnknownDataCatogory {
+            throws ArchiveFailure, UnknownDataCatogory {
 
         try {
             getDataCategoryDAO().delete(dataCategoryId);

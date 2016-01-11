@@ -1,12 +1,12 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception;
 
 
-public class InvalidValueFoundInHeader extends Throwable {
+public class FileContainsInvalidColumnName extends Throwable {
 
     public Integer columnNumber;
     public Object value;
 
-    public InvalidValueFoundInHeader(Integer columnNumber, Object value) {
+    public FileContainsInvalidColumnName(Integer columnNumber, Object value) {
         this.columnNumber = columnNumber;
         this.value = value;
     }

@@ -7,7 +7,6 @@ import gov.energy.nrel.dataRepositoryApp.dao.FileStorageStorageDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.CouldNotCreateDirectory;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
-import gov.energy.nrel.dataRepositoryApp.dao.exception.UnableToDeleteFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
 
@@ -56,10 +55,10 @@ public class FileStorageBO extends AbsBO implements IPhysicalFileBO {
     }
 
     @Override
-    public void deletFile(String storageLocation)
-            throws UnableToDeleteFile {
+    public void deleteFolder(String storageLocation)
+            throws IOException {
 
-        getFileStorageDAO().deletFile(storageLocation);
+        getFileStorageDAO().deleteFolder(storageLocation);
     }
 
     @Override

@@ -4,11 +4,14 @@ import com.mongodb.BasicDBList;
 import com.mongodb.util.JSON;
 import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
 import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.TestUsingTestData;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.InvalidValueFoundInHeader;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -60,7 +63,16 @@ public abstract class AbsRowBOTest extends TestUsingTestData
         } catch (UnsupportedFileExtension e) {
             e.printStackTrace();
             fail();
-        } catch (InvalidValueFoundInHeader e) {
+        } catch (FileContainsInvalidColumnName e) {
+            e.printStackTrace();
+            fail();
+        } catch (PartiallyFailedToPersistDataset e) {
+            e.printStackTrace();
+            fail();
+        } catch (FailedToSave e) {
+            e.printStackTrace();
+            fail();
+        } catch (UnknownDataset e) {
             e.printStackTrace();
             fail();
         }

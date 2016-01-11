@@ -4,13 +4,16 @@ import com.mongodb.BasicDBList;
 import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.bo.IDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.MongoFieldNameEncoder;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.TestUsingTestData;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.InvalidValueFoundInHeader;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -23,6 +26,7 @@ import java.util.List;
 import static gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator.CONTAINS;
 import static gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator.EQUALS;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 public abstract class AbsPerformanceTest extends TestUsingTestData
@@ -73,10 +77,21 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
                 }
             }
 
-        } catch (UnsupportedFileExtension unsupportedFileExtension) {
-            unsupportedFileExtension.printStackTrace();
-        } catch (InvalidValueFoundInHeader invalidValueFoundInHeader) {
-            invalidValueFoundInHeader.printStackTrace();
+        } catch (UnsupportedFileExtension e) {
+            e.printStackTrace();
+            fail();
+        } catch (FileContainsInvalidColumnName e) {
+            e.printStackTrace();
+            fail();
+        } catch (PartiallyFailedToPersistDataset e) {
+            e.printStackTrace();
+            fail();
+        } catch (FailedToSave e) {
+            e.printStackTrace();
+            fail();
+        } catch (UnknownDataset e) {
+            e.printStackTrace();
+            fail();
         }
     }
 
@@ -138,7 +153,8 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
         assertTrue(numberOfResults > 0);
     }
 
-    protected void seedData(StoredFile sourceDocument, int number) throws UnsupportedFileExtension, InvalidValueFoundInHeader {
+    protected void seedData(StoredFile sourceDocument, int number)
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, PartiallyFailedToPersistDataset, FailedToSave, UnknownDataset {
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "Seeding " + number + " additional datasets for test.");
 

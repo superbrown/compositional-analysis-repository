@@ -4,6 +4,8 @@ import gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.TestData;
 import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.CompletelyFailedToPersistDataset;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.model.IDataCategoryDocument;
 import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
@@ -142,6 +144,12 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
             assertTrue(columnNames.size() == 10);
         }
         catch (UnknownEntity e) {
+            e.printStackTrace();
+            fail();
+        } catch (PartiallyFailedToPersistDataset e) {
+            e.printStackTrace();
+            fail();
+        } catch (CompletelyFailedToPersistDataset e) {
             e.printStackTrace();
             fail();
         }

@@ -1,11 +1,11 @@
 package gov.energy.nrel.dataRepositoryApp.bo.exception;
 
 
-public class DeletionFailure extends Exception {
+public class ArchiveFailure extends Exception {
 
     private final Object deleteResult;
 
-    public DeletionFailure(Object deleteResult) {
+    public ArchiveFailure(Object deleteResult) {
 
         this.deleteResult = deleteResult;
     }

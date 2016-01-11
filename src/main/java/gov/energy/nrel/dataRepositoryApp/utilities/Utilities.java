@@ -262,6 +262,12 @@ public class Utilities {
         FileUtils.moveDirectory(new File(sourcePath), new File(destinationPath));
     }
 
+
+    public static void deleteFolder(String sourcePath) throws IOException {
+
+        FileUtils.deleteDirectory(new File(sourcePath));
+    }
+
     public static byte[] fileToBytes(String path) throws IOException {
 
         Path path1 = Paths.get(path);

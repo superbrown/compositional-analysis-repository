@@ -4,6 +4,8 @@ import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IRowDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.CompletelyFailedToPersistDataset;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DataCategoryDAO;
@@ -41,27 +43,39 @@ public class s_DatasetDAO extends AbsDAO implements IDatasetDAO
         return datasetDocument;
     }
 
-    public ObjectId add(IDatasetDocument datasetDocument, IRowCollection data) {
+    public ObjectId add(IDatasetDocument datasetDocument, IRowCollection data)
+            throws PartiallyFailedToPersistDataset, CompletelyFailedToPersistDataset {
 
-        ObjectId objectId = add(datasetDocument);
+        ObjectId datasetObjectId = null;
+        try {
+            datasetObjectId = add(datasetDocument);
+        }
+        catch (Throwable e) {
+            throw new CompletelyFailedToPersistDataset(e);
+        }
 
-        rowDAO.add(objectId, datasetDocument, data);
+        try {
+            rowDAO.add(datasetObjectId, datasetDocument, data);
 
-        String dataCategory = datasetDocument.getMetadata().getDataCategory();
-        Set columnNames = data.getColumnNames();
+            String dataCategory = datasetDocument.getMetadata().getDataCategory();
+            Set columnNames = data.getColumnNames();
 
-        Set columnNamesToaAssociateColumnNamesToTheDataCategory = new HashSet<>();
+            Set columnNamesToaAssociateToTheDataCategory = new HashSet<>();
 
-        columnNamesToaAssociateColumnNamesToTheDataCategory.addAll(columnNames);
-        // We are removing this one because it treated as a metadata column on the UI, meaning it is searchable as a
-        // metadata item, though it is really metadata about the row rather than the dataset.  The purpose of
-        // associating column names with the data category is to identify column names that are unique to the category
-        // by nature of the data that has been ingested for it.
-        columnNamesToaAssociateColumnNamesToTheDataCategory.remove(Row.MONGO_KEY__ROW_NUMBER);
+            columnNamesToaAssociateToTheDataCategory.addAll(columnNames);
+            // We are removing this one because it treated as a metadata column on the UI, meaning it is searchable as a
+            // metadata item, though it is really metadata about the row rather than the dataset.  The purpose of
+            // associating column names with the data category is to identify column names that are unique to the category
+            // by nature of the data that has been ingested for it.
+            columnNamesToaAssociateToTheDataCategory.remove(Row.MONGO_KEY__ROW_NUMBER);
 
-        associateColumnNamesToTheDataCategory(dataCategory, columnNamesToaAssociateColumnNamesToTheDataCategory);
+            associateColumnNamesToTheDataCategory(dataCategory, columnNamesToaAssociateToTheDataCategory);
 
-        return objectId;
+            return datasetObjectId;
+        }
+        catch (Throwable e) {
+            throw new PartiallyFailedToPersistDataset(datasetObjectId, e);
+        }
     }
 
     protected void associateColumnNamesToTheDataCategory(String dataCategory, Set columnNames) {

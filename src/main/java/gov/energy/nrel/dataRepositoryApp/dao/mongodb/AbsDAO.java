@@ -7,7 +7,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
 import gov.energy.nrel.dataRepositoryApp.dao.IDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
@@ -154,7 +153,7 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
 
     @Override
     public IDeleteResults delete(String id)
-            throws DeletionFailure, UnknownEntity {
+            throws UnknownEntity {
 
         return delete(new ObjectId(id));
     }

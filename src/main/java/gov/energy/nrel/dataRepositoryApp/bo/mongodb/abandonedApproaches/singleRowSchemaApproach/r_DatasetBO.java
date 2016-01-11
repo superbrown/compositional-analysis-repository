@@ -3,35 +3,30 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.singleR
 import com.mongodb.util.JSON;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IPhysicalFileBO;
-import gov.energy.nrel.dataRepositoryApp.bo.exception.DeletionFailure;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
-import gov.energy.nrel.dataRepositoryApp.dao.exception.UnableToDeleteFile;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.CompletelyFailedToPersistDataset;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everythingInTheRowCollectionApproach.r_DatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.model.IDatasetDocument;
-import gov.energy.nrel.dataRepositoryApp.model.IMetadata;
 import gov.energy.nrel.dataRepositoryApp.model.IRowCollection;
 import gov.energy.nrel.dataRepositoryApp.model.IStoredFile;
-import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.Metadata;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.common.StoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.mongodb.document.DatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
-import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.InvalidValueFoundInHeader;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
-import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -64,7 +59,7 @@ public class r_DatasetBO extends AbsDatasetBO {
             gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile> attachmentFiles)
-            throws UnsupportedFileExtension, InvalidValueFoundInHeader {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName {
 
         File storedFile = getPhysicalFile(sourceDocument.storageLocation);
         RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, -1);
@@ -88,7 +83,17 @@ public class r_DatasetBO extends AbsDatasetBO {
                 nameOfSubdocumentContainingDataIfApplicable,
                 attachments);
 
-        ObjectId objectId = getDatasetDAO().add(datasetDocument, rowCollection);
+        ObjectId objectId = null;
+        try {
+            objectId = getDatasetDAO().add(datasetDocument, rowCollection);
+        }
+        catch (CompletelyFailedToPersistDataset e) {
+            //  FIXME: I'm not doing anyhign here because this code has been abandoned for now.
+            e.printStackTrace();
+        } catch (PartiallyFailedToPersistDataset e) {
+            //  FIXME: I'm not doing anyhign here because this code has been abandoned for now.
+            e.printStackTrace();
+        }
 
         return objectId;
     }
@@ -104,11 +109,11 @@ public class r_DatasetBO extends AbsDatasetBO {
             gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile> attachmentFiles)
-            throws UnsupportedFileExtension, InvalidValueFoundInHeader {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName {
 
         File storedFile = getPhysicalFile(sourceDocument.storageLocation);
         RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, maxNumberOfValuesPerRow);
-        IRowCollection rowCollection = new gov.energy.nrel.dataRepositoryApp.model.mongodb.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
+        IRowCollection e = new gov.energy.nrel.dataRepositoryApp.model.mongodb.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
         List<IStoredFile> attachments = new ArrayList();
         for (gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile attachmentFile : attachmentFiles) {
@@ -126,14 +131,18 @@ public class r_DatasetBO extends AbsDatasetBO {
                 nameOfSubdocumentContainingDataIfApplicable,
                 attachments);
 
-        ObjectId objectId = getDatasetDAO().add(datasetDocument, rowCollection);
+        ObjectId objectId = null;
+        try {
+            objectId = getDatasetDAO().add(datasetDocument, e);
+        } catch (CompletelyFailedToPersistDataset e1) {
+            //  FIXME: I'm not doing anyhign here because this code has been abandoned for now.
+            e1.printStackTrace();
+        } catch (PartiallyFailedToPersistDataset e1) {
+            //  FIXME: I'm not doing anyhign here because this code has been abandoned for now.
+            e1.printStackTrace();
+        }
 
         return JSON.serialize(objectId);
-    }
-
-    protected File getPhysicalFile(String storageLocation) {
-
-        return getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO().getFile(storageLocation);
     }
 
     public String getDataset(String datasetId) {
@@ -145,16 +154,8 @@ public class r_DatasetBO extends AbsDatasetBO {
         return jsonOut;
     }
 
-    public String getAllDatasets() {
-
-        Iterable<Document> datasets = getDatasetDAO().getAll();
-
-        String jsonOut = DAOUtilities.serialize(datasets);
-        return jsonOut;
-    }
-
-    public IDeleteResults removeDataset(String datasetId)
-            throws DeletionFailure, UnknownDataset {
+    public IDeleteResults removeDatasetFromDatabaseAndMoveItsFiles(String datasetId)
+            throws UnknownDataset {
 
         // This implementation is weak in that it has no atomicity.
 
@@ -166,20 +167,18 @@ public class r_DatasetBO extends AbsDatasetBO {
         IPhysicalFileBO physicalFileBO = getDataRepositoryApplication().getBusinessObjects().getPhysicalFileBO();
 
         try {
-            physicalFileBO.deletFile(storageLocation);
-        }
-        catch (UnableToDeleteFile e) {
-            log.warn(e);
+            physicalFileBO.deleteFolder(storageLocation);
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
         }
 
         List<IStoredFile> attachments = datasetDocument.getMetadata().getAttachments();
         for (IStoredFile attachment : attachments) {
             try {
 
-                physicalFileBO.deletFile(attachment.getStorageLocation());
-            }
-            catch (UnableToDeleteFile e) {
-                log.warn(e);
+                physicalFileBO.deleteFolder(attachment.getStorageLocation());
+            } catch (java.io.IOException e) {
+                e.printStackTrace();
             }
         }
 
@@ -202,7 +201,7 @@ public class r_DatasetBO extends AbsDatasetBO {
             FileAsRawBytes sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<FileAsRawBytes> attachmentFiles)
-            throws UnsupportedFileExtension, InvalidValueFoundInHeader {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName {
 
         Date timestamp = new Date();
 
@@ -216,44 +215,31 @@ public class r_DatasetBO extends AbsDatasetBO {
             theAttachmentsThatWereStored.add(physicalFileBO.saveFile(timestamp, "attachments", attachmentFile));
         }
 
-        ObjectId objectId = addDataset(
-                dataCategory,
-                submissionDate,
-                submitter,
-                projectName,
-                chargeNumber,
-                comments,
-                theDataFileThatWasStored,
-                nameOfSubdocumentContainingDataIfApplicable,
-                theAttachmentsThatWereStored);
-
-        return JSON.serialize(objectId);
-    }
-
-    public String addDataset(String metadataJson,
-                             File file,
-                             String nameOfSubdocumentContainingDataIfApplicable)
-            throws UnsupportedFileExtension, InvalidValueFoundInHeader {
-
-        IDatasetDAO datasetDAO = getDatasetDAO();
-
+        ObjectId objectId = null;
         try {
-            RowCollection dataUpload = generalFileReader.extractDataFromDataset(file, nameOfSubdocumentContainingDataIfApplicable);
-            IRowCollection rowCollection = new gov.energy.nrel.dataRepositoryApp.model.mongodb.common.RowCollection(dataUpload.columnNames, dataUpload.rowData);
+            objectId = addDataset(
+                    dataCategory,
+                    submissionDate,
+                    submitter,
+                    projectName,
+                    chargeNumber,
+                    comments,
+                    theDataFileThatWasStored,
+                    nameOfSubdocumentContainingDataIfApplicable,
+                    theAttachmentsThatWereStored);
 
-            IMetadata metadata = new Metadata(metadataJson);
-
-            PerformanceLogger performanceLogger = new PerformanceLogger(log, "new Dataset()");
-            DatasetDocument datasetDocument = new DatasetDocument(metadata);
-            performanceLogger.done();
-
-            ObjectId objectId = datasetDAO.add(datasetDocument, rowCollection);
-
-            return objectId.toHexString();
+            return JSON.serialize(objectId);
         }
-        catch (IOException e) {
-            log.error(e);
-            throw new RuntimeException(e);
+        catch (Throwable e) {
+            try {
+                String fileName = theDataFileThatWasStored.originalFileName;
+                String path = fileName.substring(0, fileName.lastIndexOf("/"));
+                physicalFileBO.deleteFolder(path);
+            } catch (java.io.IOException e1) {
+                e1.printStackTrace();
+            }
+
+            throw e;
         }
     }
 }
