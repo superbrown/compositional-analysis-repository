@@ -135,14 +135,12 @@ drApp.run(
             drServices.populateKnownDataTypes($scope, $http);
 
             var dataCategoryFromCookie = $cookies.get('dataCategory');
-            if (dataCategoryFromCookie != undefined &&
-                dataCategoryFromCookie != '') {
+            if (isUnset(dataCategoryFromCookie) == false) {
                 $rootScope.dataCategory = dataCategoryFromCookie;
             }
 
             var submitterFromCookie = $cookies.get('submitter');
-            if (submitterFromCookie != undefined &&
-                submitterFromCookie != '') {
+            if (isUnset(submitterFromCookie) == false) {
                 $rootScope.submitter = submitterFromCookie;
             }
         }
@@ -339,9 +337,7 @@ drApp.service('drServices', function() {
 
     self.populateKnownColumnNames = function (scope, http) {
 
-        if (scope.$root.dataCategory === '') return;
-
-        scope.$root.knownColumnNames = [];
+        if (isUnset(scope.$root.dataCategory)) return;
 
         scope.$root.numberOfBlockingProcesses++;
 
@@ -352,6 +348,7 @@ drApp.service('drServices', function() {
             })
             .error(function (data, status) {
                 scope.$root.numberOfBlockingProcesses--;
+                scope.$root.knownColumnNames = [];
                 postError(scope.$root, data);
             });
     }
