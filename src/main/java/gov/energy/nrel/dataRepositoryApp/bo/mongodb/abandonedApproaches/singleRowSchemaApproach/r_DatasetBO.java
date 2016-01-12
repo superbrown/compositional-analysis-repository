@@ -56,19 +56,19 @@ public class r_DatasetBO extends AbsDatasetBO {
             String projectName,
             String chargeNumber,
             String comments,
-            gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile sourceDocument,
+            IStoredFile sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
-            List<gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile> attachmentFiles)
+            List<IStoredFile> attachmentFiles)
             throws UnsupportedFileExtension, FileContainsInvalidColumnName {
 
-        File storedFile = getPhysicalFile(sourceDocument.storageLocation);
+        File storedFile = getPhysicalFile(sourceDocument.getStorageLocation());
         RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, -1);
         IRowCollection rowCollection = new gov.energy.nrel.dataRepositoryApp.model.common.mongodb.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
         List<IStoredFile> attachments = new ArrayList();
         if (attachmentFiles != null) {
-            for (gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile attachmentFile : attachmentFiles) {
-                attachments.add(new StoredFile(attachmentFile.originalFileName, attachmentFile.storageLocation));
+            for (IStoredFile attachmentFile : attachmentFiles) {
+                attachments.add(attachmentFile);
             }
         }
 
@@ -79,7 +79,7 @@ public class r_DatasetBO extends AbsDatasetBO {
                 chargeNumber,
                 projectName,
                 comments,
-                new StoredFile(sourceDocument.originalFileName, sourceDocument.storageLocation),
+                sourceDocument,
                 nameOfSubdocumentContainingDataIfApplicable,
                 attachments);
 
@@ -207,9 +207,9 @@ public class r_DatasetBO extends AbsDatasetBO {
 
         IFileStorageBO fileStorageBO = getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO();
 
-        gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile theDataFileThatWasStored = fileStorageBO.saveFile(timestamp, "", sourceDocument);
+        IStoredFile theDataFileThatWasStored = fileStorageBO.saveFile(timestamp, "", sourceDocument);
 
-        List<gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile> theAttachmentsThatWereStored = new ArrayList();
+        List<IStoredFile> theAttachmentsThatWereStored = new ArrayList();
 
         for (FileAsRawBytes attachmentFile : attachmentFiles) {
             theAttachmentsThatWereStored.add(fileStorageBO.saveFile(timestamp, "attachments", attachmentFile));
@@ -232,7 +232,7 @@ public class r_DatasetBO extends AbsDatasetBO {
         }
         catch (Throwable e) {
             try {
-                String fileName = theDataFileThatWasStored.originalFileName;
+                String fileName = theDataFileThatWasStored.getOriginalFileName();
                 String path = fileName.substring(0, fileName.lastIndexOf("/"));
                 fileStorageBO.deleteFolder(path);
             } catch (java.io.IOException e1) {

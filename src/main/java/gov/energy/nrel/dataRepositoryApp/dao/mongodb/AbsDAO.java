@@ -103,8 +103,6 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
         return getCollection().count();
     }
 
-    protected abstract Document createDocumentOfTypeDAOHandles(Document document);
-
     @Override
     public Document getOne(Bson filter, Bson projection) {
         Document document = DAOUtilities.getOne(getCollection(), filter, projection);
@@ -208,6 +206,7 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
         return getCollection().find(new BasicDBObject());
     }
 
+    @Override
     public UpdateResult updateOne(String id, Bson update) {
 
         Bson filter = createIdFilter(new ObjectId(id));
@@ -244,5 +243,4 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
         return settings;
     }
 
-    protected abstract void makeSureTableColumnsIRelyUponAreIndexed();
 }

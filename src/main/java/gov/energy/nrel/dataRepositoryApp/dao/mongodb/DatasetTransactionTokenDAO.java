@@ -49,7 +49,7 @@ public class DatasetTransactionTokenDAO extends AbsDAO implements gov.energy.nre
     }
 
     @Override
-    protected Document createDocumentOfTypeDAOHandles(Document document) {
+    public Document createDocumentOfTypeDAOHandles(Document document) {
 
         return new DatasetTransactionTokenDocument(document);
     }
@@ -73,15 +73,9 @@ public class DatasetTransactionTokenDAO extends AbsDAO implements gov.energy.nre
     }
 
 
-    private static boolean HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = false;
-
     @Override
-    protected void makeSureTableColumnsIRelyUponAreIndexed() {
+    public void makeSureTableColumnsIRelyUponAreIndexed() {
 
-        if (HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED == false) {
-
-            getCollection().createIndex(new Document().append(DatasetTransactionTokenDocument.MONGO_KEY__DATASET_ID, 1));
-            HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = true;
-        }
+        getCollection().createIndex(new Document().append(DatasetTransactionTokenDocument.MONGO_KEY__DATASET_ID, 1));
     }
 }

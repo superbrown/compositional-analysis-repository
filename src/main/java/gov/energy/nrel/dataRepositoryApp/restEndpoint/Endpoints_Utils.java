@@ -2,6 +2,7 @@ package gov.energy.nrel.dataRepositoryApp.restEndpoint;
 
 import com.mongodb.util.JSON;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.bo.IDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.bo.IUtilsBO;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
@@ -58,5 +59,25 @@ public class Endpoints_Utils {
         String json = JSON.serialize(namesOfSheetsWithinExcelWorkbook);
 
         return create_SUCCESS_response(json);
+    }
+
+    @RequestMapping(value="/api/repopulate/the/database", method = RequestMethod.GET)
+    public ResponseEntity repolulateTheDatabase()
+            throws IOException {
+
+        IUtilsBO utilsBO = dataRepositoryApplication.getBusinessObjects().getUtilsBO();
+
+        List<String> errors = utilsBO.repopulateDatabaseUsingFilesStoredOnServer();
+
+        return create_SUCCESS_response(JSON.serialize(errors));
+    }
+
+    @RequestMapping(value="/api/attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads", method = RequestMethod.GET)
+    public ResponseEntity attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads()
+    {
+        IDatasetBO datasetBO = dataRepositoryApplication.getBusinessObjects().getDatasetBO();
+        List<String> errors = datasetBO.attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads();
+
+        return create_SUCCESS_response(JSON.serialize(errors));
     }
 }

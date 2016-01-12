@@ -1,10 +1,17 @@
 package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 
+import com.mongodb.client.MongoDatabase;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
+import gov.energy.nrel.dataRepositoryApp.bo.IDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.bo.IFileStorageBO;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
+import gov.energy.nrel.dataRepositoryApp.dao.FileStorageStorageDAO;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_ExcelWorkbook;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -22,6 +29,8 @@ public class UtilsBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.
 
     protected DatasetReader_ExcelWorkbook datasetReader_excelWorkbook;
     private String tempDirectoryPath;
+    private FileStorageStorageDAO fileStorageDAO;
+
 
     public UtilsBO(DataRepositoryApplication dataRepositoryApplication) {
         super(dataRepositoryApplication);
@@ -32,6 +41,7 @@ public class UtilsBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.
 
         datasetReader_excelWorkbook = new DatasetReader_ExcelWorkbook();
         tempDirectoryPath = getSettings().getRootDirectoryForUploadedDataFiles() + "/temp";
+        fileStorageDAO = new FileStorageStorageDAO(getSettings());
     }
 
     @Override
@@ -68,5 +78,57 @@ public class UtilsBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.
                 log.warn(e, e);
             }
         }
+    }
+
+    @Override
+    public void dropDatabase() {
+
+        MongoDatabase mongoDatabase =
+                getDataRepositoryApplication().getBusinessObjects().getDatasetBO().getDatasetDAO().getDatabase();
+        mongoDatabase.drop();
+    }
+
+    @Override
+    public List<String> repopulateDatabaseUsingFilesStoredOnServer() {
+
+        List<Metadata> metadataList = fileStorageDAO.getAllMetadata();
+
+        dropDatabase();
+
+        DataRepositoryApplication dataRepositoryApplication = getDataRepositoryApplication();
+        dataRepositoryApplication.initializeBusinessObjects();
+
+        IBusinessObjects businessObjects = dataRepositoryApplication.getBusinessObjects();
+
+        String[] defaultSetOfDataCategories = getSettings().getDefaultSetOfDataCategories();
+        businessObjects.getDataCategoryBO().assureCategoriesAreInTheDatabase(defaultSetOfDataCategories);
+
+        IDatasetBO datasetBO = businessObjects.getDatasetBO();
+
+        List<String> errors = new ArrayList<>();
+
+        for (Metadata metadata : metadataList) {
+
+            try {
+                datasetBO.addDataset(metadata);
+            }
+            catch (FailedToSave e) {
+
+                log.error(metadata, e);
+                errors.add("Failed to save: " + metadata);
+                throw new RuntimeException(e);
+            }
+            catch (FileContainsInvalidColumnName e) {
+                log.error(metadata, e);
+                errors.add("Failed to save (file contains invalid column name): " + metadata);
+                throw new RuntimeException(e);
+            }
+            catch (UnsupportedFileExtension e) {
+                errors.add("Failed to save (unsupported file extension): " + metadata);
+                throw new RuntimeException(e);
+            }
+        }
+
+        return errors;
     }
 }

@@ -11,4 +11,8 @@ public interface IUtilsBO extends IBO {
 
     List<String> getNamesOfSheetsWithinWorkbook(String fileName, FileAsRawBytes fileAsRawBytes)
             throws IOException, UnsupportedFileExtension;
+
+    void dropDatabase();
+
+    List<String> repopulateDatabaseUsingFilesStoredOnServer();
 }

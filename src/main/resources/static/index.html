@@ -64,7 +64,7 @@
 
 <!-- F i x e d   n a v b a r  -->
 
-<div ng-controller="rootPageController">
+<div ng-controller="controller_rootPage">
 
   <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
@@ -84,9 +84,9 @@
 
         <ul class="nav navbar-nav">
 
-          <li class="{{$root.menuItemClass_uploadData}}"><a href="#/uploadData" ng-click="handleUploadDataMenuItemClick()">Upload Data</a></li>
+          <li class="{{$root.menuItemClass_uploadData}}"><a href="#/uploadData" ng-click="handleMenuItem_uploadData()">Upload Data</a></li>
 
-          <li class="{{$root.menuItemClass_findData}}"><a href="#/findData" ng-click="handleFindDataMenuItemClick()">Find Data</a></li>
+          <li class="{{$root.menuItemClass_findData}}"><a href="#/findData" ng-click="handleMenuItem_findData()">Find Data</a></li>
 
         </ul>
       </div><!--/.nav-collapse -->

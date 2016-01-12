@@ -122,7 +122,7 @@ public class r_RowDAO extends AbsDAO implements IRowDAO {
     }
 
     @Override
-    protected Document createDocumentOfTypeDAOHandles(Document document) {
+    public Document createDocumentOfTypeDAOHandles(Document document) {
         return new RowDocument_usingListStructure(document);
     }
 
@@ -368,46 +368,39 @@ public class r_RowDAO extends AbsDAO implements IRowDAO {
         return objectIds;
     }
 
-    private static boolean HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = false;
-
     @Override
-    protected void makeSureTableColumnsIRelyUponAreIndexed() {
+    public void makeSureTableColumnsIRelyUponAreIndexed() {
 
-        if (HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED == false) {
+        getCollection().createIndex(new Document().append(RowDocument.MONGO_KEY__ID, 1));
 
-            getCollection().createIndex(new Document().append(RowDocument.MONGO_KEY__ID, 1));
+        // DESIGN NOTE: Even though these indexes are on the cell collection, they are being set here because this
+        //              is where the code exists that relies upon them. I figured if they were here, they would less
+        //              likely get removed by someone who didn't realize they were used somewhere.
 
-            // DESIGN NOTE: Even though these indexes are on the cell collection, they are being set here because this
-            //              is where the code exists that relies upon them. I figured if they were here, they would less
-            //              likely get removed by someone who didn't realize they were used somewhere.
+        MongoCollection<Document> cellCollection = cellDAO.getCollection();
 
-            MongoCollection<Document> cellCollection = cellDAO.getCollection();
+        BasicDBObject compoundIndex = new BasicDBObject();
+        compoundIndex.put(CellDocument.MONGO_KEY__ROW_ID, 1);
+        compoundIndex.put(CellDocument.MONGO_KEY__COLUMN_NAME, 1);
+        compoundIndex.put(CellDocument.MONGO_KEY__VALUE, 1);
+        cellCollection.createIndex(compoundIndex);
 
-            BasicDBObject compoundIndex = new BasicDBObject();
-            compoundIndex.put(CellDocument.MONGO_KEY__ROW_ID, 1);
-            compoundIndex.put(CellDocument.MONGO_KEY__COLUMN_NAME, 1);
-            compoundIndex.put(CellDocument.MONGO_KEY__VALUE, 1);
-            cellCollection.createIndex(compoundIndex);
+        compoundIndex = new BasicDBObject();
+        compoundIndex.put(CellDocument.MONGO_KEY__COLUMN_NAME, 1);
+        compoundIndex.put(CellDocument.MONGO_KEY__VALUE, 1);
+        cellCollection.createIndex(compoundIndex);
 
-            compoundIndex = new BasicDBObject();
-            compoundIndex.put(CellDocument.MONGO_KEY__COLUMN_NAME, 1);
-            compoundIndex.put(CellDocument.MONGO_KEY__VALUE, 1);
-            cellCollection.createIndex(compoundIndex);
+        if (log.isInfoEnabled()) {
 
-            if (log.isInfoEnabled()) {
+            StringBuilder message = new StringBuilder();
+            message.append("Cell Indexes");
 
-                StringBuilder message = new StringBuilder();
-                message.append("Cell Indexes");
-
-                ListIndexesIterable<Document> indexes = cellCollection.listIndexes();
-                for (Document index : indexes) {
-                    message.append(index.toJson());
-                }
-
-                log.info(message);
+            ListIndexesIterable<Document> indexes = cellCollection.listIndexes();
+            for (Document index : indexes) {
+                message.append(index.toJson());
             }
 
-            HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = true;
+            log.info(message);
         }
     }
 

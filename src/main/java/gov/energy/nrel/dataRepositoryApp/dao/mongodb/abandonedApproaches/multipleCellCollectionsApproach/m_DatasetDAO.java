@@ -93,7 +93,7 @@ public class m_DatasetDAO extends AbsDAO implements IDatasetDAO {
         return deleteResults;
     }
 
-    protected Document createDocumentOfTypeDAOHandles(Document document) {
+    public Document createDocumentOfTypeDAOHandles(Document document) {
 
         return new DatasetDocument(document);
     }
@@ -108,14 +108,8 @@ public class m_DatasetDAO extends AbsDAO implements IDatasetDAO {
         return dataCategoryDAO;
     }
 
-    private static boolean HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = false;
-
     @Override
-    protected void makeSureTableColumnsIRelyUponAreIndexed() {
+    public void makeSureTableColumnsIRelyUponAreIndexed() {
 
-        if (HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED == false) {
-
-            HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = true;
-        }
     }
 }

@@ -164,6 +164,20 @@ public class DataCategoryBO extends AbsBO implements IDataCategoryBO {
     }
 
     @Override
+    public void assureCategoriesAreInTheDatabase(String[] dataCategoryNames) {
+
+        for (String dataCategoryName : dataCategoryNames) {
+
+            try {
+                addDataCategory(dataCategoryName);
+            }
+            catch (DataCategoryAlreadyExists e) {
+                // that's fine
+            }
+        }
+    }
+
+    @Override
     public IDataCategoryDAO getDataCategoryDAO() {
         return dataCategoryDAO;
     }

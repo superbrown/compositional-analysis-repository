@@ -1,16 +1,27 @@
 package gov.energy.nrel.dataRepositoryApp.dao;
 
-import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
-import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
+import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.CouldNotCreateDirectory;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnableToDeleteFile;
+import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
+import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class FileStorageStorageDAO implements IFileStorageDAO {
 
@@ -24,7 +35,7 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
     }
 
     @Override
-    public StoredFile saveFile(Date timestamp, String subdirectory, FileAsRawBytes fileAsRawBytes)
+    public IStoredFile saveFile(Date timestamp, String subdirectory, FileAsRawBytes fileAsRawBytes)
             throws CouldNotCreateDirectory, IOException {
 
         String fileName = fileAsRawBytes.fileName;
@@ -46,7 +57,7 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
 
         File savedFile = Utilities.saveFile(fileAsRawBytes.bytes, fullyQualifiedFileLocation + "/" + fileName);
 
-        StoredFile storedFile = new StoredFile(fileName, relativeFileLocation + "/" + fileName);
+        IStoredFile storedFile = new StoredFile(fileName, relativeFileLocation + "/" + fileName);
 
         return storedFile;
     }
@@ -125,4 +136,55 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
         return Utilities.toString(timestamp, "yyyy/MM/yyyy-MM-dd_aaa-hh-mm-ss_SSS-Z");
     }
 
+    @Override
+    public List<Metadata> getAllMetadata() {
+
+        String rootDirectoryForUploadedDataFiles = getRootDirectoryForUploadedDataFiles();
+
+        File rootDirectory = new File(rootDirectoryForUploadedDataFiles);
+        if (rootDirectory.isDirectory() == false) {throw new RuntimeException(
+                rootDirectoryForUploadedDataFiles + " is not a directory.");
+        }
+
+        return getAllMetadata(rootDirectory);
+    }
+
+    protected List<Metadata> getAllMetadata(File rootDirectory) {
+
+        List<Metadata> metadataList = new ArrayList<>();
+
+        File[] files = rootDirectory.listFiles();
+
+        for (File file : files) {
+
+            if (file.isDirectory()) {
+
+                metadataList.addAll(getAllMetadata(file));
+            }
+            else if (file.getName().equals(AbsDatasetBO.METADATA_FILE_NAME)) {
+
+                try {
+                    String fileContents = readFile(file.getPath().toString());
+                    BasicDBObject document = (BasicDBObject) JSON.parse(fileContents);
+                    BasicDBObject metadataDocument = (BasicDBObject) document.get(DatasetDocument.MONGO_KEY__METADATA);
+
+                    Metadata metadata = new Metadata(JSON.serialize(metadataDocument));
+                    metadataList.add(metadata);
+                }
+                catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        return metadataList;
+    }
+
+
+    static String readFile(String path)
+            throws IOException
+    {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, Charset.defaultCharset());
+    }
 }

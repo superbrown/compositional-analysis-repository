@@ -1,8 +1,7 @@
 package gov.energy.nrel.dataRepositoryApp.bo;
 
 import gov.energy.nrel.dataRepositoryApp.dao.IFileStorageDAO;
-import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
-import gov.energy.nrel.dataRepositoryApp.dao.exception.CouldNotCreateDirectory;
+import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 
 import java.io.File;
@@ -11,12 +10,9 @@ import java.util.Date;
 
 public interface IFileStorageBO extends IBO {
 
-    StoredFile saveFile(Date timestamp, String subdirectory, FileAsRawBytes file);
+    IStoredFile saveFile(Date timestamp, String subdirectory, FileAsRawBytes file);
 
     IFileStorageDAO getFileStorageDAO();
-
-    StoredFile storeFile(Date timestamp, String subdirectory, FileAsRawBytes file)
-            throws CouldNotCreateDirectory, IOException;
 
     void deleteFolder(String storageLocation)
             throws IOException;

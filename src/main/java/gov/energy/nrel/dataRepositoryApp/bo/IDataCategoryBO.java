@@ -21,5 +21,7 @@ public interface IDataCategoryBO extends IBO {
 
     void addDataCategory(String categoryName) throws DataCategoryAlreadyExists;
 
+    void assureCategoriesAreInTheDatabase(String[] dataCategoryNames);
+
     IDataCategoryDAO getDataCategoryDAO();
 }

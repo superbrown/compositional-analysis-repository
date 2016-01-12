@@ -43,12 +43,12 @@ drApp.config(
             .when('/uploadData',
             {
                 templateUrl: 'pages/uploadData.html',
-                controller: 'uploadController'
+                controller: 'controller_uploadDataPage'
             })
             .when('/findData',
             {
                 templateUrl: 'pages/findData.html',
-                controller: 'findDataController'
+                controller: 'controller_findDataPage'
             })
             .when('/',
             {
@@ -59,6 +59,46 @@ drApp.config(
                 redirectTo: '/uploadData'
             })
     });
+
+// This came from:
+// http://stackoverflow.com/questions/17922557/angularjs-how-to-check-for-changes-in-file-input-fields#answer-26591042
+//
+// It is vitally necessary for the file selection controls to trigger events upon value changes.  (You'd think they
+// would do this out of the box, like other controls, but they don't.)
+//
+drApp.directive('fileChange', ['$parse', function($parse) {
+
+    return {
+        require: 'ngModel',
+        restrict: 'A',
+        link: function ($scope, element, attrs, ngModel) {
+
+            // Get the function provided in the file-change attribute.
+            // Note the attribute has become an angular expression,
+            // which is what we are parsing. The provided handler is
+            // wrapped up in an outer function (attrHandler) - we'll
+            // call the provided event handler inside the handler()
+            // function below.
+            var attrHandler = $parse(attrs['fileChange']);
+
+            // This is a wrapper handler which will be attached to the
+            // HTML change event.
+            var handler = function (e) {
+
+                $scope.$apply(function () {
+
+                    // Execute the provided handler in the directive's scope.
+                    // The files variable will be available for consumption
+                    // by the event handler.
+                    attrHandler($scope, { $event: e, files: e.target.files });
+                });
+            };
+
+            // Attach the handler to the HTML change event
+            element[0].addEventListener('change', handler, false);
+        }
+    };
+}]);
 
 drApp.run(
     function ($rootScope) {
@@ -92,12 +132,12 @@ drApp.run(
         $rootScope.numberOfBlockingProcesses = 0;
     });
 
-    drApp.controller('rootPageController',
+    drApp.controller('controller_rootPage',
     [
         '$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', '$cookies', 'drServices',
         function($scope, $rootScope, $http, $log, $filter, $resource, $location, $cookies, drServices) {
 
-            $scope.handleUploadDataMenuItemClick = function () {
+            $scope.handleMenuItem_uploadData = function () {
                 $rootScope.menuItemClass_uploadData = '';
                 $rootScope.menuItemClass_findData = '';
                 $rootScope.alertMessage_success = '';
@@ -105,7 +145,7 @@ drApp.run(
                 $rootScope.alertMessage_missingUserInput = '';
             }
 
-            $scope.handleFindDataMenuItemClick = function () {
+            $scope.handleMenuItem_findData = function () {
                 $rootScope.menuItemClass_uploadData = '';
                 $rootScope.menuItemClass_findData = '';
                 $rootScope.alertMessage_success = '';
@@ -147,9 +187,21 @@ drApp.run(
     ]
 );
 
-drApp.controller('uploadController',
+drApp.controller('controller_uploadDataPage',
     ['$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', '$parse', 'drServices',
         function($scope, $rootScope, $http, $log, $filter, $resource, $location, $parse, drServices)  {
+
+            // This is next part is sort of a work-around.  Because this code is in the controller, it will be called
+            // each time the page gets displayed.  In theory, anytime when we return to this page, all the controls
+            // should reflect the model values in $rootscope.  Unfortunately, the file selection controls aren't
+            // cooperating.  If there are files selected in the model, the file selection controls won't reflect that.
+            // But if you submit the page, the files will be included (that the user might not have been unaware of).
+            //
+            // Until this issue can be remedied, we're going to just "deselect" any file selection model state currently
+            // in $rootScope, in essense, setting the model state to reflect the controls.
+            $rootScope.sourceDocument = '';
+            $rootScope.nameOfSubdocumentContainingDataIfApplicable = '';
+            $rootScope.attachments = [];
 
             $rootScope.selectedPage = "Upload Data";
             $rootScope.menuItemClass_uploadData = 'active';
@@ -159,7 +211,7 @@ drApp.controller('uploadController',
                 drServices.uploadData($scope, $http);
             }
 
-            $scope.handleDataFileSelection = function(event, sourceDocument) {
+            $scope.handleSourceDocumentSelection = function(event, sourceDocument) {
                 $rootScope.sourceDocument = sourceDocument[0];
             }
 
@@ -170,43 +222,7 @@ drApp.controller('uploadController',
     ]
 );
 
-// This came from:
-// http://stackoverflow.com/questions/17922557/angularjs-how-to-check-for-changes-in-file-input-fields#answer-26591042
-drApp.directive('fileChange', ['$parse', function($parse) {
-
-    return {
-        require: 'ngModel',
-        restrict: 'A',
-        link: function ($scope, element, attrs, ngModel) {
-
-            // Get the function provided in the file-change attribute.
-            // Note the attribute has become an angular expression,
-            // which is what we are parsing. The provided handler is
-            // wrapped up in an outer function (attrHandler) - we'll
-            // call the provided event handler inside the handler()
-            // function below.
-            var attrHandler = $parse(attrs['fileChange']);
-
-            // This is a wrapper handler which will be attached to the
-            // HTML change event.
-            var handler = function (e) {
-
-                $scope.$apply(function () {
-
-                    // Execute the provided handler in the directive's scope.
-                    // The files variable will be available for consumption
-                    // by the event handler.
-                    attrHandler($scope, { $event: e, files: e.target.files });
-                });
-            };
-
-            // Attach the handler to the HTML change event
-            element[0].addEventListener('change', handler, false);
-        }
-    };
-}]);
-
-drApp.controller('findDataController',
+drApp.controller('controller_findDataPage',
     [
         '$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', 'drServices',
         function($scope, $rootScope, $http, $log, $filter, $resource, $location, drServices)

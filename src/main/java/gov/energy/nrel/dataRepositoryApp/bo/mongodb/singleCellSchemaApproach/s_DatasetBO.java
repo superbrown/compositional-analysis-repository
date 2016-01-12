@@ -55,12 +55,12 @@ public class s_DatasetBO extends AbsDatasetBO implements IDatasetBO {
             String projectName,
             String chargeNumber,
             String comments,
-            gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile sourceDocument,
+            IStoredFile sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
-            List<gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile> attachmentFiles)
+            List<IStoredFile> attachmentFiles)
             throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave {
 
-        File storedFile = getPhysicalFile(sourceDocument.storageLocation);
+        File storedFile = getPhysicalFile(sourceDocument.getStorageLocation());
         RowCollection dataUpload = null;
         try {
             dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, -1);
@@ -75,8 +75,8 @@ public class s_DatasetBO extends AbsDatasetBO implements IDatasetBO {
 
         List<IStoredFile> attachments = new ArrayList();
         if (attachmentFiles != null) {
-            for (gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile attachmentFile : attachmentFiles) {
-                attachments.add(new StoredFile(attachmentFile.originalFileName, attachmentFile.storageLocation));
+            for (IStoredFile attachmentFile : attachmentFiles) {
+                attachments.add(new StoredFile(attachmentFile.getOriginalFileName(), attachmentFile.getStorageLocation()));
             }
         }
 
@@ -87,7 +87,7 @@ public class s_DatasetBO extends AbsDatasetBO implements IDatasetBO {
                 chargeNumber,
                 projectName,
                 comments,
-                new StoredFile(sourceDocument.originalFileName, sourceDocument.storageLocation),
+                new StoredFile(sourceDocument.getOriginalFileName(), sourceDocument.getStorageLocation()),
                 nameOfSubdocumentContainingDataIfApplicable,
                 attachments);
 
@@ -156,15 +156,13 @@ public class s_DatasetBO extends AbsDatasetBO implements IDatasetBO {
 
         IFileStorageBO fileStorageBO = getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO();
 
-        gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile theDataFileThatWasStored =
-                fileStorageBO.saveFile(timestamp, "", sourceDocument);
+        IStoredFile theDataFileThatWasStored = fileStorageBO.saveFile(timestamp, "", sourceDocument);
 
-        List<gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile> theAttachmentsThatWereStored = new ArrayList();
+        List<IStoredFile> theAttachmentsThatWereStored = new ArrayList();
 
         for (FileAsRawBytes attachmentFile : attachmentFiles) {
 
-            gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile attachments =
-                    fileStorageBO.saveFile(timestamp, "attachments", attachmentFile);
+            IStoredFile attachments = fileStorageBO.saveFile(timestamp, "attachments", attachmentFile);
             theAttachmentsThatWereStored.add(attachments);
         }
 
