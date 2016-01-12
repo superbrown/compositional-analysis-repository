@@ -2,23 +2,16 @@ package gov.energy.nrel.dataRepositoryApp;
 
 import com.mongodb.MongoTimeoutException;
 import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
-import gov.energy.nrel.dataRepositoryApp.bo.IDataCategoryBO;
-import gov.energy.nrel.dataRepositoryApp.bo.IDatasetBO;
-import gov.energy.nrel.dataRepositoryApp.bo.exception.DataCategoryAlreadyExists;
-import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToDeleteFiles;
-import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach.s_BusinessObjects;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
 
 /**
  * The Data Repository Application was originally designed and coded by Mike Brown (mike.public@superbrown.com)
@@ -76,13 +69,14 @@ public class DataRepositoryApplication extends SpringApplication {
             // During development I experimented with a couple of different approaches to the DAO layer, and changing
             // what class was instantiated here determined which one would be used.
 
-            IBusinessObjects businessObjects = new s_BusinessObjects(this);
-            setBusinessObjects(businessObjects);
+            IBusinessObjects businessObjects = initializeBusinessObjects();
 
-            String[] defaultSetOfDataCategories = businessObjects.getSettings().getDefaultSetOfDataCategories();
-            assureCategoriesAreInTheDatabase(businessObjects, defaultSetOfDataCategories);
+            ISettings settings = businessObjects.getSettings();
 
-            attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads(businessObjects);
+            String[] defaultSetOfDataCategories = settings.getDefaultSetOfDataCategories();
+            businessObjects.getDataCategoryBO().assureCategoriesAreInTheDatabase(defaultSetOfDataCategories);
+
+            businessObjects.getDatasetBO().attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads();
         }
         catch (MongoTimeoutException e) {
             // This is written like this so it stands out in the log.
@@ -93,6 +87,13 @@ public class DataRepositoryApplication extends SpringApplication {
                     "M A K E   S U R E   I T   I S   R U N N I N G .\n",
                     e);
         }
+    }
+
+    public IBusinessObjects initializeBusinessObjects() {
+
+        IBusinessObjects businessObjects = new s_BusinessObjects(this);
+        setBusinessObjects(businessObjects);
+        return businessObjects;
     }
 
     public ISettings getSettings() {
@@ -107,54 +108,6 @@ public class DataRepositoryApplication extends SpringApplication {
     public IBusinessObjects getBusinessObjects() {
 
         return businessObjects;
-    }
-
-
-    protected static void assureCategoriesAreInTheDatabase(
-            IBusinessObjects businessObjects, String[] dataCategoryNames) {
-
-        IDataCategoryBO dataCategoryBO = businessObjects.getDataCategoryBO();
-
-        for (String dataCategoryName : dataCategoryNames) {
-
-            assureDataCategoryIsInTheDatabase(
-                    dataCategoryBO,
-                    dataCategoryName);
-        }
-    }
-
-    protected static void assureDataCategoryIsInTheDatabase(
-            IDataCategoryBO dataCategoryDAO,
-            String categoryName) {
-
-        try {
-            dataCategoryDAO.addDataCategory(categoryName);
-        }
-        catch (DataCategoryAlreadyExists e) {
-            // that's fine
-        }
-    }
-
-    protected void attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads(IBusinessObjects businessObjects) {
-
-        IDatasetBO datasetBO = businessObjects.getDatasetBO();
-        List<ObjectId> datasetIdsForAllIncompleteDatasetUploadCleanups = datasetBO.getDatasetIdsForAllIncompleteDatasetUploadCleanups();
-
-        for (ObjectId datasetId : datasetIdsForAllIncompleteDatasetUploadCleanups) {
-            try {
-                datasetBO.removeDatasetFromDatabaseAndDeleteItsFiles(datasetId);
-                datasetBO.removeDatasetTransactionToken(datasetId);
-            }
-            catch (UnknownDataset e) {
-                log.warn("Failed to remove dataset " + datasetId + " that was only partially added.", e);
-            }
-            catch (FailedToDeleteFiles e) {
-                log.warn("Failed to remove dataset " + datasetId + " that was only partially added.", e);
-            }
-            catch (Throwable e) {
-                log.warn("Failed to remove dataset " + datasetId + " that was only partially added.", e);
-            }
-        }
     }
 
     // This constructor is used by unit tests.

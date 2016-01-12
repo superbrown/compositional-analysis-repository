@@ -47,7 +47,7 @@ public class m_CellDAO extends AbsDAO implements ICellDAO {
     }
 
     @Override
-    protected Document createDocumentOfTypeDAOHandles(Document document) {
+    public Document createDocumentOfTypeDAOHandles(Document document) {
 
         return new CellDocument(document);
     }
@@ -67,24 +67,16 @@ public class m_CellDAO extends AbsDAO implements ICellDAO {
         return allDeleteResults;
     }
 
-    private static boolean HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = false;
-
     @Override
-    protected void makeSureTableColumnsIRelyUponAreIndexed() {
+    public void makeSureTableColumnsIRelyUponAreIndexed() {
 
-        if (HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED == false) {
+        MongoCollection<Document> cellCollection = getCollection();
 
-            MongoCollection<Document> cellCollection = getCollection();
+        cellCollection.createIndex(new BasicDBObject(CellDocument.MONGO_KEY__VALUE, 1));
 
-            cellCollection.createIndex(new BasicDBObject(CellDocument.MONGO_KEY__VALUE, 1));
-
-            BasicDBObject compoundIndex = new BasicDBObject();
-            compoundIndex.put(CellDocument.MONGO_KEY__ROW_ID, 1);
-            compoundIndex.put(CellDocument.MONGO_KEY__VALUE, 1);
-            cellCollection.createIndex(compoundIndex);
-
-            HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = true;
-        }
-
+        BasicDBObject compoundIndex = new BasicDBObject();
+        compoundIndex.put(CellDocument.MONGO_KEY__ROW_ID, 1);
+        compoundIndex.put(CellDocument.MONGO_KEY__VALUE, 1);
+        cellCollection.createIndex(compoundIndex);
     }
 }

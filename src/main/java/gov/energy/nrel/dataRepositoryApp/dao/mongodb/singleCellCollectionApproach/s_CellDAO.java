@@ -78,7 +78,7 @@ public class s_CellDAO extends AbsDAO implements ICellDAO {
     }
 
     @Override
-    protected Document createDocumentOfTypeDAOHandles(Document document) {
+    public Document createDocumentOfTypeDAOHandles(Document document) {
 
         return new CellDocument(document);
     }
@@ -98,7 +98,7 @@ public class s_CellDAO extends AbsDAO implements ICellDAO {
     }
 
     @Override
-    protected void makeSureTableColumnsIRelyUponAreIndexed() {
+    public void makeSureTableColumnsIRelyUponAreIndexed() {
 
     }
 

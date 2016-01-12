@@ -1,17 +1,19 @@
 package gov.energy.nrel.dataRepositoryApp.dao;
 
-import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
-import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.CouldNotCreateDirectory;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnableToDeleteFile;
+import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
+import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 public interface IFileStorageDAO {
 
-    StoredFile saveFile(Date timestamp, String subdirectory, FileAsRawBytes file)
+    IStoredFile saveFile(Date timestamp, String subdirectory, FileAsRawBytes file)
                     throws CouldNotCreateDirectory, IOException;
 
     void deletFile(String file)
@@ -24,4 +26,6 @@ public interface IFileStorageDAO {
             throws IOException;
 
     File getFile(String storageLocation);
+
+    List<Metadata> getAllMetadata();
 }

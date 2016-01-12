@@ -37,7 +37,7 @@ public class DataCategoryDAO extends AbsDAO implements IDataCategoryDAO {
     }
 
     @Override
-    protected Document createDocumentOfTypeDAOHandles(Document document) {
+    public Document createDocumentOfTypeDAOHandles(Document document) {
         return new DataCategoryDocument(document);
     }
 
@@ -77,15 +77,9 @@ public class DataCategoryDAO extends AbsDAO implements IDataCategoryDAO {
         return dataCategoryDocument;
     }
 
-    private static boolean HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = false;
-
     @Override
-    protected void makeSureTableColumnsIRelyUponAreIndexed() {
+    public void makeSureTableColumnsIRelyUponAreIndexed() {
 
-        if (HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED == false) {
-
-            getCollection().createIndex(new Document().append(DataCategoryDocument.MONGO_KEY__NAME, 1));
-            HAVE_MADE_SURE_TABLE_COLUMNS_ARE_INDEXED = true;
-        }
+        getCollection().createIndex(new Document().append(DataCategoryDocument.MONGO_KEY__NAME, 1));
     }
 }

@@ -64,7 +64,7 @@
              ng-model="$root.sourceDocument"
              accept=".xls,.xlsx,.xlsm,.csv"
              required
-             file-change="handleDataFileSelection($event, files)"
+             file-change="handleSourceDocumentSelection($event, files)"
              style="display: inline;" />
     </div>
 
@@ -76,7 +76,9 @@
       </div>
       <div>
         <label></label>
-        <select name="nameOfSubdocumentContainingDataIfApplicable" id="nameOfSubdocumentContainingDataIfApplicable" ng-model="$root.nameOfSubdocumentContainingDataIfApplicable">
+        <select name="nameOfSubdocumentContainingDataIfApplicable"
+                id="nameOfSubdocumentContainingDataIfApplicable"
+                ng-model="$root.nameOfSubdocumentContainingDataIfApplicable">
           <option ng-repeat="sheetName in $root.knownNamesOfSheetsWithinSelectedWorkbook" value="{{sheetName}}">
             {{sheetName}}
           </option>

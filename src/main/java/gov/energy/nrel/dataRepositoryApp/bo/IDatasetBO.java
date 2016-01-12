@@ -5,8 +5,8 @@ import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
-import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
-import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
+import gov.energy.nrel.dataRepositoryApp.model.common.IMetadata;
+import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
@@ -21,18 +21,6 @@ import java.util.List;
 
 
 public interface IDatasetBO extends IBO {
-
-    ObjectId addDataset(
-            String dataCategory,
-            Date submissionDate,
-            String submitter,
-            String projectName,
-            String chargeNumber,
-            String comments,
-            StoredFile sourceDocument,
-            String nameOfSubdocumentContainingDataIfApplicable,
-            List<StoredFile> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, PartiallyFailedToPersistDataset, FailedToSave, UnknownDataset;
 
     String getDataset(String datasetId) throws UnknownDataset;
 
@@ -53,6 +41,21 @@ public interface IDatasetBO extends IBO {
 
     List<ObjectId> getDatasetIdsForAllIncompleteDatasetUploadCleanups();
 
+    ObjectId addDataset(
+            String dataCategory,
+            Date submissionDate,
+            String submitter,
+            String projectName,
+            String chargeNumber,
+            String comments,
+            IStoredFile sourceDocument,
+            String nameOfSubdocumentContainingDataIfApplicable,
+            List<IStoredFile> attachmentFiles)
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave;
+
+    ObjectId addDataset(IMetadata metadata)
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave;
+
     String addDataset(
             String dataCategory,
             Date submissionDate,
@@ -70,4 +73,6 @@ public interface IDatasetBO extends IBO {
     File getSourceDocument(String datasetId);
 
     ByteArrayInputStream packageAttachmentsInAZipFile(String datasetId) throws IOException;
+
+    List<String> attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads();
 }

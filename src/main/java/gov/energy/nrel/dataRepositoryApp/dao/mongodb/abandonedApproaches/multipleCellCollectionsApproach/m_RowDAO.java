@@ -150,7 +150,7 @@ public class m_RowDAO extends AbsDAO implements IRowDAO {
         return deleteResults;
     }
 
-    protected Document createDocumentOfTypeDAOHandles(Document document) {
+    public Document createDocumentOfTypeDAOHandles(Document document) {
 
         return new RowDocument(document);
     }
@@ -389,7 +389,7 @@ public class m_RowDAO extends AbsDAO implements IRowDAO {
     }
 
     @Override
-    protected void makeSureTableColumnsIRelyUponAreIndexed() {
+    public void makeSureTableColumnsIRelyUponAreIndexed() {
 
     }
 

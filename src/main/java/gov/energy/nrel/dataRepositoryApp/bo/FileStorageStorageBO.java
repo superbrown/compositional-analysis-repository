@@ -2,11 +2,10 @@ package gov.energy.nrel.dataRepositoryApp.bo;
 
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsBO;
-import gov.energy.nrel.dataRepositoryApp.dao.IFileStorageDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.FileStorageStorageDAO;
-import gov.energy.nrel.dataRepositoryApp.dao.exception.CouldNotCreateDirectory;
+import gov.energy.nrel.dataRepositoryApp.dao.IFileStorageDAO;
+import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
-import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
 
@@ -32,24 +31,15 @@ public class FileStorageStorageBO extends AbsBO implements IFileStorageBO {
     }
 
     @Override
-    public StoredFile saveFile(Date timestamp, String subdirectory, FileAsRawBytes file) {
+    public IStoredFile saveFile(Date timestamp, String subdirectory, FileAsRawBytes file) {
 
-        StoredFile theDataFileThatWasStored = null;
+        IStoredFile theDataFileThatWasStored = null;
         try {
-            theDataFileThatWasStored = storeFile(timestamp, subdirectory, file);
+
+            theDataFileThatWasStored = getFileStorageDAO().saveFile(timestamp, subdirectory, file);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        return theDataFileThatWasStored;
-    }
-
-    @Override
-    public StoredFile storeFile(Date timestamp, String subdirectory, FileAsRawBytes file)
-            throws CouldNotCreateDirectory, IOException {
-
-        StoredFile theDataFileThatWasStored;
-        theDataFileThatWasStored = getFileStorageDAO().saveFile(timestamp, subdirectory, file);
 
         return theDataFileThatWasStored;
     }

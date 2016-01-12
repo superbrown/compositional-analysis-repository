@@ -62,12 +62,12 @@ public class r_CellDAO extends AbsDAO implements ICellDAO {
     }
 
     @Override
-    protected Document createDocumentOfTypeDAOHandles(Document document) {
+    public Document createDocumentOfTypeDAOHandles(Document document) {
         return new CellDocument(document);
     }
 
     @Override
-    protected void makeSureTableColumnsIRelyUponAreIndexed() {
+    public void makeSureTableColumnsIRelyUponAreIndexed() {
 
     }
 }

@@ -5,20 +5,25 @@ import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.bo.IFileStorageBO;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToDeleteFiles;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetTransactionTokenDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
+import gov.energy.nrel.dataRepositoryApp.model.common.IMetadata;
 import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -26,6 +31,7 @@ import java.util.zip.ZipOutputStream;
 
 public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
 
+    public static final String METADATA_FILE_NAME = "DATASET_METADATA.json";
     protected IDatasetDAO datasetDAO;
 
     protected static Logger log = Logger.getLogger(AbsDatasetBO.class);
@@ -211,7 +217,7 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
         IDatasetDocument datasetDocument = getDatasetDAO().getDataset(objectId.toHexString());
         byte[] json = JSON.serialize(datasetDocument).getBytes();
 
-        FileAsRawBytes jsonAsRawBytes = new FileAsRawBytes("DATASET_METADATA.json", json);
+        FileAsRawBytes jsonAsRawBytes = new FileAsRawBytes(METADATA_FILE_NAME, json);
 
         IFileStorageBO fileStorageBO = getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO();
         fileStorageBO.saveFile(timestamp, "", jsonAsRawBytes);
@@ -256,5 +262,53 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
     @Override
     public List<ObjectId> getDatasetIdsForAllIncompleteDatasetUploadCleanups() {
         return datasetTransactionTokenDAO.getDatasetIdsOfAllTokens();
+    }
+
+    @Override
+    public ObjectId addDataset(IMetadata metadata)
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave {
+
+        return addDataset(
+                metadata.getDataCategory(),
+                metadata.getSubmissionDate(),
+                metadata.getSubmitter(),
+                metadata.getProjectName(),
+                metadata.getChargeNumber(),
+                metadata.getComments(),
+                metadata.getSourceDocument(),
+                metadata.getSubdocumentName(),
+                metadata.getAttachments());
+    }
+
+    @Override
+    public List<String> attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads() {
+
+        List<ObjectId> datasetIdsForAllIncompleteDatasetUploadCleanups = getDatasetIdsForAllIncompleteDatasetUploadCleanups();
+
+        List<String> errors = new ArrayList<>();
+
+        for (ObjectId datasetId : datasetIdsForAllIncompleteDatasetUploadCleanups) {
+            try {
+                removeDatasetFromDatabaseAndDeleteItsFiles(datasetId);
+                removeDatasetTransactionToken(datasetId);
+            }
+            catch (UnknownDataset e) {
+                String message = "Failed to remove dataset " + datasetId + " that was only partially added.";
+                log.warn(message, e);
+                errors.add(message);
+            }
+            catch (FailedToDeleteFiles e) {
+                String message = "Failed to remove dataset " + datasetId + " that was only partially added.";
+                log.warn(message, e);
+                errors.add(message);
+            }
+            catch (Throwable e) {
+                String message = "Failed to remove dataset " + datasetId + " that was only partially added.";
+                log.warn(message, e);
+                errors.add(message);
+            }
+        }
+
+        return errors;
     }
 }

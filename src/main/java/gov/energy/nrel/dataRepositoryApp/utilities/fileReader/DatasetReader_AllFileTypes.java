@@ -42,7 +42,6 @@ public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDat
             }
         }
         catch (IOException e) {
-            // FIXME: Log
             log.error(e, e);
             throw new RuntimeException(e);
         }
