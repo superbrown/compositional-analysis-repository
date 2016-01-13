@@ -95,11 +95,11 @@ public class Endpoints_DataCategories {
     }
 
     @RequestMapping(
-            value="/api/dataCategory",
-            method = RequestMethod.POST,
+            value="/api/addDataCategory",
+            method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity addDataCategory(
-            @RequestParam(value = "dataCategoryName") String dataCategoryName) {
+            @RequestParam(value = "name") String dataCategoryName) {
 
         try {
             getDataCategoryBO().addDataCategory(dataCategoryName);

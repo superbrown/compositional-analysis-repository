@@ -61,7 +61,7 @@ public class Endpoints_Utils {
         return create_SUCCESS_response(json);
     }
 
-    @RequestMapping(value="/api/repopulate/the/database", method = RequestMethod.GET)
+    @RequestMapping(value="/api/dropDatabaseAndReIngestAllDataFromOriginallyUploadedFiles", method = RequestMethod.GET)
     public ResponseEntity repolulateTheDatabase()
             throws IOException {
 
