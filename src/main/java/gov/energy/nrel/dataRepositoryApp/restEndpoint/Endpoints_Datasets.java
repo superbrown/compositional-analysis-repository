@@ -194,11 +194,14 @@ public class Endpoints_Datasets {
     }
 
     @RequestMapping(
-            value="/api/dataset/{datasetId}",
-            method = RequestMethod.DELETE,
+            value="/api/removeDataset/{datasetId}",
+            method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity deleteDataset(
             @PathVariable(value = "datasetId") String datasetId) {
+
+        // I know that shouldn't be GET, but rather, DELETE. But I'm making it GET so a user can easily call it from
+        // a browser.
 
         try {
             getDatasetBO().removeDatasetFromDatabaseAndMoveItsFiles(datasetId);
