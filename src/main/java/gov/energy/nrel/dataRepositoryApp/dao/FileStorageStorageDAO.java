@@ -5,7 +5,6 @@ import com.mongodb.util.JSON;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.CouldNotCreateDirectory;
-import gov.energy.nrel.dataRepositoryApp.dao.exception.UnableToDeleteFile;
 import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
 import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DatasetDocument;
@@ -27,6 +26,7 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
 
     protected ISettings settings;
 
+    private static final String NAME_OF_DIRECTORY_FOR_ACTIVE_FILES = "active";
     protected static final String NAME_OF_DIRECTORY_FOR_REMOVED_FILES = "removed";
 
     public FileStorageStorageDAO(ISettings settings) {
@@ -40,7 +40,7 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
 
         String fileName = fileAsRawBytes.fileName;
 
-        String rootDirectoryForUploadedDataFiles = getRootDirectoryForUploadedDataFiles();
+        String rootDirectoryForActiveUploadedDataFiles = getRootDirectoryForActiveUploadedDataFiles();
 
         // DESIGN NOTE: The location is hierarchical by year, month and time. The idea is to avoid having a single
         // directory containing hoards of files.
@@ -49,7 +49,7 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
             relativeFileLocation += "/" + subdirectory;
         }
 
-        String fullyQualifiedFileLocation = rootDirectoryForUploadedDataFiles + relativeFileLocation;
+        String fullyQualifiedFileLocation = rootDirectoryForActiveUploadedDataFiles + relativeFileLocation;
 
         if (Utilities.assureTheDirectoryExists(fullyQualifiedFileLocation) == false) {
             throw new CouldNotCreateDirectory(fullyQualifiedFileLocation);
@@ -62,27 +62,16 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
         return storedFile;
     }
 
-
-    @Override
-    public void deletFile(String file)
-            throws UnableToDeleteFile {
-
-        boolean success = (new File(getRootDirectoryForUploadedDataFiles() + file).delete());
-        if (success == false) {
-            throw new UnableToDeleteFile(file);
-        }
-    }
-
     @Override
     public void moveFilesToRemovedFilesLocation(String filePath)
             throws IOException {
 
-        String rootDirectoryForUploadedDataFiles = getRootDirectoryForUploadedDataFiles();
+        String rootDirectoryForActiveUploadedDataFiles = getRootDirectoryForActiveUploadedDataFiles();
         String rootDirectoryForRemovedFiles = getRootDirectoryForRemovedFiles();
 
         String relativePath = extractPathToContainingDirectory(filePath);
 
-        String sourcePath = rootDirectoryForUploadedDataFiles + relativePath;
+        String sourcePath = rootDirectoryForActiveUploadedDataFiles + relativePath;
         String destinationPath = rootDirectoryForRemovedFiles + relativePath;
 
         Utilities.assureTheDirectoryExists(extractPathToContainingDirectory(destinationPath));
@@ -94,8 +83,8 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
     public void deleteFolder(String relativePath)
             throws IOException {
 
-        String rootDirectoryForUploadedDataFiles = getRootDirectoryForUploadedDataFiles();
-        String sourcePath = rootDirectoryForUploadedDataFiles + relativePath;
+        String rootDirectoryForActiveUploadedDataFiles = getRootDirectoryForActiveUploadedDataFiles();
+        String sourcePath = rootDirectoryForActiveUploadedDataFiles + relativePath;
 
         Utilities.deleteFolder(sourcePath);
     }
@@ -108,19 +97,25 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
     @Override
     public File getFile(String storageLocation) {
 
-        return new File(getRootDirectoryForUploadedDataFiles() + storageLocation);
+        return new File(getRootDirectoryForActiveUploadedDataFiles() + storageLocation);
     }
 
-    protected String getRootDirectoryForUploadedDataFiles() {
+    protected String getRootDirectoryForActiveUploadedDataFiles() {
+
+        return seeToItThatItEndsWithAFileSeparator(
+                getRootDirectoryForUploadedDataFiles() + NAME_OF_DIRECTORY_FOR_ACTIVE_FILES);
+    }
+
+    private String getRootDirectoryForUploadedDataFiles() {
 
         String dataFilesDirectoryPath = settings.getRootDirectoryForUploadedDataFiles();
-        dataFilesDirectoryPath = seeToItThatItEndsWithAFileSeparator(dataFilesDirectoryPath);
-        return dataFilesDirectoryPath;
+        return seeToItThatItEndsWithAFileSeparator(dataFilesDirectoryPath);
     }
 
     protected String getRootDirectoryForRemovedFiles() {
 
-        return getRootDirectoryForUploadedDataFiles() + NAME_OF_DIRECTORY_FOR_REMOVED_FILES + "/";
+        return seeToItThatItEndsWithAFileSeparator(
+                getRootDirectoryForUploadedDataFiles() + NAME_OF_DIRECTORY_FOR_REMOVED_FILES + "/");
     }
 
     protected String seeToItThatItEndsWithAFileSeparator(String path) {
@@ -137,13 +132,16 @@ public class FileStorageStorageDAO implements IFileStorageDAO {
     }
 
     @Override
-    public List<Metadata> getAllMetadata() {
+    public List<Metadata> getAllMetadataForActiveData() {
 
-        String rootDirectoryForUploadedDataFiles = getRootDirectoryForUploadedDataFiles();
+        String rootDirectoryForActiveUploadedDataFiles = getRootDirectoryForActiveUploadedDataFiles();
 
-        File rootDirectory = new File(rootDirectoryForUploadedDataFiles);
+        Utilities.assureTheDirectoryExists(rootDirectoryForActiveUploadedDataFiles);
+
+        File rootDirectory = new File(rootDirectoryForActiveUploadedDataFiles);
+
         if (rootDirectory.isDirectory() == false) {throw new RuntimeException(
-                rootDirectoryForUploadedDataFiles + " is not a directory.");
+                rootDirectoryForActiveUploadedDataFiles + " is not a directory.");
         }
 
         return getAllMetadata(rootDirectory);

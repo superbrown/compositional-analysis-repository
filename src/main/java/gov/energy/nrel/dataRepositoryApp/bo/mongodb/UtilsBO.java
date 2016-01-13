@@ -91,7 +91,7 @@ public class UtilsBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.
     @Override
     public List<String> repopulateDatabaseUsingFilesStoredOnServer() {
 
-        List<Metadata> metadataList = fileStorageDAO.getAllMetadata();
+        List<Metadata> metadataList = fileStorageDAO.getAllMetadataForActiveData();
 
         dropDatabase();
 
