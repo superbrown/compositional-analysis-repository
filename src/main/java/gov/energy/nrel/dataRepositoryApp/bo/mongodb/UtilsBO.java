@@ -4,7 +4,6 @@ import com.mongodb.client.MongoDatabase;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.bo.IDatasetBO;
-import gov.energy.nrel.dataRepositoryApp.bo.IFileStorageBO;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
 import gov.energy.nrel.dataRepositoryApp.dao.FileStorageStorageDAO;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
@@ -48,10 +47,14 @@ public class UtilsBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.
     public List<String> getNamesOfSheetsWithinWorkbook(String fileName, FileAsRawBytes fileAsRawBytes)
             throws IOException, UnsupportedFileExtension {
 
+        // DESIGN NOTE: We are temporarily saving the file to disk and using an input stream from the file.  In
+        // theory, that shouldn't be necessary; we should be able to create a stream from the raw bytes.  However,
+        // taking this approach seems to address a significant performance issue with the Excel workbook parser.
+
         String tempFileDirectoryPath = this.tempDirectoryPath + "/" + UUID.randomUUID() + "/";
         Utilities.assureTheDirectoryExists(tempFileDirectoryPath);
 
-        String tempFilePath = tempFileDirectoryPath + "/" + fileName;
+        String tempFilePath = tempFileDirectoryPath + fileName;
         File tempFile = Utilities.saveFile(fileAsRawBytes.bytes, tempFilePath);
 
         try {
@@ -71,8 +74,7 @@ public class UtilsBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.
         finally {
 
             try {
-                IFileStorageBO fileSotrageBO = getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO();
-                fileSotrageBO.deleteFolder(tempFileDirectoryPath);
+                Utilities.deleteFolder(tempFileDirectoryPath);
             }
             catch (Exception e) {
                 log.warn(e, e);
