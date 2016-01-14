@@ -34,7 +34,7 @@ public class CSVFileReaderTest {
     public void testExtractDataFromCSVFile_1() throws Exception {
 
         try {
-            File file = Utilities.getFile("/SpreadsheetForReadingTest_1.csv");
+            File file = Utilities.getFile("/testData/active/SpreadsheetForReadingTest_1.csv");
 
             RowCollection rowCollection = csvFileReader.extractDataFromFile(file, -1);
 
@@ -109,7 +109,7 @@ public class CSVFileReaderTest {
     public void testExtractDataFromCSVFile_2() throws Exception {
 
         try {
-            File file = Utilities.getFile("/SpreadsheetForReadingTest_2.csv");
+            File file = Utilities.getFile("/testData/active/SpreadsheetForReadingTest_2.csv");
 
             RowCollection rowCollection = csvFileReader.extractDataFromFile(file, -1);
 
@@ -170,7 +170,7 @@ public class CSVFileReaderTest {
     public void testExtractDataFromCSVFile_3() throws Exception {
 
         try {
-            File file = Utilities.getFile("/SpreadsheetForReadingTest_3.csv");
+            File file = Utilities.getFile("/testData/active/SpreadsheetForReadingTest_3.csv");
 
             RowCollection rowCollection = csvFileReader.extractDataFromFile(file, -1);
 

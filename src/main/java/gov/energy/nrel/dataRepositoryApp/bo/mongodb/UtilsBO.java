@@ -2,7 +2,7 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 
 import com.mongodb.client.MongoDatabase;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
-import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
+import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.bo.IDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.bo.IFileStorageBO;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
@@ -98,7 +98,7 @@ public class UtilsBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.
         DataRepositoryApplication dataRepositoryApplication = getDataRepositoryApplication();
         dataRepositoryApplication.initializeBusinessObjects();
 
-        IBusinessObjects businessObjects = dataRepositoryApplication.getBusinessObjects();
+        IBusinessObjectsInventory businessObjects = dataRepositoryApplication.getBusinessObjects();
 
         String[] defaultSetOfDataCategories = getSettings().getDefaultSetOfDataCategories();
         businessObjects.getDataCategoryBO().assureCategoriesAreInTheDatabase(defaultSetOfDataCategories);

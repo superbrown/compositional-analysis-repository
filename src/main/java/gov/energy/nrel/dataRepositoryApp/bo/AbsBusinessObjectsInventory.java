@@ -3,7 +3,7 @@ package gov.energy.nrel.dataRepositoryApp.bo;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 
-public abstract class AbsBusinessObjects implements IBusinessObjects {
+public abstract class AbsBusinessObjectsInventory implements IBusinessObjectsInventory {
 
     private final DataRepositoryApplication dataRepositoryApplication;
 
@@ -18,7 +18,7 @@ public abstract class AbsBusinessObjects implements IBusinessObjects {
 
     protected ITestDataBO testDataBO;
 
-    public AbsBusinessObjects(DataRepositoryApplication dataRepositoryApplication) {
+    public AbsBusinessObjectsInventory(DataRepositoryApplication dataRepositoryApplication) {
 
         this.dataRepositoryApplication = dataRepositoryApplication;
         init();

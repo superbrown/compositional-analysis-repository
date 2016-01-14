@@ -1,7 +1,7 @@
 package gov.energy.nrel.dataRepositoryApp.dao.mongodb;
 
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
-import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
+import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.CompletelyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
@@ -23,7 +23,7 @@ public abstract class TestUsingTestData {
         return dataRepositoryApplication;
     }
 
-    protected abstract IBusinessObjects createBusinessObjects(DataRepositoryApplication dataRepositoryApplication);
+    protected abstract IBusinessObjectsInventory createBusinessObjects(DataRepositoryApplication dataRepositoryApplication);
 
     public static void beforeClass() {
     }
@@ -35,12 +35,12 @@ public abstract class TestUsingTestData {
         settings.setMongoDbHost("localhost");
         settings.setMongoDbPort("27017");
         settings.setMongoDatabaseName("data-repository-app_UNIT_TESTING");
-        settings.setRootDirectoryForUploadedDataFiles("target/test-classes");
+        settings.setRootDirectoryForUploadedDataFiles("target/test-classes/testData");
         settings.setDefaultSetOfDataCategories(DEFAULT_SET_OF_DATA_CATEGORIES);
         settings.setPerformanceLoggingEnabled(false);
 
         DataRepositoryApplication dataRepositoryApplication = new DataRepositoryApplication(settings);
-        IBusinessObjects businessObjects = createBusinessObjects(dataRepositoryApplication);
+        IBusinessObjectsInventory businessObjects = createBusinessObjects(dataRepositoryApplication);
         dataRepositoryApplication.setBusinessObjects(businessObjects);
 
         this.dataRepositoryApplication = dataRepositoryApplication;
@@ -63,7 +63,7 @@ public abstract class TestUsingTestData {
         }
     }
 
-    protected IBusinessObjects getBusinessObjects() {
+    protected IBusinessObjectsInventory getBusinessObjects() {
 
         return getDataRepositoryApplication().getBusinessObjects();
     }

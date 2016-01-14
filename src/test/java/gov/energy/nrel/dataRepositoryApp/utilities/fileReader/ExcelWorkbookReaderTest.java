@@ -46,7 +46,7 @@ public class ExcelWorkbookReaderTest {
     public void testExtractDataFromDataset_xls() throws Exception {
 
         try {
-            File file = Utilities.getFile("/SpreadsheetForReadingTest.xls");
+            File file = Utilities.getFile("/testData/active/SpreadsheetForReadingTest.xls");
             testExtractDataFromDataset(file);
         }
         catch (FileContainsInvalidColumnName fileContainsInvalidColumnName) {
@@ -58,7 +58,7 @@ public class ExcelWorkbookReaderTest {
     public void testExtractDataFromDataset_xlm() throws Exception {
 
         try {
-            File file = Utilities.getFile("/SpreadsheetForReadingTest.xlsm");
+            File file = Utilities.getFile("/testData/active/SpreadsheetForReadingTest.xlsm");
             testExtractDataFromDataset(file);
         }
         catch (FileContainsInvalidColumnName fileContainsInvalidColumnName) {
@@ -70,7 +70,7 @@ public class ExcelWorkbookReaderTest {
     public void testExtractDataFromDataset_xlsx() throws Exception {
 
         try {
-            File file = Utilities.getFile("/SpreadsheetForReadingTest.xlsx");
+            File file = Utilities.getFile("/testData/active/SpreadsheetForReadingTest.xlsx");
             testExtractDataFromDataset(file);
         }
         catch (FileContainsInvalidColumnName fileContainsInvalidColumnName) {

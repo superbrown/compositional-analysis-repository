@@ -2,15 +2,15 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.singleR
 
 
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
-import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
+import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsPerformanceTest;
 
 public class r_PerformanceTest extends AbsPerformanceTest
 {
     @Override
-    protected IBusinessObjects createBusinessObjects(DataRepositoryApplication dataRepositoryApplication) {
+    protected IBusinessObjectsInventory createBusinessObjects(DataRepositoryApplication dataRepositoryApplication) {
 
-        return new r_BusinessObjects(dataRepositoryApplication);
+        return new r_BusinessObjectsInventory(dataRepositoryApplication);
     }
 
     @Override

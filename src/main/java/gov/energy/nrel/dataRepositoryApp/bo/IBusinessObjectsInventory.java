@@ -4,7 +4,7 @@ import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 
 
-public interface IBusinessObjects {
+public interface IBusinessObjectsInventory {
 
     DataRepositoryApplication getDataRepositoryApplication();
 

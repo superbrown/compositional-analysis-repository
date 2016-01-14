@@ -260,6 +260,11 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
     }
 
     @Override
+    public void addDatasetTransactionToken(ObjectId datasetObjectId) {
+        datasetTransactionTokenDAO.addToken(datasetObjectId);
+    }
+
+    @Override
     public List<ObjectId> getDatasetIdsForAllIncompleteDatasetUploadCleanups() {
         return datasetTransactionTokenDAO.getDatasetIdsOfAllTokens();
     }
