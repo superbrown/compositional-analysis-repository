@@ -106,18 +106,18 @@ public class r_DatasetBO extends AbsDatasetBO {
             String projectName,
             String chargeNumber,
             String comments,
-            gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile sourceDocument,
+            StoredFile sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
-            List<gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile> attachmentFiles)
+            List<StoredFile> attachmentFiles)
             throws UnsupportedFileExtension, FileContainsInvalidColumnName {
 
-        File storedFile = getPhysicalFile(sourceDocument.storageLocation);
+        File storedFile = getPhysicalFile(sourceDocument.getStorageLocation());
         RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, maxNumberOfValuesPerRow);
         IRowCollection e = new gov.energy.nrel.dataRepositoryApp.model.common.mongodb.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
         List<IStoredFile> attachments = new ArrayList();
-        for (gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile attachmentFile : attachmentFiles) {
-            attachments.add(new StoredFile(attachmentFile.originalFileName, attachmentFile.storageLocation));
+        for (StoredFile attachmentFile : attachmentFiles) {
+            attachments.add(new StoredFile(attachmentFile.getOriginalFileName(), attachmentFile.getStorageLocation()));
         }
 
         DatasetDocument datasetDocument = new DatasetDocument(
@@ -127,7 +127,7 @@ public class r_DatasetBO extends AbsDatasetBO {
                 chargeNumber,
                 projectName,
                 comments,
-                new StoredFile(sourceDocument.originalFileName, sourceDocument.storageLocation),
+                new StoredFile(sourceDocument.getOriginalFileName(), sourceDocument.getStorageLocation()),
                 nameOfSubdocumentContainingDataIfApplicable,
                 attachments);
 

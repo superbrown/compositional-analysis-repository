@@ -77,7 +77,7 @@ public class TestData {
             projectName_1 = "Project Name 1";
             comments_1 = "Comment 1";
             tags_1 = Arrays.asList("tag 1", "tag 2", "tag 3");
-            sourceDocument_1 = new StoredFile("{ originalFileName: \"Dataset 1.xls\", storageLocation : \"sourceDocuments/2015-10-20_08_12_23_124/Dataset 1.xls\"}");
+            sourceDocument_1 = new StoredFile("{ ' originalFileName': \"Dataset 1.xls\", ' storageLocation' : \"sourceDocuments/2015-10-20_08_12_23_124/Dataset 1.xls\"}");
             nameOfSubdocumentContainingData_1 = "sheet 1";
             attachments_1 = null;
 
@@ -88,12 +88,12 @@ public class TestData {
             projectName_2 = "Project Name 3";
             comments_2 = "Comment 2";
             tags_2 = Arrays.asList("tag 2", "tag 2", "tag 3");
-            sourceDocument_2 = new StoredFile("{ originalFileName: \"Dataset 2.xls\", storageLocation : \"sourceDocuments/2015-10-20_08_02_00_231/Dataset 2.xls\"}");
+            sourceDocument_2 = new StoredFile("{ ' originalFileName': \"Dataset 2.xls\", ' storageLocation' : \"sourceDocuments/2015-10-20_08_02_00_231/Dataset 2.xls\"}");
             nameOfSubdocumentContainingData_2 = "sheet 2";
             attachments_2 = new ArrayList<>();
-            attachments_2.add(new StoredFile("{ originalFile1ame: \"name_3\", storageLocation : \"uuid_3\"}"));
-            attachments_2.add(new StoredFile("{ originalFileName: \"name_4\", storageLocation : \"uuid_4\"}"));
-            attachments_2.add(new StoredFile("{ originalFileName: \"name_5\", storageLocation : \"uuid_5\"}"));
+            attachments_2.add(new StoredFile("{ ' originalFileName': \"name_3\", ' storageLocation' : \"uuid_3\"}"));
+            attachments_2.add(new StoredFile("{ ' originalFileName': \"name_4\", ' storageLocation' : \"uuid_4\"}"));
+            attachments_2.add(new StoredFile("{ ' originalFileName': \"name_5\", ' storageLocation' : \"uuid_5\"}"));
 
             Object[][] data = new Object[][]{
                     {

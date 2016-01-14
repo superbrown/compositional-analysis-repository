@@ -1,17 +1,17 @@
 package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 
 import com.mongodb.BasicDBList;
-import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.bo.IDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
+import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
-import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.MongoFieldNameEncoder;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.TestUsingTestData;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.StoredFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
@@ -58,7 +58,9 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
     public void testPerformance() {
 
         try {
-            StoredFile sourceDocument = new StoredFile("46RowsAndOver3000Columns.csv", "/46RowsAndOver3000Columns.csv");
+            // The upward relative path up is required because the DAO layer is looking for the
+            // files in a relative path: ./active/
+            StoredFile sourceDocument = new StoredFile("46RowsAndOver3000Columns.csv", "46RowsAndOver3000Columns.csv");
 
             if (SUSPEND_DATA_SEEDING == true) {
 

@@ -7,8 +7,8 @@ import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
-import gov.energy.nrel.dataRepositoryApp.dao.dto.StoredFile;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.TestUsingTestData;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.StoredFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
@@ -45,7 +45,9 @@ public abstract class AbsRowBOTest extends TestUsingTestData
 
         super.before();
 
-        StoredFile sourceDocument = new StoredFile("SpreadsheetWithDifferentTypesOfValues.xlsx", "/SpreadsheetWithDifferentTypesOfValues.xlsx");
+        // The upward relative path up is required because the DAO layer is looking for the
+        // files in a relative path: ./active/
+        StoredFile sourceDocument = new StoredFile("SpreadsheetWithDifferentTypesOfValues.xlsx", "SpreadsheetWithDifferentTypesOfValues.xlsx");
 
         try {
             ObjectId objectId = getBusinessObjects().getDatasetBO().addDataset(

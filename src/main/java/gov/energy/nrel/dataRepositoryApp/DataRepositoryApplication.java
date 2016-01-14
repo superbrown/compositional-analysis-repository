@@ -1,8 +1,8 @@
 package gov.energy.nrel.dataRepositoryApp;
 
 import com.mongodb.MongoTimeoutException;
-import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
-import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach.s_BusinessObjects;
+import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjectsInventory;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach.s_BusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
@@ -51,7 +51,7 @@ public class DataRepositoryApplication extends SpringApplication {
     @Autowired
     private ISettings settings;
 
-    protected IBusinessObjects businessObjects;
+    protected IBusinessObjectsInventory businessObjects;
 
     protected static Logger log = Logger.getLogger(DataRepositoryApplication.class);
 
@@ -69,7 +69,7 @@ public class DataRepositoryApplication extends SpringApplication {
             // During development I experimented with a couple of different approaches to the DAO layer, and changing
             // what class was instantiated here determined which one would be used.
 
-            IBusinessObjects businessObjects = initializeBusinessObjects();
+            IBusinessObjectsInventory businessObjects = initializeBusinessObjects();
 
             ISettings settings = businessObjects.getSettings();
 
@@ -89,9 +89,9 @@ public class DataRepositoryApplication extends SpringApplication {
         }
     }
 
-    public IBusinessObjects initializeBusinessObjects() {
+    public IBusinessObjectsInventory initializeBusinessObjects() {
 
-        IBusinessObjects businessObjects = new s_BusinessObjects(this);
+        IBusinessObjectsInventory businessObjects = new s_BusinessObjectsInventory(this);
         setBusinessObjects(businessObjects);
         return businessObjects;
     }
@@ -100,12 +100,12 @@ public class DataRepositoryApplication extends SpringApplication {
         return settings;
     }
 
-    public void setBusinessObjects(IBusinessObjects businessObjects) {
+    public void setBusinessObjects(IBusinessObjectsInventory businessObjects) {
 
         this.businessObjects = businessObjects;
     }
 
-    public IBusinessObjects getBusinessObjects() {
+    public IBusinessObjectsInventory getBusinessObjects() {
 
         return businessObjects;
     }

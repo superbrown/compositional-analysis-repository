@@ -2,15 +2,15 @@ package gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everyt
 
 
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
-import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjects;
-import gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.singleRowSchemaApproach.r_BusinessObjects;
+import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjectsInventory;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.singleRowSchemaApproach.r_BusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsRowDAOTest;
 
 public class r_RowDAOTest extends AbsRowDAOTest {
 
     @Override
-    protected IBusinessObjects createBusinessObjects(DataRepositoryApplication dataRepositoryApplication) {
+    protected IBusinessObjectsInventory createBusinessObjects(DataRepositoryApplication dataRepositoryApplication) {
 
-        return new r_BusinessObjects(dataRepositoryApplication);
+        return new r_BusinessObjectsInventory(dataRepositoryApplication);
     }
 }

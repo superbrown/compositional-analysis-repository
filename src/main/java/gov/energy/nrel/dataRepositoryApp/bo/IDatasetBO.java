@@ -37,6 +37,8 @@ public interface IDatasetBO extends IBO {
     IDeleteResults removeDatasetFromDatabaseAndMoveItsFiles(String datasetId)
             throws UnknownDataset, FailedToDeleteFiles;
 
+    void addDatasetTransactionToken(ObjectId datasetObjectId);
+
     void removeDatasetTransactionToken(ObjectId datasetObjectId);
 
     List<ObjectId> getDatasetIdsForAllIncompleteDatasetUploadCleanups();
