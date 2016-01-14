@@ -372,6 +372,7 @@ drApp.service('drServices', function() {
     self.populateNamesOfSheetsWithinExcelWorkbook = function (scope, http) {
 
         scope.$root.knownNamesOfSheetsWithinSelectedWorkbook = [];
+        scope.$root.nameOfSubdocumentContainingDataIfApplicable = '';
 
         var sourceDocument = scope.$root.sourceDocument;
 
