@@ -77,5 +77,7 @@ public class DatasetTransactionTokenDAO extends AbsDAO implements gov.energy.nre
     public void makeSureTableColumnsIRelyUponAreIndexed() {
 
         getCollection().createIndex(new Document().append(DatasetTransactionTokenDocument.MONGO_KEY__DATASET_ID, 1));
+
+        logCollectionIndexes();
     }
 }

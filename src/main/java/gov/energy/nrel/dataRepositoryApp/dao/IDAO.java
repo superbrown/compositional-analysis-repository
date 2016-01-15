@@ -65,4 +65,6 @@ public interface IDAO {
     Long getCount();
 
     void makeSureTableColumnsIRelyUponAreIndexed();
+
+    void logCollectionIndexes();
 }

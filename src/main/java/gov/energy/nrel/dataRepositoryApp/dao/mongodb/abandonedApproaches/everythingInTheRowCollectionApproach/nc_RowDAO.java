@@ -1,22 +1,26 @@
-package gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.multipleCellCollectionsApproach;
+package gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everythingInTheRowCollectionApproach;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.DeleteResult;
 import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
+import gov.energy.nrel.dataRepositoryApp.dao.ICellDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IRowDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.IMongodbDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.MongoFieldNameEncoder;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.dto.DeleteResults;
 import gov.energy.nrel.dataRepositoryApp.model.common.IMetadata;
 import gov.energy.nrel.dataRepositoryApp.model.common.IRow;
 import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
-import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
-import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.CellDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.IRowDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.CellDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.RowDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.RowDocument_usingListStructure;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
@@ -26,114 +30,80 @@ import org.bson.types.ObjectId;
 
 import java.util.*;
 
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.in;
+import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Projections.include;
 
-public class m_RowDAO extends AbsDAO implements IRowDAO {
+public class nc_RowDAO extends AbsDAO implements IRowDAO {
 
     public static final String COLLECTION_NAME = "row";
 
-    protected static Logger log = Logger.getLogger(m_RowDAO.class);
-    private Map<String, m_CellDAO> cellDAOs;
+    protected nc_CellDAO cellDAO;
 
-    public m_RowDAO(ISettings settings) {
+    protected static Logger log = Logger.getLogger(nc_RowDAO.class);
+
+    public nc_RowDAO(ISettings settings) {
 
         super(COLLECTION_NAME, settings);
     }
 
     @Override
     public void init(String collectionName, ISettings settings) {
+
         super.init(collectionName, settings);
-        cellDAOs = new HashMap<>();
+        cellDAO = new nc_CellDAO(settings);
     }
 
-    @Override
     public IRowDocument get(String id) {
 
         return (IRowDocument) getOneWithId(id);
     }
 
-    @Override
     public List<ObjectId> add(ObjectId datasetId, IDatasetDocument datasetDocument, IRowCollection data) {
 
-        List<ObjectId> idsOfRowsAdded = new ArrayList();
+        List<ObjectId> rowIds = new ArrayList();
 
         IMetadata metadata = datasetDocument.getMetadata();
 
         for (IRow row : data.getRows()) {
 
-            RowDocument rowDocument = new RowDocument(
+            IRowDocument rowDocument = new RowDocument_usingListStructure(
                     datasetId,
                     metadata,
                     row);
-
-            // add row
 
 //            PerformanceLogger performanceLogger = new PerformanceLogger(log, "insert(rowDocument)");
             ObjectId rowId = add(rowDocument);
 //            performanceLogger.done();
 
-            idsOfRowsAdded.add(rowId);
+            rowIds.add(rowId);
 
-            // add metadata into cell collections
-
-            addCell(rowId, Metadata.MONGO_KEY__SUBMISSION_DATE, metadata.getSubmissionDate());
-            addCell(rowId, Metadata.MONGO_KEY__SUBMITTER, metadata.getSubmitter());
-            addCell(rowId, Metadata.MONGO_KEY__PROJECT_NAME, metadata.getProjectName());
-            addCell(rowId, Metadata.MONGO_KEY__SUB_DOCUMENT_NAME, metadata.getSubdocumentName());
-            addCell(rowId, Metadata.MONGO_KEY__CHARGE_NUMBER, metadata.getChargeNumber());
-
-            // add data into cell collections
-
-            for (String columnName : row.getColumnNames()) {
-
-                addCell(rowId, columnName, row.getValue(columnName));
-            }
+            cellDAO.add(rowId, row);
         }
 
-        return idsOfRowsAdded;
+        return rowIds;
     }
 
-    protected void addCell(ObjectId rowId, String columnName, Object value) {
-
-        m_CellDAO cellDAO = getCellDAO(columnName);
-        cellDAO.add(rowId, value);
-    }
-
-    public DeleteResults deleteRowsAssociatedWithDataset(ObjectId datasetId) {
+    public IDeleteResults deleteRowsAssociatedWithDataset(ObjectId datasetId) {
 
         DeleteResults allDeleteResults = new DeleteResults();
 
         Document datasetIdFilter = new Document().
                 append(RowDocument.MONGO_KEY__DATASET_ID, datasetId);
 
-//        Bson projection = fields(include(RowDocument.MONGO_KEY__ID));
+        Bson projection = fields(include(RowDocument.MONGO_KEY__ID));
 
-//        List<Document> rowIds = get(datasetIdFilter, projection);
-        List<Document> rows = get(datasetIdFilter);
+        List<Document> rowsAssociatedWithDataset = this.query(datasetIdFilter, projection);
 
-        if (rows.size() > 0) {
+        for (Document document : rowsAssociatedWithDataset) {
 
-            Document firstRow = rows.get(0);
-            Document data = (Document) firstRow.get(RowDocument.MONGO_KEY__DATA);
+            ObjectId rowId = (ObjectId) document.get(RowDocument.MONGO_KEY__ID);
 
-            for (String columnName : data.keySet()) {
+            // delete all cells associated with the row
+            allDeleteResults.addAll(cellDAO.deleteCellsAssociatedWithRow(rowId));
 
-                m_CellDAO cellDAO = getCellDAO(columnName);
-
-                for (Document rowDocument : rows) {
-
-                    ObjectId rowId = (ObjectId) rowDocument.get("_id");
-
-                    // delete all cells associated with the row
-                    allDeleteResults.addAll(cellDAO.deleteCellsAssociatedWithRow(rowId));
-
-                    // detlete the row
-                    allDeleteResults.addAll(deleteRow(rowId));
-                }
-            }
+            // delete the row
+            allDeleteResults.addAll(deleteRow(rowId));
         }
 
         return allDeleteResults;
@@ -148,11 +118,12 @@ public class m_RowDAO extends AbsDAO implements IRowDAO {
         DeleteResults deleteResults = new DeleteResults(deleteResult);
 
         return deleteResults;
+
     }
 
+    @Override
     public Document createDocumentOfTypeDAOHandles(Document document) {
-
-        return new RowDocument(document);
+        return new RowDocument_usingListStructure(document);
     }
 
     @Override
@@ -215,6 +186,26 @@ public class m_RowDAO extends AbsDAO implements IRowDAO {
         return rows;
     }
 
+    protected List<CriterionAndItsNumberOfMatches> getNumberOfMatchesForEachCriterion(
+            List<SearchCriterion> searchCriteria) {
+
+        List<CriterionAndItsNumberOfMatches> results = new ArrayList<>();
+
+        for (SearchCriterion searchCriterion : searchCriteria) {
+
+            long count = getCountOfCellsThatMatch(searchCriterion);
+            CriterionAndItsNumberOfMatches result = new CriterionAndItsNumberOfMatches(searchCriterion, count);
+
+            results.add(result);
+
+            if (count == 0) {
+                return results;
+            }
+        }
+
+        return results;
+    }
+
     protected List<Document> getRows(Set<ObjectId> matchingIds, Set<String> dataColumnNamesToIncludedInQueryResults) {
 
         List<String> attributesToInclude = new ArrayList<>();
@@ -236,93 +227,31 @@ public class m_RowDAO extends AbsDAO implements IRowDAO {
 
             Document document = getOne(matchingId, projection);
 
-            Document data = (Document) document.get(RowDocument.MONGO_KEY__DATA);
+            List<Document> data = (List) document.get(RowDocument.MONGO_KEY__DATA);
+            DAOUtilities.toDocumentsWithClientSideFieldNames(data);
 
-            results.add(DAOUtilities.toDocumentWithClientSideFieldNames(data));
+            results.add(document);
         }
 
         performanceLogger.done();
         log.info("[RESULTS] results.size() = " + results.size() +
-                ", row.count() = " + getCount());
-
-        return results;
-    }
-
-    private String toMongoSafeFieldName(String columnIncludedInQuery) {
-
-        return MongoFieldNameEncoder.toMongoSafeFieldName(columnIncludedInQuery);
-    }
-
-    protected List<CriterionAndItsNumberOfMatches> getNumberOfMatchesForEachCriterion(
-            List<SearchCriterion> searchCriteria) {
-
-        List<CriterionAndItsNumberOfMatches> results = new ArrayList<>();
-
-        for (SearchCriterion searchCriterion : searchCriteria) {
-
-            long count = getCountOfCellsThatMatch(searchCriterion);
-            CriterionAndItsNumberOfMatches result = new CriterionAndItsNumberOfMatches(searchCriterion, count);
-
-            results.add(result);
-
-            if (count == 0) {
-                return results;
-            }
-        }
-
-        return results;
-    }
-
-    public long getCountOfCellsThatMatch(SearchCriterion searchCriterion) {
-
-        m_CellDAO cellDAOForThisName = getCellDAO(searchCriterion.getName());
-
-        Bson valueFilter = DAOUtilities.toCriterion(
-                CellDocument.MONGO_KEY__VALUE,
-                searchCriterion.getValue(),
-                searchCriterion.getComparisonOperator());
-
-        PerformanceLogger performanceLogger = new PerformanceLogger(
-                log,
-                "[getCountOfRowsThatMatch()] cellDAO.getCollection().count(" + DAOUtilities.toJSON(valueFilter) + ")"
-        );
-        long count = cellDAOForThisName.getCollection().count(valueFilter);
-        performanceLogger.done();
-
-        return count;
-    }
-
-
-    @Override
-    public Set<ObjectId> getIdsOfRowsThatMatch(SearchCriterion searchCriterion) {
-
-        m_CellDAO cellDAO = getCellDAO(searchCriterion.getName());
-
-        Bson query = DAOUtilities.toCriterion(
-                CellDocument.MONGO_KEY__VALUE,
-                searchCriterion.getValue(),
-                searchCriterion.getComparisonOperator());
-
-        Bson projection = fields(include(CellDocument.MONGO_KEY__ROW_ID));
-
-        PerformanceLogger performanceLogger = new PerformanceLogger(log, "[getIdsOfRowsThatMatch()] cellDAO.get(" + DAOUtilities.toJSON(query) + ")");
-        List<Document> documents = cellDAO.get(query, projection);
-        performanceLogger.done();
-        log.info("[RESULTS] results.size() = " + documents.size() +
                 ", row.count() = " + getCount() +
-                ", cell.count() = " + cellDAO.getCount());
+                ", cell.count() = " + cellDAO.getCollection().count());
 
-        return toSetOfRowIds(documents);
+        return results;
     }
 
     protected Set<ObjectId> getIdsOfRowsInSubsetThatMatch(Set<ObjectId> rowIds, SearchCriterion searchCriterion) {
-
-        m_CellDAO cellDAO = getCellDAO(searchCriterion.getName());
 
         // CAUTION: Do NOT change the order of these, as these reflect an index set within the
         //          database.  If you do, you'll have to change the index as well.
         Bson query = and(
                 in(CellDocument.MONGO_KEY__ROW_ID, rowIds),
+
+                DAOUtilities.toCriterion(
+                        CellDocument.MONGO_KEY__COLUMN_NAME,
+                        searchCriterion.getName(),
+                        searchCriterion.getComparisonOperator()),
 
                 DAOUtilities.toCriterion(
                         CellDocument.MONGO_KEY__VALUE,
@@ -347,6 +276,86 @@ public class m_RowDAO extends AbsDAO implements IRowDAO {
         return matchingIds;
     }
 
+    public long getCountOfCellsThatMatch(SearchCriterion searchCriterion) {
+
+        // CAUTION: Do NOT change the order of these, as these reflect an index set within the
+        //          database.  If you do, you'll have to change the index as well.
+
+        Bson query = and(
+
+                eq(
+                        CellDocument.MONGO_KEY__COLUMN_NAME,
+                        toMongoSafeFieldName(searchCriterion.getName())),
+
+                DAOUtilities.toCriterion(
+                        CellDocument.MONGO_KEY__VALUE,
+                        searchCriterion.getValue(),
+                        searchCriterion.getComparisonOperator()));
+
+        PerformanceLogger performanceLogger = new PerformanceLogger(
+                log,
+                "[getCountOfRowsThatMatch()] cellDAO.getCollection().count(" + DAOUtilities.toJSON(query) + ")"
+        );
+        long count = ((IMongodbDAO)cellDAO).getCollection().count(query);
+        performanceLogger.done();
+
+        return count;
+    }
+
+    public Set<ObjectId> getIdsOfRowsThatMatch(SearchCriterion searchCriterion) {
+
+        Bson rowIdCriterion = eq(CellDocument.MONGO_KEY__COLUMN_NAME, toMongoSafeFieldName(searchCriterion.getName()));
+
+        Bson valueCriterion = DAOUtilities.toCriterion(
+                CellDocument.MONGO_KEY__VALUE,
+                searchCriterion.getValue(),
+                searchCriterion.getComparisonOperator());
+
+        // CAUTION: Do NOT change the order of these, as these reflect an index set within the
+        //          database.  If you do, you'll have to change the index as well.
+        Bson query = and(rowIdCriterion, valueCriterion);
+
+        Bson projection = fields(include(CellDocument.MONGO_KEY__ROW_ID));
+
+        PerformanceLogger performanceLogger = new PerformanceLogger(log, "[getIdsOfRowsThatMatch()] cellDAO.get(" + DAOUtilities.toJSON(query) + ")");
+        List<Document> documents = cellDAO.get(query, projection);
+        performanceLogger.done();
+        log.info("[RESULTS] results.size() = " + documents.size() +
+                ", row.count() = " + getCount() +
+                ", cell.count() = " + ((IMongodbDAO)cellDAO).getCollection().count());
+
+        return toSetOfRowIds(documents);
+    }
+
+    protected boolean rowMatchesTheCriterion(ObjectId rowId, SearchCriterion searchCriterion) {
+
+        // CAUTION: Do NOT change the order of these, as these reflect an index set within the
+        //          database.  If you do, you'll have to change the index as well.
+        Bson query = and(
+
+                eq(
+                        CellDocument.MONGO_KEY__ROW_ID,
+                        rowId),
+
+                eq(
+                        CellDocument.MONGO_KEY__COLUMN_NAME,
+                        toMongoSafeFieldName(searchCriterion.getName())),
+
+                DAOUtilities.toCriterion(
+                        CellDocument.MONGO_KEY__VALUE,
+                        searchCriterion.getValue(),
+                        searchCriterion.getComparisonOperator()));
+
+        Bson projection = fields(include(
+                CellDocument.MONGO_KEY__ROW_ID));
+
+        PerformanceLogger performanceLogger = new PerformanceLogger(log, "[rowMatchesTheCriterion()] cellDAO.getOne(" + DAOUtilities.toJSON(query) + ")");
+        Document document = cellDAO.getOne(query, projection);
+        performanceLogger.done();
+
+        return document != null;
+    }
+
     private Set<ObjectId> toSetOfRowIds(List<Document> documents) {
 
         Set<ObjectId> objectIds = new HashSet();
@@ -360,24 +369,35 @@ public class m_RowDAO extends AbsDAO implements IRowDAO {
     }
 
     @Override
-    public m_CellDAO getCellDAO(String columnName) {
+    public void makeSureTableColumnsIRelyUponAreIndexed() {
 
-        String collectonNameForCell = toCellCollectionName(columnName);
+        // DESIGN NOTE: Even though these indexes are on the cell collection, they are being set here because this
+        //              is where the code exists that relies upon them. I figured if they were here, they would less
+        //              likely get removed by someone who didn't realize they were used somewhere.
 
-        m_CellDAO cellDAO = cellDAOs.get(collectonNameForCell);
+        MongoCollection<Document> cellCollection = cellDAO.getCollection();
 
-        if (cellDAO == null) {
-            cellDAO = new m_CellDAO(collectonNameForCell, settings);
-            cellDAOs.put(columnName, cellDAO);
-        }
+        BasicDBObject compoundIndex = new BasicDBObject();
+        compoundIndex.put(CellDocument.MONGO_KEY__ROW_ID, 1);
+        compoundIndex.put(CellDocument.MONGO_KEY__COLUMN_NAME, 1);
+        compoundIndex.put(CellDocument.MONGO_KEY__VALUE, 1);
+        cellCollection.createIndex(compoundIndex);
 
-        return cellDAO;
+        compoundIndex = new BasicDBObject();
+        compoundIndex.put(CellDocument.MONGO_KEY__COLUMN_NAME, 1);
+        compoundIndex.put(CellDocument.MONGO_KEY__VALUE, 1);
+        cellCollection.createIndex(compoundIndex);
+
+        cellDAO.logCollectionIndexes();
     }
 
-    private static final String PREFIX_FOR_CELL_COLLECTIONS = "CELL_";
+    @Override
+    public ICellDAO getCellDAO(String columnName) {
+        return getCellDAO();
+    }
 
-    public static String toCellCollectionName(String columnName) {
-        return PREFIX_FOR_CELL_COLLECTIONS + columnName;
+    public ICellDAO getCellDAO() {
+        return cellDAO;
     }
 
     protected void encodeColumnNamesForMongoSafety(List<SearchCriterion> searchCriteria_data) {
@@ -388,12 +408,10 @@ public class m_RowDAO extends AbsDAO implements IRowDAO {
         }
     }
 
-    @Override
-    public void makeSureTableColumnsIRelyUponAreIndexed() {
+    protected String toMongoSafeFieldName(String name) {
 
+        return MongoFieldNameEncoder.toMongoSafeFieldName(name);
     }
-
-
 
     private class CriterionAndItsNumberOfMatches implements Comparable {
 

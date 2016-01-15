@@ -1,10 +1,10 @@
-package gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everythingInTheRowCollectionApproach;
+package gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.multipleCellCollectionsApproach;
 
+import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
+import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
-import gov.energy.nrel.dataRepositoryApp.dao.IRowDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
-import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DataCategoryDAO;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDataCategoryDocument;
@@ -12,38 +12,37 @@ import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
 import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DataCategoryDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DatasetDocument;
-import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.util.Set;
 
-public class r_DatasetDAO extends AbsDAO implements IDatasetDAO
-{
+public class mc_DatasetDAO extends AbsDAO implements IDatasetDAO {
+
     public static final String COLLECTION_NAME = "dataset";
     protected DataCategoryDAO dataCategoryDAO;
-    protected IRowDAO rowDAO;
+    protected mc_RowDAO rowDAO;
 
-    public r_DatasetDAO(ISettings settings) {
+    public mc_DatasetDAO(ISettings settings) {
 
         super(COLLECTION_NAME, settings);
     }
 
     @Override
     public void init(String collectionName, ISettings settings) {
-
         super.init(collectionName, settings);
-        rowDAO = new r_RowDAO(settings);
+        rowDAO = new mc_RowDAO(settings);
         dataCategoryDAO = new DataCategoryDAO(settings);
-
     }
 
+    @Override
     public IDatasetDocument getDataset(String id) {
 
-        DatasetDocument metadata = (DatasetDocument) getOneWithId(id);
-        return metadata;
+        DatasetDocument datasetDocument = (DatasetDocument) getOneWithId(id);
+        return datasetDocument;
     }
 
+    @Override
     public ObjectId add(IDatasetDocument datasetDocument, IRowCollection data) {
 
         ObjectId objectId = add(datasetDocument);
@@ -79,31 +78,35 @@ public class r_DatasetDAO extends AbsDAO implements IDatasetDAO
     }
 
     @Override
+    public IDeleteResults delete(ObjectId objectId)
+            throws UnknownEntity {
+
+        IDeleteResults deleteResults = rowDAO.deleteRowsAssociatedWithDataset(objectId);
+
+        IDeleteResults deleteResultForDataset = super.delete(objectId);
+        deleteResults.addAll(deleteResultForDataset);
+
+        if (deleteResults.wasAcknowledged() == false) {
+            return deleteResults;
+        }
+
+        return deleteResults;
+    }
+
     public Document createDocumentOfTypeDAOHandles(Document document) {
 
         return new DatasetDocument(document);
     }
 
     @Override
-    public IDeleteResults delete(ObjectId objectId)
-            throws UnknownEntity {
-
-        IDeleteResults deleteResults = super.delete(objectId);
-
-        IDeleteResults deleteResultsForRows = rowDAO.deleteRowsAssociatedWithDataset(objectId);
-        deleteResults.addAll(deleteResultsForRows);
-
-        return deleteResults;
-    }
-
-    public IRowDAO getRowDAO() {
+    public mc_RowDAO getRowDAO() {
         return rowDAO;
     }
 
+    @Override
     public IDataCategoryDAO getDataCategoryDAO() {
         return dataCategoryDAO;
     }
-
 
     @Override
     public void makeSureTableColumnsIRelyUponAreIndexed() {

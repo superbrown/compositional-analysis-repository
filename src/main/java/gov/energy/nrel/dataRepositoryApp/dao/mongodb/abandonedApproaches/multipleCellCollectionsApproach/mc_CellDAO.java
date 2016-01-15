@@ -17,9 +17,9 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.List;
 
-public class m_CellDAO extends AbsDAO implements ICellDAO {
+public class mc_CellDAO extends AbsDAO implements ICellDAO {
 
-    public m_CellDAO(String columnName, ISettings settings) {
+    public mc_CellDAO(String columnName, ISettings settings) {
 
         super(columnName, settings);
     }

@@ -2,7 +2,7 @@ package gov.energy.nrel.dataRepositoryApp;
 
 import com.mongodb.MongoTimeoutException;
 import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjectsInventory;
-import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach.s_BusinessObjectsInventory;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach.sc_BusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
@@ -91,7 +91,7 @@ public class DataRepositoryApplication extends SpringApplication {
 
     public IBusinessObjectsInventory initializeBusinessObjects() {
 
-        IBusinessObjectsInventory businessObjects = new s_BusinessObjectsInventory(this);
+        IBusinessObjectsInventory businessObjects = new sc_BusinessObjectsInventory(this);
         setBusinessObjects(businessObjects);
         return businessObjects;
     }

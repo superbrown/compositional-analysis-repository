@@ -11,7 +11,7 @@ import gov.energy.nrel.dataRepositoryApp.dao.exception.CompletelyFailedToPersist
 import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
-import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everythingInTheRowCollectionApproach.r_DatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everythingInTheRowCollectionApproach.nc_DatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
 import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
@@ -31,13 +31,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class r_DatasetBO extends AbsDatasetBO {
+public class nc_DatasetBO extends AbsDatasetBO {
 
-    protected static Logger log = Logger.getLogger(r_DatasetBO.class);
+    protected static Logger log = Logger.getLogger(nc_DatasetBO.class);
 
     protected IDatasetReader_AllFileTypes generalFileReader;
 
-    public r_DatasetBO(DataRepositoryApplication dataRepositoryApplication) {
+    public nc_DatasetBO(DataRepositoryApplication dataRepositoryApplication) {
 
         super(dataRepositoryApplication);
     }
@@ -45,7 +45,7 @@ public class r_DatasetBO extends AbsDatasetBO {
     @Override
     protected void init() {
 
-        datasetDAO = new r_DatasetDAO(getSettings());
+        datasetDAO = new nc_DatasetDAO(getSettings());
         generalFileReader = new DatasetReader_AllFileTypes();
     }
 

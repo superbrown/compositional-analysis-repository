@@ -1,16 +1,20 @@
 package gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.singleRowSchemaApproach;
 
+
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjectsInventory;
-import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBOTest;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsPerformanceTest;
 
-
-public class r_DatasetBOTest extends AbsDatasetBOTest
+public class nc_PerformanceTest extends AbsPerformanceTest
 {
     @Override
     protected IBusinessObjectsInventory createBusinessObjects(DataRepositoryApplication dataRepositoryApplication) {
 
-        return new r_BusinessObjectsInventory(dataRepositoryApplication);
+        return new nc_BusinessObjectsInventory(dataRepositoryApplication);
     }
 
+    @Override
+    public void testPerformance() {
+        // do nothing
+    }
 }

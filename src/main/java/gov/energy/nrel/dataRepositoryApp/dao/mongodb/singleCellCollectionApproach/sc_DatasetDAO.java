@@ -24,14 +24,14 @@ import org.bson.types.ObjectId;
 import java.util.HashSet;
 import java.util.Set;
 
-public class s_DatasetDAO extends AbsDAO implements IDatasetDAO
+public class sc_DatasetDAO extends AbsDAO implements IDatasetDAO
 {
     public static final String COLLECTION_NAME = "dataset";
     protected DataCategoryDAO dataCategoryDAO;
     protected IRowDAO rowDAO;
     protected IDatasetTransactionTokenDAO datasetTransactionTokenDAO;
 
-    public s_DatasetDAO(ISettings settings) {
+    public sc_DatasetDAO(ISettings settings) {
 
         super(COLLECTION_NAME, settings);
     }
@@ -39,7 +39,7 @@ public class s_DatasetDAO extends AbsDAO implements IDatasetDAO
     @Override
     public void init(String collectionName, ISettings settings) {
         super.init(collectionName, settings);
-        rowDAO = new s_RowDAO(settings);
+        rowDAO = new sc_RowDAO(settings);
         dataCategoryDAO = new DataCategoryDAO(settings);
         datasetTransactionTokenDAO = new DatasetTransactionTokenDAO(getSettings());
     }

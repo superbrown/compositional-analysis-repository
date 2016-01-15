@@ -21,15 +21,15 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.List;
 
-public class s_CellDAO extends AbsDAO implements ICellDAO {
+public class sc_CellDAO extends AbsDAO implements ICellDAO {
 
     public static final String COLLECTION_NAME = "cell";
 
-    public s_CellDAO(String collectionName, Settings settings) {
+    public sc_CellDAO(String collectionName, Settings settings) {
         super(collectionName, settings);
     }
 
-    public s_CellDAO(ISettings settings) {
+    public sc_CellDAO(ISettings settings) {
         super(COLLECTION_NAME, settings);
     }
 

@@ -81,5 +81,7 @@ public class DataCategoryDAO extends AbsDAO implements IDataCategoryDAO {
     public void makeSureTableColumnsIRelyUponAreIndexed() {
 
         getCollection().createIndex(new Document().append(DataCategoryDocument.MONGO_KEY__NAME, 1));
+
+        logCollectionIndexes();
     }
 }

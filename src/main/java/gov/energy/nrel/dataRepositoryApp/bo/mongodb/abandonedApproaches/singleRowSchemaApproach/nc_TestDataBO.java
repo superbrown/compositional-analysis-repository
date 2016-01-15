@@ -1,4 +1,4 @@
-package gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach;
+package gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.singleRowSchemaApproach;
 
 import com.mongodb.client.MongoDatabase;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
@@ -9,24 +9,24 @@ import gov.energy.nrel.dataRepositoryApp.dao.exception.CompletelyFailedToPersist
 import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.IMongodbDAO;
-import gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellCollectionApproach.s_DatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everythingInTheRowCollectionApproach.nc_DatasetDAO;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class s_TestDataBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO {
+public class nc_TestDataBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO {
 
     public IDatasetDAO datasetDAO;
 
-    public s_TestDataBO(DataRepositoryApplication dataRepositoryApplication) {
-        super(dataRepositoryApplication);
+    public nc_TestDataBO(DataRepositoryApplication settings) {
+        super(settings);
     }
 
     @Override
     protected void init() {
-        datasetDAO = new s_DatasetDAO(getSettings());
+        datasetDAO = new nc_DatasetDAO(getSettings());
     }
 
     @Override

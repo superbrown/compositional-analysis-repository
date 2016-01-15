@@ -3,6 +3,7 @@ package gov.energy.nrel.dataRepositoryApp.dao.mongodb;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.WriteConcern;
+import com.mongodb.client.ListIndexesIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
@@ -243,4 +244,20 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
         return settings;
     }
 
+    @Override
+    public void logCollectionIndexes() {
+
+        if (log.isInfoEnabled()) {
+
+            StringBuilder message = new StringBuilder();
+            message.append(getCollectionName() + " indexes");
+
+            ListIndexesIterable<Document> indexes = getCollection().listIndexes();
+            for (Document index : indexes) {
+                message.append(index.toJson());
+            }
+
+            log.info(message);
+        }
+    }
 }

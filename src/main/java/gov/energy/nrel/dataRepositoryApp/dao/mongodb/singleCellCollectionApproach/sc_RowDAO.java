@@ -1,7 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellCollectionApproach;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.client.ListIndexesIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.DeleteResult;
 import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
@@ -19,9 +18,9 @@ import gov.energy.nrel.dataRepositoryApp.model.common.IRow;
 import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
-import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.CellDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.IRowDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.CellDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.RowDocument;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
@@ -36,15 +35,15 @@ import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Projections.include;
 
-public class s_RowDAO extends AbsDAO implements IRowDAO {
+public class sc_RowDAO extends AbsDAO implements IRowDAO {
 
     public static final String COLLECTION_NAME = "row";
 
-    protected s_CellDAO cellDAO;
+    protected sc_CellDAO cellDAO;
 
-    protected static Logger log = Logger.getLogger(s_RowDAO.class);;
+    protected static Logger log = Logger.getLogger(sc_RowDAO.class);;
 
-    public s_RowDAO(ISettings settings) {
+    public sc_RowDAO(ISettings settings) {
 
         super(COLLECTION_NAME, settings);
     }
@@ -53,7 +52,7 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
     public void init(String collectionName, ISettings settings) {
 
         super.init(collectionName, settings);
-        cellDAO = new s_CellDAO(settings);
+        cellDAO = new sc_CellDAO(settings);
     }
 
     public IRowDocument get(String id) {
@@ -419,8 +418,6 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
     @Override
     public void makeSureTableColumnsIRelyUponAreIndexed() {
 
-        getCollection().createIndex(new Document().append(RowDocument.MONGO_KEY__ID, 1));
-
         // DESIGN NOTE: Even though these indexes are on the cell collection, they are being set here because this
         //              is where the code exists that relies upon them. I figured if they were here, they would less
         //              likely get removed by someone who didn't realize they were used somewhere.
@@ -438,18 +435,7 @@ public class s_RowDAO extends AbsDAO implements IRowDAO {
         compoundIndex.put(CellDocument.MONGO_KEY__VALUE, 1);
         cellCollection.createIndex(compoundIndex);
 
-        if (log.isInfoEnabled()) {
-
-            StringBuilder message = new StringBuilder();
-            message.append("Cell Indexes");
-
-            ListIndexesIterable<Document> indexes = cellCollection.listIndexes();
-            for (Document index : indexes) {
-                message.append(index.toJson());
-            }
-
-            log.info(message);
-        }
+        cellDAO.logCollectionIndexes();
     }
 
     protected void encodeColumnNamesForMongoSafety(List<SearchCriterion> searchCriteria_data) {

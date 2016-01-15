@@ -1,7 +1,8 @@
-package gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.singleRowSchemaApproach;
+package gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.multipleCellSchemaApproach;
 
 import com.mongodb.client.MongoDatabase;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
+import gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsBO;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.TestData;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
@@ -9,29 +10,31 @@ import gov.energy.nrel.dataRepositoryApp.dao.exception.CompletelyFailedToPersist
 import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.IMongodbDAO;
-import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.everythingInTheRowCollectionApproach.r_DatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.multipleCellCollectionsApproach.mc_DatasetDAO;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class r_TestDataBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO {
+public class mc_TestDataBO extends AbsBO implements ITestDataBO {
 
     public IDatasetDAO datasetDAO;
 
-    public r_TestDataBO(DataRepositoryApplication settings) {
-        super(settings);
+    public mc_TestDataBO(DataRepositoryApplication dataRepositoryApplication) {
+
+        super(dataRepositoryApplication);
     }
 
     @Override
     protected void init() {
-        datasetDAO = new r_DatasetDAO(getSettings());
+
+        datasetDAO = new mc_DatasetDAO(getSettings());
     }
 
-    @Override
+
     public String seedTestDataInTheDatabase_dataset_1_and_2()
-            throws PartiallyFailedToPersistDataset, CompletelyFailedToPersistDataset {
+            throws CompletelyFailedToPersistDataset, PartiallyFailedToPersistDataset {
 
         TestData.dataset_1_objectId = datasetDAO.add(TestData.dataset_1, TestData.rowCollection_1);
         TestData.dataset_2_objectId = datasetDAO.add(TestData.dataset_2, TestData.rowCollection_2);
@@ -46,7 +49,6 @@ public class r_TestDataBO extends AbsBO implements gov.energy.nrel.dataRepositor
         return DAOUtilities.serialize(document);
     }
 
-    @Override
     public String seedTestDataInTheDatabase_dataset_1()
             throws PartiallyFailedToPersistDataset, CompletelyFailedToPersistDataset {
 
@@ -61,7 +63,6 @@ public class r_TestDataBO extends AbsBO implements gov.energy.nrel.dataRepositor
         return DAOUtilities.serialize(document);
     }
 
-    @Override
     public String seedTestDataInTheDatabase_dataset_2()
             throws PartiallyFailedToPersistDataset, CompletelyFailedToPersistDataset {
 
@@ -75,13 +76,11 @@ public class r_TestDataBO extends AbsBO implements gov.energy.nrel.dataRepositor
         return DAOUtilities.serialize(document);
     }
 
-    @Override
     public void removeTestData() {
 
         ((IMongodbDAO)datasetDAO).getMongoClient().dropDatabase(getSettings().getMongoDatabaseName());
     }
 
-    @Override
     public void dropTheTestDatabase() {
 
         MongoDatabase database = ((IMongodbDAO)datasetDAO).getDatabase();

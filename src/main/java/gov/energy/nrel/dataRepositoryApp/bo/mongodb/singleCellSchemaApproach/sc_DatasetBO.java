@@ -11,7 +11,7 @@ import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.CompletelyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DatasetTransactionTokenDAO;
-import gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellCollectionApproach.s_DatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellCollectionApproach.sc_DatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
 import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.StoredFile;
@@ -30,20 +30,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class s_DatasetBO extends AbsDatasetBO implements IDatasetBO {
+public class sc_DatasetBO extends AbsDatasetBO implements IDatasetBO {
 
-    protected static Logger log = Logger.getLogger(s_DatasetBO.class);
+    protected static Logger log = Logger.getLogger(sc_DatasetBO.class);
 
     protected IDatasetReader_AllFileTypes generalFileReader;
 
-    public s_DatasetBO(DataRepositoryApplication dataRepositoryApplication) {
+    public sc_DatasetBO(DataRepositoryApplication dataRepositoryApplication) {
         super(dataRepositoryApplication);
     }
 
     @Override
     protected void init() {
 
-        datasetDAO = new s_DatasetDAO(getSettings());
+        datasetDAO = new sc_DatasetDAO(getSettings());
         generalFileReader = new DatasetReader_AllFileTypes();
         datasetTransactionTokenDAO = new DatasetTransactionTokenDAO(getSettings());
     }

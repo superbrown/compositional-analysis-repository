@@ -5,7 +5,7 @@ import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IFileStorageBO;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
-import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.multipleCellCollectionsApproach.m_DatasetDAO;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.multipleCellCollectionsApproach.mc_DatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
 import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
@@ -24,20 +24,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class m_DatasetBO extends AbsDatasetBO {
+public class mc_DatasetBO extends AbsDatasetBO {
 
-    protected static Logger log = Logger.getLogger(m_DatasetBO.class);
+    protected static Logger log = Logger.getLogger(mc_DatasetBO.class);
 
     protected IDatasetReader_AllFileTypes generalFileReader;
 
-    public m_DatasetBO(DataRepositoryApplication dataRepositoryApplication) {
+    public mc_DatasetBO(DataRepositoryApplication dataRepositoryApplication) {
         super(dataRepositoryApplication);
     }
 
     @Override
     protected void init() {
 
-        datasetDAO = new m_DatasetDAO(getSettings());
+        datasetDAO = new mc_DatasetDAO(getSettings());
         generalFileReader = new DatasetReader_AllFileTypes();
     }
 
@@ -131,8 +131,8 @@ public class m_DatasetBO extends AbsDatasetBO {
     }
 
     @Override
-    public m_DatasetDAO getDatasetDAO() {
+    public mc_DatasetDAO getDatasetDAO() {
 
-        return (m_DatasetDAO) datasetDAO;
+        return (mc_DatasetDAO) datasetDAO;
     }
 }
