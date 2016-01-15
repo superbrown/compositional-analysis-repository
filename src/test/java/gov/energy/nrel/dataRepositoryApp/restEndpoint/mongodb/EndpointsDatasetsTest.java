@@ -4,7 +4,7 @@
 //import gov.energy.nrel.dataRepositoryApp.CARApplication;
 //import gov.energy.nrel.dataRepositoryApp.Settings;
 //import gov.energy.nrel.dataRepositoryApp.Settings_forUnitTestPurposes;
-//import gov.energy.nrel.dataRepositoryApp.bo.mongodb.multipleCellSchemaApproach.m_BusinessObjects;
+//import gov.energy.nrel.dataRepositoryApp.bo.mongodb.multipleCellCollectionsApproach.m_BusinessObjects;
 //import gov.energy.nrel.dataRepositoryApp.dao.mongodb.TestUsingTestData;
 //import org.junit.*;
 //import org.junit.runner.RunWith;

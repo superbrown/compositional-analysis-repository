@@ -2,7 +2,7 @@ package gov.energy.nrel.dataRepositoryApp;
 
 import com.mongodb.MongoTimeoutException;
 import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjectsInventory;
-import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellSchemaApproach.sc_BusinessObjectsInventory;
+import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellCollectionApproach.sc_BusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import org.apache.log4j.Logger;
