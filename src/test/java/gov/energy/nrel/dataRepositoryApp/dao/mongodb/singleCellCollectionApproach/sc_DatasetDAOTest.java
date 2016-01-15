@@ -3,9 +3,9 @@ package gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellCollectionApproa
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellCollectionApproach.sc_BusinessObjectsInventory;
-import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsRowDAOTest;
+import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsDatasetDAOTest;
 
-public class s_RowDAOTest extends AbsRowDAOTest {
+public class sc_DatasetDAOTest extends AbsDatasetDAOTest{
 
     @Override
     protected IBusinessObjectsInventory createBusinessObjects(DataRepositoryApplication dataRepositoryApplication) {

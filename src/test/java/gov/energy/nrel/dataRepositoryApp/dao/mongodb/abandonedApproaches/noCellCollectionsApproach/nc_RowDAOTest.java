@@ -6,7 +6,7 @@ import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.noCellCollectionApproach.nc_BusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsRowDAOTest;
 
-public class r_RowDAOTest extends AbsRowDAOTest {
+public class nc_RowDAOTest extends AbsRowDAOTest {
 
     @Override
     protected IBusinessObjectsInventory createBusinessObjects(DataRepositoryApplication dataRepositoryApplication) {
