@@ -26,21 +26,15 @@
 
         <span ng-hide="criterion.columnName === ''">
 
-          <!--Date Type-->
-          <select ng-model="criterion.dataTypeId">
-            <option ng-repeat="knownDataType in $root.knownDataTypes" value="{{knownDataType.id}}">
-              {{knownDataType.label}}
-            </option>
-          </select>
+          <!--Data Type-->
+        <select ng-model="criterion.dataTypeId"
+              ng-options="knownDataType.id as knownDataType.label for knownDataType in $root.knownDataTypes" />
 
           <span ng-hide="criterion.dataTypeId === ''">
 
             <!--Comparison Operator-->
-            <select ng-model="criterion.comparisonOperatorId">
-              <option ng-repeat="knownComparisonOperator in criterion.knownComparisonOperators" value="{{knownComparisonOperator.id}}">
-                {{knownComparisonOperator.label}}
-              </option>
-            </select>
+          <select ng-model="criterion.comparisonOperatorId"
+                  ng-options="knownComparisonOperator.id as knownComparisonOperator.label for knownComparisonOperator in criterion.knownComparisonOperators" />
 
             <span ng-hide="criterion.comparisonOperatorId === ''">
 
