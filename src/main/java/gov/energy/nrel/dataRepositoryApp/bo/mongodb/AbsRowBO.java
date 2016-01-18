@@ -191,7 +191,7 @@ public abstract class AbsRowBO extends AbsBO implements IRowBO {
         FOR_SCREEN_DIAPLAYED_SEARCH_RESULTS,
     }
 
-    private BasicDBList flatten(List<Document> rowDocuments, Purpose purpose) {
+    protected BasicDBList flatten(List<Document> rowDocuments, Purpose purpose) {
 
         BasicDBList rowsFlat = new BasicDBList();
 

@@ -60,7 +60,7 @@ public class Endpoints_Rows {
             @RequestBody String query) throws IOException {
 
         // It's not clear why this is necessary with this call, but it is.
-        query = query.replace("query=", "");
+        query = query.replaceFirst("query=", "");
         query = URLDecoder.decode(query, "UTF-8");
 
         XSSFWorkbook workbook = getRowBO().getRowsAsExcelWorkbook(query);
