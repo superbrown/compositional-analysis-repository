@@ -35,39 +35,36 @@
 
 <body style="margin-left: 20px; margin-top: 10px">
 
-    <h1>Compositional Analysis Repository</h1>
+    <h1>data-repository-app REST endpoints</h1>
 
-    <a href="index.html">Upload Data</a><br/>
-    <br/>
-
-    <h2>Test Data</h2>
-    <a href="/api/seedTestData">/api/seedTestData</a> [GET]<br/>
-    <a href="/api/removeTestData">/api/removeTestData</a> [GET]<br/>
-    <a href="/api/dropTheTestDatabase">/api/dropTheTestDatabase</a> [GET]<br/>
+    <h2>Cateogy Data</h2>
+    api/dataCategory/{dataCategoryId} [GET] [returns JSON]<br/>
+    api/dataCategory?dataCategoryName={dataCateogryName} [GET] [returns JSON]<br/>
+    api/dataCategory/searchableColumnNames?dataCategoryName={dataCateogryName} [GET] [returns JSON]<br/>
+    <a href="api/dataCategory/names/all" target="_blank">api/dataCategory/names/all</a> [GET] [returns JSON]<br/>
+    <a href="api/dataCategories/all" target="_blank">api/dataCategories/all</a> [GET] [returns JSON]<br/>
 
     <h2>Datasets</h2>
-    /api/addDataset/{dataset_id} [POST] (spreasheet JSON in the request body)<br/>
-    /api/addDataset/{dataset_id} [DELETE]<br/>
-    <br/>
-    <a href="/api/datasets/all">/api/datasets/all</a> [GET]<br/>
-    /api/datasets [POST] (query JSON in the request body)<br/>
-    <br/>
-    /api/dataset/{dataset_id} [GET]<br/>
-    /api/dataset/data/{dataset_id} [GET]<br/>
-    /api/dataset/metadata/{dataset_id} [GET]<br/>
+    api/addDataset/{dataset_id} {JSON in the request body} [POST]<br/>
+    <a href="api/datasets/all" target="_blank">api/datasets/all</a> [GET] [returns JSON]<br/>
+    api/dataset/{datasetId}/sourceDocument [GET] [returns binary document]<br/>
+    api/dataset/{datasetId}/attachments [GET] [returns binary document, a zip file]<br/>
+    api/dataset/{datasetId}/rows {JSON in the request body} [GET]<br/>
 
     <h2>Dataset Rows</h2>
-    /api/row/{rowId} [GET]<br/>
-    <br/>
-    <a href="/api/rows/all">/api/rows/all</a> [GET]<br/>
-    /api/rows [POST] (query JSON in the request body)<br/>
+    api/rows {query JSON in the request body} [POST] [returns JSON]<br/>
+    api/rows/flat {query JSON in the request body} [POST] [returns JSON]<br/>
+    api/rows/asFile {query JSON in the request body} [POST] [returns binary document]<br/>
+    api/row/{rowId} [GET] [returns JSON]<br/>
 
-    <h2>Sample Type</h2>
+    <h2>Utilities</h2>
+    api/getNamesOfSheetsWithinExcelWorkbook (multipart file in the request body) [POST] [returns JSON]<br/>
 
-    /api/dataCategory/{dataCategoryId} [GET]<br/>
-    /api/dataCategory/name/{sampleName}" [GET]<br/>
-    <br/>
-    <a href="/api/dataCategories/all">/api/dataCategories/all</a> [GET]<br/>
+    <h2>Admin</h2>
+    api/addDataCategory?name={dataCateogryName} [GET] [returns JSON]<br/>
+    api/removeDataset/{datasetId} [GET]<br/>
+    api/dropDatabaseAndReIngestAllDataFromOriginallyUploadedFiles [GET] [returns JSON with a list of errors]<br/>
+    api/attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads [GET] [returns JSON with a list of errors]<br/>
     <br/>
     <br/>
 

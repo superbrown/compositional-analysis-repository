@@ -66,7 +66,6 @@ public class Endpoints_Utils {
             throws IOException {
 
         IUtilsBO utilsBO = dataRepositoryApplication.getBusinessObjects().getUtilsBO();
-
         List<String> errors = utilsBO.repopulateDatabaseUsingFilesStoredOnServer();
 
         return create_SUCCESS_response(JSON.serialize(errors));
