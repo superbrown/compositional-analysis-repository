@@ -227,6 +227,41 @@ drApp.controller('controller_findDataPage',
         '$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', 'drServices',
         function($scope, $rootScope, $http, $log, $filter, $resource, $location, drServices)
         {
+            $scope.methodsToCallToUnbindTheWatchers = [];
+
+            // These have to be reset each time a criterion is added or removed because the
+            // "watchers" are watching for particular indexed array elements.  If the number of
+            // elements goes up or down, we'll need more or less watchers.  The most
+            // straightforward way to handle this is just to remove all the existing watchers and
+            // create an inventory of new ones.
+            function resetCriteriaWatchers() {
+
+                for (i = 0; i < $scope.methodsToCallToUnbindTheWatchers.length; i++) {
+                    $scope.methodsToCallToUnbindTheWatchers[i]();
+                }
+                $scope.methodsToCallToUnbindTheWatchers = [];
+
+
+                for (i = 0; i < $rootScope.searchCriteria.length; i++) {
+
+                    methodToCallToUnbindTheWatcher =
+                        $rootScope.$watch(
+                            '$root.searchCriteria[' + i + ']',
+                            function (newCriterionState, oldCriterionState) {
+
+                                // the only thing we need to take action on is if a new data type
+                                // has been selected
+                                if (newCriterionState.dataTypeId !== oldCriterionState.dataTypeId) {
+
+                                    drServices.populateKnownComparisonOperators($scope, $http, newCriterionState);
+                                }
+                            },
+                            true);
+
+                    $scope.methodsToCallToUnbindTheWatchers.push(methodToCallToUnbindTheWatcher);
+                }
+            }
+
             $rootScope.selectedPage = "Find Data";
             $rootScope.menuItemClass_findData = 'active';
 
@@ -253,18 +288,14 @@ drApp.controller('controller_findDataPage',
                 {
                     var index = $rootScope.searchCriteria.indexOf(this);
                     $rootScope.searchCriteria.splice(index, 1);
+                    resetCriteriaWatchers();
                 };
 
                 var searchCriteria = $rootScope.searchCriteria;
 
                 searchCriteria.push(newCriterion);
 
-                var indexOfThisNewCriterion = (searchCriteria.length - 1);
-
-                $rootScope.$watch('$root.searchCriteria[' + indexOfThisNewCriterion + '].dataTypeId', function()
-                {
-                    drServices.populateKnownComparisonOperators($scope, $http, newCriterion);
-                });
+                resetCriteriaWatchers();
             }
 
             if ($rootScope.searchCriteria.length === 0) {
