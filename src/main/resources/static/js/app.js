@@ -6,7 +6,7 @@ function hasExcelWorkbookFileSuffix(fileName) {
     return (
         endsWith(fileName, ".xls") ||
         endsWith(fileName, ".xlsx") ||
-        endsWith(fileName, ".xlsm")) == true;
+        endsWith(fileName, ".xlsm")) === true;
 }
 
 function endsWith(str, suffix) {
@@ -57,7 +57,7 @@ drApp.config(
             .otherwise(
             {
                 redirectTo: '/uploadData'
-            })
+            });
     });
 
 // This came from:
@@ -143,7 +143,7 @@ drApp.run(
                 $rootScope.alertMessage_success = '';
                 $rootScope.alertMessage_failure = '';
                 $rootScope.alertMessage_missingUserInput = '';
-            }
+            };
 
             $scope.handleMenuItem_findData = function () {
                 $rootScope.menuItemClass_uploadData = '';
@@ -151,7 +151,7 @@ drApp.run(
                 $rootScope.alertMessage_success = '';
                 $rootScope.alertMessage_failure = '';
                 $rootScope.alertMessage_missingUserInput = '';
-            }
+            };
 
             $rootScope.$watch('$root.dataCategory', function() {
                 var cookieExpirationDate = createDateThatIsOneYearFromNow();
@@ -175,12 +175,12 @@ drApp.run(
             drServices.populateKnownDataTypes($scope, $http);
 
             var dataCategoryFromCookie = $cookies.get('dataCategory');
-            if (isUnset(dataCategoryFromCookie) == false) {
+            if (isUnset(dataCategoryFromCookie) === false) {
                 $rootScope.dataCategory = dataCategoryFromCookie;
             }
 
             var submitterFromCookie = $cookies.get('submitter');
-            if (isUnset(submitterFromCookie) == false) {
+            if (isUnset(submitterFromCookie) === false) {
                 $rootScope.submitter = submitterFromCookie;
             }
         }
@@ -209,15 +209,15 @@ drApp.controller('controller_uploadDataPage',
             $scope.uploadData = function ()  {
                 $rootScope.alertMessage_missingUserInput = '';
                 drServices.uploadData($scope, $http);
-            }
+            };
 
             $scope.handleSourceDocumentSelection = function(event, sourceDocument) {
                 $rootScope.sourceDocument = sourceDocument[0];
-            }
+            };
 
             $scope.handleAttachmentFilesSelection = function($event, attachments) {
                 $rootScope.attachments = attachments;
-            }
+            };
         }
     ]
 );
@@ -236,6 +236,8 @@ drApp.controller('controller_findDataPage',
             // create an inventory of new ones.
             function resetCriteriaWatchers() {
 
+                var i;
+
                 for (i = 0; i < $scope.methodsToCallToUnbindTheWatchers.length; i++) {
                     $scope.methodsToCallToUnbindTheWatchers[i]();
                 }
@@ -244,7 +246,7 @@ drApp.controller('controller_findDataPage',
 
                 for (i = 0; i < $rootScope.searchCriteria.length; i++) {
 
-                    methodToCallToUnbindTheWatcher =
+                    var methodToCallToUnbindTheWatcher =
                         $rootScope.$watch(
                             '$root.searchCriteria[' + i + ']',
                             function (newCriterionState, oldCriterionState) {
@@ -269,7 +271,7 @@ drApp.controller('controller_findDataPage',
             {
                 $rootScope.alertMessage_missingUserInput = '';
                 drServices.findData($scope, $http);
-            }
+            };
 
             $scope.createANewCriterion = function()
             {
@@ -296,7 +298,7 @@ drApp.controller('controller_findDataPage',
                 searchCriteria.push(newCriterion);
 
                 resetCriteriaWatchers();
-            }
+            };
 
             if ($rootScope.searchCriteria.length === 0) {
                 $rootScope.searchComplete = false;
@@ -325,7 +327,7 @@ drApp.service('drServices', function() {
             }
         );
 
-        for (i = 0; i < searchCriteria.length; i++) {
+        for (var i = 0; i < searchCriteria.length; i++) {
 
             var criterion = searchCriteria[i];
 
@@ -336,19 +338,19 @@ drApp.service('drServices', function() {
             var value;
 
             var dataTypeId = criterion.dataTypeId;
-            if (dataTypeId == 'STRING') {
+            if (dataTypeId === 'STRING') {
                 if (isUnset(criterion.value_asString)) continue;
                 value = criterion.value_asString;
             }
-            else if (dataTypeId == 'NUMBER') {
+            else if (dataTypeId === 'NUMBER') {
                 if (isUnset(criterion.value_asNumber)) continue;
                 value = criterion.value_asNumber;
             }
-            else if (dataTypeId == 'DATE') {
+            else if (dataTypeId === 'DATE') {
                 if (isUnset(criterion.value_asDate)) continue;
                 value = criterion.value_asDate.toJSON();
             }
-            else if (dataTypeId == 'BOOLEAN') {
+            else if (dataTypeId === 'BOOLEAN') {
                 if (isUnset(criterion.value_asBoolean)) continue;
                 value = criterion.value_asBoolean;
             }
@@ -364,7 +366,7 @@ drApp.service('drServices', function() {
         }
 
         return criteriaPackagedForRestCall;
-    }
+    };
 
     self.populateKnownDataCategories = function (scope, http) {
 
@@ -380,7 +382,7 @@ drApp.service('drServices', function() {
                 postError(scope.$root, data);
 
             });
-    }
+    };
 
     self.populateKnownColumnNames = function (scope, http) {
 
@@ -398,7 +400,7 @@ drApp.service('drServices', function() {
                 scope.$root.knownColumnNames = [];
                 postError(scope.$root, data);
             });
-    }
+    };
 
     self.populateNamesOfSheetsWithinExcelWorkbook = function (scope, http) {
 
@@ -411,7 +413,7 @@ drApp.service('drServices', function() {
             return;
         }
 
-        if (hasExcelWorkbookFileSuffix(sourceDocument.name) == false) {
+        if (hasExcelWorkbookFileSuffix(sourceDocument.name) === false) {
             // This is fine. They probably selected a CSV file.
             return;
         }
@@ -439,7 +441,7 @@ drApp.service('drServices', function() {
                 postError(scope.$root, data);
             }
         );
-    }
+    };
 
     self.uploadData = function (scope, http) {
 
@@ -500,7 +502,7 @@ drApp.service('drServices', function() {
                 postError(scope.$root, data);
             }
         );
-    }
+    };
 
     self.populateKnownDataTypes = function (scope, http) {
 
@@ -515,7 +517,7 @@ drApp.service('drServices', function() {
                 scope.$root.numberOfBlockingProcesses--;
                 postError(scope.$root, data);
             });
-    }
+    };
 
     self.populateKnownComparisonOperators = function (scope, http, criterion) {
 
@@ -534,7 +536,7 @@ drApp.service('drServices', function() {
                 scope.$root.numberOfBlockingProcesses--;
                 postError(scope.$root, data);
             });
-    }
+    };
 
     self.findData = function (scope, http) {
 
@@ -561,7 +563,7 @@ drApp.service('drServices', function() {
                 'Content-Type': undefined
             },
             data: searchCriteriaAsJson
-        }
+        };
 
         scope.$root.numberOfBlockingProcesses++;
 
@@ -576,10 +578,10 @@ drApp.service('drServices', function() {
                 scope.$root.searchComplete = true;
                 postError(scope.$root, data);
             });
-    }
+    };
 
     function postError(root, data) {
         root.alertMessage_failure = "A failure occurred on the server.";
         console.error(data);
     }
-})
+});
