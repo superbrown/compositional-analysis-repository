@@ -4,6 +4,7 @@ import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IDataCategoryBO;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.DataCategoryAlreadyExists;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataCatogory;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueScrubbingHelper;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,9 @@ public class Endpoints_DataCategories {
             @PathVariable(value = "dataCategoryId") String dataCategoryId) {
 
         try {
+            ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
+            dataCategoryId = valueScrubbingHelper.scrubValue(dataCategoryId);
+
             String dataCategory = getDataCategoryBO().getDataCategory(dataCategoryId);
             return create_SUCCESS_response(dataCategory);
         }
@@ -48,6 +52,9 @@ public class Endpoints_DataCategories {
             @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName) {
 
         try {
+            ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
+            dataCategoryName = valueScrubbingHelper.scrubValue(dataCategoryName);
+
             String dataCategory = getDataCategoryBO().getDataCategoryWithName(dataCategoryName);
             return create_SUCCESS_response(dataCategory);
         }
@@ -65,6 +72,9 @@ public class Endpoints_DataCategories {
             @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName) {
 
         try {
+            ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
+            dataCategoryName = valueScrubbingHelper.scrubValue(dataCategoryName);
+
             String columnNamesForDataCategoryName = getDataCategoryBO().getSearchableColumnNamesForDataCategoryName(dataCategoryName);
             return create_SUCCESS_response(columnNamesForDataCategoryName);
 
@@ -119,5 +129,10 @@ public class Endpoints_DataCategories {
     protected IDataCategoryBO getDataCategoryBO() {
 
         return dataRepositoryApplication.getBusinessObjects().getDataCategoryBO();
+    }
+
+    protected ValueScrubbingHelper getValueScrubbingHelper() {
+
+        return dataRepositoryApplication.getValueScrubbingHelper();
     }
 }

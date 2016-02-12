@@ -19,7 +19,7 @@ public class SearchResultsFileWriter_ExcelWorkbook {
 
     private static final int FONT_HEIGHT = 9;
 
-    public static final List<String> METADATA_COLUMNS_TO_RETURN = new ArrayList();
+    public static final List<String> METADATA_COLUMNS_TO_RETURN = new ArrayList<>();
     static {
         METADATA_COLUMNS_TO_RETURN.add(Metadata.MONGO_KEY__DATA_CATEGORY);
         METADATA_COLUMNS_TO_RETURN.add(Metadata.MONGO_KEY__SUBMISSION_DATE);

@@ -61,7 +61,7 @@ public class nc_RowDAO extends AbsDAO implements IRowDAO {
 
     public List<ObjectId> add(ObjectId datasetId, IDatasetDocument datasetDocument, IRowCollection data) {
 
-        List<ObjectId> rowIds = new ArrayList();
+        List<ObjectId> rowIds = new ArrayList<>();
 
         IMetadata metadata = datasetDocument.getMetadata();
 
@@ -159,7 +159,7 @@ public class nc_RowDAO extends AbsDAO implements IRowDAO {
         CriterionAndItsNumberOfMatches firstCriterion = numberOfMatchesForEachCriterion.get(0);
         if (firstCriterion.getNubmerOfMatches() == 0) {
             // since the search is performed as an AND operation, this means that, by definition, there are no matches
-            return new ArrayList();
+            return new ArrayList<>();
         }
 
         // get the row numbers of all cells that match the first criterion
@@ -222,7 +222,7 @@ public class nc_RowDAO extends AbsDAO implements IRowDAO {
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "getting rows for the matching IDs");
 
-        List<Document> results = new ArrayList();
+        List<Document> results = new ArrayList<>();
         for (ObjectId matchingId : matchingIds) {
 
             Document document = getOne(matchingId, projection);

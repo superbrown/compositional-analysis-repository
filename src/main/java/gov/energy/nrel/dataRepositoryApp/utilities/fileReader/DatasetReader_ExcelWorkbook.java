@@ -81,7 +81,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
 
     protected List<List> extractData(Sheet sheet, int numberOfColumnNames) {
 
-        List<List> dataUpload = new ArrayList();
+        List<List> dataUpload = new ArrayList<>();
         Iterator<org.apache.poi.ss.usermodel.Row> rowIterator = sheet.rowIterator();
 
         // This is to be interpreted as the row containing the column names.
@@ -106,7 +106,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
 
     protected List<Object> extractData(org.apache.poi.ss.usermodel.Row row, int numberOfColumnHeadings) {
 
-        List<Object> rowData = new ArrayList();
+        List<Object> rowData = new ArrayList<>();
 
         // DESIGN NOTE: We are added the row number number so users will be able to trace the data back to the original
         //              source document.
@@ -198,7 +198,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
                 iteratToTheFirstRowWithAValueInItsFirstCell(rowIterator);
         Iterator<Cell> cellIterator = firstRowWithAValueInItsFirstCell.cellIterator();
 
-        List<String> colunmNames = new ArrayList();
+        List<String> colunmNames = new ArrayList<>();
 
         boolean lastColumnEncountered = false;
         int columnNumber = 1;

@@ -60,13 +60,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
                     sourceDocument,
                     "only spreadheet in workbook",
                     null);
-        } catch (UnsupportedFileExtension e) {
-            e.printStackTrace();
-            fail();
-        } catch (FileContainsInvalidColumnName e) {
-            e.printStackTrace();
-            fail();
-        } catch (FailedToSave e) {
+        } catch (UnsupportedFileExtension | FileContainsInvalidColumnName | FailedToSave e) {
             e.printStackTrace();
             fail();
         }
@@ -149,7 +143,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
 
     private BasicDBList exerciseABooleanQuery(IRowBO rowBO, String name, boolean value, ComparisonOperator comparisonOperator) {
 
-        List<SearchCriterion> rowSearchCriteria = new ArrayList();
+        List<SearchCriterion> rowSearchCriteria = new ArrayList<>();
         rowSearchCriteria.add(new SearchCriterion(name, value, comparisonOperator));
         String json = getBusinessObjects().getRowBO().getRows(rowSearchCriteria, ResultsMode.INCLUDE_ONLY_DATA_COLUMNS_BEING_FILTERED_UPON);
         BasicDBList basicDBList = (BasicDBList) JSON.parse(json);
@@ -158,7 +152,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
 
     private BasicDBList exerciseANumbericQuery(IRowBO rowBO, String name, double value, ComparisonOperator comparisonOperator) {
 
-        List<SearchCriterion> rowSearchCriteria = new ArrayList();
+        List<SearchCriterion> rowSearchCriteria = new ArrayList<>();
         rowSearchCriteria.add(new SearchCriterion(name, value, comparisonOperator));
         String json = rowBO.getRows(rowSearchCriteria, ResultsMode.INCLUDE_ONLY_DATA_COLUMNS_BEING_FILTERED_UPON);
         BasicDBList basicDBList = (BasicDBList) JSON.parse(json);
@@ -167,7 +161,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
 
     private BasicDBList exerciseADateQuery(IRowBO rowBO, String name, Date value, ComparisonOperator comparisonOperator) {
 
-        List<SearchCriterion> rowSearchCriteria = new ArrayList();
+        List<SearchCriterion> rowSearchCriteria = new ArrayList<>();
         rowSearchCriteria.add(new SearchCriterion(name, value, comparisonOperator));
         String json = rowBO.getRows(rowSearchCriteria, ResultsMode.INCLUDE_ONLY_DATA_COLUMNS_BEING_FILTERED_UPON);
         BasicDBList basicDBList = (BasicDBList) JSON.parse(json);

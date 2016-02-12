@@ -8,7 +8,7 @@ import java.util.List;
 
 public class DeleteResults extends DeleteResult implements IDeleteResults {
 
-    protected List<DeleteResult> deleteResults = new ArrayList();
+    protected List<DeleteResult> deleteResults = new ArrayList<>();
 
 
     public DeleteResults() {

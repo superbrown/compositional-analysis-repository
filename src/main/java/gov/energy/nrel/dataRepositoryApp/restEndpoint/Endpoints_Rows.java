@@ -1,10 +1,11 @@
 package gov.energy.nrel.dataRepositoryApp.restEndpoint;
 
-import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
+import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownRow;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueScrubbingHelper;
 import org.apache.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLDecoder;
 
 import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.create_NOT_FOUND_response;
@@ -84,6 +86,9 @@ public class Endpoints_Rows {
             @PathVariable(value = "rowId") String rowId) {
 
         try {
+            ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
+            rowId = valueScrubbingHelper.scrubValue(rowId);
+
             String row = getRowBO().getRow(rowId);
             return create_SUCCESS_response(row);
         }
@@ -99,4 +104,8 @@ public class Endpoints_Rows {
         return dataRepositoryApplication.getBusinessObjects().getRowBO();
     }
 
+    protected ValueScrubbingHelper getValueScrubbingHelper() {
+
+        return dataRepositoryApplication.getValueScrubbingHelper();
+    }
 }
