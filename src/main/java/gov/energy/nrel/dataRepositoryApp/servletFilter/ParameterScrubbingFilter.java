@@ -30,10 +30,10 @@ public class ParameterScrubbingFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
 
         Map<String, String[]> parameters = request.getParameterMap();
-        final Map<String, String[]> scrubParameters = scrubParameters(parameters);
+        final Map<String, String[]> scrubnedParameters = scrubParameters(parameters);
 
         HttpServletRequestWrapper requestWrapper =
-                new ParameterOverridingHttpRequestWrapper(servletRequest, scrubParameters);
+                new ParameterOverridingHttpRequestWrapper(servletRequest, scrubnedParameters);
 
         filterChain.doFilter(requestWrapper, servletResponse);
     }

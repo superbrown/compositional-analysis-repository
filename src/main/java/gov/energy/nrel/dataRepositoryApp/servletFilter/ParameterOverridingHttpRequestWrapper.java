@@ -7,25 +7,25 @@ import java.util.Map;
 
 class ParameterOverridingHttpRequestWrapper extends HttpServletRequestWrapper {
 
-    private final Map<String, String[]> scrubParameters;
+    private final Map<String, String[]> scrubbedParameters;
 
-    public ParameterOverridingHttpRequestWrapper(ServletRequest servletRequest, Map<String, String[]> scrubParameters) {
+    public ParameterOverridingHttpRequestWrapper(ServletRequest servletRequest, Map<String, String[]> scrubbedParameters) {
         super((HttpServletRequest) servletRequest);
-        this.scrubParameters = scrubParameters;
+        this.scrubbedParameters = scrubbedParameters;
     }
 
     @Override
     public Map<String, String[]> getParameterMap() {
-        return scrubParameters;
+        return scrubbedParameters;
     }
 
     @Override
     public String getParameter(String name) {
-        return scrubParameters.get(name)[0];
+        return scrubbedParameters.get(name)[0];
     }
 
     @Override
     public String[] getParameterValues(String name) {
-        return scrubParameters.get(name);
+        return scrubbedParameters.get(name);
     }
 }
