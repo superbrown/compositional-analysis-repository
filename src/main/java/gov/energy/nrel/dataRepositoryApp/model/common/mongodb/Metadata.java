@@ -118,7 +118,7 @@ public class Metadata extends AbstractDocument implements IMetadata {
 
         List<BasicDBObject> attachmentObjects = (List<BasicDBObject>) document.get(MONGO_KEY__ATTACHMENTS);
 
-        List<IStoredFile> attachments = new ArrayList();
+        List<IStoredFile> attachments = new ArrayList<>();
 
         if (attachmentObjects != null) {
 

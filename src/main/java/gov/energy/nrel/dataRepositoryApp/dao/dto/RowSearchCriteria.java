@@ -5,8 +5,8 @@ import java.util.List;
 
 public class RowSearchCriteria {
 
-    private List<SearchCriterion> metadataSearchCriteria = new ArrayList();
-    private List<SearchCriterion> dataSearchCriteria = new ArrayList();
+    private List<SearchCriterion> metadataSearchCriteria = new ArrayList<>();
+    private List<SearchCriterion> dataSearchCriteria = new ArrayList<>();
 
     public void addCriterion_metadata(String name, Object value, ComparisonOperator comparisonOperator) {
         metadataSearchCriteria.add(new SearchCriterion(name, value, comparisonOperator));

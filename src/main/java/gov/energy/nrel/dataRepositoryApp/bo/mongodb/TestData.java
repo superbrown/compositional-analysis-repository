@@ -157,7 +157,7 @@ public class TestData {
 
     private static List<List> toListOfLists(Object[][] array) {
 
-        List<List> listOfLists = new ArrayList();
+        List<List> listOfLists = new ArrayList<>();
 
         for (Object[] item : array) {
 

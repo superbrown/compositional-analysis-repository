@@ -9,6 +9,7 @@ import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueScrubbingHelper;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
@@ -131,6 +132,9 @@ public class Endpoints_Datasets {
             @PathVariable(value = "datasetId") String datasetId) {
 
         try {
+            ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
+            datasetId = valueScrubbingHelper.scrubValue(datasetId);
+
             String dataset = getDatasetBO().getDataset(datasetId);
             return create_SUCCESS_response(dataset);
         }
@@ -145,6 +149,9 @@ public class Endpoints_Datasets {
             method = RequestMethod.GET)
     public  ResponseEntity<InputStreamResource> downloadDataset(
             @PathVariable(value = "datasetId") String datasetId) throws IOException {
+
+        ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
+        datasetId = valueScrubbingHelper.scrubValue(datasetId);
 
         IDatasetBO datasetBO = getDatasetBO();
 
@@ -169,6 +176,9 @@ public class Endpoints_Datasets {
     public  ResponseEntity<InputStreamResource> downloadAttachments(
             @PathVariable(value = "datasetId") String datasetId) throws IOException {
 
+        ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
+        datasetId = valueScrubbingHelper.scrubValue(datasetId);
+
         IDatasetBO datasetBO = getDatasetBO();
 
         InputStream attachmentsInAZipFile = datasetBO.packageAttachmentsInAZipFile(datasetId);
@@ -189,6 +199,9 @@ public class Endpoints_Datasets {
     public ResponseEntity getRows(
             @PathVariable(value = "datasetId") String datasetId) {
 
+        ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
+        datasetId = valueScrubbingHelper.scrubValue(datasetId);
+
         String rowsForDataset = getRowBO().getRowsAssociatedWithDataset(datasetId);
         return create_SUCCESS_response(rowsForDataset);
     }
@@ -202,6 +215,9 @@ public class Endpoints_Datasets {
 
         // I know that shouldn't be GET, but rather, DELETE. But I'm making it GET so a user can easily call it from
         // a browser.
+
+        ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
+        datasetId = valueScrubbingHelper.scrubValue(datasetId);
 
         try {
             getDatasetBO().removeDatasetFromDatabaseAndMoveItsFiles(datasetId);
@@ -251,5 +267,10 @@ public class Endpoints_Datasets {
     protected boolean isAnExcelFile(MultipartFile sourceDocument) {
 
         return GENERAL_FILE_READER.isAnExcelFile(sourceDocument.getOriginalFilename());
+    }
+
+    protected ValueScrubbingHelper getValueScrubbingHelper() {
+
+        return dataRepositoryApplication.getValueScrubbingHelper();
     }
 }

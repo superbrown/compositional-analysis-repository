@@ -85,6 +85,13 @@
 			<version>2.3</version>
 		</dependency>
 
+		<!--Utility for scrubbing REST services input-->
+		<dependency>
+			<groupId>org.owasp.antisamy</groupId>
+			<artifactId>antisamy</artifactId>
+			<version>1.5.3</version>
+		</dependency>
+
 		<!--General Java utilities-->
 		<dependency>
 			<groupId>org.apache.commons</groupId>

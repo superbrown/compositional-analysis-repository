@@ -135,7 +135,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
         assertTrue(numberOfResults > 0);
 
 
-        rowSearchCriteria = new ArrayList();
+        rowSearchCriteria = new ArrayList<>();
         rowSearchCriteria.add(new SearchCriterion(
                 "FEEDSTOCK",
                 "corn stover",

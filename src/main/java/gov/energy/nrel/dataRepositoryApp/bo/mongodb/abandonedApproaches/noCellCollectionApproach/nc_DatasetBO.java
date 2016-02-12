@@ -65,7 +65,7 @@ public class nc_DatasetBO extends AbsDatasetBO {
         RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, -1);
         IRowCollection rowCollection = new gov.energy.nrel.dataRepositoryApp.model.common.mongodb.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
-        List<IStoredFile> attachments = new ArrayList();
+        List<IStoredFile> attachments = new ArrayList<>();
         if (attachmentFiles != null) {
             for (IStoredFile attachmentFile : attachmentFiles) {
                 attachments.add(attachmentFile);
@@ -115,7 +115,7 @@ public class nc_DatasetBO extends AbsDatasetBO {
         RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, maxNumberOfValuesPerRow);
         IRowCollection e = new gov.energy.nrel.dataRepositoryApp.model.common.mongodb.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
-        List<IStoredFile> attachments = new ArrayList();
+        List<IStoredFile> attachments = new ArrayList<>();
         for (StoredFile attachmentFile : attachmentFiles) {
             attachments.add(new StoredFile(attachmentFile.getOriginalFileName(), attachmentFile.getStorageLocation()));
         }
@@ -209,7 +209,7 @@ public class nc_DatasetBO extends AbsDatasetBO {
 
         IStoredFile theDataFileThatWasStored = fileStorageBO.saveFile(timestamp, "", sourceDocument);
 
-        List<IStoredFile> theAttachmentsThatWereStored = new ArrayList();
+        List<IStoredFile> theAttachmentsThatWereStored = new ArrayList<>();
 
         for (FileAsRawBytes attachmentFile : attachmentFiles) {
             theAttachmentsThatWereStored.add(fileStorageBO.saveFile(timestamp, "attachments", attachmentFile));

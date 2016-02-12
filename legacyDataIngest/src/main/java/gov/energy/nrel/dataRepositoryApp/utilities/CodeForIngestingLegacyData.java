@@ -125,7 +125,7 @@ public class CodeForIngestingLegacyData {
 
         Sheet sheet = metadata.getSheet("USE THIS");
 
-        List<DatasetMetadata> datasetMetadata = new ArrayList();
+        List<DatasetMetadata> datasetMetadata = new ArrayList<>();
         for (int rowIndex = 1; rowIndex < sheet.getLastRowNum(); rowIndex++) {
 
             Row row = sheet.getRow(rowIndex);

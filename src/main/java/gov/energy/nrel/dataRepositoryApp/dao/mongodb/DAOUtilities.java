@@ -190,7 +190,7 @@ public class DAOUtilities {
 
     public static List<Document> toDocumentsWithClientSideFieldNames(List<Document> documents) {
 
-        List<Document> documentasWithClientSidFiledNames = new ArrayList();
+        List<Document> documentasWithClientSidFiledNames = new ArrayList<>();
 
         for (Document document : documents) {
             documentasWithClientSidFiledNames.add(toDocumentWithClientSideFieldNames(document));

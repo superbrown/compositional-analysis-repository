@@ -73,7 +73,7 @@ public class sc_DatasetBO extends AbsDatasetBO implements IDatasetBO {
         }
         IRowCollection rowCollection = new gov.energy.nrel.dataRepositoryApp.model.common.mongodb.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
-        List<IStoredFile> attachments = new ArrayList();
+        List<IStoredFile> attachments = new ArrayList<>();
         if (attachmentFiles != null) {
             for (IStoredFile attachmentFile : attachmentFiles) {
                 attachments.add(new StoredFile(attachmentFile.getOriginalFileName(), attachmentFile.getStorageLocation()));
@@ -158,7 +158,7 @@ public class sc_DatasetBO extends AbsDatasetBO implements IDatasetBO {
 
         IStoredFile theDataFileThatWasStored = fileStorageBO.saveFile(timestamp, "", sourceDocument);
 
-        List<IStoredFile> theAttachmentsThatWereStored = new ArrayList();
+        List<IStoredFile> theAttachmentsThatWereStored = new ArrayList<>();
 
         for (FileAsRawBytes attachmentFile : attachmentFiles) {
 

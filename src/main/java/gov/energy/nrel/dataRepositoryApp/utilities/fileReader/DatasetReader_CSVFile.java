@@ -58,7 +58,7 @@ public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetR
 
         List<Object> firstRow = lines.get(0);
 
-        List<String> columnNames = new ArrayList();
+        List<String> columnNames = new ArrayList<>();
 
         int columnNumber = 1;
 
@@ -92,7 +92,7 @@ public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetR
         // DESIGN NOTE: We skip the first line because it contains the column names
         List<List> dataRows = lines.subList(1, lines.size());
 
-        List<List> data = new ArrayList();
+        List<List> data = new ArrayList<>();
 
         Integer lineNumber = 2;
         for (List dataRow : dataRows) {
@@ -116,7 +116,7 @@ public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetR
 
     private List<List> parse(File file, int maxNumberOfValuesPerRow) {
 
-        List<List> lines = new ArrayList();
+        List<List> lines = new ArrayList<>();
 
         CSVReader reader = null;
         try {
@@ -127,7 +127,7 @@ public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetR
             //Read one line at a time
             while ((values = reader.readNext()) != null) {
 
-                List<Object> line = new ArrayList();
+                List<Object> line = new ArrayList<>();
 
                 int i = 1;
                 for (String value : values) {

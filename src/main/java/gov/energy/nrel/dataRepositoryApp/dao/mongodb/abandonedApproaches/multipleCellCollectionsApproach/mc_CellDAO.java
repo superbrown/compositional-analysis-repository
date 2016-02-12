@@ -26,7 +26,7 @@ public class mc_CellDAO extends AbsDAO implements ICellDAO {
 
     public List<ObjectId> add(ObjectId rowId, IRow row) {
 
-        List<ObjectId> idsOfCellsAdded = new ArrayList();
+        List<ObjectId> idsOfCellsAdded = new ArrayList<>();
 
         for (String columnName : row.getColumnNames()) {
 

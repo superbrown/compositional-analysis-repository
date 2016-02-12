@@ -5,6 +5,7 @@ import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellCollectionApproach.sc_BusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueScrubbingHelper;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -51,6 +52,8 @@ public class DataRepositoryApplication extends SpringApplication {
     @Autowired
     private ISettings settings;
 
+    private ValueScrubbingHelper valueScrubbingHelper;
+
     protected IBusinessObjectsInventory businessObjects;
 
     protected static Logger log = Logger.getLogger(DataRepositoryApplication.class);
@@ -62,6 +65,8 @@ public class DataRepositoryApplication extends SpringApplication {
     // Spring will call this after it calls the concstrutor.
     @PostConstruct
     protected void init() {
+
+        valueScrubbingHelper = new ValueScrubbingHelper(settings.getAntiSamyPolicyFileName());
 
         try {
             // This line is very significant. It determines what business objects the app will use.
@@ -97,6 +102,7 @@ public class DataRepositoryApplication extends SpringApplication {
     }
 
     public ISettings getSettings() {
+
         return settings;
     }
 
@@ -108,6 +114,11 @@ public class DataRepositoryApplication extends SpringApplication {
     public IBusinessObjectsInventory getBusinessObjects() {
 
         return businessObjects;
+    }
+
+    public ValueScrubbingHelper getValueScrubbingHelper() {
+
+        return valueScrubbingHelper;
     }
 
     // This constructor is used by unit tests.

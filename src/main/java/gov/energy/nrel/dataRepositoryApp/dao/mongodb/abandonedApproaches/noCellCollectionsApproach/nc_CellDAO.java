@@ -31,7 +31,7 @@ public class nc_CellDAO extends AbsDAO implements ICellDAO {
 
     public List<ObjectId> add(ObjectId rowId, IRow row) {
 
-        List<ObjectId> cellIDs = new ArrayList();
+        List<ObjectId> cellIDs = new ArrayList<>();
 
         for (String columnName : row.getColumnNames()) {
 

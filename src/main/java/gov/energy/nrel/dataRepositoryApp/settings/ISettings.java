@@ -28,4 +28,8 @@ public interface ISettings {
     boolean getPerformanceLoggingEnabled();
 
     void setPerformanceLoggingEnabled(Boolean performanceLoggingEnabled);
+
+    String getAntiSamyPolicyFileName();
+
+    void setAntiSamyPolicyFileName(String antiSamyPolicyFileName);
 }

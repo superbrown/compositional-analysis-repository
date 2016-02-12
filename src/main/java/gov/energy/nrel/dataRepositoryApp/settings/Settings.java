@@ -1,5 +1,7 @@
 package gov.energy.nrel.dataRepositoryApp.settings;
 
+import gov.energy.nrel.dataRepositoryApp.servletFilter.ParameterScrubbingFilter;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueScrubbingHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.context.annotation.Bean;
@@ -7,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
+
+import javax.servlet.*;
 
 
 // The idea behind the settings is to have the app look for them in two files, one that contains defaults,
@@ -19,9 +23,22 @@ import org.springframework.stereotype.Component;
         "classpath:data-repository-app__defaults.properties",
         "classpath:data-repository-app__envSpecificOverrides.properties"
 })
+
 @Component
 @AutoConfigureBefore
 public class Settings implements ISettings {
+
+    @Bean
+    public Filter createParameterScrubbingFilter() {
+
+        // This filter scrubs the data coming in to the REST endpoints.
+
+        String antiSamyPolicyFileName = this.getAntiSamyPolicyFileName();
+        ValueScrubbingHelper valueScrubbingHelper = new ValueScrubbingHelper(antiSamyPolicyFileName);
+
+        return new ParameterScrubbingFilter(valueScrubbingHelper);
+    }
+
 
     // DESIGN NOTE: These are all values in the application's properties file.
 
@@ -42,6 +59,9 @@ public class Settings implements ISettings {
 
     @Value("${app.performanceLoggingEnabled}")
     private boolean performanceLoggingEnabled;
+
+    @Value("${app.antiSamyPolicyFileName}")
+    private String antiSamyPolicyFileName;
 
 
     @Bean
@@ -121,4 +141,15 @@ public class Settings implements ISettings {
     public void setPerformanceLoggingEnabled(Boolean performanceLoggingEnabled) {
         this.performanceLoggingEnabled = performanceLoggingEnabled;
     }
+
+    @Override
+    public String getAntiSamyPolicyFileName() {
+        return this.antiSamyPolicyFileName;
+    }
+
+    @Override
+    public void setAntiSamyPolicyFileName(String antiSamyPolicyFileName) {
+        this.antiSamyPolicyFileName = antiSamyPolicyFileName;
+    }
+
 }
