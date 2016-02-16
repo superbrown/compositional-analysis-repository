@@ -24,15 +24,15 @@ public class Endpoints_DataCategories {
     protected DataRepositoryApplication dataRepositoryApplication;
 
     @RequestMapping(
-            value="/api/dataCategory/{dataCategoryId}",
+            value="/api/v01/dataCategory/{dataCategoryId}",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity getDataCategory(
             @PathVariable(value = "dataCategoryId") String dataCategoryId) {
 
         try {
-            ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
-            dataCategoryId = valueScrubbingHelper.scrubValue(dataCategoryId);
+            // not certain this is necessary, but doing as a precaution
+            dataCategoryId = getValueScrubbingHelper().scrubValue(dataCategoryId);
 
             String dataCategory = getDataCategoryBO().getDataCategory(dataCategoryId);
             return create_SUCCESS_response(dataCategory);
@@ -45,35 +45,35 @@ public class Endpoints_DataCategories {
     }
 
     @RequestMapping(
-            value="/api/dataCategory",
+            value="/api/v01/dataCategory",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity getDataCategoryByName(
             @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName) {
 
         try {
-            ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
-            dataCategoryName = valueScrubbingHelper.scrubValue(dataCategoryName);
+            // not certain this is necessary, but doing as a precaution
+            dataCategoryName = getValueScrubbingHelper().scrubValue(dataCategoryName);
 
             String dataCategory = getDataCategoryBO().getDataCategoryWithName(dataCategoryName);
             return create_SUCCESS_response(dataCategory);
         }
         catch (UnknownDataCatogory e) {
             return create_NOT_FOUND_response(
-                    "{message: 'Unknown data category: " + dataCategoryName + "'" + "}");
+                    "{messag8e: 'Unknown data category: " + dataCategoryName + "'" + "}");
         }
     }
 
     @RequestMapping(
-            value="/api/dataCategory/searchableColumnNames",
+            value="/api/v01/dataCategory/searchableColumnNames",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity getSearchableColumnNames(
             @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName) {
 
         try {
-            ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
-            dataCategoryName = valueScrubbingHelper.scrubValue(dataCategoryName);
+            // not certain this is necessary, but doing as a precaution
+            dataCategoryName = getValueScrubbingHelper().scrubValue(dataCategoryName);
 
             String columnNamesForDataCategoryName = getDataCategoryBO().getSearchableColumnNamesForDataCategoryName(dataCategoryName);
             return create_SUCCESS_response(columnNamesForDataCategoryName);
@@ -85,7 +85,7 @@ public class Endpoints_DataCategories {
     }
 
     @RequestMapping(
-            value="/api/dataCategory/names/all",
+            value="/api/v01/dataCategory/names/all",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity getAllDataCategoryNames() {
@@ -95,7 +95,7 @@ public class Endpoints_DataCategories {
     }
 
     @RequestMapping(
-            value="/api/dataCategories/all",
+            value="/api/v01/dataCategories/all",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity getDataCategoryByName() {
@@ -105,7 +105,7 @@ public class Endpoints_DataCategories {
     }
 
     @RequestMapping(
-            value="/api/addDataCategory",
+            value="/api/v01/addDataCategory",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity addDataCategory(

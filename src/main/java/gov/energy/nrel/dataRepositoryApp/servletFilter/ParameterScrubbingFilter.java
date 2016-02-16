@@ -43,7 +43,7 @@ public class ParameterScrubbingFilter implements Filter {
 
     }
 
-    private Map<String, String[]> scrubParameters(Map<String, String[]> parameters) {
+    public Map<String, String[]> scrubParameters(Map<String, String[]> parameters) {
 
         Map<String, String[]> scrubbedParameterMap = new HashMap<>();
 

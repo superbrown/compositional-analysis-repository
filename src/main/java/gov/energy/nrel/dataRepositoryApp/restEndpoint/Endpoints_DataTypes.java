@@ -24,14 +24,14 @@ public class Endpoints_DataTypes {
     protected DataRepositoryApplication dataRepositoryApplication;
 
 
-    @RequestMapping(value="/api/dataTypes/all", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value="/api/v01/dataTypes/all", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getAllComparisonOperators() {
 
         String inventoryOfDataTypes = getDataTypeBO().getInventoryOfDataTypes();;
         return create_SUCCESS_response(inventoryOfDataTypes);
     }
 
-    @RequestMapping(value="/api/dataType/comparisonOperators", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value="/api/v01/dataType/comparisonOperators", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity getComparisonOperators(
             @RequestParam(value = "dataType", required = true) String dataType) {
 

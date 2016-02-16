@@ -31,7 +31,7 @@ public class Endpoints_Utils {
     protected DataRepositoryApplication dataRepositoryApplication;
 
 
-    @RequestMapping(value="/api/getNamesOfSheetsWithinExcelWorkbook", method = RequestMethod.POST)
+    @RequestMapping(value="/api/v01/getNamesOfSheetsWithinExcelWorkbook", method = RequestMethod.POST)
     public ResponseEntity addDataset(
             @RequestParam(value = "workbook", required = true) MultipartFile workbook)
             throws IOException {
@@ -61,7 +61,7 @@ public class Endpoints_Utils {
         return create_SUCCESS_response(json);
     }
 
-    @RequestMapping(value="/api/dropDatabaseAndReIngestAllDataFromOriginallyUploadedFiles", method = RequestMethod.GET)
+    @RequestMapping(value="/api/v01/dropDatabaseAndReIngestAllDataFromOriginallyUploadedFiles", method = RequestMethod.GET)
     public ResponseEntity repolulateTheDatabase()
             throws IOException {
 
@@ -71,7 +71,7 @@ public class Endpoints_Utils {
         return create_SUCCESS_response(JSON.serialize(errors));
     }
 
-    @RequestMapping(value="/api/attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads", method = RequestMethod.GET)
+    @RequestMapping(value="/api/v01/attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads", method = RequestMethod.GET)
     public ResponseEntity attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads()
     {
         IDatasetBO datasetBO = dataRepositoryApplication.getBusinessObjects().getDatasetBO();

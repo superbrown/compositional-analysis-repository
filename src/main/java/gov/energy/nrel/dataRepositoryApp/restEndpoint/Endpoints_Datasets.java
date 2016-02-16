@@ -50,7 +50,7 @@ public class Endpoints_Datasets {
     protected DataRepositoryApplication dataRepositoryApplication;
 
     @RequestMapping(
-            value="/api/addDataset",
+            value="/api/v01/addDataset",
             method = RequestMethod.POST,
             produces = "application/json")
     public ResponseEntity addDataset(
@@ -115,7 +115,7 @@ public class Endpoints_Datasets {
     }
 
     @RequestMapping(
-            value="/api/datasets/all",
+            value="/api/v01/datasets/all",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity getAllDatasets() {
@@ -125,15 +125,15 @@ public class Endpoints_Datasets {
     }
 
     @RequestMapping(
-            value="/api/dataset/{datasetId}",
+            value="/api/v01/dataset/{datasetId}",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity getDataset(
             @PathVariable(value = "datasetId") String datasetId) {
 
         try {
-            ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
-            datasetId = valueScrubbingHelper.scrubValue(datasetId);
+            // not certain this is necessary, but doing as a precaution
+            datasetId = getValueScrubbingHelper().scrubValue(datasetId);
 
             String dataset = getDatasetBO().getDataset(datasetId);
             return create_SUCCESS_response(dataset);
@@ -145,13 +145,13 @@ public class Endpoints_Datasets {
     }
 
     @RequestMapping(
-            value="/api/dataset/{datasetId}/sourceDocument",
+            value="/api/v01/dataset/{datasetId}/sourceDocument",
             method = RequestMethod.GET)
     public  ResponseEntity<InputStreamResource> downloadDataset(
             @PathVariable(value = "datasetId") String datasetId) throws IOException {
 
-        ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
-        datasetId = valueScrubbingHelper.scrubValue(datasetId);
+        // not certain this is necessary, but doing as a precaution
+        datasetId = getValueScrubbingHelper().scrubValue(datasetId);
 
         IDatasetBO datasetBO = getDatasetBO();
 
@@ -170,14 +170,14 @@ public class Endpoints_Datasets {
     }
 
     @RequestMapping(
-            value="/api/dataset/{datasetId}/attachments",
+            value="/api/v01/dataset/{datasetId}/attachments",
             produces="application/zip",
             method = RequestMethod.GET)
     public  ResponseEntity<InputStreamResource> downloadAttachments(
             @PathVariable(value = "datasetId") String datasetId) throws IOException {
 
-        ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
-        datasetId = valueScrubbingHelper.scrubValue(datasetId);
+        // not certain this is necessary, but doing as a precaution
+        datasetId = getValueScrubbingHelper().scrubValue(datasetId);
 
         IDatasetBO datasetBO = getDatasetBO();
 
@@ -193,21 +193,21 @@ public class Endpoints_Datasets {
     }
 
     @RequestMapping(
-            value="/api/dataset/{datasetId}/rows",
+            value="/api/v01/dataset/{datasetId}/rows",
             method = RequestMethod.GET,
             produces = "application/binary")
     public ResponseEntity getRows(
             @PathVariable(value = "datasetId") String datasetId) {
 
-        ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
-        datasetId = valueScrubbingHelper.scrubValue(datasetId);
+        // not certain this is necessary, but doing as a precaution
+        datasetId = getValueScrubbingHelper().scrubValue(datasetId);
 
         String rowsForDataset = getRowBO().getRowsAssociatedWithDataset(datasetId);
         return create_SUCCESS_response(rowsForDataset);
     }
 
     @RequestMapping(
-            value="/api/removeDataset/{datasetId}",
+            value="/api/v01/removeDataset/{datasetId}",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity deleteDataset(
@@ -216,8 +216,8 @@ public class Endpoints_Datasets {
         // I know that shouldn't be GET, but rather, DELETE. But I'm making it GET so a user can easily call it from
         // a browser.
 
-        ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
-        datasetId = valueScrubbingHelper.scrubValue(datasetId);
+        // not certain this is necessary, but doing as a precaution
+        datasetId = getValueScrubbingHelper().scrubValue(datasetId);
 
         try {
             getDatasetBO().removeDatasetFromDatabaseAndMoveItsFiles(datasetId);
