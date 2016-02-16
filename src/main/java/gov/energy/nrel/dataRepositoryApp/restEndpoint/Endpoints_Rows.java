@@ -32,7 +32,7 @@ public class Endpoints_Rows {
 
 
     @RequestMapping(
-            value="/api/rows",
+            value="/api/v01/rows",
             method = RequestMethod.POST,
             produces = "application/json")
     public ResponseEntity getRows(
@@ -44,7 +44,7 @@ public class Endpoints_Rows {
     }
 
     @RequestMapping(
-            value="/api/rows/flat",
+            value="/api/v01/rows/flat",
             method = RequestMethod.POST,
             produces = "application/json")
     public ResponseEntity getRowsFlat(
@@ -56,7 +56,7 @@ public class Endpoints_Rows {
     }
 
     @RequestMapping(
-            value="/api/rows/asFile",
+            value="/api/v01/rows/asFile",
             method = RequestMethod.POST)
     public ResponseEntity<InputStreamResource> getRowsAsFile(
             @RequestBody String query) throws IOException {
@@ -79,15 +79,15 @@ public class Endpoints_Rows {
     }
 
     @RequestMapping(
-            value="/api/row/{rowId}",
+            value="/api/v01/row/{rowId}",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity getRow(
             @PathVariable(value = "rowId") String rowId) {
 
         try {
-            ValueScrubbingHelper valueScrubbingHelper = getValueScrubbingHelper();
-            rowId = valueScrubbingHelper.scrubValue(rowId);
+            // not certain this is necessary, but doing as a precaution
+            rowId = getValueScrubbingHelper().scrubValue(rowId);
 
             String row = getRowBO().getRow(rowId);
             return create_SUCCESS_response(row);

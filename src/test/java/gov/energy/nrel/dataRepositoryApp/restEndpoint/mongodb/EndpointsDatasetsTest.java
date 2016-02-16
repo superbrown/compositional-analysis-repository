@@ -1,4 +1,4 @@
-//package gov.energy.nrel.dataRepositoryApp.restEndpoint.mongodb;
+package gov.energy.nrel.dataRepositoryApp.restEndpoint.mongodb;//package gov.energy.nrel.dataRepositoryApp.restEndpoint.mongodb;
 //
 //import gov.energy.nrel.dataRepositoryApp.Application;
 //import gov.energy.nrel.dataRepositoryApp.CARApplication;
@@ -83,7 +83,7 @@
 //
 ////		String url = "/getDataset/" + TestData.objectId_1 + "?inTestMode=true";
 //
-//		String url = "/api/seedTestData";
+//		String url = "/api/v01/seedTestData";
 //
 //		MockHttpServletRequestBuilder requestBuilder = get(url);
 //
@@ -102,7 +102,7 @@
 ////	@Test
 //	public void testGetRowsQuery() throws Exception {
 //
-//		String url = "/api/rows?inTestMode=true";
+//		String url = "/api/v01/rows?inTestMode=true";
 //
 //		MockHttpServletRequestBuilder requestBuilder = post(url);
 //		requestBuilder.content(
