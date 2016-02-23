@@ -10,7 +10,9 @@ import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_ExcelWorkbook;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.NotAnExcelWorkbook;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -45,7 +47,7 @@ public class UtilsBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.
 
     @Override
     public List<String> getNamesOfSheetsWithinWorkbook(String fileName, FileAsRawBytes fileAsRawBytes)
-            throws IOException, UnsupportedFileExtension {
+            throws IOException, NotAnExcelWorkbook {
 
         // DESIGN NOTE: We are temporarily saving the file to disk and using an input stream from the file.  In
         // theory, that shouldn't be necessary; we should be able to create a stream from the raw bytes.  However,
@@ -127,6 +129,10 @@ public class UtilsBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.
             }
             catch (UnsupportedFileExtension e) {
                 errors.add("Failed to save (unsupported file extension): " + metadata);
+                throw new RuntimeException(e);
+            }
+            catch (FailedToExtractDataFromFile e) {
+                errors.add("Failed to save (failed to extract data from the file): " + metadata);
                 throw new RuntimeException(e);
             }
         }

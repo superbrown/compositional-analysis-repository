@@ -13,6 +13,7 @@ import gov.energy.nrel.dataRepositoryApp.dao.mongodb.MongoFieldNameEncoder;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.TestUsingTestData;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.StoredFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
@@ -79,19 +80,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
                 }
             }
 
-        } catch (UnsupportedFileExtension e) {
-            e.printStackTrace();
-            fail();
-        } catch (FileContainsInvalidColumnName e) {
-            e.printStackTrace();
-            fail();
-        } catch (PartiallyFailedToPersistDataset e) {
-            e.printStackTrace();
-            fail();
-        } catch (FailedToSave e) {
-            e.printStackTrace();
-            fail();
-        } catch (UnknownDataset e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             fail();
         }
@@ -156,7 +145,7 @@ public abstract class AbsPerformanceTest extends TestUsingTestData
     }
 
     protected void seedData(StoredFile sourceDocument, int number)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, PartiallyFailedToPersistDataset, FailedToSave, UnknownDataset {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, PartiallyFailedToPersistDataset, FailedToSave, UnknownDataset, FailedToExtractDataFromFile {
 
         PerformanceLogger performanceLogger = new PerformanceLogger(log, "Seeding " + number + " additional datasets for test.");
 

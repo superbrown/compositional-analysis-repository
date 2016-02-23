@@ -4,13 +4,10 @@ import com.mongodb.BasicDBList;
 import com.mongodb.util.JSON;
 import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
 import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
-import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.TestUsingTestData;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.StoredFile;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.junit.*;
@@ -60,7 +57,7 @@ public abstract class AbsRowBOTest extends TestUsingTestData
                     sourceDocument,
                     "only spreadheet in workbook",
                     null);
-        } catch (UnsupportedFileExtension | FileContainsInvalidColumnName | FailedToSave e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             fail();
         }

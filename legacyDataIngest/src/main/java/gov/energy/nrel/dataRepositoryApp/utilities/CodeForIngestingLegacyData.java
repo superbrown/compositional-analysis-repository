@@ -1,6 +1,7 @@
 package gov.energy.nrel.dataRepositoryApp.utilities;
 
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_ExcelWorkbook;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.NotAnExcelWorkbook;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -47,7 +48,7 @@ public class CodeForIngestingLegacyData {
                 CloseableHttpClient closeableHttpClient = null;
                 try {
                     // specify the get request
-                    HttpPost postRequest = new HttpPost(appBaseURL + "/api/addDataset");
+                    HttpPost postRequest = new HttpPost(appBaseURL + "/api/v01/addDataset");
 
                     MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 
@@ -116,7 +117,7 @@ public class CodeForIngestingLegacyData {
     }
 
     private static List<DatasetMetadata> extractDatasetMetadata(String metadataFilePath)
-            throws IOException, UnsupportedFileExtension {
+            throws IOException, UnsupportedFileExtension, NotAnExcelWorkbook {
 
         File file = new File(metadataFilePath);
         FileInputStream fileInputStream = new FileInputStream(file);

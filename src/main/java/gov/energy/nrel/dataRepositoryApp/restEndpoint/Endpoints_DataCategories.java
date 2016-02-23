@@ -10,13 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.create_INTERNAL_SERVER_ERROR_response;
-import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.create_NOT_FOUND_response;
 import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.create_SUCCESS_response;
 
 
 @RestController
-public class Endpoints_DataCategories {
+public class Endpoints_DataCategories extends EndpointController {
 
     protected static Logger log = Logger.getLogger(Endpoints_DataCategories.class);
 
@@ -28,20 +26,16 @@ public class Endpoints_DataCategories {
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity getDataCategory(
-            @PathVariable(value = "dataCategoryId") String dataCategoryId) {
+            @PathVariable(value = "dataCategoryId") String dataCategoryId)
+            throws UnknownDataCatogory, CleanupOperationIsOccurring {
 
-        try {
-            // not certain this is necessary, but doing as a precaution
-            dataCategoryId = getValueScrubbingHelper().scrubValue(dataCategoryId);
+        throwExceptionIfCleanupOperationsIsOccurring();
 
-            String dataCategory = getDataCategoryBO().getDataCategory(dataCategoryId);
-            return create_SUCCESS_response(dataCategory);
-        }
-        catch (UnknownDataCatogory unknownDataCatogory) {
+        // not certain this is necessary, but doing as a precaution
+        dataCategoryId = getValueScrubbingHelper().scrubValue(dataCategoryId);
 
-            return create_NOT_FOUND_response(
-                    "{message: 'Unknown data category: " + dataCategoryId + "'" + "}");
-        }
+        String dataCategory = getDataCategoryBO().getDataCategory(dataCategoryId);
+        return create_SUCCESS_response(dataCategory);
     }
 
     @RequestMapping(
@@ -49,19 +43,16 @@ public class Endpoints_DataCategories {
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity getDataCategoryByName(
-            @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName) {
+            @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName)
+            throws UnknownDataCatogory, CleanupOperationIsOccurring {
 
-        try {
-            // not certain this is necessary, but doing as a precaution
-            dataCategoryName = getValueScrubbingHelper().scrubValue(dataCategoryName);
+        throwExceptionIfCleanupOperationsIsOccurring();
 
-            String dataCategory = getDataCategoryBO().getDataCategoryWithName(dataCategoryName);
-            return create_SUCCESS_response(dataCategory);
-        }
-        catch (UnknownDataCatogory e) {
-            return create_NOT_FOUND_response(
-                    "{messag8e: 'Unknown data category: " + dataCategoryName + "'" + "}");
-        }
+        // not certain this is necessary, but doing as a precaution
+        dataCategoryName = getValueScrubbingHelper().scrubValue(dataCategoryName);
+
+        String dataCategory = getDataCategoryBO().getDataCategoryWithName(dataCategoryName);
+        return create_SUCCESS_response(dataCategory);
     }
 
     @RequestMapping(
@@ -69,26 +60,26 @@ public class Endpoints_DataCategories {
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity getSearchableColumnNames(
-            @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName) {
+            @RequestParam(value = "dataCategoryName", required = true) String dataCategoryName)
+            throws UnknownDataCatogory, CleanupOperationIsOccurring {
 
-        try {
-            // not certain this is necessary, but doing as a precaution
-            dataCategoryName = getValueScrubbingHelper().scrubValue(dataCategoryName);
+        throwExceptionIfCleanupOperationsIsOccurring();
 
-            String columnNamesForDataCategoryName = getDataCategoryBO().getSearchableColumnNamesForDataCategoryName(dataCategoryName);
-            return create_SUCCESS_response(columnNamesForDataCategoryName);
+        // not certain this is necessary, but doing as a precaution
+        dataCategoryName = getValueScrubbingHelper().scrubValue(dataCategoryName);
 
-        } catch (UnknownDataCatogory e) {
-            return create_NOT_FOUND_response(
-                    "{message: 'Unknown data category: " + dataCategoryName + "'" + "}");
-        }
+        String columnNamesForDataCategoryName =
+                getDataCategoryBO().getSearchableColumnNamesForDataCategoryName(dataCategoryName);
+        return create_SUCCESS_response(columnNamesForDataCategoryName);
     }
 
     @RequestMapping(
             value="/api/v01/dataCategory/names/all",
             method = RequestMethod.GET,
             produces = "application/json")
-    public ResponseEntity getAllDataCategoryNames() {
+    public ResponseEntity getAllDataCategoryNames() throws CleanupOperationIsOccurring {
+
+        throwExceptionIfCleanupOperationsIsOccurring();
 
         String dataCategoryNames = getDataCategoryBO().getAllDataCategoryNames();
         return create_SUCCESS_response(dataCategoryNames);
@@ -98,7 +89,9 @@ public class Endpoints_DataCategories {
             value="/api/v01/dataCategories/all",
             method = RequestMethod.GET,
             produces = "application/json")
-    public ResponseEntity getDataCategoryByName() {
+    public ResponseEntity getDataCategoryByName() throws CleanupOperationIsOccurring {
+
+        throwExceptionIfCleanupOperationsIsOccurring();
 
         String dataCategory = getDataCategoryBO().getAllDataCategories();
         return create_SUCCESS_response(dataCategory);
@@ -109,21 +102,24 @@ public class Endpoints_DataCategories {
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity addDataCategory(
-            @RequestParam(value = "name") String dataCategoryName) {
+            @RequestParam(value = "name") String dataCategoryName)
+            throws DataCategoryAlreadyExists, CleanupOperationIsOccurring {
 
+        throwExceptionIfCleanupOperationsIsOccurring();
+
+        getDataCategoryBO().addDataCategory(dataCategoryName);
+
+        String dataCategory = null;
         try {
-            getDataCategoryBO().addDataCategory(dataCategoryName);
-            String dataCategory = getDataCategoryBO().getDataCategoryWithName(dataCategoryName);
-            return create_SUCCESS_response(dataCategory);
+            dataCategory = getDataCategoryBO().getDataCategoryWithName(dataCategoryName);
         }
-        catch (UnknownDataCatogory unknownDataCatogory) {
-            return create_INTERNAL_SERVER_ERROR_response(
-                    "{message: 'Added category, but then couldn't retreive it, so something must be amiss.'}");
+        catch (UnknownDataCatogory e) {
+            throw new RuntimeException(
+                    "Data category appeared to be created, but could not be found afterwards: " +
+                            dataCategoryName);
         }
-        catch (DataCategoryAlreadyExists dataCategoryAlreadyExists) {
-            return create_SUCCESS_response(
-                    "{message: 'Data category already exists'}");
-        }
+
+        return create_SUCCESS_response(dataCategory);
     }
 
     protected IDataCategoryBO getDataCategoryBO() {

@@ -38,7 +38,14 @@ public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetR
 
         List<List> lines = parse(file, maxNumberOfValuesPerRow);
 
-        List<String> columnNames = determineColumnNames(lines);
+        List<String> columnNames = null;
+        try {
+            columnNames = determineColumnNames(lines);
+        }
+        catch (FileContainsInvalidColumnName e) {
+            e.fileName = file.getName();
+            throw e;
+        }
         int numberOfColumnNames = columnNames.size();
 
         List<List> data = extractData(lines, numberOfColumnNames);

@@ -16,6 +16,7 @@ import gov.energy.nrel.dataRepositoryApp.model.common.IMetadata;
 import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
@@ -41,7 +42,7 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
         super(dataRepositoryApplication);
     }
 
-    public File getSourceDocument(String datasetId) {
+    public File getSourceDocument(String datasetId) throws UnknownDataset {
 
         IDatasetDocument dataset = getDatasetDAO().getDataset(datasetId);
         String storageLocation = dataset.getMetadata().getSourceDocument().getStorageLocation();
@@ -50,7 +51,7 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
     }
 
      @Override
-    public ByteArrayInputStream packageAttachmentsInAZipFile(String datasetId) throws IOException {
+    public ByteArrayInputStream packageAttachmentsInAZipFile(String datasetId) throws IOException, UnknownDataset {
 
         IDatasetDocument dataset = getDatasetDAO().getDataset(datasetId);
 
@@ -137,10 +138,6 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
         IDatasetDAO datasetDAO = getDatasetDAO();
         IDatasetDocument datasetDocument = datasetDAO.getDataset(datasetId);
 
-        if (datasetDocument == null) {
-            throw new UnknownDataset();
-        }
-
         IDeleteResults results = null;
         try {
             results = datasetDAO.delete(datasetId);
@@ -167,10 +164,6 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
 
         IDatasetDAO datasetDAO = getDatasetDAO();
         IDatasetDocument datasetDocument = datasetDAO.getDataset(datasetId);
-
-        if (datasetDocument == null) {
-            throw new UnknownDataset();
-        }
 
         IDeleteResults results = null;
         try {
@@ -207,12 +200,13 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
         IFileStorageBO fileStorageBO = getDataRepositoryApplication().getBusinessObjects().getFileSotrageBO();
         try {
             fileStorageBO.deleteFolder(path);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new FailedToDeleteFiles(e);
         }
     }
 
-    protected void saveMetadataAsJsonFile(Date timestamp, ObjectId objectId) {
+    protected void saveMetadataAsJsonFile(Date timestamp, ObjectId objectId) throws UnknownDataset {
 
         IDatasetDocument datasetDocument = getDatasetDAO().getDataset(objectId.toHexString());
         byte[] json = JSON.serialize(datasetDocument).getBytes();
@@ -235,10 +229,6 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
             throws UnknownDataset {
 
         IDatasetDocument datasetDocument = getDatasetDAO().getDataset(datasetId);
-
-        if (datasetDocument == null) {
-            throw new UnknownDataset();
-        }
 
         String jsonOut = DAOUtilities.serialize(datasetDocument);
         return jsonOut;
@@ -271,7 +261,7 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
 
     @Override
     public ObjectId addDataset(IMetadata metadata)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile {
 
         return addDataset(
                 metadata.getDataCategory(),

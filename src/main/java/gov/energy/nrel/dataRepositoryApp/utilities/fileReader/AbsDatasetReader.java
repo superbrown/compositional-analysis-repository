@@ -2,12 +2,9 @@ package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
 import java.util.List;
 
 public abstract class AbsDatasetReader {
-
-    abstract boolean canReadFile(File file);
 
     abstract boolean canReadFileWithExtension(String filename);
 

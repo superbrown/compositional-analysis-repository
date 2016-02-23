@@ -1,5 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.dao.mongodb.singleCellCollectionApproach;
 
+import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetTransactionTokenDAO;
@@ -44,9 +45,14 @@ public class sc_DatasetDAO extends AbsDAO implements IDatasetDAO
         datasetTransactionTokenDAO = new DatasetTransactionTokenDAO(getSettings());
     }
 
-    public IDatasetDocument getDataset(String id) {
+    public IDatasetDocument getDataset(String id) throws UnknownDataset {
 
         DatasetDocument datasetDocument = (DatasetDocument) getOneWithId(id);
+
+        if (datasetDocument == null) {
+            throw new UnknownDataset(id);
+        }
+
         return datasetDocument;
     }
 

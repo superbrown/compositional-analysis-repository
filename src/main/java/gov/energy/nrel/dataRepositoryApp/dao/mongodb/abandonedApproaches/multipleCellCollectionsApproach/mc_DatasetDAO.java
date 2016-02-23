@@ -1,5 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.multipleCellCollectionsApproach;
 
+import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
@@ -36,9 +37,14 @@ public class mc_DatasetDAO extends AbsDAO implements IDatasetDAO {
     }
 
     @Override
-    public IDatasetDocument getDataset(String id) {
+    public IDatasetDocument getDataset(String id) throws UnknownDataset {
 
         DatasetDocument datasetDocument = (DatasetDocument) getOneWithId(id);
+
+        if (datasetDocument == null) {
+            throw new UnknownDataset(id);
+        }
+
         return datasetDocument;
     }
 

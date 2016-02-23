@@ -20,12 +20,14 @@ import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,19 +60,10 @@ public class sc_DatasetBO extends AbsDatasetBO implements IDatasetBO {
             IStoredFile sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<IStoredFile> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile {
 
         File storedFile = getPhysicalFile(sourceDocument.getStorageLocation());
-        RowCollection dataUpload = null;
-        try {
-            dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, -1);
-        }
-        catch (UnsupportedFileExtension e) {
-            throw e;
-        }
-        catch (FileContainsInvalidColumnName e) {
-            throw e;
-        }
+        RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, -1);
         IRowCollection rowCollection = new gov.energy.nrel.dataRepositoryApp.model.common.mongodb.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
         List<IStoredFile> attachments = new ArrayList<>();
@@ -150,7 +143,7 @@ public class sc_DatasetBO extends AbsDatasetBO implements IDatasetBO {
             FileAsRawBytes sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<FileAsRawBytes> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, UnknownDataset, IOException, FailedToExtractDataFromFile {
 
         Date timestamp = new Date();
 

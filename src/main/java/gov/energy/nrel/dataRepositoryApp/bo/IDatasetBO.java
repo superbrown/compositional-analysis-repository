@@ -9,6 +9,7 @@ import gov.energy.nrel.dataRepositoryApp.model.common.IMetadata;
 import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.bson.types.ObjectId;
@@ -53,10 +54,10 @@ public interface IDatasetBO extends IBO {
             IStoredFile sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<IStoredFile> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave;
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile;
 
     ObjectId addDataset(IMetadata metadata)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave;
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile;
 
     String addDataset(
             String dataCategory,
@@ -68,13 +69,13 @@ public interface IDatasetBO extends IBO {
             FileAsRawBytes sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<FileAsRawBytes> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave;
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, UnknownDataset, IOException, FailedToExtractDataFromFile;
 
     IDatasetDAO getDatasetDAO();
 
-    File getSourceDocument(String datasetId);
+    File getSourceDocument(String datasetId) throws UnknownDataset;
 
-    ByteArrayInputStream packageAttachmentsInAZipFile(String datasetId) throws IOException;
+    ByteArrayInputStream packageAttachmentsInAZipFile(String datasetId) throws IOException, UnknownDataset;
 
     List<String> attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads();
 }

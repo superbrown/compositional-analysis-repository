@@ -1,6 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.dao.exception;
 
-public class UnableToDeleteFile extends Throwable {
+public class UnableToDeleteFile extends Exception {
 
     private final String file;
 

@@ -1,7 +1,9 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.NotAnExcelWorkbook;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
 
@@ -24,34 +26,43 @@ public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDat
 
     @Override
     public RowCollection extractDataFromFile(File file, String nameOfSubdocumentContainingDataIfApplicable, int maxNumberOfValuesPerRow)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName {
+            throws FileContainsInvalidColumnName, UnsupportedFileExtension, FailedToExtractDataFromFile {
 
         RowCollection rowCollection = null;
 
-        try {
-            if (excelWorkbookReader.canReadFile(file)) {
+        if (excelWorkbookReader.canReadFile(file)) {
 
-                rowCollection = extractDataFromDataset(file, nameOfSubdocumentContainingDataIfApplicable);
+            try {
+                rowCollection = extractDataFromExcelFile(file, nameOfSubdocumentContainingDataIfApplicable);
             }
-            else if (csvFileReader.canReadFile(file)) {
-
-                rowCollection = extractDataFromCSVFile(file, maxNumberOfValuesPerRow);
+            catch (NotAnExcelWorkbook e) {
+                throw new RuntimeException("This should never happen. Is likely a software defect.", e);
             }
-            else {
-                new UnsupportedFileExtension(file.getName());
+            catch (IOException e) {
+                throw new FailedToExtractDataFromFile(file.getName(), e);
             }
         }
-        catch (IOException e) {
-            log.error(e, e);
-            throw new RuntimeException(e);
+        else if (csvFileReader.canReadFile(file)) {
+
+            try {
+                rowCollection = extractDataFromCSVFile(file, maxNumberOfValuesPerRow);
+            }
+            catch (UnsupportedFileExtension e) {
+                throw new RuntimeException("This should never happen. Is likely a software defect.", e);
+            }
+            catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            throw new UnsupportedFileExtension(file.getName());
         }
 
         return rowCollection;
     }
 
-    @Override
-    public RowCollection extractDataFromDataset(File file, String nameOfSubdocumentContainingDataIfApplicable)
-            throws UnsupportedFileExtension, IOException, FileContainsInvalidColumnName {
+    public RowCollection extractDataFromExcelFile(File file, String nameOfSubdocumentContainingDataIfApplicable)
+            throws IOException, FileContainsInvalidColumnName, NotAnExcelWorkbook {
 
         RowCollection dataUpload =
                 excelWorkbookReader.extractDataFromFile(file, nameOfSubdocumentContainingDataIfApplicable);

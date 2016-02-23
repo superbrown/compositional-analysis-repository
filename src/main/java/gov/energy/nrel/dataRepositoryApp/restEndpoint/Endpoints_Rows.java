@@ -18,12 +18,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
 
-import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.create_NOT_FOUND_response;
 import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.create_SUCCESS_response;
 
 
 @RestController
-public class Endpoints_Rows {
+public class Endpoints_Rows extends EndpointController {
 
     protected static Logger log = Logger.getLogger(Endpoints_Rows.class);
 
@@ -36,7 +35,9 @@ public class Endpoints_Rows {
             method = RequestMethod.POST,
             produces = "application/json")
     public ResponseEntity getRows(
-            @RequestBody String query) {
+            @RequestBody String query) throws CleanupOperationIsOccurring {
+
+        throwExceptionIfCleanupOperationsIsOccurring();
 
         String rows = getRowBO().getRows(query, ResultsMode.INCLUDE_ONLY_DATA_COLUMNS_BEING_FILTERED_UPON);
 
@@ -48,7 +49,9 @@ public class Endpoints_Rows {
             method = RequestMethod.POST,
             produces = "application/json")
     public ResponseEntity getRowsFlat(
-            @RequestBody String query) {
+            @RequestBody String query) throws CleanupOperationIsOccurring {
+
+        throwExceptionIfCleanupOperationsIsOccurring();
 
         String rowsFlat = getRowBO().getRowsFlat(query);
 
@@ -59,11 +62,17 @@ public class Endpoints_Rows {
             value="/api/v01/rows/asFile",
             method = RequestMethod.POST)
     public ResponseEntity<InputStreamResource> getRowsAsFile(
-            @RequestBody String query) throws IOException {
+            @RequestBody String query)
+            throws IOException, CleanupOperationIsOccurring {
 
-        // It's not clear why this is necessary with this call, but it is.
-        query = query.replaceFirst("query=", "");
+        throwExceptionIfCleanupOperationsIsOccurring();
+
         query = URLDecoder.decode(query, "UTF-8");
+
+        // This is all necessary because the calling code is passing the query string in as an HTML form element.
+        query = query.replaceFirst("query=", "");
+        query = query.replaceAll("&quot;", "'");
+        query = query.replaceAll("\n", " ");
 
         XSSFWorkbook workbook = getRowBO().getRowsAsExcelWorkbook(query);
 
@@ -83,20 +92,16 @@ public class Endpoints_Rows {
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity getRow(
-            @PathVariable(value = "rowId") String rowId) {
+            @PathVariable(value = "rowId") String rowId)
+            throws UnknownRow, CleanupOperationIsOccurring {
 
-        try {
-            // not certain this is necessary, but doing as a precaution
-            rowId = getValueScrubbingHelper().scrubValue(rowId);
+        throwExceptionIfCleanupOperationsIsOccurring();
 
-            String row = getRowBO().getRow(rowId);
-            return create_SUCCESS_response(row);
-        }
-        catch (UnknownRow unknownRow) {
-            return create_NOT_FOUND_response(
-                    "{message: 'Unknown row: " + rowId + "'" + "}");
-        }
+        // not certain this is necessary, but doing as a precaution
+        rowId = getValueScrubbingHelper().scrubValue(rowId);
 
+        String row = getRowBO().getRow(rowId);
+        return create_SUCCESS_response(row);
     }
 
     protected IRowBO getRowBO() {
