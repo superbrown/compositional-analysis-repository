@@ -4,7 +4,7 @@ import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.NotAnExcelWorkbook;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -39,7 +39,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
 
     @Override
     public RowCollection extractDataFromFile(File file, String nameOfSubdocumentContainingDataIfApplicable)
-            throws IOException, FileContainsInvalidColumnName, UnsupportedFileExtension {
+            throws IOException, FileContainsInvalidColumnName, NotAnExcelWorkbook {
 
         InputStream fileInputStream = null;
 
@@ -144,7 +144,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
     }
 
     public static Workbook createWorkbookObject(InputStream fileInputStream, String filePath)
-            throws IOException, UnsupportedFileExtension {
+            throws IOException, NotAnExcelWorkbook {
 
         try {
             if (filePath.toLowerCase().endsWith(".xls")) {
@@ -157,7 +157,8 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
                 return new XSSFWorkbook(fileInputStream);
             }
 
-            throw new UnsupportedFileExtension(filePath);
+            String fileName = filePath.substring(filePath.lastIndexOf('/'));
+            throw new NotAnExcelWorkbook(fileName);
         }
         finally {
             if (fileInputStream != null) {

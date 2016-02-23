@@ -3,6 +3,7 @@ package gov.energy.nrel.dataRepositoryApp;
 import com.mongodb.MongoTimeoutException;
 import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellCollectionApproach.sc_BusinessObjectsInventory;
+import gov.energy.nrel.dataRepositoryApp.context.TomcatConnectorCustomizer_threadShutdown;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
 import gov.energy.nrel.dataRepositoryApp.utilities.ValueScrubbingHelper;
@@ -10,6 +11,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -46,8 +51,12 @@ import javax.annotation.PostConstruct;
 // Reference: http://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/autoconfigure/EnableAutoConfiguration.html
 
 @Component
-@EnableAutoConfiguration
+@EnableAutoConfiguration(exclude = {
+        org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class
+})
 public class DataRepositoryApplication extends SpringApplication {
+
+    public volatile static Boolean cleanupOperationIsOccurring = false;
 
     @Autowired
     private ISettings settings;
@@ -119,6 +128,34 @@ public class DataRepositoryApplication extends SpringApplication {
     public ValueScrubbingHelper getValueScrubbingHelper() {
 
         return valueScrubbingHelper;
+    }
+
+    @Bean
+    public EmbeddedServletContainerCustomizer createTomcatCustomizer() {
+
+        EmbeddedServletContainerCustomizer tomcatCustomizer =
+
+                new EmbeddedServletContainerCustomizer() {
+
+                    @Override
+                    public void customize(ConfigurableEmbeddedServletContainer container) {
+
+                        log.debug("===== customize(): " + container);
+
+                        if (container instanceof TomcatEmbeddedServletContainerFactory) {
+
+                            TomcatEmbeddedServletContainerFactory tomcatEmbeddedServletContainerFactory =
+                                    (TomcatEmbeddedServletContainerFactory) container;
+
+                            TomcatConnectorCustomizer_threadShutdown threadShutdownCustomizer =
+                                    new TomcatConnectorCustomizer_threadShutdown();
+
+                            tomcatEmbeddedServletContainerFactory.addConnectorCustomizers(threadShutdownCustomizer);
+                        }
+                    }
+                };
+
+        return tomcatCustomizer;
     }
 
     // This constructor is used by unit tests.

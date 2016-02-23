@@ -3,6 +3,7 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb.abandonedApproaches.noCellC
 import com.mongodb.util.JSON;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IFileStorageBO;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsDatasetBO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
@@ -21,12 +22,14 @@ import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -59,7 +62,7 @@ public class nc_DatasetBO extends AbsDatasetBO {
             IStoredFile sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<IStoredFile> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile {
 
         File storedFile = getPhysicalFile(sourceDocument.getStorageLocation());
         RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, -1);
@@ -89,10 +92,10 @@ public class nc_DatasetBO extends AbsDatasetBO {
         }
         catch (CompletelyFailedToPersistDataset e) {
             //  FIXME: I'm not doing anyhign here because this code has been abandoned for now.
-            e.printStackTrace();
+            log.error(e, e);
         } catch (PartiallyFailedToPersistDataset e) {
             //  FIXME: I'm not doing anyhign here because this code has been abandoned for now.
-            e.printStackTrace();
+            log.error(e, e);
         }
 
         return objectId;
@@ -109,11 +112,11 @@ public class nc_DatasetBO extends AbsDatasetBO {
             StoredFile sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<StoredFile> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, IOException, FailedToExtractDataFromFile {
 
         File storedFile = getPhysicalFile(sourceDocument.getStorageLocation());
         RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, maxNumberOfValuesPerRow);
-        IRowCollection e = new gov.energy.nrel.dataRepositoryApp.model.common.mongodb.RowCollection(dataUpload.columnNames, dataUpload.rowData);
+        IRowCollection rowCollection = new gov.energy.nrel.dataRepositoryApp.model.common.mongodb.RowCollection(dataUpload.columnNames, dataUpload.rowData);
 
         List<IStoredFile> attachments = new ArrayList<>();
         for (StoredFile attachmentFile : attachmentFiles) {
@@ -133,22 +136,21 @@ public class nc_DatasetBO extends AbsDatasetBO {
 
         ObjectId objectId = null;
         try {
-            objectId = getDatasetDAO().add(datasetDocument, e);
-        } catch (CompletelyFailedToPersistDataset e1) {
+            objectId = getDatasetDAO().add(datasetDocument, rowCollection);
+        } catch (CompletelyFailedToPersistDataset e) {
             //  FIXME: I'm not doing anyhign here because this code has been abandoned for now.
-            e1.printStackTrace();
-        } catch (PartiallyFailedToPersistDataset e1) {
+            log.error(e, e);
+        } catch (PartiallyFailedToPersistDataset e) {
             //  FIXME: I'm not doing anyhign here because this code has been abandoned for now.
-            e1.printStackTrace();
+            log.error(e, e);
         }
 
         return JSON.serialize(objectId);
     }
 
-    public String getDataset(String datasetId) {
+    public String getDataset(String datasetId) throws UnknownDataset {
 
         IDatasetDocument datasetDocument = getDatasetDAO().getDataset(datasetId);
-        if (datasetDocument == null) { return null; }
 
         String jsonOut = DAOUtilities.serialize(datasetDocument);
         return jsonOut;
@@ -169,7 +171,8 @@ public class nc_DatasetBO extends AbsDatasetBO {
         try {
             fileStorageBO.deleteFolder(storageLocation);
         } catch (java.io.IOException e) {
-            e.printStackTrace();
+            //  FIXME: I'm not doing anyhign here because this code has been abandoned for now.
+            log.error(e, e);
         }
 
         List<IStoredFile> attachments = datasetDocument.getMetadata().getAttachments();
@@ -178,7 +181,8 @@ public class nc_DatasetBO extends AbsDatasetBO {
 
                 fileStorageBO.deleteFolder(attachment.getStorageLocation());
             } catch (java.io.IOException e) {
-                e.printStackTrace();
+                //  FIXME: I'm not doing anyhign here because this code has been abandoned for now.
+                log.error(e, e);
             }
         }
 
@@ -187,7 +191,7 @@ public class nc_DatasetBO extends AbsDatasetBO {
         }
         catch (UnknownEntity e) {
             log.warn("This is odd, as we just retrieved the dataset " + datasetId + ".", e);
-            throw new UnknownDataset();
+            throw new UnknownDataset(datasetId);
         }
     }
 
@@ -201,7 +205,7 @@ public class nc_DatasetBO extends AbsDatasetBO {
             FileAsRawBytes sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<FileAsRawBytes> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, IOException, FailedToSave, FailedToExtractDataFromFile {
 
         Date timestamp = new Date();
 
@@ -236,7 +240,8 @@ public class nc_DatasetBO extends AbsDatasetBO {
                 String path = fileName.substring(0, fileName.lastIndexOf("/"));
                 fileStorageBO.deleteFolder(path);
             } catch (java.io.IOException e1) {
-                e1.printStackTrace();
+                //  FIXME: I'm not doing anyhign here because this code has been abandoned for now.
+                log.error(e, e);
             }
 
             throw e;

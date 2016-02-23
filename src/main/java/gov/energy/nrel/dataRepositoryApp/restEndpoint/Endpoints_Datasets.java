@@ -12,6 +12,7 @@ import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.ValueScrubbingHelper;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.commons.lang3.StringUtils;
@@ -35,11 +36,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.*;
+import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.create_BAD_REQUEST_missingRequiredParam_response;
+import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.create_SUCCESS_response;
 
 
 @RestController
-public class Endpoints_Datasets {
+public class Endpoints_Datasets extends EndpointController {
 
     private static final int MS_IN_A_DAY = 24 * 60 * 60 * 1000;
     protected static Logger log = Logger.getLogger(Endpoints_Datasets.class);
@@ -62,12 +64,15 @@ public class Endpoints_Datasets {
             @RequestParam(value = "chargeNumber", required = false) String chargeNumber,
             @RequestParam(value = "comments", required = false) String comments,
             @RequestParam(value = "sourceDocument", required = false) MultipartFile sourceDocument,
-            @RequestParam(value = "nameOfSubdocumentContainingDataIfApplicable", required = false) String nameOfSubdocumentContainingDataIfApplicable) {
+            @RequestParam(value = "nameOfSubdocumentContainingDataIfApplicable", required = false) String nameOfSubdocumentContainingDataIfApplicable)
+            throws UnknownDataset, UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, IOException, FailedToExtractDataFromFile, CleanupOperationIsOccurring {
 
         if (StringUtils.isBlank(dataCategory)) { return create_BAD_REQUEST_missingRequiredParam_response("dataCategory");}
         if (submissionDate == null) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
         if (sourceDocument == null) { return create_BAD_REQUEST_missingRequiredParam_response("sourceDocument");}
         if (isAnExcelFile(sourceDocument)) { if (StringUtils.isBlank(nameOfSubdocumentContainingDataIfApplicable)) { return create_BAD_REQUEST_missingRequiredParam_response("nameOfSubdocumentContainingDataIfApplicable");} }
+
+        throwExceptionIfCleanupOperationsIsOccurring();
 
         // This is a work-around due on not being able to figure out how to get Spring to inject a list of multipart
         // files.
@@ -77,13 +82,11 @@ public class Endpoints_Datasets {
         // what the caller sent it.
         submissionDate.setTime(submissionDate.getTime() + MS_IN_A_DAY);
 
-        String objectId = null;
-        try {
-            List<FileAsRawBytes> attachmentFilesAsRawBytes = Utilities.toFilesAsRawBytes(attachments);
+        List<FileAsRawBytes> attachmentFilesAsRawBytes = Utilities.toFilesAsRawBytes(attachments);
 
-            FileAsRawBytes dataFileAsRawBytes = Utilities.toFileAsRawBytes(sourceDocument);
+        FileAsRawBytes dataFileAsRawBytes = Utilities.toFileAsRawBytes(sourceDocument);
 
-            objectId = getDatasetBO().addDataset(
+        String objectId = getDatasetBO().addDataset(
                     dataCategory,
                     submissionDate,
                     submitter,
@@ -93,23 +96,6 @@ public class Endpoints_Datasets {
                     dataFileAsRawBytes,
                     nameOfSubdocumentContainingDataIfApplicable,
                     attachmentFilesAsRawBytes);
-        }
-        catch (UnsupportedFileExtension e) {
-            log.info(e, e);
-            return create_BAD_REQUEST_response(e.toString());
-        }
-        catch (FileContainsInvalidColumnName e) {
-            log.info(e, e);
-            return create_BAD_REQUEST_response(e.toString());
-        }
-        catch (IOException e) {
-            log.error(e, e);
-            return create_INTERNAL_SERVER_ERROR_response(e.toString());
-        }
-        catch (FailedToSave e) {
-            log.error(e, e);
-            return create_INTERNAL_SERVER_ERROR_response(e.toString());
-        }
 
         return create_SUCCESS_response(objectId);
     }
@@ -129,26 +115,24 @@ public class Endpoints_Datasets {
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity getDataset(
-            @PathVariable(value = "datasetId") String datasetId) {
+            @PathVariable(value = "datasetId") String datasetId) throws UnknownDataset, CleanupOperationIsOccurring {
 
-        try {
-            // not certain this is necessary, but doing as a precaution
-            datasetId = getValueScrubbingHelper().scrubValue(datasetId);
+        throwExceptionIfCleanupOperationsIsOccurring();
 
-            String dataset = getDatasetBO().getDataset(datasetId);
-            return create_SUCCESS_response(dataset);
-        }
-        catch (UnknownDataset unknownDataset) {
-            return create_NOT_FOUND_response(
-                    "{message: 'Unknown dataset: " + datasetId + "'" + "}");
-        }
+        // not certain this is necessary, but doing as a precaution
+        datasetId = getValueScrubbingHelper().scrubValue(datasetId);
+
+        String dataset = getDatasetBO().getDataset(datasetId);
+        return create_SUCCESS_response(dataset);
     }
 
     @RequestMapping(
             value="/api/v01/dataset/{datasetId}/sourceDocument",
             method = RequestMethod.GET)
     public  ResponseEntity<InputStreamResource> downloadDataset(
-            @PathVariable(value = "datasetId") String datasetId) throws IOException {
+            @PathVariable(value = "datasetId") String datasetId) throws IOException, UnknownDataset, CleanupOperationIsOccurring {
+
+        throwExceptionIfCleanupOperationsIsOccurring();
 
         // not certain this is necessary, but doing as a precaution
         datasetId = getValueScrubbingHelper().scrubValue(datasetId);
@@ -174,7 +158,9 @@ public class Endpoints_Datasets {
             produces="application/zip",
             method = RequestMethod.GET)
     public  ResponseEntity<InputStreamResource> downloadAttachments(
-            @PathVariable(value = "datasetId") String datasetId) throws IOException {
+            @PathVariable(value = "datasetId") String datasetId) throws IOException, UnknownDataset, CleanupOperationIsOccurring {
+
+        throwExceptionIfCleanupOperationsIsOccurring();
 
         // not certain this is necessary, but doing as a precaution
         datasetId = getValueScrubbingHelper().scrubValue(datasetId);
@@ -197,7 +183,9 @@ public class Endpoints_Datasets {
             method = RequestMethod.GET,
             produces = "application/binary")
     public ResponseEntity getRows(
-            @PathVariable(value = "datasetId") String datasetId) {
+            @PathVariable(value = "datasetId") String datasetId) throws CleanupOperationIsOccurring {
+
+        throwExceptionIfCleanupOperationsIsOccurring();
 
         // not certain this is necessary, but doing as a precaution
         datasetId = getValueScrubbingHelper().scrubValue(datasetId);
@@ -211,22 +199,19 @@ public class Endpoints_Datasets {
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity deleteDataset(
-            @PathVariable(value = "datasetId") String datasetId) {
+            @PathVariable(value = "datasetId") String datasetId)
+            throws UnknownDataset, FailedToDeleteFiles, CleanupOperationIsOccurring {
 
         // I know that shouldn't be GET, but rather, DELETE. But I'm making it GET so a user can easily call it from
         // a browser.
 
+        throwExceptionIfCleanupOperationsIsOccurring();
+
         // not certain this is necessary, but doing as a precaution
         datasetId = getValueScrubbingHelper().scrubValue(datasetId);
 
-        try {
-            getDatasetBO().removeDatasetFromDatabaseAndMoveItsFiles(datasetId);
-            return create_SUCCESS_response("{message: 'success'}");
-        } catch (UnknownDataset e) {
-            return create_NOT_FOUND_response("{message: 'unknown dataset, " + datasetId + "'}");
-        } catch (FailedToDeleteFiles e) {
-            return create_INTERNAL_SERVER_ERROR_response(e.toString());
-        }
+        getDatasetBO().removeDatasetFromDatabaseAndMoveItsFiles(datasetId);
+        return create_SUCCESS_response("{message: 'success'}");
     }
 
 

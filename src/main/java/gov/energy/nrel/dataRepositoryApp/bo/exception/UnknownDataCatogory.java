@@ -1,15 +1,14 @@
 package gov.energy.nrel.dataRepositoryApp.bo.exception;
 
-
-import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
-
 public class UnknownDataCatogory extends Exception {
 
-    public UnknownDataCatogory() {
-        super();
+    private String id;
+
+    public UnknownDataCatogory(String id) {
+        this.id = id;
     }
 
-    public UnknownDataCatogory(UnknownEntity e) {
-        super(e);
+    public String getId() {
+        return id;
     }
 }

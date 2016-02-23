@@ -52,7 +52,7 @@ public abstract class AbsRowBO extends AbsBO implements IRowBO {
         IRowDocument rowDocument = getRowDAO().get(rowId);
 
         if (rowDocument == null) {
-            throw new UnknownRow();
+            throw new UnknownRow(rowId);
         }
 
         String json = DAOUtilities.serialize(rowDocument);

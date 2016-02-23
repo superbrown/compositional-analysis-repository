@@ -3,7 +3,6 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 import com.mongodb.BasicDBList;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IDataTypeBO;
-import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknowDataType;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.restEndpoint.DataType;
@@ -23,7 +22,9 @@ public class DataTypeBO extends AbsBO implements IDataTypeBO {
     }
 
     @Override
-    public String getInventoryOfComparisonOperators(DataType dataType) throws UnknowDataType {
+    public String getInventoryOfComparisonOperators(DataType dataType) {
+
+        assert (dataType != null);
 
         BasicDBList basicDBList = new BasicDBList();
 
@@ -51,7 +52,7 @@ public class DataTypeBO extends AbsBO implements IDataTypeBO {
             basicDBList.add(toNameValuePairDocument(ComparisonOperator.EQUALS.toString(), "is"));
         }
         else {
-            throw new UnknowDataType();
+            throw new RuntimeException("App needs to be modified to handle data type: " + dataType);
         }
 
         return DAOUtilities.toJSON(basicDBList);

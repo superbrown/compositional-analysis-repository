@@ -1,5 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.settings;
 
+import gov.energy.nrel.dataRepositoryApp.servletFilter.HeadersSecurityFilter;
 import gov.energy.nrel.dataRepositoryApp.servletFilter.ParameterScrubbingFilter;
 import gov.energy.nrel.dataRepositoryApp.utilities.ValueScrubbingHelper;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +38,12 @@ public class Settings implements ISettings {
         ValueScrubbingHelper valueScrubbingHelper = new ValueScrubbingHelper(antiSamyPolicyFileName);
 
         return new ParameterScrubbingFilter(valueScrubbingHelper);
+    }
+
+    @Bean
+    public Filter createHeadersSecurityFilter() {
+
+        return new HeadersSecurityFilter();
     }
 
 

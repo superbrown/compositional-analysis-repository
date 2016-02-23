@@ -3,15 +3,13 @@ package gov.energy.nrel.dataRepositoryApp.bo.mongodb;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IDataCategoryBO;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.DataCategoryAlreadyExists;
-import gov.energy.nrel.dataRepositoryApp.bo.exception.ArchiveFailure;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataCatogory;
 import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
-import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DataCategoryDAO;
-import gov.energy.nrel.dataRepositoryApp.model.document.IDataCategoryDocument;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDataCategoryDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DataCategoryDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
@@ -58,7 +56,7 @@ public class DataCategoryBO extends AbsBO implements IDataCategoryBO {
 
         IDataCategoryDocument dataCategoryDocument = getDataCategoryDocument(dataCategoryId);
         if (dataCategoryDocument == null) {
-            throw new UnknownDataCatogory();
+            throw new UnknownDataCatogory(dataCategoryId);
         }
 
         String jsonOut = DAOUtilities.serialize(dataCategoryDocument);
@@ -71,7 +69,7 @@ public class DataCategoryBO extends AbsBO implements IDataCategoryBO {
 
         IDataCategoryDocument dataCategoryDocument = getDataCategoryDAO().getByName(name);
         if (dataCategoryDocument == null) {
-            throw new UnknownDataCatogory();
+            throw new UnknownDataCatogory(name);
         }
 
         String jsonOut = DAOUtilities.serialize(dataCategoryDocument);
@@ -108,7 +106,7 @@ public class DataCategoryBO extends AbsBO implements IDataCategoryBO {
         IDataCategoryDocument dataCategoryDocument = getDataCategoryDAO().getByName(dataCategoryName);
 
         if (dataCategoryDocument == null) {
-            throw new UnknownDataCatogory();
+            throw new UnknownDataCatogory(dataCategoryName);
         }
 
         Set<String> columnNamesInDataCategory = dataCategoryDocument.getColumnNames();
@@ -126,18 +124,6 @@ public class DataCategoryBO extends AbsBO implements IDataCategoryBO {
         return jsonOut;
     }
 
-    @Override
-    public void deleteDataCategory(String dataCategoryId)
-            throws ArchiveFailure, UnknownDataCatogory {
-
-        try {
-            getDataCategoryDAO().delete(dataCategoryId);
-        }
-        catch (UnknownEntity e) {
-            throw new UnknownDataCatogory(e);
-        }
-    }
-
     protected IDataCategoryDocument getDataCategoryDocument(String dataCategoryId) {
 
         IDataCategoryDocument document = getDataCategoryDAO().get(dataCategoryId);
@@ -151,7 +137,7 @@ public class DataCategoryBO extends AbsBO implements IDataCategoryBO {
         IDataCategoryDocument dataCategoryDocument = getDataCategoryDAO().getByName(categoryName);
 
         if (dataCategoryDocument != null) {
-            throw new DataCategoryAlreadyExists();
+            throw new DataCategoryAlreadyExists(categoryName);
         }
 
         dataCategoryDocument = new DataCategoryDocument();

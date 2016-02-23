@@ -113,7 +113,13 @@ public abstract class AbsDAO implements IDAO, IMongodbDAO {
 
     @Override
     public Document getOneWithId(String id) {
-        ObjectId objectId = new ObjectId(id);
+        ObjectId objectId = null;
+        try {
+            objectId = new ObjectId(id);
+        } catch (IllegalArgumentException e) {
+            // this means there is no matching document
+            return null;
+        }
         return getOne(objectId);
     }
 

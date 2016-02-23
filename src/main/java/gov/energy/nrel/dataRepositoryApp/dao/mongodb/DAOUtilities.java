@@ -35,27 +35,21 @@ public class DAOUtilities {
                     "collection = " + collection + ", query = " + query + ", projection = " + projection);
         }
 
-        try {
-            PerformanceLogger performanceLogger = new PerformanceLogger(log, "= = = = = = [MONGO] find(query)");
+        PerformanceLogger performanceLogger = new PerformanceLogger(log, "= = = = = = [MONGO] find(query)");
 
-            FindIterable<Document> resultsCursor = collection.find(query);
+        FindIterable<Document> resultsCursor = collection.find(query);
 
-            if (projection != null) {
-                resultsCursor = resultsCursor.projection(projection);
-            }
-
-            performanceLogger.done();
-
-            performanceLogger = new PerformanceLogger(log, "= = = = = = toList(resultsCursor)");
-            List<Document> results = toList(resultsCursor);
-            performanceLogger.done();
-
-            return results;
-
-        } catch (Throwable e) {
-            e.printStackTrace();
-            throw e;
+        if (projection != null) {
+            resultsCursor = resultsCursor.projection(projection);
         }
+
+        performanceLogger.done();
+
+        performanceLogger = new PerformanceLogger(log, "= = = = = = toList(resultsCursor)");
+        List<Document> results = toList(resultsCursor);
+        performanceLogger.done();
+
+        return results;
     }
 
     public static Document getOne(MongoCollection<Document> collection, Bson query, Bson projection) {

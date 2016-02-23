@@ -1,10 +1,11 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception;
 
-public class UnsupportedFileExtension extends Exception {
+public class FailedToExtractDataFromFile extends Exception {
 
     public final String fileName;
 
-    public UnsupportedFileExtension(String fileName) {
+    public FailedToExtractDataFromFile(String fileName, Throwable e) {
+        super(e);
         this.fileName = fileName;
     }
 }

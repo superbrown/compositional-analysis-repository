@@ -581,7 +581,7 @@ drApp.service('drServices', function() {
     };
 
     function postError(root, data) {
-        root.alertMessage_failure = "A failure occurred on the server.";
+        root.alertMessage_failure = data.message;
         console.error(data);
     }
 });

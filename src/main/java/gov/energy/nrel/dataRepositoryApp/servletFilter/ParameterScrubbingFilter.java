@@ -28,12 +28,11 @@ public class ParameterScrubbingFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-
         Map<String, String[]> parameters = request.getParameterMap();
-        final Map<String, String[]> scrubnedParameters = scrubParameters(parameters);
+        final Map<String, String[]> scrubbedParameters = scrubParameters(parameters);
 
         HttpServletRequestWrapper requestWrapper =
-                new ParameterOverridingHttpRequestWrapper(servletRequest, scrubnedParameters);
+                new ParameterOverridingHttpRequestWrapper(servletRequest, scrubbedParameters);
 
         filterChain.doFilter(requestWrapper, servletResponse);
     }

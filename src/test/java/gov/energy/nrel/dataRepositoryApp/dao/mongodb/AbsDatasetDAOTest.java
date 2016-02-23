@@ -1,15 +1,13 @@
 package gov.energy.nrel.dataRepositoryApp.dao.mongodb;
 
 import gov.energy.nrel.dataRepositoryApp.bo.ITestDataBO;
+import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.TestData;
 import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
-import gov.energy.nrel.dataRepositoryApp.dao.exception.CompletelyFailedToPersistDataset;
-import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistDataset;
-import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
+import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDataCategoryDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
-import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
 import org.bson.Document;
 import org.junit.*;
 
@@ -51,7 +49,12 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
     @Test
     public void testGetById() {
 
-        IDatasetDocument document = datasetDAO.getDataset(TestData.dataset_1_objectId.toHexString());
+        IDatasetDocument document = null;
+        try {
+            document = datasetDAO.getDataset(TestData.dataset_1_objectId.toHexString());
+        } catch (UnknownDataset e) {
+            fail();
+        }
         assertTrue(document != null);
         assertTrue(document.getId().equals(TestData.dataset_1_objectId.toString()));
     }
@@ -143,13 +146,7 @@ public abstract class AbsDatasetDAOTest extends TestUsingTestData
             // cascade to the sample type colletion.
             assertTrue(columnNames.size() == 10);
         }
-        catch (UnknownEntity e) {
-            e.printStackTrace();
-            fail();
-        } catch (PartiallyFailedToPersistDataset e) {
-            e.printStackTrace();
-            fail();
-        } catch (CompletelyFailedToPersistDataset e) {
+        catch (Throwable e) {
             e.printStackTrace();
             fail();
         }

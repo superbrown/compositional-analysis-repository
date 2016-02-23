@@ -4,6 +4,7 @@ import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.NotAnExcelWorkbook;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.junit.After;
 import org.junit.Before;
@@ -78,7 +79,8 @@ public class ExcelWorkbookReaderTest {
         }
     }
 
-    private void testExtractDataFromDataset(File file) throws IOException, FileContainsInvalidColumnName, UnsupportedFileExtension, ParseException {
+    private void testExtractDataFromDataset(File file)
+            throws IOException, FileContainsInvalidColumnName, UnsupportedFileExtension, ParseException, NotAnExcelWorkbook {
 
         RowCollection rowCollection = excelWorkbookReader.extractDataFromFile(file, "Sheet Containing Data");
 
