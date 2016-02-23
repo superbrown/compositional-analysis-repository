@@ -1,3 +1,14 @@
+
+
+// DESIGN NOTE:
+//
+// This has been commented out because the inclusion of Spring Security in the project was causing runtime problems,
+// requiring login when we don't want user security as such.  (My guess is Spring Boot was automatically setting it up.)
+// I ended up taking an alternate approach, incorporating a servlet filter.
+// See: gov.energy.nrel.dataRepositoryApp.servletFilter.HeadersSecurityFilter
+
+
+
 //package gov.energy.nrel.dataRepositoryApp.security;
 //
 //import org.springframework.context.annotation.Configuration;

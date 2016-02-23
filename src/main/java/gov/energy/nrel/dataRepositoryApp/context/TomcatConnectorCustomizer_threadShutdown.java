@@ -21,7 +21,11 @@ import java.util.concurrent.TimeUnit;
  * org.apache.catalina.loader.WebappClassLoaderBase clearReferencesThreads
  * SEVERE: The web application [/data-repository-app] appears to have started a thread named [pool-1-thread-1] but has
  * failed to stop it. This is very likely to create a memory leak.
-
+ *
+ * UPDATE:
+ * This didn't actually seem to work.  At least there is no evidence onApplicationEvent() ever gets called.  So, for the
+ * time being, the issue hasn't been resolved.
+ *
  */
 public class TomcatConnectorCustomizer_threadShutdown
             implements TomcatConnectorCustomizer, ApplicationListener<ContextClosedEvent> {
