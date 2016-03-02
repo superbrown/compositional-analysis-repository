@@ -24,15 +24,15 @@ public class EndpointController {
 
     private static Logger log = Logger.getLogger(EndpointController.class);
 
-    private static final String HTTP_STATUS_CODE_KEY = "status";
-    private static final String REASON_PHRASE_KEY = "reasonPhrase";
-    private static final String MESSAGE_KEY = "message";
-    private static final String ROW_NUMBER = "rowNumber";
-    private static final String COLUMN_NUMBER = "columnNumber";
-    private static final String SANITIZED_VALUE = "sanitizedValue";
-    private static final String FILE_NAME = "fileName";
-    private static final String INVALID_NAME = "invalidName";
-    private static final String PARAMETER_NAME = "parameterName";
+    private static final String KEY__HTTP_STATUS_CODE = "status";
+    private static final String KEY__REASON_PHRASE = "reasonPhrase";
+    private static final String KEY__MESSAGE = "message";
+    private static final String KEY__ROW_NUMBER = "rowNumber";
+    private static final String KEY__COLUMN_NUMBER = "columnNumber";
+    private static final String KEY__SANITIZED_VALUE = "sanitizedValue";
+    private static final String KEY__FILE_NAME = "fileName";
+    private static final String KEY__INVALID_NAME = "invalidName";
+    private static final String KEY__PARAMETER_NAME = "parameterName";
 
     protected void throwExceptionIfCleanupOperationsIsOccurring() throws CleanupOperationIsOccurring {
 
@@ -145,9 +145,9 @@ public class EndpointController {
                 "The file, " + e.fileName + ", contains an invalid column name. " +
                         "Column " + e.columnNumber + " has the name '" + e.columnName + "'.");
 
-        result.put(FILE_NAME, e.fileName);
-        result.put(COLUMN_NUMBER, e.columnNumber);
-        result.put(INVALID_NAME, e.columnName);
+        result.put(KEY__FILE_NAME, e.fileName);
+        result.put(KEY__COLUMN_NUMBER, e.columnNumber);
+        result.put(KEY__INVALID_NAME, e.columnName);
         return result;
     }
 
@@ -162,7 +162,7 @@ public class EndpointController {
                 HttpStatus.UNPROCESSABLE_ENTITY,
                 "The parameter, " + e.paramaterName + ", contains an invalid value.");
 
-        result.put(PARAMETER_NAME, e.paramaterName);
+        result.put(KEY__PARAMETER_NAME, e.paramaterName);
         return result;
     }
 
@@ -181,9 +181,9 @@ public class EndpointController {
                         "column " + e.columnNumber + ". " +
                         "Its \"sanitized\" value is: " + e.sanitizedValue);
 
-        result.put(ROW_NUMBER, e.rowNumber);
-        result.put(COLUMN_NUMBER, e.columnNumber);
-        result.put(SANITIZED_VALUE, e.sanitizedValue);
+        result.put(KEY__ROW_NUMBER, e.rowNumber);
+        result.put(KEY__COLUMN_NUMBER, e.columnNumber);
+        result.put(KEY__SANITIZED_VALUE, e.sanitizedValue);
         return result;
     }
 
@@ -198,7 +198,7 @@ public class EndpointController {
                 HttpStatus.UNPROCESSABLE_ENTITY,
                 "The file, " + e.fileName + ", is a type that is not supported.");
 
-        result.put(FILE_NAME, e.fileName);
+        result.put(KEY__FILE_NAME, e.fileName);
         return result;
     }
 
@@ -213,7 +213,7 @@ public class EndpointController {
                 HttpStatus.UNPROCESSABLE_ENTITY,
                 "The file, " + e.fileName + ", is not an Excel workbook.");
 
-        result.put(FILE_NAME, e.fileName);
+        result.put(KEY__FILE_NAME, e.fileName);
         return result;
     }
 
@@ -235,9 +235,9 @@ public class EndpointController {
             HttpStatus httpStatus, String message) {
 
         Map<String, Object> result = new HashMap<>();
-        result.put(HTTP_STATUS_CODE_KEY, httpStatus.value());
-        result.put(REASON_PHRASE_KEY, httpStatus.getReasonPhrase());
-        result.put(MESSAGE_KEY, message);
+        result.put(KEY__HTTP_STATUS_CODE, httpStatus.value());
+        result.put(KEY__REASON_PHRASE, httpStatus.getReasonPhrase());
+        result.put(KEY__MESSAGE, message);
         return result;
     }
 
