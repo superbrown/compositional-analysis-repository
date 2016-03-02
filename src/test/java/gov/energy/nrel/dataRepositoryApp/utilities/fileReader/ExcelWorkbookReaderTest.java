@@ -2,6 +2,7 @@ package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.NotAnExcelWorkbook;
@@ -29,7 +30,8 @@ public class ExcelWorkbookReaderTest {
     @BeforeClass
     public static void beforeClass() {
 
-        excelWorkbookReader = new DatasetReader_ExcelWorkbook();
+        ValueSanitizer valueSanitizer = new ValueSanitizer();
+        excelWorkbookReader = new DatasetReader_ExcelWorkbook(valueSanitizer);
     }
 
     @Before
@@ -50,7 +52,7 @@ public class ExcelWorkbookReaderTest {
             File file = Utilities.getFile("/testData/active/SpreadsheetForReadingTest.xls");
             testExtractDataFromDataset(file);
         }
-        catch (FileContainsInvalidColumnName fileContainsInvalidColumnName) {
+        catch (Throwable fileContainsInvalidColumnName) {
             fail();
         }
     }
@@ -62,7 +64,7 @@ public class ExcelWorkbookReaderTest {
             File file = Utilities.getFile("/testData/active/SpreadsheetForReadingTest.xlsm");
             testExtractDataFromDataset(file);
         }
-        catch (FileContainsInvalidColumnName fileContainsInvalidColumnName) {
+        catch (Throwable e) {
             fail();
         }
     }
@@ -74,13 +76,13 @@ public class ExcelWorkbookReaderTest {
             File file = Utilities.getFile("/testData/active/SpreadsheetForReadingTest.xlsx");
             testExtractDataFromDataset(file);
         }
-        catch (FileContainsInvalidColumnName fileContainsInvalidColumnName) {
+        catch (Throwable e) {
             fail();
         }
     }
 
     private void testExtractDataFromDataset(File file)
-            throws IOException, FileContainsInvalidColumnName, UnsupportedFileExtension, ParseException, NotAnExcelWorkbook {
+            throws IOException, FileContainsInvalidColumnName, UnsupportedFileExtension, ParseException, NotAnExcelWorkbook, UnsanitaryData {
 
         RowCollection rowCollection = excelWorkbookReader.extractDataFromFile(file, "Sheet Containing Data");
 

@@ -5,7 +5,7 @@ import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
 import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownRow;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
-import gov.energy.nrel.dataRepositoryApp.utilities.ValueScrubbingHelper;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
 import org.apache.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +98,7 @@ public class Endpoints_Rows extends EndpointController {
         throwExceptionIfCleanupOperationsIsOccurring();
 
         // not certain this is necessary, but doing as a precaution
-        rowId = getValueScrubbingHelper().scrubValue(rowId);
+        rowId = getValueSanitizer().sanitize(rowId);
 
         String row = getRowBO().getRow(rowId);
         return create_SUCCESS_response(row);
@@ -109,8 +109,8 @@ public class Endpoints_Rows extends EndpointController {
         return dataRepositoryApplication.getBusinessObjects().getRowBO();
     }
 
-    protected ValueScrubbingHelper getValueScrubbingHelper() {
+    protected ValueSanitizer getValueSanitizer() {
 
-        return dataRepositoryApplication.getValueScrubbingHelper();
+        return dataRepositoryApplication.getValueSanitizer();
     }
 }

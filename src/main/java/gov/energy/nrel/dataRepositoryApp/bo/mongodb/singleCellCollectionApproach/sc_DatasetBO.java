@@ -17,8 +17,10 @@ import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.StoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.UnsanitaryData;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
@@ -45,8 +47,13 @@ public class sc_DatasetBO extends AbsDatasetBO implements IDatasetBO {
     @Override
     protected void init() {
 
+        super.init();
+
         datasetDAO = new sc_DatasetDAO(getSettings());
-        generalFileReader = new DatasetReader_AllFileTypes();
+
+        ValueSanitizer valueSanitizer = this.getDataRepositoryApplication().getValueSanitizer();
+        generalFileReader = new DatasetReader_AllFileTypes(valueSanitizer);
+
         datasetTransactionTokenDAO = new DatasetTransactionTokenDAO(getSettings());
     }
 
@@ -60,7 +67,7 @@ public class sc_DatasetBO extends AbsDatasetBO implements IDatasetBO {
             IStoredFile sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<IStoredFile> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile, UnsanitaryData {
 
         File storedFile = getPhysicalFile(sourceDocument.getStorageLocation());
         RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, -1);
@@ -143,7 +150,7 @@ public class sc_DatasetBO extends AbsDatasetBO implements IDatasetBO {
             FileAsRawBytes sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<FileAsRawBytes> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, UnknownDataset, IOException, FailedToExtractDataFromFile {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, UnknownDataset, IOException, FailedToExtractDataFromFile, UnsanitaryData {
 
         Date timestamp = new Date();
 

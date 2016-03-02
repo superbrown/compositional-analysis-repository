@@ -9,7 +9,9 @@ import gov.energy.nrel.dataRepositoryApp.dao.FileStorageStorageDAO;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_ExcelWorkbook;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.UnsanitaryData;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.NotAnExcelWorkbook;
@@ -40,8 +42,11 @@ public class UtilsBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.
     @Override
     protected void init() {
 
-        datasetReader_excelWorkbook = new DatasetReader_ExcelWorkbook();
+        ValueSanitizer valueSanitizer = this.getDataRepositoryApplication().getValueSanitizer();
+        datasetReader_excelWorkbook = new DatasetReader_ExcelWorkbook(valueSanitizer);
+
         tempDirectoryPath = getSettings().getRootDirectoryForUploadedDataFiles() + "/temp";
+
         fileStorageDAO = new FileStorageStorageDAO(getSettings());
     }
 
@@ -100,7 +105,7 @@ public class UtilsBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.
         dropDatabase();
 
         DataRepositoryApplication dataRepositoryApplication = getDataRepositoryApplication();
-        dataRepositoryApplication.initializeBusinessObjects();
+        dataRepositoryApplication.createBusinessObjects();
 
         IBusinessObjectsInventory businessObjects = dataRepositoryApplication.getBusinessObjects();
 
@@ -120,20 +125,24 @@ public class UtilsBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.
 
                 log.error(metadata, e);
                 errors.add("Failed to save: " + metadata);
-                throw new RuntimeException(e);
             }
             catch (FileContainsInvalidColumnName e) {
                 log.error(metadata, e);
                 errors.add("Failed to save (file contains invalid column name): " + metadata);
-                throw new RuntimeException(e);
             }
             catch (UnsupportedFileExtension e) {
+                log.error(metadata, e);
                 errors.add("Failed to save (unsupported file extension): " + metadata);
-                throw new RuntimeException(e);
             }
             catch (FailedToExtractDataFromFile e) {
+                log.error(metadata, e);
                 errors.add("Failed to save (failed to extract data from the file): " + metadata);
-                throw new RuntimeException(e);
+            }
+            catch (UnsanitaryData e) {
+                log.error(metadata, e);
+                errors.add("Failed to save (data file contains unsanitary data at " +
+                        "row, " + e.rowNumber + " column " + e.columnNumber + ". " +
+                        "Its \"sanitized\" value is: " + e.sanitizedValue + ". " + metadata);
             }
         }
 

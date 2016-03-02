@@ -1,5 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
@@ -17,16 +18,18 @@ public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDat
     public IDatasetReader_ExcelWorkbook excelWorkbookReader;
     public IDatasetReader_CSVFile csvFileReader;
 
-    public DatasetReader_AllFileTypes() {
+    public DatasetReader_AllFileTypes(ValueSanitizer valueSanitizer) {
 
-        this.excelWorkbookReader = new DatasetReader_ExcelWorkbook();
-        this.csvFileReader = new DatasetReader_CSVFile();
+        super(valueSanitizer);
+
+        this.excelWorkbookReader = new DatasetReader_ExcelWorkbook(valueSanitizer);
+        this.csvFileReader = new DatasetReader_CSVFile(valueSanitizer);
     }
 
 
     @Override
     public RowCollection extractDataFromFile(File file, String nameOfSubdocumentContainingDataIfApplicable, int maxNumberOfValuesPerRow)
-            throws FileContainsInvalidColumnName, UnsupportedFileExtension, FailedToExtractDataFromFile {
+            throws FileContainsInvalidColumnName, UnsupportedFileExtension, FailedToExtractDataFromFile, UnsanitaryData {
 
         RowCollection rowCollection = null;
 
@@ -62,7 +65,7 @@ public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDat
     }
 
     public RowCollection extractDataFromExcelFile(File file, String nameOfSubdocumentContainingDataIfApplicable)
-            throws IOException, FileContainsInvalidColumnName, NotAnExcelWorkbook {
+            throws IOException, FileContainsInvalidColumnName, NotAnExcelWorkbook, UnsanitaryData {
 
         RowCollection dataUpload =
                 excelWorkbookReader.extractDataFromFile(file, nameOfSubdocumentContainingDataIfApplicable);
@@ -71,7 +74,7 @@ public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDat
     }
 
     public RowCollection extractDataFromCSVFile(File file, int maxNumberOfValuesPerRow)
-            throws UnsupportedFileExtension, IOException, FileContainsInvalidColumnName {
+            throws UnsupportedFileExtension, IOException, FileContainsInvalidColumnName, UnsanitaryData {
 
         RowCollection dataUpload = csvFileReader.extractDataFromFile(file, maxNumberOfValuesPerRow);
 

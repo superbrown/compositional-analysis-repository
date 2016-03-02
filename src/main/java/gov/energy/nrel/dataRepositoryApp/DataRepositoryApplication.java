@@ -6,7 +6,7 @@ import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellCollectionApproach
 import gov.energy.nrel.dataRepositoryApp.context.TomcatConnectorCustomizer_threadShutdown;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
-import gov.energy.nrel.dataRepositoryApp.utilities.ValueScrubbingHelper;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -61,7 +61,7 @@ public class DataRepositoryApplication extends SpringApplication {
     @Autowired
     private ISettings settings;
 
-    private ValueScrubbingHelper valueScrubbingHelper;
+    private ValueSanitizer valueSanitizer;
 
     protected IBusinessObjectsInventory businessObjects;
 
@@ -71,21 +71,15 @@ public class DataRepositoryApplication extends SpringApplication {
     public DataRepositoryApplication() {
     }
 
-    // Spring will call this after it calls the concstrutor.
+    // Spring will call this after it calls the constructor.
     @PostConstruct
     protected void init() {
 
-        valueScrubbingHelper = new ValueScrubbingHelper(settings.getAntiSamyPolicyFileName());
+        valueSanitizer = new ValueSanitizer(settings.getAntiSamyPolicyFileName());
 
         try {
-            // This line is very significant. It determines what business objects the app will use.
-            //
-            // During development I experimented with a couple of different approaches to the DAO layer, and changing
-            // what class was instantiated here determined which one would be used.
-
-            IBusinessObjectsInventory businessObjects = initializeBusinessObjects();
-
-            ISettings settings = businessObjects.getSettings();
+            IBusinessObjectsInventory businessObjects = createBusinessObjects();
+            setBusinessObjects(businessObjects);
 
             String[] defaultSetOfDataCategories = settings.getDefaultSetOfDataCategories();
             businessObjects.getDataCategoryBO().assureCategoriesAreInTheDatabase(defaultSetOfDataCategories);
@@ -103,10 +97,14 @@ public class DataRepositoryApplication extends SpringApplication {
         }
     }
 
-    public IBusinessObjectsInventory initializeBusinessObjects() {
+    public IBusinessObjectsInventory createBusinessObjects() {
+
+        // This line is very significant. It determines what business objects the app will use.
+        //
+        // During development I experimented with a couple of different approaches to the DAO layer, and changing
+        // what class was instantiated here determined which one would be used.
 
         IBusinessObjectsInventory businessObjects = new sc_BusinessObjectsInventory(this);
-        setBusinessObjects(businessObjects);
         return businessObjects;
     }
 
@@ -125,9 +123,9 @@ public class DataRepositoryApplication extends SpringApplication {
         return businessObjects;
     }
 
-    public ValueScrubbingHelper getValueScrubbingHelper() {
+    public ValueSanitizer getValueSanitizer() {
 
-        return valueScrubbingHelper;
+        return valueSanitizer;
     }
 
     @Bean

@@ -2,6 +2,8 @@ package gov.energy.nrel.dataRepositoryApp.restEndpoint;
 
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.*;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.UnsanitaryData;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.UnsanitaryRequestParameter;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.NotAnExcelWorkbook;
@@ -25,6 +27,12 @@ public class EndpointController {
     private static final String HTTP_STATUS_CODE_KEY = "status";
     private static final String REASON_PHRASE_KEY = "reasonPhrase";
     private static final String MESSAGE_KEY = "message";
+    private static final String ROW_NUMBER = "rowNumber";
+    private static final String COLUMN_NUMBER = "columnNumber";
+    private static final String SANITIZED_VALUE = "sanitizedValue";
+    private static final String FILE_NAME = "fileName";
+    private static final String INVALID_NAME = "invalidName";
+    private static final String PARAMETER_NAME = "parameterName";
 
     protected void throwExceptionIfCleanupOperationsIsOccurring() throws CleanupOperationIsOccurring {
 
@@ -137,9 +145,45 @@ public class EndpointController {
                 "The file, " + e.fileName + ", contains an invalid column name. " +
                         "Column " + e.columnNumber + " has the name '" + e.columnName + "'.");
 
-        result.put("fileName", e.fileName);
-        result.put("columnNumber", e.columnNumber);
-        result.put("invalidName", e.columnName);
+        result.put(FILE_NAME, e.fileName);
+        result.put(COLUMN_NUMBER, e.columnNumber);
+        result.put(INVALID_NAME, e.columnName);
+        return result;
+    }
+
+    @ExceptionHandler(UnsanitaryRequestParameter.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public @ResponseBody
+    Map<String,Object> handleFileContainsInvalidColumnName(UnsanitaryRequestParameter e,
+                                                           HttpServletRequest request,
+                                                           HttpServletResponse response) {
+
+        Map<String, Object> result = createResultMapWithMessage(
+                HttpStatus.UNPROCESSABLE_ENTITY,
+                "The parameter, " + e.paramaterName + ", contains an invalid value.");
+
+        result.put(PARAMETER_NAME, e.paramaterName);
+        return result;
+    }
+
+    @ExceptionHandler(UnsanitaryData.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public @ResponseBody
+    Map<String,Object> handleFileContainsInvalidColumnName(UnsanitaryData e,
+                                                           HttpServletRequest request,
+                                                           HttpServletResponse response) {
+
+        Map<String, Object> result = createResultMapWithMessage(
+                HttpStatus.UNPROCESSABLE_ENTITY,
+                "The file contains data that could potentially be malicious. " +
+                        "The first encounter of such data (there may " +
+                        "be additional examples) is located in row " + e.rowNumber + ", " +
+                        "column " + e.columnNumber + ". " +
+                        "Its \"sanitized\" value is: " + e.sanitizedValue);
+
+        result.put(ROW_NUMBER, e.rowNumber);
+        result.put(COLUMN_NUMBER, e.columnNumber);
+        result.put(SANITIZED_VALUE, e.sanitizedValue);
         return result;
     }
 
@@ -154,7 +198,7 @@ public class EndpointController {
                 HttpStatus.UNPROCESSABLE_ENTITY,
                 "The file, " + e.fileName + ", is a type that is not supported.");
 
-        result.put("fileName", e.fileName);
+        result.put(FILE_NAME, e.fileName);
         return result;
     }
 
@@ -169,7 +213,7 @@ public class EndpointController {
                 HttpStatus.UNPROCESSABLE_ENTITY,
                 "The file, " + e.fileName + ", is not an Excel workbook.");
 
-        result.put("fileName", e.fileName);
+        result.put(FILE_NAME, e.fileName);
         return result;
     }
 
@@ -187,7 +231,6 @@ public class EndpointController {
         return result;
     }
 
-
     protected Map<String, Object> createResultMapWithMessage(
             HttpStatus httpStatus, String message) {
 
@@ -197,7 +240,6 @@ public class EndpointController {
         result.put(MESSAGE_KEY, message);
         return result;
     }
-
 
     private UUID logError(Throwable e) {
         

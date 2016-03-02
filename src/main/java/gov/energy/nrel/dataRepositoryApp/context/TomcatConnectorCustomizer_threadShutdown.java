@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  *
  */
 public class TomcatConnectorCustomizer_threadShutdown
-            implements TomcatConnectorCustomizer, ApplicationListener<ContextClosedEvent> {
+        implements TomcatConnectorCustomizer, ApplicationListener<ContextClosedEvent> {
 
     protected static Logger log = Logger.getLogger(TomcatConnectorCustomizer_threadShutdown.class);
 

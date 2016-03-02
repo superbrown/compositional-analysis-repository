@@ -1,5 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
@@ -7,15 +8,26 @@ import org.apache.poi.ss.usermodel.Cell;
 public class PoiUtils {
 
     protected static Logger log = Logger.getLogger(PoiUtils.class);
+    private static ValueSanitizer valueSanitizer;
 
-    public static Object toAppropriateDataType(Cell cell) {
+    public PoiUtils(ValueSanitizer valueSanitizer) {
+
+        this.valueSanitizer = valueSanitizer;
+    }
+
+    public Object toAppropriateDataType(Cell cell) throws UnsanitaryData {
 
         int cellType = determineCellType(cell);
 
         switch (cellType) {
 
             case Cell.CELL_TYPE_STRING:
-                return cell.getStringCellValue();
+                String stringCellValue = cell.getStringCellValue();
+                if (valueSanitizer.isSanitary(stringCellValue) == false) {
+                    String sanitizedValue = valueSanitizer.sanitize(stringCellValue);
+                    throw new UnsanitaryData(sanitizedValue);
+                }
+                return stringCellValue;
 
             case Cell.CELL_TYPE_BLANK:
                 return null;
@@ -44,7 +56,7 @@ public class PoiUtils {
         return null;
     }
 
-    protected static int determineCellType(Cell cell) {
+    protected int determineCellType(Cell cell) {
 
         int cellType = cell.getCellType();
 

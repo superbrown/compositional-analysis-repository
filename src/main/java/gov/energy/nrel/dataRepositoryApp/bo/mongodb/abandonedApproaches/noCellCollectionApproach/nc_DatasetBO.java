@@ -13,14 +13,13 @@ import gov.energy.nrel.dataRepositoryApp.dao.exception.PartiallyFailedToPersistD
 import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.noCellCollectionsApproach.nc_DatasetDAO;
-import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
 import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.StoredFile;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.UnsanitaryData;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
@@ -38,8 +37,6 @@ public class nc_DatasetBO extends AbsDatasetBO {
 
     protected static Logger log = Logger.getLogger(nc_DatasetBO.class);
 
-    protected IDatasetReader_AllFileTypes generalFileReader;
-
     public nc_DatasetBO(DataRepositoryApplication dataRepositoryApplication) {
 
         super(dataRepositoryApplication);
@@ -48,8 +45,8 @@ public class nc_DatasetBO extends AbsDatasetBO {
     @Override
     protected void init() {
 
+        super.init();
         datasetDAO = new nc_DatasetDAO(getSettings());
-        generalFileReader = new DatasetReader_AllFileTypes();
     }
 
     public ObjectId addDataset(
@@ -62,7 +59,7 @@ public class nc_DatasetBO extends AbsDatasetBO {
             IStoredFile sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<IStoredFile> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile, UnsanitaryData {
 
         File storedFile = getPhysicalFile(sourceDocument.getStorageLocation());
         RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, -1);
@@ -112,7 +109,7 @@ public class nc_DatasetBO extends AbsDatasetBO {
             StoredFile sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<StoredFile> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, IOException, FailedToExtractDataFromFile {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, IOException, FailedToExtractDataFromFile, UnsanitaryData {
 
         File storedFile = getPhysicalFile(sourceDocument.getStorageLocation());
         RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, maxNumberOfValuesPerRow);
@@ -205,7 +202,7 @@ public class nc_DatasetBO extends AbsDatasetBO {
             FileAsRawBytes sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<FileAsRawBytes> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, IOException, FailedToSave, FailedToExtractDataFromFile {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, IOException, FailedToSave, FailedToExtractDataFromFile, UnsanitaryData {
 
         Date timestamp = new Date();
 

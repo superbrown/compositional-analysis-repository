@@ -16,12 +16,17 @@ import gov.energy.nrel.dataRepositoryApp.model.common.IMetadata;
 import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.UnsanitaryData;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -37,9 +42,16 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
 
     protected static Logger log = Logger.getLogger(AbsDatasetBO.class);
     protected IDatasetTransactionTokenDAO datasetTransactionTokenDAO;
+    protected IDatasetReader_AllFileTypes generalFileReader;
 
     public AbsDatasetBO(DataRepositoryApplication dataRepositoryApplication) {
         super(dataRepositoryApplication);
+    }
+
+    protected void init() {
+
+        ValueSanitizer valueSanitizer = this.getDataRepositoryApplication().getValueSanitizer();
+        generalFileReader = new DatasetReader_AllFileTypes(valueSanitizer);
     }
 
     public File getSourceDocument(String datasetId) throws UnknownDataset {
@@ -261,7 +273,7 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
 
     @Override
     public ObjectId addDataset(IMetadata metadata)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile, UnsanitaryData {
 
         return addDataset(
                 metadata.getDataCategory(),
@@ -305,5 +317,11 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
         }
 
         return errors;
+    }
+
+    @Override
+    public boolean isAnExcelFile(MultipartFile sourceDocument) {
+
+        return generalFileReader.isAnExcelFile(sourceDocument.getOriginalFilename());
     }
 }
