@@ -36,7 +36,7 @@ public class mc_RowDAO extends AbsDAO implements IRowDAO {
     public static final String COLLECTION_NAME = "row";
 
     protected static Logger log = Logger.getLogger(mc_RowDAO.class);
-    private Map<String, mc_CellDAO> cellDAOs;
+    private volatile Map<String, mc_CellDAO> cellDAOs;
 
     public mc_RowDAO(ISettings settings) {
 
@@ -362,13 +362,18 @@ public class mc_RowDAO extends AbsDAO implements IRowDAO {
     @Override
     public mc_CellDAO getCellDAO(String columnName) {
 
-        String collectonNameForCell = toCellCollectionName(columnName);
+        String collectionNameForCell = toCellCollectionName(columnName);
 
-        mc_CellDAO cellDAO = cellDAOs.get(collectonNameForCell);
+        mc_CellDAO cellDAO;
 
-        if (cellDAO == null) {
-            cellDAO = new mc_CellDAO(collectonNameForCell, settings);
-            cellDAOs.put(columnName, cellDAO);
+        synchronized (cellDAOs) {
+
+            cellDAO = cellDAOs.get(collectionNameForCell);
+
+            if (cellDAO == null) {
+                cellDAO = new mc_CellDAO(collectionNameForCell, settings);
+                cellDAOs.put(columnName, cellDAO);
+            }
         }
 
         return cellDAO;

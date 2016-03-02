@@ -11,5 +11,5 @@ import java.io.IOException;
 public interface IDatasetReader_ExcelWorkbook extends IDatasetReader {
 
     RowCollection extractDataFromFile(File file, String nameOfSubdocumentContainingDataIfApplicable)
-            throws IOException, FileContainsInvalidColumnName, NotAnExcelWorkbook;
+            throws IOException, FileContainsInvalidColumnName, NotAnExcelWorkbook, UnsanitaryData;
 }

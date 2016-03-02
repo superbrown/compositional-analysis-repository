@@ -12,8 +12,6 @@ import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDataCategoryDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DataCategoryDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 
@@ -24,8 +22,6 @@ public class DataCategoryBO extends AbsBO implements IDataCategoryBO {
     protected static Logger log = Logger.getLogger(DataCategoryBO.class);
 
     protected DataCategoryDAO dataCategoryDAO;
-
-    protected IDatasetReader_AllFileTypes generalFileReader;
 
     public static List<String> DEFAULT_USER_SEARCHABLE_COLUMN_NAMES = new ArrayList<>();
     static {
@@ -47,7 +43,6 @@ public class DataCategoryBO extends AbsBO implements IDataCategoryBO {
     protected void init() {
 
         dataCategoryDAO = new DataCategoryDAO(getSettings());
-        generalFileReader = new DatasetReader_AllFileTypes();
     }
 
     @Override

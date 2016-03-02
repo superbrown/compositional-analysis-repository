@@ -1,8 +1,8 @@
 package gov.energy.nrel.dataRepositoryApp.settings;
 
 import gov.energy.nrel.dataRepositoryApp.servletFilter.HeadersSecurityFilter;
-import gov.energy.nrel.dataRepositoryApp.servletFilter.ParameterScrubbingFilter;
-import gov.energy.nrel.dataRepositoryApp.utilities.ValueScrubbingHelper;
+import gov.energy.nrel.dataRepositoryApp.servletFilter.MakeSureAllParametersAreSanitaryFilter;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
 
 
 // The idea behind the settings is to have the app look for them in two files, one that contains defaults,
@@ -29,15 +29,27 @@ import javax.servlet.*;
 @AutoConfigureBefore
 public class Settings implements ISettings {
 
-    @Bean
-    public Filter createParameterScrubbingFilter() {
+//    @Bean
+//    public Filter createParameterSanitizingFilter() {
+//
+//        // This filter sanitizes the data coming in to the REST endpoints.
+//
+//        String antiSamyPolicyFileName = this.getAntiSamyPolicyFileName();
+//        ValueSanitizer valueSanitizer = new ValueSanitizer(antiSamyPolicyFileName);
+//
+//        return new ParameterSanitizingFilter(valueSanitizer);
+//    }
 
-        // This filter scrubs the data coming in to the REST endpoints.
+    // DESIGN NOTE:
+    // At first I had the app sanitize incoming requests.  But I decided it made more sense to instead reject unsanitary
+    // requests.
+    @Bean
+    public Filter createMakeSureAllParametersAreSanitaryFilter() {
 
         String antiSamyPolicyFileName = this.getAntiSamyPolicyFileName();
-        ValueScrubbingHelper valueScrubbingHelper = new ValueScrubbingHelper(antiSamyPolicyFileName);
+        ValueSanitizer valueSanitizer = new ValueSanitizer(antiSamyPolicyFileName);
 
-        return new ParameterScrubbingFilter(valueScrubbingHelper);
+        return new MakeSureAllParametersAreSanitaryFilter(valueSanitizer);
     }
 
     @Bean

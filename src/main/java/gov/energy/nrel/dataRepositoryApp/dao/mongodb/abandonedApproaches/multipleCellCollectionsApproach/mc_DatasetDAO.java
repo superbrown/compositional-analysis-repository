@@ -1,18 +1,18 @@
 package gov.energy.nrel.dataRepositoryApp.dao.mongodb.abandonedApproaches.multipleCellCollectionsApproach;
 
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
-import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
-import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import gov.energy.nrel.dataRepositoryApp.dao.IDataCategoryDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IDatasetDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.IDeleteResults;
+import gov.energy.nrel.dataRepositoryApp.dao.exception.UnknownEntity;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.AbsDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DataCategoryDAO;
+import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDataCategoryDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
-import gov.energy.nrel.dataRepositoryApp.model.common.IRowCollection;
 import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DataCategoryDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -21,7 +21,7 @@ import java.util.Set;
 public class mc_DatasetDAO extends AbsDAO implements IDatasetDAO {
 
     public static final String COLLECTION_NAME = "dataset";
-    protected DataCategoryDAO dataCategoryDAO;
+    protected volatile DataCategoryDAO dataCategoryDAO;
     protected mc_RowDAO rowDAO;
 
     public mc_DatasetDAO(ISettings settings) {
@@ -64,23 +64,26 @@ public class mc_DatasetDAO extends AbsDAO implements IDatasetDAO {
 
     protected void associateColumnNamesToTheDataCategory(String dataCategory, Set columnNames) {
 
-        IDataCategoryDocument dataCategoryDocument = dataCategoryDAO.getByName(dataCategory);
+        synchronized (dataCategoryDAO) {
 
-        if (dataCategoryDocument == null) {
+            IDataCategoryDocument dataCategoryDocument = dataCategoryDAO.getByName(dataCategory);
 
-            dataCategoryDocument = new DataCategoryDocument();
-            dataCategoryDocument.setName(dataCategory);
-            ObjectId objectId = dataCategoryDAO.add(dataCategoryDocument);
-            dataCategoryDocument = dataCategoryDAO.get(objectId);
+            if (dataCategoryDocument == null) {
+
+                dataCategoryDocument = new DataCategoryDocument();
+                dataCategoryDocument.setName(dataCategory);
+                ObjectId objectId = dataCategoryDAO.add(dataCategoryDocument);
+                dataCategoryDocument = dataCategoryDAO.get(objectId);
+            }
+
+            Set<String> columnNamesFromTheDatabase = dataCategoryDocument.getColumnNames();
+            columnNamesFromTheDatabase.addAll(columnNames);
+
+            Document dataToBeUpdated = new Document().
+                    append(DataCategoryDocument.MONGO_KEY__COLUMN_NAMES, columnNamesFromTheDatabase);
+
+            dataCategoryDAO.updateOne(dataCategoryDocument.getId(), dataToBeUpdated);
         }
-
-        Set<String> columnNamesFromTheDatabase = dataCategoryDocument.getColumnNames();
-        columnNamesFromTheDatabase.addAll(columnNames);
-
-        Document dataToBeUpdated = new Document().
-                append(DataCategoryDocument.MONGO_KEY__COLUMN_NAMES, columnNamesFromTheDatabase);
-
-        dataCategoryDAO.updateOne(dataCategoryDocument.getId(), dataToBeUpdated);
     }
 
     @Override

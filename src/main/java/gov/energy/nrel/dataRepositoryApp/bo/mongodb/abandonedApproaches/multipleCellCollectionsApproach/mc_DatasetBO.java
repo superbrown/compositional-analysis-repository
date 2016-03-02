@@ -13,8 +13,10 @@ import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.DatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.UnsanitaryData;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
@@ -41,8 +43,12 @@ public class mc_DatasetBO extends AbsDatasetBO {
     @Override
     protected void init() {
 
+        super.init();
+
         datasetDAO = new mc_DatasetDAO(getSettings());
-        generalFileReader = new DatasetReader_AllFileTypes();
+
+        ValueSanitizer valueSanitizer = this.getDataRepositoryApplication().getValueSanitizer();
+        generalFileReader = new DatasetReader_AllFileTypes(valueSanitizer);
     }
 
     @Override
@@ -56,7 +62,7 @@ public class mc_DatasetBO extends AbsDatasetBO {
             IStoredFile sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<IStoredFile> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile, UnsanitaryData {
 
         File storedFile = getPhysicalFile(sourceDocument.getStorageLocation());
         RowCollection dataUpload = generalFileReader.extractDataFromFile(storedFile, nameOfSubdocumentContainingDataIfApplicable, -1);
@@ -106,7 +112,7 @@ public class mc_DatasetBO extends AbsDatasetBO {
             FileAsRawBytes sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<FileAsRawBytes> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, IOException, FailedToExtractDataFromFile, FailedToSave {
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, IOException, FailedToExtractDataFromFile, FailedToSave, UnsanitaryData {
 
         Date timestamp = new Date();
 

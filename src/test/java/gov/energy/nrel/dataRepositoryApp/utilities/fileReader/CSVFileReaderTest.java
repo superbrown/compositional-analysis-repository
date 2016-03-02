@@ -2,8 +2,8 @@ package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +20,7 @@ import static org.junit.Assert.fail;
 
 public class CSVFileReaderTest {
 
-    protected IDatasetReader_CSVFile csvFileReader = new DatasetReader_CSVFile();
+    protected IDatasetReader_CSVFile csvFileReader = new DatasetReader_CSVFile(new ValueSanitizer());
 
     @Before
     public void before() throws Exception {
@@ -100,7 +100,7 @@ public class CSVFileReaderTest {
             assertTrue(row_5.get(6).equals("five"));
             assertTrue(row_5.get(7) == null);
         }
-        catch (FileContainsInvalidColumnName e) {
+        catch (Throwable e) {
             fail();
         }
     }
@@ -161,7 +161,7 @@ public class CSVFileReaderTest {
             assertTrue(row_5.get(4) == null);
             assertTrue(row_5.get(5).equals("five"));
         }
-        catch (FileContainsInvalidColumnName e) {
+        catch (Throwable e) {
             fail();
         }
     }
@@ -230,7 +230,7 @@ public class CSVFileReaderTest {
             assertTrue(row_5.get(5).equals("five"));
             assertTrue(row_5.get(6) == null);
         }
-        catch (FileContainsInvalidColumnName e) {
+        catch (Throwable e) {
             fail();
         }
     }

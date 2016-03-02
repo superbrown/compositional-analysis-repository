@@ -11,5 +11,5 @@ import java.io.IOException;
 public interface IDatasetReader_CSVFile extends IDatasetReader {
 
     RowCollection extractDataFromFile(File file, int maxNumberOfValuesPerRow)
-            throws IOException, FileContainsInvalidColumnName, UnsupportedFileExtension;
+            throws IOException, FileContainsInvalidColumnName, UnsupportedFileExtension, UnsanitaryData;
 }

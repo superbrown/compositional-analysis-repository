@@ -95,7 +95,7 @@
 			<version>2.3</version>
 		</dependency>
 
-		<!--Utility for scrubbing REST services input-->
+		<!--Utility for sanitizing REST services input-->
 		<dependency>
 			<groupId>org.owasp.antisamy</groupId>
 			<artifactId>antisamy</artifactId>

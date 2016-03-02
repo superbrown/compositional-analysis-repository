@@ -6,6 +6,7 @@ import gov.energy.nrel.dataRepositoryApp.dao.FileStorageStorageDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IFileStorageDAO;
 import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
 
@@ -27,7 +28,9 @@ public class FileStorageStorageBO extends AbsBO implements IFileStorageBO {
     @Override
     protected void init() {
         fileStorageDAO = new FileStorageStorageDAO(getSettings());
-        generalFileReader = new DatasetReader_AllFileTypes();
+
+        ValueSanitizer valueSanitizer = this.getDataRepositoryApplication().getValueSanitizer();
+        generalFileReader = new DatasetReader_AllFileTypes(valueSanitizer);
     }
 
     @Override

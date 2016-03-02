@@ -9,10 +9,12 @@ import gov.energy.nrel.dataRepositoryApp.model.common.IMetadata;
 import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.UnsanitaryData;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.bson.types.ObjectId;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -54,10 +56,10 @@ public interface IDatasetBO extends IBO {
             IStoredFile sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<IStoredFile> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile;
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile, UnsanitaryData;
 
     ObjectId addDataset(IMetadata metadata)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile;
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, FailedToExtractDataFromFile, UnsanitaryData;
 
     String addDataset(
             String dataCategory,
@@ -69,7 +71,7 @@ public interface IDatasetBO extends IBO {
             FileAsRawBytes sourceDocument,
             String nameOfSubdocumentContainingDataIfApplicable,
             List<FileAsRawBytes> attachmentFiles)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, UnknownDataset, IOException, FailedToExtractDataFromFile;
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, UnknownDataset, IOException, FailedToExtractDataFromFile, UnsanitaryData;
 
     IDatasetDAO getDatasetDAO();
 
@@ -78,4 +80,6 @@ public interface IDatasetBO extends IBO {
     ByteArrayInputStream packageAttachmentsInAZipFile(String datasetId) throws IOException, UnknownDataset;
 
     List<String> attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads();
+
+    boolean isAnExcelFile(MultipartFile sourceDocument);
 }

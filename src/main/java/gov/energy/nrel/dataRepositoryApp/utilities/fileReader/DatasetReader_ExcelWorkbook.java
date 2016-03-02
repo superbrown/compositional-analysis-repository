@@ -2,6 +2,7 @@ package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.NotAnExcelWorkbook;
@@ -24,6 +25,14 @@ import java.util.List;
 public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDatasetReader_ExcelWorkbook {
 
     protected static Logger log = Logger.getLogger(DatasetReader_ExcelWorkbook.class);
+    private PoiUtils poiUtils;
+
+
+    public DatasetReader_ExcelWorkbook(ValueSanitizer valueSanitizer) {
+
+        super(valueSanitizer);
+        this.poiUtils = new PoiUtils(valueSanitizer);
+    }
 
     @Override
     public boolean canReadFile(File file) {
@@ -39,7 +48,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
 
     @Override
     public RowCollection extractDataFromFile(File file, String nameOfSubdocumentContainingDataIfApplicable)
-            throws IOException, FileContainsInvalidColumnName, NotAnExcelWorkbook {
+            throws IOException, FileContainsInvalidColumnName, NotAnExcelWorkbook, UnsanitaryData {
 
         InputStream fileInputStream = null;
 
@@ -79,19 +88,28 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
         }
     }
 
-    protected List<List> extractData(Sheet sheet, int numberOfColumnNames) {
+    protected List<List> extractData(Sheet sheet, int numberOfColumnNames)
+            throws UnsanitaryData {
 
         List<List> dataUpload = new ArrayList<>();
         Iterator<org.apache.poi.ss.usermodel.Row> rowIterator = sheet.rowIterator();
 
         // This is to be interpreted as the row containing the column names.
-        iteratToTheFirstRowWithAValueInItsFirstCell(rowIterator);
+        iterateToTheFirstRowWithAValueInItsFirstCell(rowIterator);
 
         while (rowIterator.hasNext()) {
 
             org.apache.poi.ss.usermodel.Row row = rowIterator.next();
 
-            List<Object> rowData = extractData(row, numberOfColumnNames);
+            List<Object> rowData = null;
+            try {
+                rowData = extractData(row, numberOfColumnNames);
+            }
+            catch (UnsanitaryData e) {
+                // adding 1 because rows are zero indexed
+                e.rowNumber = row.getRowNum() + 1;
+                throw e;
+            }
 
             List<Object> allDataInRowExceptTheFirstColumnThatContainsTheRowNumber =
                     rowData.subList(1, rowData.size());
@@ -104,7 +122,8 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
         return dataUpload;
     }
 
-    protected List<Object> extractData(org.apache.poi.ss.usermodel.Row row, int numberOfColumnHeadings) {
+    protected List<Object> extractData(org.apache.poi.ss.usermodel.Row row, int numberOfColumnHeadings)
+            throws UnsanitaryData {
 
         List<Object> rowData = new ArrayList<>();
 
@@ -131,7 +150,14 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
                 break;
             }
 
-            Object value = PoiUtils.toAppropriateDataType(cellData);
+            Object value = null;
+            try {
+                value = poiUtils.toAppropriateDataType(cellData);
+            }
+            catch (UnsanitaryData e) {
+                e.columnNumber = columnIndex + 1;
+                throw e;
+            }
 
             rowData.add(value);
 
@@ -190,16 +216,16 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
 
 
     protected List<String> determineColumnNames(Sheet sheet)
-            throws FileContainsInvalidColumnName {
+            throws FileContainsInvalidColumnName, UnsanitaryData {
 
         Iterator<org.apache.poi.ss.usermodel.Row> rowIterator = sheet.rowIterator();
 
         // This is to be interpreted as the row containing the column names.
         org.apache.poi.ss.usermodel.Row firstRowWithAValueInItsFirstCell =
-                iteratToTheFirstRowWithAValueInItsFirstCell(rowIterator);
+                iterateToTheFirstRowWithAValueInItsFirstCell(rowIterator);
         Iterator<Cell> cellIterator = firstRowWithAValueInItsFirstCell.cellIterator();
 
-        List<String> colunmNames = new ArrayList<>();
+        List<String> columnNames = new ArrayList<>();
 
         boolean lastColumnEncountered = false;
         int columnNumber = 1;
@@ -211,11 +237,20 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
             switch (cellType) {
 
                 case Cell.CELL_TYPE_STRING:
-                    colunmNames.add(cell.getStringCellValue());
+                    String stringCellValue = cell.getStringCellValue();
+                    if (valueSanitizer.isSanitary(stringCellValue) == false) {
+                        String sanitizedValue = valueSanitizer.sanitize(stringCellValue);
+                        UnsanitaryData unsanitaryData = new UnsanitaryData(sanitizedValue);
+                        // adding 1 because rows are zero indexed
+                        unsanitaryData.rowNumber = firstRowWithAValueInItsFirstCell.getRowNum() + 1;
+                        unsanitaryData.columnNumber = columnNumber;
+                        throw unsanitaryData;
+                    }
+                    columnNames.add(stringCellValue);
                     break;
 
                 case Cell.CELL_TYPE_NUMERIC:
-                    colunmNames.add(String.valueOf(cell.getNumericCellValue()));
+                    columnNames.add(String.valueOf(cell.getNumericCellValue()));
                     break;
 
                 case Cell.CELL_TYPE_BLANK:
@@ -235,10 +270,10 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
             columnNumber++;
         }
 
-        return colunmNames;
+        return columnNames;
     }
 
-    public static org.apache.poi.ss.usermodel.Row iteratToTheFirstRowWithAValueInItsFirstCell(
+    public static org.apache.poi.ss.usermodel.Row iterateToTheFirstRowWithAValueInItsFirstCell(
             Iterator<org.apache.poi.ss.usermodel.Row> rowIterator) {
 
         while (true) {

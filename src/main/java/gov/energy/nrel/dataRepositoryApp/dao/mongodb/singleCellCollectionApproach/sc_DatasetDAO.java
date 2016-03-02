@@ -28,8 +28,11 @@ import java.util.Set;
 public class sc_DatasetDAO extends AbsDAO implements IDatasetDAO
 {
     public static final String COLLECTION_NAME = "dataset";
-    protected DataCategoryDAO dataCategoryDAO;
+    protected volatile DataCategoryDAO dataCategoryDAO;
+
+
     protected IRowDAO rowDAO;
+
     protected IDatasetTransactionTokenDAO datasetTransactionTokenDAO;
 
     public sc_DatasetDAO(ISettings settings) {
@@ -99,23 +102,26 @@ public class sc_DatasetDAO extends AbsDAO implements IDatasetDAO
 
     protected void associateColumnNamesToTheDataCategory(String dataCategory, Set columnNames) {
 
-        IDataCategoryDocument dataCategoryDocument = dataCategoryDAO.getByName(dataCategory);
+        synchronized (dataCategoryDAO) {
 
-        if (dataCategoryDocument == null) {
+            IDataCategoryDocument dataCategoryDocument = dataCategoryDAO.getByName(dataCategory);
 
-            dataCategoryDocument = new DataCategoryDocument();
-            dataCategoryDocument.setName(dataCategory);
-            ObjectId objectId = dataCategoryDAO.add(dataCategoryDocument);
-            dataCategoryDocument = dataCategoryDAO.get(objectId);
+            if (dataCategoryDocument == null) {
+
+                dataCategoryDocument = new DataCategoryDocument();
+                dataCategoryDocument.setName(dataCategory);
+                ObjectId objectId = dataCategoryDAO.add(dataCategoryDocument);
+                dataCategoryDocument = dataCategoryDAO.get(objectId);
+            }
+
+            Set<String> columnNamesFromTheDatabase = dataCategoryDocument.getColumnNames();
+            columnNamesFromTheDatabase.addAll(columnNames);
+
+            Document dataToBeUpdated = new Document().
+                    append(DataCategoryDocument.MONGO_KEY__COLUMN_NAMES, columnNamesFromTheDatabase);
+
+            dataCategoryDAO.updateOne(dataCategoryDocument.getId(), dataToBeUpdated);
         }
-
-        Set<String> columnNamesFromTheDatabase = dataCategoryDocument.getColumnNames();
-        columnNamesFromTheDatabase.addAll(columnNames);
-
-        Document dataToBeUpdated = new Document().
-                append(DataCategoryDocument.MONGO_KEY__COLUMN_NAMES, columnNamesFromTheDatabase);
-
-        dataCategoryDAO.updateOne(dataCategoryDocument.getId(), dataToBeUpdated);
     }
 
     @Override

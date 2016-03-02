@@ -9,9 +9,8 @@ import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
-import gov.energy.nrel.dataRepositoryApp.utilities.ValueScrubbingHelper;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
-import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.UnsanitaryData;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
@@ -46,8 +45,6 @@ public class Endpoints_Datasets extends EndpointController {
     private static final int MS_IN_A_DAY = 24 * 60 * 60 * 1000;
     protected static Logger log = Logger.getLogger(Endpoints_Datasets.class);
 
-    protected static final IDatasetReader_AllFileTypes GENERAL_FILE_READER = new DatasetReader_AllFileTypes();
-
     @Autowired
     protected DataRepositoryApplication dataRepositoryApplication;
 
@@ -65,12 +62,12 @@ public class Endpoints_Datasets extends EndpointController {
             @RequestParam(value = "comments", required = false) String comments,
             @RequestParam(value = "sourceDocument", required = false) MultipartFile sourceDocument,
             @RequestParam(value = "nameOfSubdocumentContainingDataIfApplicable", required = false) String nameOfSubdocumentContainingDataIfApplicable)
-            throws UnknownDataset, UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, IOException, FailedToExtractDataFromFile, CleanupOperationIsOccurring {
+            throws UnknownDataset, UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToSave, IOException, FailedToExtractDataFromFile, CleanupOperationIsOccurring, UnsanitaryData {
 
         if (StringUtils.isBlank(dataCategory)) { return create_BAD_REQUEST_missingRequiredParam_response("dataCategory");}
         if (submissionDate == null) { return create_BAD_REQUEST_missingRequiredParam_response("submissionDate");}
         if (sourceDocument == null) { return create_BAD_REQUEST_missingRequiredParam_response("sourceDocument");}
-        if (isAnExcelFile(sourceDocument)) { if (StringUtils.isBlank(nameOfSubdocumentContainingDataIfApplicable)) { return create_BAD_REQUEST_missingRequiredParam_response("nameOfSubdocumentContainingDataIfApplicable");} }
+        if (getDatasetBO().isAnExcelFile(sourceDocument)) { if (StringUtils.isBlank(nameOfSubdocumentContainingDataIfApplicable)) { return create_BAD_REQUEST_missingRequiredParam_response("nameOfSubdocumentContainingDataIfApplicable");} }
 
         throwExceptionIfCleanupOperationsIsOccurring();
 
@@ -120,7 +117,7 @@ public class Endpoints_Datasets extends EndpointController {
         throwExceptionIfCleanupOperationsIsOccurring();
 
         // not certain this is necessary, but doing as a precaution
-        datasetId = getValueScrubbingHelper().scrubValue(datasetId);
+        datasetId = getValueSanitizer().sanitize(datasetId);
 
         String dataset = getDatasetBO().getDataset(datasetId);
         return create_SUCCESS_response(dataset);
@@ -135,7 +132,7 @@ public class Endpoints_Datasets extends EndpointController {
         throwExceptionIfCleanupOperationsIsOccurring();
 
         // not certain this is necessary, but doing as a precaution
-        datasetId = getValueScrubbingHelper().scrubValue(datasetId);
+        datasetId = getValueSanitizer().sanitize(datasetId);
 
         IDatasetBO datasetBO = getDatasetBO();
 
@@ -163,7 +160,7 @@ public class Endpoints_Datasets extends EndpointController {
         throwExceptionIfCleanupOperationsIsOccurring();
 
         // not certain this is necessary, but doing as a precaution
-        datasetId = getValueScrubbingHelper().scrubValue(datasetId);
+        datasetId = getValueSanitizer().sanitize(datasetId);
 
         IDatasetBO datasetBO = getDatasetBO();
 
@@ -188,7 +185,7 @@ public class Endpoints_Datasets extends EndpointController {
         throwExceptionIfCleanupOperationsIsOccurring();
 
         // not certain this is necessary, but doing as a precaution
-        datasetId = getValueScrubbingHelper().scrubValue(datasetId);
+        datasetId = getValueSanitizer().sanitize(datasetId);
 
         String rowsForDataset = getRowBO().getRowsAssociatedWithDataset(datasetId);
         return create_SUCCESS_response(rowsForDataset);
@@ -208,7 +205,7 @@ public class Endpoints_Datasets extends EndpointController {
         throwExceptionIfCleanupOperationsIsOccurring();
 
         // not certain this is necessary, but doing as a precaution
-        datasetId = getValueScrubbingHelper().scrubValue(datasetId);
+        datasetId = getValueSanitizer().sanitize(datasetId);
 
         getDatasetBO().removeDatasetFromDatabaseAndMoveItsFiles(datasetId);
         return create_SUCCESS_response("{message: 'success'}");
@@ -249,13 +246,8 @@ public class Endpoints_Datasets extends EndpointController {
         return dataRepositoryApplication.getBusinessObjects().getRowBO();
     }
 
-    protected boolean isAnExcelFile(MultipartFile sourceDocument) {
+    protected ValueSanitizer getValueSanitizer() {
 
-        return GENERAL_FILE_READER.isAnExcelFile(sourceDocument.getOriginalFilename());
-    }
-
-    protected ValueScrubbingHelper getValueScrubbingHelper() {
-
-        return dataRepositoryApplication.getValueScrubbingHelper();
+        return dataRepositoryApplication.getValueSanitizer();
     }
 }

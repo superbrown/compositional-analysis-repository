@@ -2,6 +2,7 @@ package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
 import au.com.bytecode.opencsv.CSVReader;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
@@ -18,7 +19,13 @@ import java.util.List;
 public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetReader, IDatasetReader_CSVFile {
 
     protected static Logger log = Logger.getLogger(DatasetReader_CSVFile.class);
-    
+
+
+    public DatasetReader_CSVFile(ValueSanitizer valueSanitizer) {
+
+        super(valueSanitizer);
+    }
+
     @Override
     public boolean canReadFile(File file) {
 
@@ -34,7 +41,7 @@ public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetR
 
     @Override
     public RowCollection extractDataFromFile(File file, int maxNumberOfValuesPerRow)
-            throws IOException, FileContainsInvalidColumnName, UnsupportedFileExtension {
+            throws IOException, FileContainsInvalidColumnName, UnsupportedFileExtension, UnsanitaryData {
 
         List<List> lines = parse(file, maxNumberOfValuesPerRow);
 
@@ -121,7 +128,8 @@ public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetR
         return data;
     }
 
-    private List<List> parse(File file, int maxNumberOfValuesPerRow) {
+    private List<List> parse(File file, int maxNumberOfValuesPerRow)
+            throws UnsanitaryData, IOException {
 
         List<List> lines = new ArrayList<>();
 
@@ -131,30 +139,37 @@ public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetR
             reader = new CSVReader(new java.io.FileReader(file), ',');
             String[] values;
 
+            int lineNumnber = 1;
+
             //Read one line at a time
             while ((values = reader.readNext()) != null) {
 
                 List<Object> line = new ArrayList<>();
 
-                int i = 1;
+                int columnNumber = 1;
                 for (String value : values) {
 
                     if ((maxNumberOfValuesPerRow != -1) &&
-                        (i > maxNumberOfValuesPerRow)) {
+                        (columnNumber > maxNumberOfValuesPerRow)) {
                         break;
                     }
 
-                    Object appropriateDataType = toAppropriateDataType(value);
-                    line.add(appropriateDataType);
-                    i++;
+                    Object valueOfAppropriateDataType = null;
+                    try {
+                        valueOfAppropriateDataType = toAppropriateDataType(value);
+                    }
+                    catch (UnsanitaryData e) {
+                        e.rowNumber = lineNumnber;
+                        e.columnNumber = columnNumber;
+                        throw e;
+                    }
+                    line.add(valueOfAppropriateDataType);
+                    columnNumber++;
                 }
 
                 lines.add(line);
+                lineNumnber++;
             }
-        }
-        catch (Exception e) {
-            log.error(e, e);
-            throw new RuntimeException(e);
         }
         finally {
             try {
@@ -172,7 +187,7 @@ public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetR
     protected static SimpleDateFormat SIMPLE_DATE_FORMAT_WITH_DASHES = new SimpleDateFormat("M-d-yyyy");
     protected static SimpleDateFormat SIMPLE_DATE_FORMAT_WITH_SlASHES = new SimpleDateFormat("M/d/yyyy");
 
-    protected Object toAppropriateDataType(String value) {
+    protected Object toAppropriateDataType(String value) throws UnsanitaryData {
 
         if (StringUtils.isBlank(value)) {
             return null;
@@ -204,6 +219,14 @@ public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetR
         catch (ParseException e) {
         }
 
-        return value;
+        // then it must be a string
+
+        String sanitizedValue = valueSanitizer.sanitize(value);
+
+        if (sanitizedValue.equals(value) == false) {
+            throw new UnsanitaryData(sanitizedValue);
+        }
+
+        return sanitizedValue;
     }
 }

@@ -12,7 +12,7 @@ public interface IDatasetReader_AllFileTypes extends IDatasetReader {
     RowCollection extractDataFromFile(File file,
                                       String nameOfSubdocumentContainingDataIfApplicable,
                                       int maxNumberOfValuesPerRow)
-            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToExtractDataFromFile;
+            throws UnsupportedFileExtension, FileContainsInvalidColumnName, FailedToExtractDataFromFile, UnsanitaryData;
 
     boolean isAnExcelFile(String filename);
 }
