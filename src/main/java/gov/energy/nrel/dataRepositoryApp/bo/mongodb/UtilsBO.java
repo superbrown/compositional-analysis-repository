@@ -141,7 +141,7 @@ public class UtilsBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.
             catch (UnsanitaryData e) {
                 log.error(metadata, e);
                 errors.add("Failed to save (data file contains unsanitary data at " +
-                        "row, " + e.rowNumber + " column " + e.columnNumber + ". " +
+                        "row " + e.rowNumber + ", column " + e.columnNumber + ". " +
                         "Its \"sanitized\" value is: " + e.sanitizedValue + ". " + metadata);
             }
         }
