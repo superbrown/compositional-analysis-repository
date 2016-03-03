@@ -232,7 +232,8 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
         while (cellIterator.hasNext()) {
 
             Cell cell = cellIterator.next();
-            int cellType = cell.getCellType();
+
+            int cellType = poiUtils.determineCellType(cell);
 
             switch (cellType) {
 
