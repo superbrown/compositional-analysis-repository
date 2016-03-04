@@ -5,8 +5,7 @@ import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellCollectionApproach.sc_BusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.context.TomcatConnectorCustomizer_threadShutdown;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
-import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
-import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -61,7 +60,7 @@ public class DataRepositoryApplication extends SpringApplication {
     @Autowired
     private ISettings settings;
 
-    private ValueSanitizer valueSanitizer;
+    private AbsValueSanitizer valueSanitizer;
 
     protected IBusinessObjectsInventory businessObjects;
 
@@ -75,7 +74,11 @@ public class DataRepositoryApplication extends SpringApplication {
     @PostConstruct
     protected void init() {
 
-        valueSanitizer = new ValueSanitizer(settings.getAntiSamyPolicyFileName());
+        // DESIGN NOTE: The use of AntiSamy was dropped because it is no longer maintained. I don't know how important
+        // this is.
+
+//        valueSanitizer = new ValueSanitizer_usingAntiSamy(settings.getAntiSamyPolicyFileName());
+        valueSanitizer = new ValueSanitizer_usingOwaspJavaHtmlSanitizer();
 
         try {
             IBusinessObjectsInventory businessObjects = createBusinessObjects();
@@ -123,7 +126,7 @@ public class DataRepositoryApplication extends SpringApplication {
         return businessObjects;
     }
 
-    public ValueSanitizer getValueSanitizer() {
+    public AbsValueSanitizer getValueSanitizer() {
 
         return valueSanitizer;
     }
@@ -167,5 +170,11 @@ public class DataRepositoryApplication extends SpringApplication {
         else {
             PerformanceLogger.disable();
         }
+
+        // DESIGN NOTE: The use of AntiSamy was dropped because it is no longer maintained. I don't know how important
+        // this is.
+
+//        valueSanitizer = new ValueSanitizer_usingAntiSamy(settings.getAntiSamyPolicyFileName());
+        valueSanitizer = new ValueSanitizer_usingOwaspJavaHtmlSanitizer();
     }
 }
