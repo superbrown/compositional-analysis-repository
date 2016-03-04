@@ -2,7 +2,7 @@ package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
-import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer_usingOwaspJavaHtmlSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import org.junit.After;
 import org.junit.Before;
@@ -20,7 +20,8 @@ import static org.junit.Assert.fail;
 
 public class CSVFileReaderTest {
 
-    protected IDatasetReader_CSVFile csvFileReader = new DatasetReader_CSVFile(new ValueSanitizer());
+    protected IDatasetReader_CSVFile csvFileReader =
+            new DatasetReader_CSVFile(new ValueSanitizer_usingOwaspJavaHtmlSanitizer());
 
     @Before
     public void before() throws Exception {

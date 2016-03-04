@@ -85,9 +85,7 @@ public class DataCategoryBO extends AbsBO implements IDataCategoryBO {
 
         List<String> dataCategoryNames = getDataCategoryDAO().getAllNames();
 
-        // FIXME: This doesn't sort correctly if the string contains a number.  This is a problem with the
-        // implementation of String.
-        Collections.sort(dataCategoryNames);
+        Utilities.sortAlphaNumerically(dataCategoryNames);
 
         String jsonOut = DAOUtilities.serialize(dataCategoryNames);
         return jsonOut;

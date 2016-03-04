@@ -5,8 +5,8 @@ import gov.energy.nrel.dataRepositoryApp.bo.mongodb.AbsBO;
 import gov.energy.nrel.dataRepositoryApp.dao.FileStorageStorageDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.IFileStorageDAO;
 import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
+import gov.energy.nrel.dataRepositoryApp.utilities.AbsValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
-import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
 
@@ -29,7 +29,7 @@ public class FileStorageStorageBO extends AbsBO implements IFileStorageBO {
     protected void init() {
         fileStorageDAO = new FileStorageStorageDAO(getSettings());
 
-        ValueSanitizer valueSanitizer = this.getDataRepositoryApplication().getValueSanitizer();
+        AbsValueSanitizer valueSanitizer = this.getDataRepositoryApplication().getValueSanitizer();
         generalFileReader = new DatasetReader_AllFileTypes(valueSanitizer);
     }
 

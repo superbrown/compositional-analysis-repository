@@ -1,6 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.servletFilter;
 
-import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.AbsValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.UnsanitaryRequestParameter;
 
 import javax.servlet.*;
@@ -11,10 +11,10 @@ import java.util.Map;
 
 public class MakeSureAllParametersAreSanitaryFilter implements Filter {
 
-    private ValueSanitizer valueSanitizer;
+    private AbsValueSanitizer valueSanitizer;
 
 
-    public MakeSureAllParametersAreSanitaryFilter(ValueSanitizer valueSanitizer) {
+    public MakeSureAllParametersAreSanitaryFilter(AbsValueSanitizer valueSanitizer) {
 
         this.valueSanitizer = valueSanitizer;
     }
@@ -47,7 +47,7 @@ public class MakeSureAllParametersAreSanitaryFilter implements Filter {
                     "{ " +
                     "\"status\":\"" + httpStatus.value() + "\", " +
                     "\"reasonPhrase\":\"" + httpStatus.getReasonPhrase() + "\", " +
-                    "\"message\":\"The parameter, " + e.paramaterName + ", contains a value that is not legal.\" " +
+                    "\"message\":\"The parameter, " + e.paramaterName + ", contains a value that could potentially be malicious.\" " +
                     "}");
             return;
         }

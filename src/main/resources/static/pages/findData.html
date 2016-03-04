@@ -4,6 +4,16 @@
 
 <div class="page-content">
 
+  <!-- alert messages -->
+  <div class="alert alert-warning" ng-show="alertMessage_missingUserInput != ''" style="margin-top: 10px;">
+    {{$root.alertMessage_missingUserInput}}
+    <a href="/data-repository-app/#/findData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_missingUserInput = ''">&times;</a>
+  </div>
+  <div class="alert alert-danger" ng-show="alertMessage_failure != ''">
+    <strong>ERROR:</strong> {{$root.alertMessage_failure}}
+    <a href="/data-repository-app/#/findData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_failure = ''">&times;</a>
+  </div>
+
   <div>
     <label for="dataCategory">Data Category</label>
     <select name="dataCategory" id="dataCategory" ng-model="$root.dataCategory">
@@ -85,16 +95,6 @@
       </button>
     </div>
 
-  </div>
-
-  <!-- alert messages -->
-  <div class="alert alert-danger" ng-show="alertMessage_failure != ''">
-    <strong>ERROR:</strong> {{$root.alertMessage_failure}}
-    <a href="/data-repository-app/#/findData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_failure = ''">&times;</a>
-  </div>
-  <div class="alert alert-warning" ng-show="alertMessage_missingUserInput != ''" style="margin-top: 10px;">
-    {{$root.alertMessage_missingUserInput}}
-    <a href="/data-repository-app/#/findData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_missingUserInput = ''">&times;</a>
   </div>
 
   <!-- Number of results header -->

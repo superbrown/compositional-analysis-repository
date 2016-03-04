@@ -1,8 +1,8 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
+import gov.energy.nrel.dataRepositoryApp.utilities.AbsValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
-import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.NotAnExcelWorkbook;
@@ -28,7 +28,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
     private PoiUtils poiUtils;
 
 
-    public DatasetReader_ExcelWorkbook(ValueSanitizer valueSanitizer) {
+    public DatasetReader_ExcelWorkbook(AbsValueSanitizer valueSanitizer) {
 
         super(valueSanitizer);
         this.poiUtils = new PoiUtils(valueSanitizer);
@@ -178,7 +178,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
                 return new HSSFWorkbook(fileInputStream);
             }
             else if (filePath.toLowerCase().endsWith(".xlsx") ||
-                     filePath.toLowerCase().endsWith(".xlsm")) {
+                    filePath.toLowerCase().endsWith(".xlsm")) {
 
                 return new XSSFWorkbook(fileInputStream);
             }

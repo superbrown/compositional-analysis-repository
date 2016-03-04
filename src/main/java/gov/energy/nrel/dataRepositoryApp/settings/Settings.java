@@ -2,7 +2,8 @@ package gov.energy.nrel.dataRepositoryApp.settings;
 
 import gov.energy.nrel.dataRepositoryApp.servletFilter.HeadersSecurityFilter;
 import gov.energy.nrel.dataRepositoryApp.servletFilter.MakeSureAllParametersAreSanitaryFilter;
-import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.AbsValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer_usingOwaspJavaHtmlSanitizer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.context.annotation.Bean;
@@ -46,8 +47,13 @@ public class Settings implements ISettings {
     @Bean
     public Filter createMakeSureAllParametersAreSanitaryFilter() {
 
-        String antiSamyPolicyFileName = this.getAntiSamyPolicyFileName();
-        ValueSanitizer valueSanitizer = new ValueSanitizer(antiSamyPolicyFileName);
+        // DESIGN NOTE: The use of AntiSamy was dropped because it is no longer maintained. I don't know how important
+        // this is.
+
+//        String antiSamyPolicyFileName = this.getAntiSamyPolicyFileName();
+//        AbsValueSanitizer valueSanitizer = new ValueSanitizer_usingAntiSamy(antiSamyPolicyFileName);
+
+        AbsValueSanitizer valueSanitizer = new ValueSanitizer_usingOwaspJavaHtmlSanitizer();
 
         return new MakeSureAllParametersAreSanitaryFilter(valueSanitizer);
     }
