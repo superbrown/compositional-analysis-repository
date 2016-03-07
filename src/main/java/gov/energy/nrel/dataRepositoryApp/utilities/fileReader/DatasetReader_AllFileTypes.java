@@ -1,6 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
-import gov.energy.nrel.dataRepositoryApp.utilities.AbsValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer.IValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
@@ -18,7 +18,7 @@ public class DatasetReader_AllFileTypes extends AbsDatasetReader implements IDat
     public IDatasetReader_ExcelWorkbook excelWorkbookReader;
     public IDatasetReader_CSVFile csvFileReader;
 
-    public DatasetReader_AllFileTypes(AbsValueSanitizer valueSanitizer) {
+    public DatasetReader_AllFileTypes(IValueSanitizer valueSanitizer) {
 
         super(valueSanitizer);
 

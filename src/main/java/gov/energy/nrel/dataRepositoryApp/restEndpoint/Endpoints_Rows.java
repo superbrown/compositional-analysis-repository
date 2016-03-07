@@ -4,7 +4,7 @@ import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
 import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownRow;
-import gov.energy.nrel.dataRepositoryApp.utilities.AbsValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer.IValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import org.apache.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -109,7 +109,7 @@ public class Endpoints_Rows extends EndpointController {
         return dataRepositoryApplication.getBusinessObjects().getRowBO();
     }
 
-    protected AbsValueSanitizer getValueSanitizer() {
+    protected IValueSanitizer getValueSanitizer() {
 
         return dataRepositoryApplication.getValueSanitizer();
     }

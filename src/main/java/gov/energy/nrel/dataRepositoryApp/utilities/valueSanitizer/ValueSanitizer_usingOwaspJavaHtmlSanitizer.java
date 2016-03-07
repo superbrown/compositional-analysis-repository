@@ -1,4 +1,4 @@
-package gov.energy.nrel.dataRepositoryApp.utilities;
+package gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer;
 
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;

@@ -2,7 +2,7 @@ package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
 import au.com.bytecode.opencsv.CSVReader;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
-import gov.energy.nrel.dataRepositoryApp.utilities.AbsValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer.IValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
@@ -21,7 +21,7 @@ public class DatasetReader_CSVFile extends AbsDatasetReader implements IDatasetR
     protected static Logger log = Logger.getLogger(DatasetReader_CSVFile.class);
 
 
-    public DatasetReader_CSVFile(AbsValueSanitizer valueSanitizer) {
+    public DatasetReader_CSVFile(IValueSanitizer valueSanitizer) {
 
         super(valueSanitizer);
     }

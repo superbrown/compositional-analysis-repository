@@ -4,8 +4,12 @@ import com.mongodb.MongoTimeoutException;
 import gov.energy.nrel.dataRepositoryApp.bo.IBusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.bo.mongodb.singleCellCollectionApproach.sc_BusinessObjectsInventory;
 import gov.energy.nrel.dataRepositoryApp.context.TomcatConnectorCustomizer_threadShutdown;
+import gov.energy.nrel.dataRepositoryApp.servletFilter.HeadersSecurityFilter;
+import gov.energy.nrel.dataRepositoryApp.servletFilter.MakeSureAllParametersAreSanitaryFilter;
 import gov.energy.nrel.dataRepositoryApp.settings.ISettings;
-import gov.energy.nrel.dataRepositoryApp.utilities.*;
+import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
+import gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer.IValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer.ValueSanitizer_usingOwaspJavaHtmlSanitizer;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -17,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.Filter;
 
 /**
  * The Data Repository Application was originally designed and coded by Mike Brown (mike.public@superbrown.com)
@@ -60,7 +65,7 @@ public class DataRepositoryApplication extends SpringApplication {
     @Autowired
     private ISettings settings;
 
-    private AbsValueSanitizer valueSanitizer;
+    private IValueSanitizer valueSanitizer;
 
     protected IBusinessObjectsInventory businessObjects;
 
@@ -100,6 +105,7 @@ public class DataRepositoryApplication extends SpringApplication {
         }
     }
 
+
     public IBusinessObjectsInventory createBusinessObjects() {
 
         // This line is very significant. It determines what business objects the app will use.
@@ -126,7 +132,7 @@ public class DataRepositoryApplication extends SpringApplication {
         return businessObjects;
     }
 
-    public AbsValueSanitizer getValueSanitizer() {
+    public IValueSanitizer getValueSanitizer() {
 
         return valueSanitizer;
     }
@@ -159,6 +165,54 @@ public class DataRepositoryApplication extends SpringApplication {
         return tomcatCustomizer;
     }
 
+    // DESIGN NOTE:
+    //
+    // At first I had the app sanitize incoming requests.  But I decided it made more sense to
+    // reject unsanitary requests to avoid adding data to the database from a malicious source
+    // (because it would likely be junk data). Also, it avoids the data being "silently" modified by
+    // the app without the user’s awareness. We want to avoid scenarios where the data may actually
+    // be the way the user intends, but the app nevertheless changes it because it interprets it to
+    // be potentially malicious. If the app thinks it needs to change legitimate values, the user
+    // should have visibility of that so the design of the application’s XSS detection functionality
+    // can be revisited.
+    //    @Bean
+    //    public Filter createParameterSanitizingFilter() {
+    //
+    //        // This filter sanitizes the data coming in to the REST endpoints.
+    //
+    //        // DESIGN NOTE: The use of AntiSamy was dropped because it is no longer maintained. I didn't
+    //        // do a lot of research into this, so I don't know how important this is.
+    //
+    ////        String antiSamyPolicyFileName = this.getAntiSamyPolicyFileName();
+    ////        IValueSanitizer valueSanitizer = new ValueSanitizer_usingAntiSamy(antiSamyPolicyFileName);
+    //
+    //        IValueSanitizer valueSanitizer = new ValueSanitizer_usingOwaspJavaHtmlSanitizer();
+    //
+    //        return new ParameterSanitizingFilter(valueSanitizer);
+    //    }
+
+    // See design note above.
+    @Bean
+    public Filter createMakeSureAllParametersAreSanitaryFilter() {
+
+        // DESIGN NOTE: The use of AntiSamy was dropped because it is no longer maintained. I didn't
+        // do a lot of research into this, so I don't know how important this is.
+
+        //        String antiSamyPolicyFileName = this.getAntiSamyPolicyFileName();
+        //        IValueSanitizer valueSanitizer = new ValueSanitizer_usingAntiSamy(antiSamyPolicyFileName);
+
+        IValueSanitizer valueSanitizer = new ValueSanitizer_usingOwaspJavaHtmlSanitizer();
+
+        return new MakeSureAllParametersAreSanitaryFilter(valueSanitizer);
+    }
+
+    // DESIGN NOTE: This cleans up the headers to eliminate security vulnerabilities.
+    @Bean
+    public Filter createHeadersSecurityFilter() {
+
+        return new HeadersSecurityFilter();
+    }
+
     // This constructor is used by unit tests.
     public DataRepositoryApplication(ISettings settings) {
 
@@ -171,10 +225,6 @@ public class DataRepositoryApplication extends SpringApplication {
             PerformanceLogger.disable();
         }
 
-        // DESIGN NOTE: The use of AntiSamy was dropped because it is no longer maintained. I don't know how important
-        // this is.
-
-//        valueSanitizer = new ValueSanitizer_usingAntiSamy(settings.getAntiSamyPolicyFileName());
         valueSanitizer = new ValueSanitizer_usingOwaspJavaHtmlSanitizer();
     }
 }
