@@ -1,6 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
-import gov.energy.nrel.dataRepositoryApp.utilities.AbsValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer.IValueSanitizer;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
@@ -8,9 +8,9 @@ import org.apache.poi.ss.usermodel.Cell;
 public class PoiUtils {
 
     protected static Logger log = Logger.getLogger(PoiUtils.class);
-    private static AbsValueSanitizer valueSanitizer;
+    private static IValueSanitizer valueSanitizer;
 
-    public PoiUtils(AbsValueSanitizer valueSanitizer) {
+    public PoiUtils(IValueSanitizer valueSanitizer) {
 
         this.valueSanitizer = valueSanitizer;
     }

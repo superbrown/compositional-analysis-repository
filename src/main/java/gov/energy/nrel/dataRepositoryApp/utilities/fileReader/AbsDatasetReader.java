@@ -1,15 +1,15 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
-import gov.energy.nrel.dataRepositoryApp.utilities.AbsValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer.IValueSanitizer;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 public abstract class AbsDatasetReader {
 
-    protected AbsValueSanitizer valueSanitizer;
+    protected IValueSanitizer valueSanitizer;
 
-    public AbsDatasetReader(AbsValueSanitizer valueSanitizer) {
+    public AbsDatasetReader(IValueSanitizer valueSanitizer) {
 
         this.valueSanitizer = valueSanitizer;
     }

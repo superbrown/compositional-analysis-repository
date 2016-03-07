@@ -1,6 +1,6 @@
 package test.gov.energy.nrel.dataRepositoryApp.utilities;
 
-import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer_usingOwaspJavaHtmlSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer.ValueSanitizer_usingOwaspJavaHtmlSanitizer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

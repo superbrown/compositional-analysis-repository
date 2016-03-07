@@ -1,6 +1,6 @@
 package gov.energy.nrel.dataRepositoryApp.servletFilter;
 
-import gov.energy.nrel.dataRepositoryApp.utilities.AbsValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer.IValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.UnsanitaryRequestParameter;
 
 import javax.servlet.*;
@@ -11,10 +11,10 @@ import java.util.Map;
 
 public class MakeSureAllParametersAreSanitaryFilter implements Filter {
 
-    private AbsValueSanitizer valueSanitizer;
+    private IValueSanitizer valueSanitizer;
 
 
-    public MakeSureAllParametersAreSanitaryFilter(AbsValueSanitizer valueSanitizer) {
+    public MakeSureAllParametersAreSanitaryFilter(IValueSanitizer valueSanitizer) {
 
         this.valueSanitizer = valueSanitizer;
     }

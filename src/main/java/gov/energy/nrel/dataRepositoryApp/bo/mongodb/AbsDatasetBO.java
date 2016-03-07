@@ -15,7 +15,7 @@ import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
 import gov.energy.nrel.dataRepositoryApp.model.common.IMetadata;
 import gov.energy.nrel.dataRepositoryApp.model.common.IStoredFile;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
-import gov.energy.nrel.dataRepositoryApp.utilities.AbsValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer.IValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_AllFileTypes;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.IDatasetReader_AllFileTypes;
@@ -50,7 +50,7 @@ public abstract class AbsDatasetBO extends AbsBO implements IDatasetBO {
 
     protected void init() {
 
-        AbsValueSanitizer valueSanitizer = this.getDataRepositoryApplication().getValueSanitizer();
+        IValueSanitizer valueSanitizer = this.getDataRepositoryApplication().getValueSanitizer();
         generalFileReader = new DatasetReader_AllFileTypes(valueSanitizer);
     }
 

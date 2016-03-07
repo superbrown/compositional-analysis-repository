@@ -7,7 +7,7 @@ import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToDeleteFiles;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.FailedToSave;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataset;
 import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
-import gov.energy.nrel.dataRepositoryApp.utilities.AbsValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer.IValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.UnsanitaryData;
@@ -246,7 +246,7 @@ public class Endpoints_Datasets extends EndpointController {
         return dataRepositoryApplication.getBusinessObjects().getRowBO();
     }
 
-    protected AbsValueSanitizer getValueSanitizer() {
+    protected IValueSanitizer getValueSanitizer() {
 
         return dataRepositoryApplication.getValueSanitizer();
     }

@@ -2,7 +2,7 @@ package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
-import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer_usingOwaspJavaHtmlSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer.ValueSanitizer_usingOwaspJavaHtmlSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import org.junit.After;
 import org.junit.Before;

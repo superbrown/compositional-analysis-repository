@@ -4,7 +4,7 @@ import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
 import gov.energy.nrel.dataRepositoryApp.bo.IDataCategoryBO;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.DataCategoryAlreadyExists;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownDataCatogory;
-import gov.energy.nrel.dataRepositoryApp.utilities.AbsValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer.IValueSanitizer;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -127,7 +127,7 @@ public class Endpoints_DataCategories extends EndpointController {
         return dataRepositoryApplication.getBusinessObjects().getDataCategoryBO();
     }
 
-    protected AbsValueSanitizer getValueSanitizer() {
+    protected IValueSanitizer getValueSanitizer() {
 
         return dataRepositoryApplication.getValueSanitizer();
     }

@@ -1,9 +1,5 @@
 package gov.energy.nrel.dataRepositoryApp.settings;
 
-import gov.energy.nrel.dataRepositoryApp.servletFilter.HeadersSecurityFilter;
-import gov.energy.nrel.dataRepositoryApp.servletFilter.MakeSureAllParametersAreSanitaryFilter;
-import gov.energy.nrel.dataRepositoryApp.utilities.AbsValueSanitizer;
-import gov.energy.nrel.dataRepositoryApp.utilities.ValueSanitizer_usingOwaspJavaHtmlSanitizer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.context.annotation.Bean;
@@ -12,13 +8,13 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.Filter;
-
-
-// The idea behind the settings is to have the app look for them in two files, one that contains defaults,
-// (data-repository-app__defaults.properties), and one that overrides them,
-// (data-repository-app__envSpecificOverrides.properties).  The idea is that the defaults will come bundled in the
-// war, while the overrides will be placed somewhere on the server's classpath (for example, Tomcat's lib directory).
+// DESIGN AND USAGE NOTE:
+//
+// The idea behind the settings is to have the app look for them in two files, one that contains
+// defaults, (data-repository-app__defaults.properties), and one that overrides them,
+// (data-repository-app__envSpecificOverrides.properties).  The idea is that the defaults will come
+// bundled in the war, while the overrides will be placed somewhere on the server's classpath (for
+// example, Tomcat's lib directory).
 
 @Configuration
 @PropertySource(value = {
@@ -30,42 +26,7 @@ import javax.servlet.Filter;
 @AutoConfigureBefore
 public class Settings implements ISettings {
 
-//    @Bean
-//    public Filter createParameterSanitizingFilter() {
-//
-//        // This filter sanitizes the data coming in to the REST endpoints.
-//
-//        String antiSamyPolicyFileName = this.getAntiSamyPolicyFileName();
-//        ValueSanitizer valueSanitizer = new ValueSanitizer(antiSamyPolicyFileName);
-//
-//        return new ParameterSanitizingFilter(valueSanitizer);
-//    }
-
-    // DESIGN NOTE:
-    // At first I had the app sanitize incoming requests.  But I decided it made more sense to instead reject unsanitary
-    // requests.
-    @Bean
-    public Filter createMakeSureAllParametersAreSanitaryFilter() {
-
-        // DESIGN NOTE: The use of AntiSamy was dropped because it is no longer maintained. I don't know how important
-        // this is.
-
-//        String antiSamyPolicyFileName = this.getAntiSamyPolicyFileName();
-//        AbsValueSanitizer valueSanitizer = new ValueSanitizer_usingAntiSamy(antiSamyPolicyFileName);
-
-        AbsValueSanitizer valueSanitizer = new ValueSanitizer_usingOwaspJavaHtmlSanitizer();
-
-        return new MakeSureAllParametersAreSanitaryFilter(valueSanitizer);
-    }
-
-    @Bean
-    public Filter createHeadersSecurityFilter() {
-
-        return new HeadersSecurityFilter();
-    }
-
-
-    // DESIGN NOTE: These are all values in the application's properties file.
+    // DESIGN NOTE: These are all values contained in the application's properties file.
 
     @Value("${mongoDb.host}")
     protected String mongoDbHost;

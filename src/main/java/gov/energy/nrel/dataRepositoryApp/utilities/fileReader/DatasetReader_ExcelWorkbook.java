@@ -1,7 +1,7 @@
 package gov.energy.nrel.dataRepositoryApp.utilities.fileReader;
 
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
-import gov.energy.nrel.dataRepositoryApp.utilities.AbsValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer.IValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.dto.RowCollection;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FileContainsInvalidColumnName;
@@ -28,7 +28,7 @@ public class DatasetReader_ExcelWorkbook extends AbsDatasetReader implements IDa
     private PoiUtils poiUtils;
 
 
-    public DatasetReader_ExcelWorkbook(AbsValueSanitizer valueSanitizer) {
+    public DatasetReader_ExcelWorkbook(IValueSanitizer valueSanitizer) {
 
         super(valueSanitizer);
         this.poiUtils = new PoiUtils(valueSanitizer);

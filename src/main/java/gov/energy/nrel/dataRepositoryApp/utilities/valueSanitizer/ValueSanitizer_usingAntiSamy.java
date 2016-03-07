@@ -1,4 +1,4 @@
-package gov.energy.nrel.dataRepositoryApp.utilities;
+package gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer;
 
 import org.owasp.validator.html.AntiSamy;
 import org.owasp.validator.html.Policy;

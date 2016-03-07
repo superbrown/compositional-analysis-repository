@@ -1,14 +1,14 @@
-package gov.energy.nrel.dataRepositoryApp.utilities;
+package gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 
-public abstract class AbsValueSanitizer {
+public abstract class AbsValueSanitizer implements IValueSanitizer
+{
 
-    public abstract String sanitize(String value);
-
+    @Override
     public Object sanitize(Object value)
     {
         Object sanitizedValue;
@@ -25,6 +25,7 @@ public abstract class AbsValueSanitizer {
         return sanitizedValue;
     }
 
+    @Override
     public boolean isSanitary(String value) {
 
         String sanitizedValue = sanitize(value);
@@ -39,6 +40,7 @@ public abstract class AbsValueSanitizer {
      * @param values
      * @return
      */
+    @Override
     public List sanitize(List values)
     {
         if (values == null)
@@ -76,6 +78,7 @@ public abstract class AbsValueSanitizer {
      * @param values
      * @return
      */
+    @Override
     public Set sanitize(Set values)
     {
         if (values == null)
@@ -118,6 +121,7 @@ public abstract class AbsValueSanitizer {
      * @param values
      * @return
      */
+    @Override
     public Object[] sanitize(Object[] values)
     {
         if (values == null)

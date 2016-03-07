@@ -9,7 +9,7 @@ import gov.energy.nrel.dataRepositoryApp.dao.FileStorageStorageDAO;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
 import gov.energy.nrel.dataRepositoryApp.utilities.FileAsRawBytes;
 import gov.energy.nrel.dataRepositoryApp.utilities.Utilities;
-import gov.energy.nrel.dataRepositoryApp.utilities.AbsValueSanitizer;
+import gov.energy.nrel.dataRepositoryApp.utilities.valueSanitizer.IValueSanitizer;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.DatasetReader_ExcelWorkbook;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.UnsanitaryData;
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.FailedToExtractDataFromFile;
@@ -42,7 +42,7 @@ public class UtilsBO extends AbsBO implements gov.energy.nrel.dataRepositoryApp.
     @Override
     protected void init() {
 
-        AbsValueSanitizer valueSanitizer = this.getDataRepositoryApplication().getValueSanitizer();
+        IValueSanitizer valueSanitizer = this.getDataRepositoryApplication().getValueSanitizer();
         datasetReader_excelWorkbook = new DatasetReader_ExcelWorkbook(valueSanitizer);
 
         tempDirectoryPath = getSettings().getRootDirectoryForUploadedDataFiles() + "/temp";
