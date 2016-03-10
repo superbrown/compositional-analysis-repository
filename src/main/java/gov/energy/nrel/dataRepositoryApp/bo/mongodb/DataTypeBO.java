@@ -32,9 +32,9 @@ public class DataTypeBO extends AbsBO implements IDataTypeBO {
 
             basicDBList.add(toNameValuePairDocument(ComparisonOperator.EQUALS.toString(), "is equal to"));
             basicDBList.add(toNameValuePairDocument(ComparisonOperator.GREATER_THAN.toString(), "is greater than"));
-            basicDBList.add(toNameValuePairDocument(ComparisonOperator.GREATER_THAN_OR_EQUAL.toString(), "is greater than or equals"));
+            basicDBList.add(toNameValuePairDocument(ComparisonOperator.GREATER_THAN_OR_EQUAL.toString(), "is greater than or equal to"));
             basicDBList.add(toNameValuePairDocument(ComparisonOperator.LESS_THAN.toString(), "is less than"));
-            basicDBList.add(toNameValuePairDocument(ComparisonOperator.LESS_THAN_OR_EQUAL.toString(), "is less than or equals"));
+            basicDBList.add(toNameValuePairDocument(ComparisonOperator.LESS_THAN_OR_EQUAL.toString(), "is less than or equal to"));
         }
         else if (dataType == DataType.STRING) {
 
