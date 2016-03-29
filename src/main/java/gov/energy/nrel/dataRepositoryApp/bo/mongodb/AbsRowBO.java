@@ -5,7 +5,6 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import gov.energy.nrel.dataRepositoryApp.DataRepositoryApplication;
-import gov.energy.nrel.dataRepositoryApp.ServletContainerConfig;
 import gov.energy.nrel.dataRepositoryApp.bo.IRowBO;
 import gov.energy.nrel.dataRepositoryApp.bo.ResultsMode;
 import gov.energy.nrel.dataRepositoryApp.bo.exception.UnknownRow;
@@ -13,11 +12,11 @@ import gov.energy.nrel.dataRepositoryApp.dao.IRowDAO;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.ComparisonOperator;
 import gov.energy.nrel.dataRepositoryApp.dao.dto.SearchCriterion;
 import gov.energy.nrel.dataRepositoryApp.dao.mongodb.DAOUtilities;
-import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
-import gov.energy.nrel.dataRepositoryApp.model.document.IRowDocument;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Metadata;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.Row;
 import gov.energy.nrel.dataRepositoryApp.model.common.mongodb.StoredFile;
+import gov.energy.nrel.dataRepositoryApp.model.document.IDatasetDocument;
+import gov.energy.nrel.dataRepositoryApp.model.document.IRowDocument;
 import gov.energy.nrel.dataRepositoryApp.model.document.mongodb.RowDocument;
 import gov.energy.nrel.dataRepositoryApp.restEndpoint.DataType;
 import gov.energy.nrel.dataRepositoryApp.utilities.PerformanceLogger;
@@ -243,8 +242,8 @@ public abstract class AbsRowBO extends AbsBO implements IRowBO {
                 // DESIGN NOTE: I know, this is the wrong architectural layer. I'm in a time crunch right now.
 
                 row.put(Metadata.MONGO_KEY__SOURCE_DOCUMENT,
-                        "<a href='" + ServletContainerConfig.CONTEXT_PATH +
-                        "/api/v01/dataset/" + datasetId + "/sourceDocument' " +
+                        "<a href='" +
+                        "api/v01/dataset/" + datasetId + "/sourceDocument' " +
                         "target='_blank'>" +
                         originalFileName + "</a>");
 
@@ -295,8 +294,8 @@ public abstract class AbsRowBO extends AbsBO implements IRowBO {
 
                 if (StringUtils.isNotBlank(originalFileNames)) {
                     row.put("Attachments",
-                            "<a href='" + ServletContainerConfig.CONTEXT_PATH +
-                                    "/api/v01/dataset/" + datasetId + "/attachments' " +
+                            "<a href='" +
+                                    "api/v01/dataset/" + datasetId + "/attachments' " +
                                     "target='_blank'>" +
                                     originalFileNames + "</a>");
                 }

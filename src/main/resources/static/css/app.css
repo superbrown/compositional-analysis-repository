@@ -85,7 +85,7 @@ thead {
     height: 100%;
     background-color: black;
     opacity: 0.3;
-    background-image: url('/data-repository-app/img/progressAnimation.gif');
+    background-image: url('../img/progressAnimation.gif');
     background-repeat: no-repeat;
     background-position: center center;
     top: 0;

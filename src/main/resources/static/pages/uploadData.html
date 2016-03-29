@@ -7,11 +7,11 @@
   <!-- alert messages -->
   <div class="alert alert-success" ng-show="alertMessage_success != ''">
     <strong>Success!</strong> {{$root.alertMessage_success}}
-    <a href="/data-repository-app/#/uploadData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_success = ''">&times;</a>
+    <a href="#/uploadData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_success = ''">&times;</a>
   </div>
   <div class="alert alert-danger" ng-show="alertMessage_failure != ''">
     <strong>ERROR:</strong> {{$root.alertMessage_failure}}
-    <a href="/data-repository-app/#/uploadData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_failure = ''">&times;</a>
+    <a href="#/uploadData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_failure = ''">&times;</a>
   </div>
 
   <div>
@@ -108,7 +108,7 @@
 
   <div class="alert alert-warning" ng-show="alertMessage_missingUserInput != ''" style="margin-top: 10px;">
     {{$root.alertMessage_missingUserInput}}
-    <a href="/data-repository-app/#/uploadData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_missingUserInput = ''">&times;</a>
+    <a href="#/uploadData" class="close" data-dismiss="alert" ng-click="$root.alertMessage_missingUserInput = ''">&times;</a>
   </div>
 
   <!--Upload button-->

@@ -372,7 +372,7 @@ drApp.service('drServices', function() {
 
         scope.$root.numberOfBlockingProcesses++;
 
-        http.get('/data-repository-app/api/v01/dataCategory/names/all')
+        http.get('api/v01/dataCategory/names/all')
             .success(function (result) {
                 scope.$root.numberOfBlockingProcesses--;
                 scope.$root.knownDataCategories = result;
@@ -390,7 +390,7 @@ drApp.service('drServices', function() {
 
         scope.$root.numberOfBlockingProcesses++;
 
-        http.get('/data-repository-app/api/v01/dataCategory/searchableColumnNames?dataCategoryName=' + scope.$root.dataCategory)
+        http.get('api/v01/dataCategory/searchableColumnNames?dataCategoryName=' + scope.$root.dataCategory)
             .success(function (result) {
                 scope.$root.numberOfBlockingProcesses--;
                 scope.$root.knownColumnNames = result;
@@ -424,7 +424,7 @@ drApp.service('drServices', function() {
         scope.$root.numberOfBlockingProcesses++;
 
         http.post(
-            '/data-repository-app/api/v01/getNamesOfSheetsWithinExcelWorkbook',
+            'api/v01/getNamesOfSheetsWithinExcelWorkbook',
             formData,
             {
                 transformRequest: angular.identity,
@@ -484,7 +484,7 @@ drApp.service('drServices', function() {
         scope.$root.numberOfBlockingProcesses++;
 
         http.post(
-            '/data-repository-app/api/v01/addDataset',
+            'api/v01/addDataset',
             formData,
             {
                 transformRequest: angular.identity,
@@ -508,7 +508,7 @@ drApp.service('drServices', function() {
 
         scope.$root.numberOfBlockingProcesses++;
 
-        http.get('/data-repository-app/api/v01/dataTypes/all')
+        http.get('api/v01/dataTypes/all')
             .success(function (result) {
                 scope.$root.numberOfBlockingProcesses--;
                 scope.$root.knownDataTypes = result;
@@ -527,7 +527,7 @@ drApp.service('drServices', function() {
 
         scope.$root.numberOfBlockingProcesses++;
 
-        http.get('/data-repository-app/api/v01/dataType/comparisonOperators?dataType=' + dataTypeId)
+        http.get('api/v01/dataType/comparisonOperators?dataType=' + dataTypeId)
             .success(function (result) {
                 scope.$root.numberOfBlockingProcesses--;
                 criterion.knownComparisonOperators = result;
@@ -558,7 +558,7 @@ drApp.service('drServices', function() {
 
         var req = {
             method: 'POST',
-            url: '/data-repository-app/api/v01/rows/flat',
+            url: 'api/v01/rows/flat',
             headers: {
                 'Content-Type': undefined
             },
