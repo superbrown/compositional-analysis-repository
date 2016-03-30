@@ -4,12 +4,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>gov.energy.nrel</groupId>
-	<!--Don't change this because the HTML code relies upon it being data-repository-app. -->
 	<artifactId>data-repository-app</artifactId>
 	<version>0.0.1</version>
 	<packaging>war</packaging>
 
-	<!--Don't change this because the HTML code relies upon it being data-repository-app. -->
 	<name>data-repository-app</name>
 	<description>Data Repository Application</description>
 
@@ -124,7 +122,6 @@
 	</dependencies>
 
 	<build>
-		<!--Don't change this because the HTML code relies upon it being data-repository-app. -->
 		<finalName>data-repository-app</finalName>
 		<plugins>
 			<plugin>

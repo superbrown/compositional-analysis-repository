@@ -29,15 +29,12 @@ public class CodeForIngestingLegacyData {
 
     public static void main(String[] args) {
 
-//        String appBaseURL = "http://localhost:8080/data-repository-app";
-//        String pathToDataFileDirectories = "C:/projects/legacyDataToBeIngested/WOLFRUM";
-//        String metadataFilePath = "C:/projects/legacyDataToBeIngested/WOLFRUM/code/Book1.xlsx";
-//        String dataCategory = "Biomass";
+        // Set this to what you want them to be:
 
-        String appBaseURL = args[0];
-        String pathToDirectoryContainingDataFiles = args[1];
-        String pathToSpreadsheetContainingMetadata = args[2];
-        String dataCategory = args[3];
+        String appBaseURL = "http://localhost:8080/data-repository-app";
+        String pathToDirectoryContainingDataFiles = "C:/projects/legacyDataToBeIngested/WOLFRUM";
+        String pathToSpreadsheetContainingMetadata = "C:/projects/legacyDataToBeIngested/WOLFRUM/code/Book1.xlsx";
+        String dataCategory = "Biomass";
 
         try {
 
