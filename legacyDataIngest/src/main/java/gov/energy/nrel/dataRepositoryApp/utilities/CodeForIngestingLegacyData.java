@@ -29,7 +29,7 @@ public class CodeForIngestingLegacyData {
 
     public static void main(String[] args) {
 
-        // Set this to what you want them to be:
+        // Set these to what you want them to be:
 
         String appBaseURL = "http://localhost:8080/data-repository-app";
         String pathToDirectoryContainingDataFiles = "C:/projects/legacyDataToBeIngested/WOLFRUM";
