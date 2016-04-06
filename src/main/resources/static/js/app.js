@@ -132,7 +132,8 @@ drApp.run(
         $rootScope.numberOfBlockingProcesses = 0;
     });
 
-    drApp.controller('controller_rootPage',
+drApp.controller(
+    'controller_rootPage',
     [
         '$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', '$cookies', 'drServices',
         function($scope, $rootScope, $http, $log, $filter, $resource, $location, $cookies, drServices) {
@@ -187,8 +188,10 @@ drApp.run(
     ]
 );
 
-drApp.controller('controller_uploadDataPage',
-    ['$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', '$parse', 'drServices',
+drApp.controller(
+    'controller_uploadDataPage',
+    [
+        '$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', '$parse', 'drServices',
         function($scope, $rootScope, $http, $log, $filter, $resource, $location, $parse, drServices)  {
 
             // This is next part is sort of a work-around.  Because this code is in the controller, it will be called
@@ -222,7 +225,8 @@ drApp.controller('controller_uploadDataPage',
     ]
 );
 
-drApp.controller('controller_findDataPage',
+drApp.controller(
+    'controller_findDataPage',
     [
         '$scope', '$rootScope', '$http', '$log', '$filter', '$resource', '$location', 'drServices',
         function($scope, $rootScope, $http, $log, $filter, $resource, $location, drServices)
@@ -308,280 +312,283 @@ drApp.controller('controller_findDataPage',
     ]
 );
 
-drApp.service('drServices', function() {
+drApp.service(
+    'drServices',
+    function() {
 
-    var self = this;
+        var self = this;
 
-    self.toSearchCriteriaAsJson = function(dataCategory, searchCriteria) {
+        self.toSearchCriteriaAsJson = function(dataCategory, searchCriteria) {
 
-        var criteriaPackagedForRestCall = [];
+            var criteriaPackagedForRestCall = [];
 
-        // make sure we're limiting ourselves to the data category in question
-
-        criteriaPackagedForRestCall.push(
-            {
-                'name': ' Data Category',
-                'dataType': 'STRING',
-                'comparisonOperator': 'EQUALS',
-                'value': dataCategory
-            }
-        );
-
-        for (var i = 0; i < searchCriteria.length; i++) {
-
-            var criterion = searchCriteria[i];
-
-            if (isUnset(criterion.columnName)) continue;
-            if (isUnset(criterion.dataTypeId)) continue;
-            if (isUnset(criterion.comparisonOperatorId)) continue;
-
-            var value;
-
-            var dataTypeId = criterion.dataTypeId;
-            if (dataTypeId === 'STRING') {
-                if (isUnset(criterion.value_asString)) continue;
-                value = criterion.value_asString;
-            }
-            else if (dataTypeId === 'NUMBER') {
-                if (isUnset(criterion.value_asNumber)) continue;
-                value = criterion.value_asNumber;
-            }
-            else if (dataTypeId === 'DATE') {
-                if (isUnset(criterion.value_asDate)) continue;
-                value = criterion.value_asDate.toJSON();
-            }
-            else if (dataTypeId === 'BOOLEAN') {
-                if (isUnset(criterion.value_asBoolean)) continue;
-                value = criterion.value_asBoolean;
-            }
+            // make sure we're limiting ourselves to the data category in question
 
             criteriaPackagedForRestCall.push(
                 {
-                    'name': criterion.columnName,
-                    'dataType': criterion.dataTypeId,
-                    'comparisonOperator': criterion.comparisonOperatorId,
-                    'value': value
+                    'name': ' Data Category',
+                    'dataType': 'STRING',
+                    'comparisonOperator': 'EQUALS',
+                    'value': dataCategory
                 }
             );
-        }
 
-        return criteriaPackagedForRestCall;
-    };
+            for (var i = 0; i < searchCriteria.length; i++) {
 
-    self.populateKnownDataCategories = function (scope, http) {
+                var criterion = searchCriteria[i];
 
-        scope.$root.numberOfBlockingProcesses++;
+                if (isUnset(criterion.columnName)) continue;
+                if (isUnset(criterion.dataTypeId)) continue;
+                if (isUnset(criterion.comparisonOperatorId)) continue;
 
-        http.get('api/v01/dataCategory/names/all')
-            .success(function (result) {
-                scope.$root.numberOfBlockingProcesses--;
-                scope.$root.knownDataCategories = result;
-            })
-            .error(function (data, status) {
-                scope.$root.numberOfBlockingProcesses--;
-                postError(scope.$root, data);
+                var value;
 
-            });
-    };
+                var dataTypeId = criterion.dataTypeId;
+                if (dataTypeId === 'STRING') {
+                    if (isUnset(criterion.value_asString)) continue;
+                    value = criterion.value_asString;
+                }
+                else if (dataTypeId === 'NUMBER') {
+                    if (isUnset(criterion.value_asNumber)) continue;
+                    value = criterion.value_asNumber;
+                }
+                else if (dataTypeId === 'DATE') {
+                    if (isUnset(criterion.value_asDate)) continue;
+                    value = criterion.value_asDate.toJSON();
+                }
+                else if (dataTypeId === 'BOOLEAN') {
+                    if (isUnset(criterion.value_asBoolean)) continue;
+                    value = criterion.value_asBoolean;
+                }
 
-    self.populateKnownColumnNames = function (scope, http) {
-
-        if (isUnset(scope.$root.dataCategory)) return;
-
-        scope.$root.numberOfBlockingProcesses++;
-
-        http.get('api/v01/dataCategory/searchableColumnNames?dataCategoryName=' + scope.$root.dataCategory)
-            .success(function (result) {
-                scope.$root.numberOfBlockingProcesses--;
-                scope.$root.knownColumnNames = result;
-            })
-            .error(function (data, status) {
-                scope.$root.numberOfBlockingProcesses--;
-                scope.$root.knownColumnNames = [];
-                postError(scope.$root, data);
-            });
-    };
-
-    self.populateNamesOfSheetsWithinExcelWorkbook = function (scope, http) {
-
-        scope.$root.knownNamesOfSheetsWithinSelectedWorkbook = [];
-        scope.$root.nameOfSubdocumentContainingDataIfApplicable = '';
-
-        var sourceDocument = scope.$root.sourceDocument;
-
-        if (isUnset(sourceDocument)) {
-            return;
-        }
-
-        if (hasExcelWorkbookFileSuffix(sourceDocument.name) === false) {
-            // This is fine. They probably selected a CSV file.
-            return;
-        }
-
-        var formData = new FormData();
-        formData.append('workbook', sourceDocument);
-
-        scope.$root.numberOfBlockingProcesses++;
-
-        http.post(
-            'api/v01/getNamesOfSheetsWithinExcelWorkbook',
-            formData,
-            {
-                transformRequest: angular.identity,
-                headers: {'Content-Type': undefined}
+                criteriaPackagedForRestCall.push(
+                    {
+                        'name': criterion.columnName,
+                        'dataType': criterion.dataTypeId,
+                        'comparisonOperator': criterion.comparisonOperatorId,
+                        'value': value
+                    }
+                );
             }
-        )
-            .success(function (result) {
-                scope.$root.numberOfBlockingProcesses--;
-                scope.$root.knownNamesOfSheetsWithinSelectedWorkbook = result;
-            }
-        )
-            .error(function (data, status) {
-                scope.$root.numberOfBlockingProcesses--;
-                postError(scope.$root, data);
-            }
-        );
-    };
 
-    self.uploadData = function (scope, http) {
-
-        // Explanation of this approach:
-        // https://uncorkedstudios.com/blog/multipartformdata-file-upload-with-angularjs
-        // http://shazwazza.com/post/uploading-files-and-json-data-in-the-same-request-with-angular-js/
-
-        var formData = new FormData();
-        var $root = scope.$root;
-
-        scope.$root.alertMessage_missingUserInput = '';
-
-        // validation
-        if (isUnset($root.dataCategory)) {
-            $root.alertMessage_missingUserInput = 'Please select a Data Category.'; return; }
-        if (isUnset($root.submissionDate)) {
-            $root.alertMessage_missingUserInput = 'Please enter a Submission Date.'; return; }
-        if (isUnset($root.submitter)) {
-            $root.alertMessage_missingUserInput = 'Please enter a Submitter.'; return; }
-        if (isUnset($root.sourceDocument)) {
-            $root.alertMessage_missingUserInput = 'Please select a Source Document.'; return; }
-        if (hasExcelWorkbookFileSuffix($root.sourceDocument.name) &&
-            isUnset($root.nameOfSubdocumentContainingDataIfApplicable)) {
-            $root.alertMessage_missingUserInput = 'Please select the name of the sheet within the Excel workbook that contains the data to be ingested.'; return; }
-
-        formData.append('dataCategory', $root.dataCategory);
-        formData.append('submissionDate', $root.submissionDate.toJSON());
-        formData.append('submitter', $root.submitter);
-        formData.append('projectName', $root.projectName);
-        formData.append('chargeNumber', $root.chargeNumber);
-        formData.append('comments', $root.comments);
-        formData.append('sourceDocument', $root.sourceDocument);
-        formData.append('nameOfSubdocumentContainingDataIfApplicable', $root.nameOfSubdocumentContainingDataIfApplicable);
-
-        for (var i = 0; i < $root.attachments.length; i++) {
-            var attachment = $root.attachments[i];
-            formData.append('attachments[' + i + ']', attachment);
-        }
-
-        scope.$root.numberOfBlockingProcesses++;
-
-        http.post(
-            'api/v01/addDataset',
-            formData,
-            {
-                transformRequest: angular.identity,
-                headers: {'Content-Type': undefined}
-            }
-        )
-            .success(function (result) {
-                scope.$root.numberOfBlockingProcesses--;
-                scope.$root.alertMessage_success = "File successfully uploaded.";
-                self.populateKnownColumnNames(scope, http);
-            }
-        )
-            .error(function (data, status) {
-                scope.$root.numberOfBlockingProcesses--;
-                postError(scope.$root, data);
-            }
-        );
-    };
-
-    self.populateKnownDataTypes = function (scope, http) {
-
-        scope.$root.numberOfBlockingProcesses++;
-
-        http.get('api/v01/dataTypes/all')
-            .success(function (result) {
-                scope.$root.numberOfBlockingProcesses--;
-                scope.$root.knownDataTypes = result;
-            })
-            .error(function (data, status) {
-                scope.$root.numberOfBlockingProcesses--;
-                postError(scope.$root, data);
-            });
-    };
-
-    self.populateKnownComparisonOperators = function (scope, http, criterion) {
-
-        var dataTypeId = criterion.dataTypeId;
-
-        if (isUnset(dataTypeId)) return;
-
-        scope.$root.numberOfBlockingProcesses++;
-
-        http.get('api/v01/dataType/comparisonOperators?dataType=' + dataTypeId)
-            .success(function (result) {
-                scope.$root.numberOfBlockingProcesses--;
-                criterion.knownComparisonOperators = result;
-            })
-            .error(function (data, status) {
-                scope.$root.numberOfBlockingProcesses--;
-                postError(scope.$root, data);
-            });
-    };
-
-    self.findData = function (scope, http) {
-
-        var searchCriteria = scope.$root.searchCriteria;
-        var dataCategory = scope.$root.dataCategory;
-
-        var searchCriteriaAsJson = self.toSearchCriteriaAsJson(dataCategory, searchCriteria);
-
-        if (searchCriteriaAsJson.length === 1) {
-            scope.$root.alertMessage_missingUserInput =
-                "Can't perform search because none of the search criteria are complete.";
-            return;
-        }
-
-        scope.$root.searchComplete = false;
-        scope.$root.searchResults = [];
-
-        scope.$root.searchCriteriaAsJson = searchCriteriaAsJson;
-
-        var req = {
-            method: 'POST',
-            url: 'api/v01/rows/flat',
-            headers: {
-                'Content-Type': undefined
-            },
-            data: searchCriteriaAsJson
+            return criteriaPackagedForRestCall;
         };
 
-        scope.$root.numberOfBlockingProcesses++;
+        self.populateKnownDataCategories = function (scope, http) {
 
-        http(req)
-            .success(function (result) {
-                scope.$root.numberOfBlockingProcesses--;
-                scope.$root.searchComplete = true;
-                scope.$root.searchResults = result;
-            })
-            .error(function (data, status) {
-                scope.$root.numberOfBlockingProcesses--;
-                scope.$root.searchComplete = true;
-                postError(scope.$root, data);
-            });
-    };
+            scope.$root.numberOfBlockingProcesses++;
 
-    function postError(root, data) {
-        root.alertMessage_failure = data.message;
-        console.error(data);
+            http.get('api/v01/dataCategory/names/all')
+                .success(function (result) {
+                    scope.$root.numberOfBlockingProcesses--;
+                    scope.$root.knownDataCategories = result;
+                })
+                .error(function (data, status) {
+                    scope.$root.numberOfBlockingProcesses--;
+                    postError(scope.$root, data);
+
+                });
+        };
+
+        self.populateKnownColumnNames = function (scope, http) {
+
+            if (isUnset(scope.$root.dataCategory)) return;
+
+            scope.$root.numberOfBlockingProcesses++;
+
+            http.get('api/v01/dataCategory/searchableColumnNames?dataCategoryName=' + scope.$root.dataCategory)
+                .success(function (result) {
+                    scope.$root.numberOfBlockingProcesses--;
+                    scope.$root.knownColumnNames = result;
+                })
+                .error(function (data, status) {
+                    scope.$root.numberOfBlockingProcesses--;
+                    scope.$root.knownColumnNames = [];
+                    postError(scope.$root, data);
+                });
+        };
+
+        self.populateNamesOfSheetsWithinExcelWorkbook = function (scope, http) {
+
+            scope.$root.knownNamesOfSheetsWithinSelectedWorkbook = [];
+            scope.$root.nameOfSubdocumentContainingDataIfApplicable = '';
+
+            var sourceDocument = scope.$root.sourceDocument;
+
+            if (isUnset(sourceDocument)) {
+                return;
+            }
+
+            if (hasExcelWorkbookFileSuffix(sourceDocument.name) === false) {
+                // This is fine. They probably selected a CSV file.
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('workbook', sourceDocument);
+
+            scope.$root.numberOfBlockingProcesses++;
+
+            http.post(
+                'api/v01/getNamesOfSheetsWithinExcelWorkbook',
+                formData,
+                {
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': undefined}
+                }
+            )
+                .success(function (result) {
+                    scope.$root.numberOfBlockingProcesses--;
+                    scope.$root.knownNamesOfSheetsWithinSelectedWorkbook = result;
+                }
+            )
+                .error(function (data, status) {
+                    scope.$root.numberOfBlockingProcesses--;
+                    postError(scope.$root, data);
+                }
+            );
+        };
+
+        self.uploadData = function (scope, http) {
+
+            // Explanation of this approach:
+            // https://uncorkedstudios.com/blog/multipartformdata-file-upload-with-angularjs
+            // http://shazwazza.com/post/uploading-files-and-json-data-in-the-same-request-with-angular-js/
+
+            var formData = new FormData();
+            var $root = scope.$root;
+
+            scope.$root.alertMessage_missingUserInput = '';
+
+            // validation
+            if (isUnset($root.dataCategory)) {
+                $root.alertMessage_missingUserInput = 'Please select a Data Category.'; return; }
+            if (isUnset($root.submissionDate)) {
+                $root.alertMessage_missingUserInput = 'Please enter a Submission Date.'; return; }
+            if (isUnset($root.submitter)) {
+                $root.alertMessage_missingUserInput = 'Please enter a Submitter.'; return; }
+            if (isUnset($root.sourceDocument)) {
+                $root.alertMessage_missingUserInput = 'Please select a Source Document.'; return; }
+            if (hasExcelWorkbookFileSuffix($root.sourceDocument.name) &&
+                isUnset($root.nameOfSubdocumentContainingDataIfApplicable)) {
+                $root.alertMessage_missingUserInput = 'Please select the name of the sheet within the Excel workbook that contains the data to be ingested.'; return; }
+
+            formData.append('dataCategory', $root.dataCategory);
+            formData.append('submissionDate', $root.submissionDate.toJSON());
+            formData.append('submitter', $root.submitter);
+            formData.append('projectName', $root.projectName);
+            formData.append('chargeNumber', $root.chargeNumber);
+            formData.append('comments', $root.comments);
+            formData.append('sourceDocument', $root.sourceDocument);
+            formData.append('nameOfSubdocumentContainingDataIfApplicable', $root.nameOfSubdocumentContainingDataIfApplicable);
+
+            for (var i = 0; i < $root.attachments.length; i++) {
+                var attachment = $root.attachments[i];
+                formData.append('attachments[' + i + ']', attachment);
+            }
+
+            scope.$root.numberOfBlockingProcesses++;
+
+            http.post(
+                'api/v01/addDataset',
+                formData,
+                {
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': undefined}
+                }
+            )
+                .success(function (result) {
+                    scope.$root.numberOfBlockingProcesses--;
+                    scope.$root.alertMessage_success = "File successfully uploaded.";
+                    self.populateKnownColumnNames(scope, http);
+                }
+            )
+                .error(function (data, status) {
+                    scope.$root.numberOfBlockingProcesses--;
+                    postError(scope.$root, data);
+                }
+            );
+        };
+
+        self.populateKnownDataTypes = function (scope, http) {
+
+            scope.$root.numberOfBlockingProcesses++;
+
+            http.get('api/v01/dataTypes/all')
+                .success(function (result) {
+                    scope.$root.numberOfBlockingProcesses--;
+                    scope.$root.knownDataTypes = result;
+                })
+                .error(function (data, status) {
+                    scope.$root.numberOfBlockingProcesses--;
+                    postError(scope.$root, data);
+                });
+        };
+
+        self.populateKnownComparisonOperators = function (scope, http, criterion) {
+
+            var dataTypeId = criterion.dataTypeId;
+
+            if (isUnset(dataTypeId)) return;
+
+            scope.$root.numberOfBlockingProcesses++;
+
+            http.get('api/v01/dataType/comparisonOperators?dataType=' + dataTypeId)
+                .success(function (result) {
+                    scope.$root.numberOfBlockingProcesses--;
+                    criterion.knownComparisonOperators = result;
+                })
+                .error(function (data, status) {
+                    scope.$root.numberOfBlockingProcesses--;
+                    postError(scope.$root, data);
+                });
+        };
+
+        self.findData = function (scope, http) {
+
+            var searchCriteria = scope.$root.searchCriteria;
+            var dataCategory = scope.$root.dataCategory;
+
+            var searchCriteriaAsJson = self.toSearchCriteriaAsJson(dataCategory, searchCriteria);
+
+            if (searchCriteriaAsJson.length === 1) {
+                scope.$root.alertMessage_missingUserInput =
+                    "Can't perform search because none of the search criteria are complete.";
+                return;
+            }
+
+            scope.$root.searchComplete = false;
+            scope.$root.searchResults = [];
+
+            scope.$root.searchCriteriaAsJson = searchCriteriaAsJson;
+
+            var req = {
+                method: 'POST',
+                url: 'api/v01/rows/flat',
+                headers: {
+                    'Content-Type': undefined
+                },
+                data: searchCriteriaAsJson
+            };
+
+            scope.$root.numberOfBlockingProcesses++;
+
+            http(req)
+                .success(function (result) {
+                    scope.$root.numberOfBlockingProcesses--;
+                    scope.$root.searchComplete = true;
+                    scope.$root.searchResults = result;
+                })
+                .error(function (data, status) {
+                    scope.$root.numberOfBlockingProcesses--;
+                    scope.$root.searchComplete = true;
+                    postError(scope.$root, data);
+                });
+        };
+
+        function postError(root, data) {
+            root.alertMessage_failure = data.message;
+            console.error(data);
+        }
     }
-});
+);
