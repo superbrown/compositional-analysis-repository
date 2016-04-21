@@ -7,4 +7,4 @@ for searching for data rows using user specified criteria, as well as the abilit
 
 This document can provide  further infomation about its usage and design:
 
-https://github.com/superbrown/data-repository-app/blob/master/documentation/Data%20Repository%20App%20-%20Design%20Document.docx
+https://github.com/superbrown/data-repository-app/raw/master/documentation/Data%20Repository%20App%20-%20Documentation.docx
