@@ -31,11 +31,14 @@ public class Endpoints_Rows extends EndpointController {
 
 
     @RequestMapping(
-            value="/api/v01/rows",
+            value="/api/v02/rows",
             method = RequestMethod.POST,
             produces = "application/json")
     public ResponseEntity getRows(
             @RequestBody String query) throws CleanupOperationIsOccurring {
+
+        // NOTE: This is logically a GET operation. It's a POST because data must be sent in the
+        // requuest body.
 
         throwExceptionIfCleanupOperationsIsOccurring();
 
@@ -45,11 +48,14 @@ public class Endpoints_Rows extends EndpointController {
     }
 
     @RequestMapping(
-            value="/api/v01/rows/flat",
+            value="/api/v02/rows/flat",
             method = RequestMethod.POST,
             produces = "application/json")
     public ResponseEntity getRowsFlat(
             @RequestBody String query) throws CleanupOperationIsOccurring {
+
+        // NOTE: This is logically a GET operation. It's a POST because data must be sent in the
+        // requuest body.
 
         throwExceptionIfCleanupOperationsIsOccurring();
 
@@ -59,11 +65,15 @@ public class Endpoints_Rows extends EndpointController {
     }
 
     @RequestMapping(
-            value="/api/v01/rows/asFile",
-            method = RequestMethod.POST)
+            value="/api/v02/rows/asFile",
+            method = RequestMethod.POST,
+            produces = "application/binary")
     public ResponseEntity<InputStreamResource> getRowsAsFile(
             @RequestBody String query)
             throws IOException, CleanupOperationIsOccurring {
+
+        // NOTE: This is logically a GET operation. It is a POST because data must be sent in the
+        // requuest body.
 
         throwExceptionIfCleanupOperationsIsOccurring();
 
@@ -88,7 +98,7 @@ public class Endpoints_Rows extends EndpointController {
     }
 
     @RequestMapping(
-            value="/api/v01/row/{rowId}",
+            value="/api/v02/rows/{rowId}",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity getRow(

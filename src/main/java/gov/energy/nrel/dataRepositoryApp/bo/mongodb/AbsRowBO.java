@@ -243,7 +243,7 @@ public abstract class AbsRowBO extends AbsBO implements IRowBO {
 
                 row.put(Metadata.MONGO_KEY__SOURCE_DOCUMENT,
                         "<a href='" +
-                        "api/v01/dataset/" + datasetId + "/sourceDocument' " +
+                        "api/v02/datasets/" + datasetId + "/sourceDocument' " +
                         "target='_blank'>" +
                         originalFileName + "</a>");
 
@@ -295,7 +295,7 @@ public abstract class AbsRowBO extends AbsBO implements IRowBO {
                 if (StringUtils.isNotBlank(originalFileNames)) {
                     row.put("Attachments",
                             "<a href='" +
-                                    "api/v01/dataset/" + datasetId + "/attachments' " +
+                                    "api/v02/datasets/" + datasetId + "/attachments' " +
                                     "target='_blank'>" +
                                     originalFileNames + "</a>");
                 }

@@ -49,7 +49,7 @@ public class Endpoints_Datasets extends EndpointController {
     protected DataRepositoryApplication dataRepositoryApplication;
 
     @RequestMapping(
-            value="/api/v01/addDataset",
+            value="/api/v02/dataset",
             method = RequestMethod.POST,
             produces = "application/json")
     public ResponseEntity addDataset(
@@ -98,7 +98,7 @@ public class Endpoints_Datasets extends EndpointController {
     }
 
     @RequestMapping(
-            value="/api/v01/datasets/all",
+            value="/api/v02/datasets",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity getAllDatasets() {
@@ -108,7 +108,7 @@ public class Endpoints_Datasets extends EndpointController {
     }
 
     @RequestMapping(
-            value="/api/v01/dataset/{datasetId}",
+            value="/api/v02/datasets/{datasetId}",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity getDataset(
@@ -124,8 +124,9 @@ public class Endpoints_Datasets extends EndpointController {
     }
 
     @RequestMapping(
-            value="/api/v01/dataset/{datasetId}/sourceDocument",
-            method = RequestMethod.GET)
+            value="/api/v02/datasets/{datasetId}/sourceDocument",
+            method = RequestMethod.GET,
+            produces = "application/binary")
     public  ResponseEntity<InputStreamResource> downloadDataset(
             @PathVariable(value = "datasetId") String datasetId) throws IOException, UnknownDataset, CleanupOperationIsOccurring {
 
@@ -151,9 +152,9 @@ public class Endpoints_Datasets extends EndpointController {
     }
 
     @RequestMapping(
-            value="/api/v01/dataset/{datasetId}/attachments",
-            produces="application/zip",
-            method = RequestMethod.GET)
+            value="/api/v02/datasets/{datasetId}/attachments",
+            method = RequestMethod.GET,
+            produces="application/zip")
     public  ResponseEntity<InputStreamResource> downloadAttachments(
             @PathVariable(value = "datasetId") String datasetId) throws IOException, UnknownDataset, CleanupOperationIsOccurring {
 
@@ -176,7 +177,7 @@ public class Endpoints_Datasets extends EndpointController {
     }
 
     @RequestMapping(
-            value="/api/v01/dataset/{datasetId}/rows",
+            value="/api/v02/datasets/{datasetId}/rows",
             method = RequestMethod.GET,
             produces = "application/binary")
     public ResponseEntity getRows(
@@ -192,15 +193,15 @@ public class Endpoints_Datasets extends EndpointController {
     }
 
     @RequestMapping(
-            value="/api/v01/removeDataset/{datasetId}",
+            value="/api/v02/removeDataset/{datasetId}",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity deleteDataset(
             @PathVariable(value = "datasetId") String datasetId)
             throws UnknownDataset, FailedToDeleteFiles, CleanupOperationIsOccurring {
 
-        // I know that shouldn't be GET, but rather, DELETE. But I'm making it GET so a user can easily call it from
-        // a browser.
+        // I know that shouldn't be GET, but rather, DELETE. But I'm making it GET so a user can
+        // easily call it from a browser.
 
         throwExceptionIfCleanupOperationsIsOccurring();
 
