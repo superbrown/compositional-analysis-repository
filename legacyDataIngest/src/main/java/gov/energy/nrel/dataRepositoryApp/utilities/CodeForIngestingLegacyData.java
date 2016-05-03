@@ -45,7 +45,7 @@ public class CodeForIngestingLegacyData {
                 CloseableHttpClient closeableHttpClient = null;
                 try {
                     // specify the get request
-                    HttpPost postRequest = new HttpPost(appBaseURL + "/api/v01/addDataset");
+                    HttpPost postRequest = new HttpPost(appBaseURL + "/api/v02/dataset");
 
                     MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 

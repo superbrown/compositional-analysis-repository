@@ -38,34 +38,38 @@
     <h1>data-repository-app REST endpoints</h1>
 
     <h2>Cateogy Data</h2>
-    api/v01/dataCategory/{dataCategoryId} [GET]<br/>
-    api/v01/dataCategory?dataCategoryName={dataCateogryName} [GET]<br/>
-    api/v01/dataCategory/searchableColumnNames?dataCategoryName={dataCateogryName} [GET]<br/>
-    <a href="api/v01/dataCategory/names/all" target="_blank">api/v01/dataCategory/names/all</a> [GET]<br/>
-    <a href="api/v01/dataCategories/all" target="_blank">api/v01/dataCategories/all</a> [GET]<br/>
+    <a href="api/v02/dataCategories" target="_blank">api/v02/dataCategories</a> [GET]<br/>
+    <a href="api/v02/dataCategories/names" target="_blank">api/v02/dataCategories/names</a> [GET]<br/>
+    api/v02/dataCategories/{dataCategoryId} [GET]<br/>
+    api/v02/dataCategories?dataCategoryName={dataCateogryName} [GET]<br/>
+    api/v02/dataCategories/searchableColumnNames?dataCategoryName={dataCateogryName} [GET]<br/>
 
     <h2>Datasets</h2>
-    api/v01/addDataset/{dataset_id} {JSON in the request body} [POST]<br/>
-    <a href="api/v01/datasets/all" target="_blank">api/v01/datasets/all</a> [GET]<br/>
-    api/v01/dataset/{datasetId}/sourceDocument [GET] [returns binary document]<br/>
-    api/v01/dataset/{datasetId}/attachments [GET] [returns binary document, a zip file]<br/>
-    api/v01/dataset/{datasetId}/rows {JSON in the request body} [GET]<br/>
+    api/v02/dataset {JSON in the request body} [POST]<br/>
+    <a href="api/v02/datasets" target="_blank">api/v02/datasets</a> [GET]<br/>
+    api/v02/datasets/{datasetId}/sourceDocument [GET] [returns a binary document]<br/>
+    api/v02/datasets/{datasetId}/attachments [GET] [returns a zip file]<br/>
+    api/v02/datasets/{datasetId}/rows [GET]<br/>
 
     <h2>Dataset Rows</h2>
-    api/v01/rows {query JSON in the request body} [POST]<br/>
-    api/v01/rows/flat {query JSON in the request body} [POST]<br/>
-    api/v01/rows/asFile {query JSON in the request body} [POST] [returns binary document]<br/>
-    api/v01/row/{rowId} [GET]<br/>
+    api/v02/rows (request body contains JSON embodying a query) [POST*]<br/>
+    api/v02/rows/flat (request body contains JSON embodying a query) [POST*]<br/>
+    api/v02/rows/asFile (request body contains JSON embodying a query) [POST*] [returns binary document]<br/>
+    api/v02/rows/{rowId} [GET]<br/>
 
     <h2>Utilities</h2>
-    api/v01/getNamesOfSheetsWithinExcelWorkbook (multipart file in the request body) [POST]<br/>
+    api/v02/getNamesOfSheetsWithinExcelWorkbook (multipart file in the request body) [POST*]<br/>
 
-    <h2>Admin</h2>
-    api/v01/addDataCategory?name={dataCateogryName} [GET]<br/>
-    api/v01/removeDataset/{datasetId} [GET]<br/>
-    api/v01/dropDatabaseAndReIngestAllDataFromOriginallyUploadedFiles [GET] [returns JSON with a list of errors if any occurred]<br/>
-    api/v01/attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads [GET] [returns JSON with a list of errors if any occurred]<br/>
+    <h2>Admin Operations</h2>
+    NOTE: These have all been made GET operations for ease of execution.<br/>
+    api/v02/addDataCategory?name={dataCateogryName} [GET]<br/>
+    api/v02/removeDataset/{datasetId} [GET]<br/>
+    api/v02/dropDatabaseAndReIngestAllDataFromOriginallyUploadedFiles [GET] [returns JSON with a list of errors that occurred, may be empty]<br/>
+    api/v02/attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads [GET] [returns JSON with a list of errors that occurred, may be empty]<br/>
     <br/>
+    <br/>
+    _________________________________<br/>
+    * This is logically a GET operation. It is a POST because data must be sent in the requuest body.<br/>
     <br/>
 
 </body>

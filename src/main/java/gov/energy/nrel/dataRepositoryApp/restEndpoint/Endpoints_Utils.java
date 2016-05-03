@@ -32,10 +32,16 @@ public class Endpoints_Utils extends EndpointController {
     protected DataRepositoryApplication dataRepositoryApplication;
 
 
-    @RequestMapping(value="/api/v01/getNamesOfSheetsWithinExcelWorkbook", method = RequestMethod.POST)
+    @RequestMapping(
+            value="/api/v02/getNamesOfSheetsWithinExcelWorkbook",
+            method = RequestMethod.POST)
     public ResponseEntity addDataset(
             @RequestParam(value = "workbook", required = true) MultipartFile workbook)
             throws IOException, NotAnExcelWorkbook, CleanupOperationIsOccurring {
+
+        // NOTE: This is more like a GET operation than a POST, but it had to be a post because data
+        // must be sent in the request body.  In truth, it's more like a utility method.  It
+        // does nothing more than interrogate the passed in Excel workbook.
 
         throwExceptionIfCleanupOperationsIsOccurring();
 
@@ -57,9 +63,14 @@ public class Endpoints_Utils extends EndpointController {
         return create_SUCCESS_response(json);
     }
 
-    @RequestMapping(value="/api/v01/dropDatabaseAndReIngestAllDataFromOriginallyUploadedFiles", method = RequestMethod.GET)
+    @RequestMapping(
+            value="/api/v02/dropDatabaseAndReIngestAllDataFromOriginallyUploadedFiles",
+            method = RequestMethod.GET,
+            produces = "application/json")
     public synchronized ResponseEntity repopulateTheDatabase()
             throws IOException, CleanupOperationIsOccurring {
+
+        // NOTE: This has been made a GET operation for ease of use.
 
         synchronized (DataRepositoryApplication.cleanupOperationIsOccurring) {
 
@@ -80,8 +91,13 @@ public class Endpoints_Utils extends EndpointController {
         }
     }
 
-    @RequestMapping(value="/api/v01/attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads", method = RequestMethod.GET)
+    @RequestMapping(
+            value="/api/v02/attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads",
+            method = RequestMethod.GET,
+            produces = "application/json")
     public synchronized ResponseEntity attemptToCleanupDataFromAllPreviouslyIncompleteDatasetUploads() throws CleanupOperationIsOccurring {
+
+        // NOTE: This has been made a GET operation for ease of use.
 
         synchronized (DataRepositoryApplication.cleanupOperationIsOccurring) {
 

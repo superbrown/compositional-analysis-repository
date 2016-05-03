@@ -22,7 +22,10 @@ public class Endpoints_DataTypes extends EndpointController {
     protected DataRepositoryApplication dataRepositoryApplication;
 
 
-    @RequestMapping(value="/api/v01/dataTypes/all", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(
+            value="/api/v02/dataTypes/all",
+            method = RequestMethod.GET,
+            produces = "application/json")
     public ResponseEntity getAllComparisonOperators() throws CleanupOperationIsOccurring {
 
         throwExceptionIfCleanupOperationsIsOccurring();
@@ -31,7 +34,10 @@ public class Endpoints_DataTypes extends EndpointController {
         return create_SUCCESS_response(inventoryOfDataTypes);
     }
 
-    @RequestMapping(value="/api/v01/dataType/comparisonOperators", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(
+            value="/api/v02/dataType/comparisonOperators",
+            method = RequestMethod.GET,
+            produces = "application/json")
     public ResponseEntity getComparisonOperators(
             @RequestParam(value = "dataType", required = true) String dataType) throws CleanupOperationIsOccurring {
 
