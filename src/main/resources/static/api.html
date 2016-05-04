@@ -61,7 +61,10 @@
     api/v02/getNamesOfSheetsWithinExcelWorkbook (multipart file in the request body) [POST*]<br/>
 
     <h2>Admin Operations</h2>
-    NOTE: These have all been made GET operations for ease of execution.<br/>
+    NOTE: These have all been made GET operations for ease of use from a browser. This is not
+    standard because they do change system state.  If this app ever gains usage that requires more
+    rubostness, this approach should be revisited. NEVER enbed these links on a site that might get
+    visitied by crawlers.<br/>
     api/v02/addDataCategory?name={dataCateogryName} [GET]<br/>
     api/v02/removeDataset/{datasetId} [GET]<br/>
     api/v02/dropDatabaseAndReIngestAllDataFromOriginallyUploadedFiles [GET] [returns JSON with a list of errors that occurred, may be empty]<br/>
