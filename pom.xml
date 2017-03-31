@@ -5,8 +5,8 @@
 
 	<groupId>gov.energy.nrel</groupId>
 	<artifactId>data-repository-app</artifactId>
-	<version>0.0.1</version>
-	<packaging>war</packaging>
+	<version>0.0.2</version>
+	<packaging>jar</packaging>
 
 	<name>data-repository-app</name>
 	<description>Data Repository Application</description>
@@ -117,6 +117,13 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
+		</dependency>
+
+		<!--For generating Swagger documentation -->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.6.1</version>
 		</dependency>
 
 	</dependencies>
