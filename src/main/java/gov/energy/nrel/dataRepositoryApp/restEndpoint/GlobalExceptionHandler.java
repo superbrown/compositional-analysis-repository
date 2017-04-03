@@ -10,7 +10,7 @@ import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.NotAnExc
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Component
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
     private static Logger log = Logger.getLogger(GlobalExceptionHandler.class);
