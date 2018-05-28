@@ -10,6 +10,7 @@ import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.NotAnExc
 import gov.energy.nrel.dataRepositoryApp.utilities.fileReader.exception.UnsupportedFileExtension;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -20,9 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class EndpointController {
+@ControllerAdvice
+public class GlobalExceptionHandler {
 
-    private static Logger log = Logger.getLogger(EndpointController.class);
+    private static Logger log = Logger.getLogger(GlobalExceptionHandler.class);
 
     private static final String KEY__HTTP_STATUS_CODE = "status";
     private static final String KEY__REASON_PHRASE = "reasonPhrase";
@@ -34,17 +36,11 @@ public class EndpointController {
     private static final String KEY__INVALID_NAME = "invalidName";
     private static final String KEY__PARAMETER_NAME = "parameterName";
 
-    protected void throwExceptionIfCleanupOperationsIsOccurring() throws CleanupOperationIsOccurring {
-
-        if (DataRepositoryApplication.cleanupOperationIsOccurring == true) {
-            throw new CleanupOperationIsOccurring();
-        }
-    }
 
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public @ResponseBody
-    Map<String,Object> handleGenericException(Throwable e,
+    @ResponseBody
+    public Map<String,Object> handleGenericException(Throwable e,
                                               HttpServletRequest request,
                                               HttpServletResponse response) {
 
@@ -57,8 +53,8 @@ public class EndpointController {
 
     @ExceptionHandler(FailedToSave.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public @ResponseBody
-    Map<String,Object> handleFailedToSave(FailedToSave e,
+    @ResponseBody
+    public Map<String,Object> handleFailedToSave(FailedToSave e,
                                           HttpServletRequest request,
                                           HttpServletResponse response) {
 
@@ -67,8 +63,8 @@ public class EndpointController {
 
     @ExceptionHandler(FailedToDeleteFiles.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public @ResponseBody
-    Map<String,Object> handleFailedToDeleteFiles(FailedToDeleteFiles e,
+    @ResponseBody
+    public Map<String,Object> handleFailedToDeleteFiles(FailedToDeleteFiles e,
                                                  HttpServletRequest request,
                                                  HttpServletResponse response) {
 
@@ -77,8 +73,8 @@ public class EndpointController {
 
     @ExceptionHandler(FailedToExtractDataFromFile.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public @ResponseBody
-    Map<String,Object> handleFailedToDeleteFiles(FailedToExtractDataFromFile e,
+    @ResponseBody
+    public Map<String,Object> handleFailedToDeleteFiles(FailedToExtractDataFromFile e,
                                                  HttpServletRequest request,
                                                  HttpServletResponse response) {
 
@@ -87,8 +83,8 @@ public class EndpointController {
 
     @ExceptionHandler(UnknownDataset.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public @ResponseBody
-    Map<String,Object> handleUnknownDataset(UnknownDataset e,
+    @ResponseBody
+    public Map<String,Object> handleUnknownDataset(UnknownDataset e,
                                             HttpServletRequest request, 
                                             HttpServletResponse response) {
 
@@ -99,8 +95,8 @@ public class EndpointController {
 
     @ExceptionHandler(UnknownRow.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public @ResponseBody
-    Map<String,Object> handleUnknownDataCatogory(UnknownRow e,
+    @ResponseBody
+    public Map<String,Object> handleUnknownDataCatogory(UnknownRow e,
                                                  HttpServletRequest request,
                                                  HttpServletResponse response) {
 
@@ -111,8 +107,8 @@ public class EndpointController {
 
     @ExceptionHandler(UnknownDataCatogory.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public @ResponseBody
-    Map<String,Object> handleUnknownDataCatogory(UnknownDataCatogory e,
+    @ResponseBody
+    public Map<String,Object> handleUnknownDataCatogory(UnknownDataCatogory e,
                                                  HttpServletRequest request,
                                                  HttpServletResponse response) {
 
@@ -123,8 +119,8 @@ public class EndpointController {
 
     @ExceptionHandler(DataCategoryAlreadyExists.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public @ResponseBody
-    Map<String,Object> handleDataCategoryAlreadyExists(DataCategoryAlreadyExists e,
+    @ResponseBody
+    public Map<String,Object> handleDataCategoryAlreadyExists(DataCategoryAlreadyExists e,
                                                        HttpServletRequest request,
                                                        HttpServletResponse response) {
 
@@ -135,8 +131,8 @@ public class EndpointController {
 
     @ExceptionHandler(FileContainsInvalidColumnName.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public @ResponseBody
-    Map<String,Object> handleFileContainsInvalidColumnName(FileContainsInvalidColumnName e,
+    @ResponseBody
+    public Map<String,Object> handleFileContainsInvalidColumnName(FileContainsInvalidColumnName e,
                                                            HttpServletRequest request,
                                                            HttpServletResponse response) {
 
@@ -153,8 +149,8 @@ public class EndpointController {
 
     @ExceptionHandler(UnsanitaryRequestParameter.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public @ResponseBody
-    Map<String,Object> handleFileContainsInvalidColumnName(UnsanitaryRequestParameter e,
+    @ResponseBody
+    public Map<String,Object> handleFileContainsInvalidColumnName(UnsanitaryRequestParameter e,
                                                            HttpServletRequest request,
                                                            HttpServletResponse response) {
 
@@ -168,8 +164,8 @@ public class EndpointController {
 
     @ExceptionHandler(UnsanitaryData.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public @ResponseBody
-    Map<String,Object> handleFileContainsInvalidColumnName(UnsanitaryData e,
+    @ResponseBody
+    public Map<String,Object> handleFileContainsInvalidColumnName(UnsanitaryData e,
                                                            HttpServletRequest request,
                                                            HttpServletResponse response) {
 
@@ -189,8 +185,8 @@ public class EndpointController {
 
     @ExceptionHandler(UnsupportedFileExtension.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public @ResponseBody
-    Map<String,Object> handleFileContainsInvalidColumnName(UnsupportedFileExtension e,
+    @ResponseBody
+    public Map<String,Object> handleFileContainsInvalidColumnName(UnsupportedFileExtension e,
                                                            HttpServletRequest request,
                                                            HttpServletResponse response) {
 
@@ -204,8 +200,8 @@ public class EndpointController {
 
     @ExceptionHandler(NotAnExcelWorkbook.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public @ResponseBody
-    Map<String,Object> handleNotAnExcelWorkbook(NotAnExcelWorkbook e,
+    @ResponseBody
+    public Map<String,Object> handleNotAnExcelWorkbook(NotAnExcelWorkbook e,
                                                 HttpServletRequest request,
                                                 HttpServletResponse response) {
 
@@ -219,8 +215,8 @@ public class EndpointController {
 
     @ExceptionHandler(CleanupOperationIsOccurring.class)
     @ResponseStatus(HttpStatus.LOCKED)
-    public @ResponseBody
-    Map<String,Object> handleCleanupOperationIsOccurring(CleanupOperationIsOccurring e,
+    @ResponseBody
+    public Map<String,Object> handleCleanupOperationIsOccurring(CleanupOperationIsOccurring e,
                                                          HttpServletRequest request,
                                                          HttpServletResponse response) {
 
