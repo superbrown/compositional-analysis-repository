@@ -40,7 +40,7 @@ import static gov.energy.nrel.dataRepositoryApp.utilities.HTTPResponseUtility.cr
 
 
 @RestController
-public class Endpoints_Datasets extends EndpointController {
+public class Endpoints_Datasets extends AbstractEndpoints {
 
     private static final int MS_IN_A_DAY = 24 * 60 * 60 * 1000;
     protected static Logger log = Logger.getLogger(Endpoints_Datasets.class);
