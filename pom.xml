@@ -7,7 +7,7 @@
 	<!--Don't change this because the HTML code relies upon it being data-repository-app. -->
 	<artifactId>data-repository-app</artifactId>
 	<version>0.0.2</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<!--Don't change this because the HTML code relies upon it being data-repository-app. -->
 	<name>data-repository-app</name>
@@ -125,8 +125,9 @@
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
-			<version>2.6.1</version>
+			<version>2.9.2</version>
 		</dependency>
+
 
 	</dependencies>
 
@@ -135,8 +136,60 @@
 		<finalName>data-repository-app</finalName>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<excludes>
+						<exclude>ngapp/**</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<excludes>
+						<exclude>ngapp/**</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.5.0</version>
+				<executions>
+					<execution>
+						<id>exec-npm-install</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<workingDirectory>${project.basedir}/src/main/ngapp</workingDirectory>
+							<executable>npm.cmd</executable>
+							<arguments>
+								<argument>install</argument>
+							</arguments>
+						</configuration>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>exec-npm-ng-build</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<workingDirectory>${project.basedir}/src/main/ngapp</workingDirectory>
+							<executable>ng.cmd</executable>
+							<arguments>
+								<argument>build</argument>
+								<argument>--base-href=/data-repository-app/ng/</argument>
+							</arguments>
+						</configuration>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
